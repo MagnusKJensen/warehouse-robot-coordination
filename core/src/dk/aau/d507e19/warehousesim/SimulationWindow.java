@@ -19,7 +19,7 @@ public class SimulationWindow extends ApplicationAdapter {
 
 	// The camera that is used for the interface (menu and buttons)
 	private OrthographicCamera interfaceCamera;
-	
+
 	@Override
 	public void create () {
 		simulationCamera = new OrthographicCamera(getSimulationCameraWidth(), DEFAULT_SCREEN_HEIGHT_IN_TILES);
