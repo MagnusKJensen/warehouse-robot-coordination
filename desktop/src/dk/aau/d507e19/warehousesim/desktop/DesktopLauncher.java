@@ -17,6 +17,8 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.height = screenHeight;
 		config.width = screenWidth;
+		config.foregroundFPS = 25;
+		config.backgroundFPS = 25;
 		LwjglApplication application = new LwjglApplication(new SimulationApp(), config);
 	}
 
