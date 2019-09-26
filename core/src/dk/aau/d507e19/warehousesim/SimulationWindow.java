@@ -60,7 +60,17 @@ public class SimulationWindow extends ApplicationAdapter {
 		simulationRenderer.rect(1,1, 1, 1);
 		simulationRenderer.end();
 	}
-	
+
+	@Override
+	public void pause() {
+
+	}
+
+	@Override
+	public void resume() {
+
+	}
+
 	@Override
 	public void dispose () {
 		simulationRenderer.dispose();
