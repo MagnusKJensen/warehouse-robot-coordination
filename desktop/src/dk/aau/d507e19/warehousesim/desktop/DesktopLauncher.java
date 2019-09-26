@@ -2,7 +2,7 @@ package dk.aau.d507e19.warehousesim.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import dk.aau.d507e19.warehousesim.SimulationWindow;
+import dk.aau.d507e19.warehousesim.SimulationApp;
 
 public class DesktopLauncher {
 
@@ -17,7 +17,7 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.height = screenHeight;
 		config.width = screenWidth;
-		LwjglApplication application = new LwjglApplication(new SimulationWindow(), config);
+		LwjglApplication application = new LwjglApplication(new SimulationApp(), config);
 	}
 
 	public int getScreenWidth() {
