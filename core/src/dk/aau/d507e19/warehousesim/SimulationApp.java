@@ -2,11 +2,9 @@ package dk.aau.d507e19.warehousesim;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class SimulationApp extends ApplicationAdapter {
@@ -25,8 +23,18 @@ public class SimulationApp extends ApplicationAdapter {
 
 
 	// Variables for simulation loop logic
-	private UpdateMode updateMode = UpdateMode.MANUAL;
+	private static final int LOGIC_TICKRATE = 25;
+	private static final long MS_PER_TICK = 1000 / LOGIC_TICKRATE; // todo Should this be nanoseconds for better accuracy
+	private static final int FRAME_RATE = 25;
 
+	private UpdateMode updateMode = UpdateMode.MANUAL;
+	private long msSinceLastRender = 0L;
+	private long lastUpdateTime = 0L;
+
+
+	//
+	private Simulation simulation = new Simulation();
+	private SideMenu sideMenu = new SideMenu();
 
 	@Override
 	public void create () {
@@ -43,7 +51,6 @@ public class SimulationApp extends ApplicationAdapter {
 		camera.position.x = camera.viewportWidth / 2f;
 		camera.position.y = camera.viewportHeight / 2f;
 	}
-
 
 	private void updateSimulationScreenSize(int windowWidth, int windowHeight){
 		simulationViewport.setScreenWidth(windowWidth - MENU_WIDTH_IN_PIXELS); // todo Fix below zero error
@@ -77,11 +84,39 @@ public class SimulationApp extends ApplicationAdapter {
 		Gdx.gl.glClearColor(0, 0,0,0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+		// Render as fast as possible when in fast mode
+		if(updateMode == UpdateMode.FAST_NO_GRAPHICS || updateMode == UpdateMode.FAST_FORWARD) {
+			updateSimulation();
+		}
 
-		renderMenu();
+		long currentTime = System.currentTimeMillis();
+		msSinceLastRender += currentTime - lastUpdateTime;
+		lastUpdateTime = currentTime;
+
+		// Render/update if enough time has passed since last time we rendered/updated
+		if(msSinceLastRender >= MS_PER_TICK){
+			msSinceLastRender -= MS_PER_TICK;
+
+			// If the simulation is running in real time then update once every frame
+			if(updateMode == UpdateMode.REAL_TIME){
+				updateSimulation();
+			}
+
+			renderSimulation();
+			renderMenu();
+			updateMenu();
+		}
+
 		renderSimulation();
 	}
 
+	private void updateMenu() {
+		sideMenu.update();
+	}
+
+	private void updateSimulation(){
+		simulation.update();
+	}
 
 	private void renderMenu(){
 		menuCamera.update();
@@ -93,6 +128,7 @@ public class SimulationApp extends ApplicationAdapter {
 		simulationCamera.update();
 		simulationViewport.apply();
 		simulationRenderer.setProjectionMatrix(simulationCamera.combined);
+		simulation.render(simulationCamera);
 	}
 
 	@Override
@@ -101,21 +137,23 @@ public class SimulationApp extends ApplicationAdapter {
 		menuRenderer.dispose();
 	}
 
-
 	public void startRealTime(){
 		updateMode = UpdateMode.REAL_TIME;
+		msSinceLastRender = 0L;
 	}
 
 	public void pause(){
 		updateMode = UpdateMode.MANUAL;
 	}
 
-	public void fastForward(){
+	public void startFastForward(){
 		updateMode = UpdateMode.FAST_FORWARD;
+		msSinceLastRender = 0L;
 	}
 
 	public void simulateWithoutGrapihcs(){
 		updateMode = UpdateMode.FAST_NO_GRAPHICS;
+		msSinceLastRender = 0L;
 	}
 
 }
