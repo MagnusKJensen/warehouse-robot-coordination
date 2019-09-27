@@ -34,16 +34,17 @@ public class SimulationApp extends ApplicationAdapter {
 
 	@Override
 	public void create () {
-		simulation = new Simulation();
-		sideMenu = new SideMenu();
+		simulationViewport = new ScreenViewport(simulationCamera);
+		simulationViewport.setUnitsPerPixel(1f / 64f);
 
-		simulationViewport = new ScreenViewport();
-		menuViewport = new ScreenViewport();
+		menuViewport = new ScreenViewport(menuCamera);
 
-		updateMenuScreenSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		updateSimulationScreenSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		centerCamera(simulationCamera);
 		centerCamera(menuCamera);
+
+		simulation = new Simulation();
+		sideMenu = new SideMenu(menuViewport);
+
 		lastUpdateTime = System.currentTimeMillis();
 	}
 
@@ -52,31 +53,14 @@ public class SimulationApp extends ApplicationAdapter {
 		camera.position.y = camera.viewportHeight / 2f;
 	}
 
-	private void updateSimulationScreenSize(int windowWidth, int windowHeight){
-		simulationViewport.setScreenWidth(windowWidth - MENU_WIDTH_IN_PIXELS); // todo Fix below zero error
-		simulationViewport.setScreenHeight(windowHeight);
-
-		float simCamWidthInTiles = (float) simulationViewport.getScreenWidth() / (float) DEFAULT_PIXELS_PER_TILE;
-		float simCamHeightInTiles = (float) simulationViewport.getScreenHeight() / (float) DEFAULT_PIXELS_PER_TILE;
-
-		simulationCamera.viewportWidth = simCamWidthInTiles;
-		simulationCamera.viewportHeight = simCamHeightInTiles;
-	}
-
-	private void updateMenuScreenSize(int width, int height){
-		menuViewport.setScreenWidth(MENU_WIDTH_IN_PIXELS);
-		menuViewport.setScreenHeight(height);
-		menuViewport.setScreenPosition(width - MENU_WIDTH_IN_PIXELS, 0);
-
-		menuCamera.viewportWidth = MENU_WIDTH_IN_PIXELS;
-		menuCamera.viewportHeight = height;
-	}
-
 	@Override
 	// Called when the simulation window is resized; adjusts the screen height to fit the new aspect ratio
 	public void resize(int width, int height) {
-		updateSimulationScreenSize(width, height);
-		updateMenuScreenSize(width, height);
+        simulationViewport.update(width - MENU_WIDTH_IN_PIXELS, height);
+        menuViewport.update(MENU_WIDTH_IN_PIXELS, height);
+	    menuViewport.setScreenX(width - MENU_WIDTH_IN_PIXELS);
+		//updateSimulationScreenSize(width, height);
+		//updateMenuScreenSize(width, height);
 		centerCamera(menuCamera);
 		centerCamera(simulationCamera); // TODO: 26/09/2019 Add more intelligent system for repositioning camera when resizing
 	}
@@ -92,6 +76,7 @@ public class SimulationApp extends ApplicationAdapter {
 		}
 
 		updateMenu();
+
 		clearScreen();
 		renderMenu();
 		if(updateMode != UpdateMode.FAST_NO_GRAPHICS)
@@ -138,11 +123,12 @@ public class SimulationApp extends ApplicationAdapter {
 		menuCamera.update();
 		menuViewport.apply();
 		sideMenu.render(menuCamera);
+
 	}
 
 	private void renderSimulation(){
 		simulationCamera.update();
-		simulationViewport.apply();
+        simulationViewport.apply();
 		simulation.render(simulationCamera);
 	}
 

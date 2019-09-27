@@ -1,11 +1,13 @@
 package dk.aau.d507e19.warehousesim;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import javafx.scene.Camera;
@@ -24,8 +26,19 @@ public class Simulation {
     public Simulation(){
         shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
-        font = new BitmapFont();
-        font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        font = generateFont();
+    }
+
+    private BitmapFont generateFont(){
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/OpenSans.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 12;
+        parameter.borderColor = Color.RED;
+        parameter.minFilter = Texture.TextureFilter.Linear;
+        parameter.magFilter = Texture.TextureFilter.Linear;
+        BitmapFont font = generator.generateFont(parameter); // font size 12 pixels
+        generator.dispose();
+        return font;
     }
 
     public void update(){
@@ -36,13 +49,12 @@ public class Simulation {
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.rect(0,0, 1, 0.2f);
+        shapeRenderer.rect(5,5, 5, 5);
         shapeRenderer.end();
 
-
-        Vector3 screenPos = camera.project(new Vector3(0.35f, 0.18f, 0));
         batch.begin();
         font.setColor(Color.RED);
-        font.draw(batch, String.valueOf(tickCount), screenPos.x, screenPos.y);
+        font.draw(batch, String.valueOf(tickCount), 15, 10);
         batch.end();
     }
 
