@@ -32,9 +32,10 @@ public class SideMenu {
 
         shapeRenderer = new ShapeRenderer();
 
-        TextureRegion textRegion = new TextureRegion(new Texture(Gdx.files.internal("icons/play_icon.png")));
+        TextureRegion textRegion = new TextureRegion(new Texture(Gdx.files.internal("icons/play.png")));
         pauseButton = new Button(new TextureRegionDrawable(textRegion));
         pauseButton.setPosition(45f, 15f);
+
         menuStage.addActor(pauseButton);
     }
 

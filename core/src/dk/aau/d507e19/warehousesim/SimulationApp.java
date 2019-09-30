@@ -22,10 +22,10 @@ public class SimulationApp extends ApplicationAdapter {
 	private ScreenViewport simulationViewport;
 
 	// Variables for simulation loop logic
-	private static final int TICKS_PER_SECOND = 20;
+	private static final int TICKS_PER_SECOND = 10;
 	private static final long MILLIS_PER_TICK = 1000 / TICKS_PER_SECOND;
 
-	private UpdateMode updateMode = UpdateMode.REAL_TIME;
+	private UpdateMode updateMode = UpdateMode.MANUAL;
 	private long millisSinceUpdate = 0L;
 	private long lastUpdateTime = 0L;
 
@@ -146,6 +146,13 @@ public class SimulationApp extends ApplicationAdapter {
 	public void switchUpdateMode(UpdateMode newMode){
 		updateMode = newMode;
 		millisSinceUpdate = 0L;
+	}
+
+	public void globalStepForward(){
+		if(updateMode != UpdateMode.MANUAL)
+			throw new IllegalStateException("Update mode must be manual to step forward manually; But current " +
+					"update mode is : " + updateMode.name());
+		simulation.update();
 	}
 
 }
