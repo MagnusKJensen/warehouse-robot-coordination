@@ -1,4 +1,4 @@
-package dk.aau.d507e19.warehousesim;
+package dk.aau.d507e19.warehousesim.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -12,11 +12,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import dk.aau.d507e19.warehousesim.SimulationApp;
 
 public class SideMenu {
 
     private Button playBtn, pauseBtn, globalStepForwardBtn, globalStepBackBtn, fastForwardBtn;
-
 
     ShapeRenderer shapeRenderer;
     private Stage menuStage;
