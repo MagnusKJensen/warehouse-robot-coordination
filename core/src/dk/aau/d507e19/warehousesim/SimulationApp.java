@@ -2,6 +2,7 @@ package dk.aau.d507e19.warehousesim;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -15,6 +16,7 @@ public class SimulationApp extends ApplicationAdapter {
 
 	private OrthographicCamera menuCamera = new OrthographicCamera();
 	private OrthographicCamera simulationCamera = new OrthographicCamera();
+	private OrthographicCamera simFontCamera = new OrthographicCamera();
 
 	private ScreenViewport menuViewport;
 	private ScreenViewport simulationViewport;
@@ -27,6 +29,8 @@ public class SimulationApp extends ApplicationAdapter {
 	private long millisSinceUpdate = 0L;
 	private long lastUpdateTime = 0L;
 
+
+	private static final Color simBGColor = new Color(244f/255f, 245f/255f,247f/255f, 1);
 
 	//
 	private Simulation simulation;
@@ -59,10 +63,16 @@ public class SimulationApp extends ApplicationAdapter {
         simulationViewport.update(width - MENU_WIDTH_IN_PIXELS, height);
         menuViewport.update(MENU_WIDTH_IN_PIXELS, height);
 	    menuViewport.setScreenX(width - MENU_WIDTH_IN_PIXELS);
+
+		simFontCamera.viewportWidth = simulationViewport.getScreenWidth();
+		simFontCamera.viewportHeight = simulationViewport.getScreenHeight();
+
 		//updateSimulationScreenSize(width, height);
 		//updateMenuScreenSize(width, height);
 		centerCamera(menuCamera);
 		centerCamera(simulationCamera); // TODO: 26/09/2019 Add more intelligent system for repositioning camera when resizing
+		centerCamera(simFontCamera);
+		simFontCamera.update();
 	}
 
 
@@ -107,7 +117,7 @@ public class SimulationApp extends ApplicationAdapter {
 	}
 
 	private void clearScreen() {
-		Gdx.gl.glClearColor(0, 0,0,0);
+		Gdx.gl.glClearColor(simBGColor.r, simBGColor.g, simBGColor.b, simBGColor.a);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	}
 
@@ -128,8 +138,9 @@ public class SimulationApp extends ApplicationAdapter {
 
 	private void renderSimulation(){
 		simulationCamera.update();
-        simulationViewport.apply();
-		simulation.render(simulationCamera);
+		simFontCamera.update();
+		simulationViewport.apply();
+		simulation.render(simulationCamera, simFontCamera);
 	}
 
 	public void switchUpdateMode(UpdateMode newMode){

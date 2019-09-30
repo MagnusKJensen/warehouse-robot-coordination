@@ -45,16 +45,18 @@ public class Simulation {
         tickCount += 1;
     }
 
-    public void render(OrthographicCamera camera){
+    public void render(OrthographicCamera camera, OrthographicCamera fontCamera){
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.rect(0,0, 1, 0.2f);
         shapeRenderer.rect(5,5, 5, 5);
         shapeRenderer.end();
 
+        Vector3 textPos = camera.project(new Vector3(0.3f, 0.15f, 0));
+        batch.setProjectionMatrix(fontCamera.combined);
         batch.begin();
         font.setColor(Color.RED);
-        font.draw(batch, String.valueOf(tickCount), 15, 10);
+        font.draw(batch, String.valueOf(tickCount), textPos.x, textPos.y);
         batch.end();
     }
 

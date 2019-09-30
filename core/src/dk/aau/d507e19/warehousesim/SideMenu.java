@@ -24,6 +24,8 @@ public class SideMenu {
     ShapeRenderer shapeRenderer;
     private Stage menuStage;
 
+    private Color menuBGColor = new Color(75f / 255f, 75f / 255f, 75f / 255f,  1);
+
     public SideMenu(Viewport menuViewport){
         menuStage = new Stage(menuViewport);
         Gdx.input.setInputProcessor(menuStage);
@@ -32,6 +34,7 @@ public class SideMenu {
 
         TextureRegion textRegion = new TextureRegion(new Texture(Gdx.files.internal("icons/play_icon.png")));
         pauseButton = new Button(new TextureRegionDrawable(textRegion));
+        pauseButton.setPosition(45f, 15f);
         menuStage.addActor(pauseButton);
     }
 
@@ -41,9 +44,9 @@ public class SideMenu {
 
     public void render(OrthographicCamera camera){
         shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.setColor(Color.RED);
+        shapeRenderer.setColor(menuBGColor);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.rect(0, 5, camera.viewportWidth - 5, camera.viewportHeight - 10);
+        shapeRenderer.rect(0, 0, camera.viewportWidth, camera.viewportHeight);
         shapeRenderer.end();
 
         menuStage.draw();
