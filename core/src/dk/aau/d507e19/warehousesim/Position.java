@@ -42,7 +42,8 @@ public class Position {
 
         if (getClass() != o.getClass()) {
             if (o.getClass() == GridCoordinate.class)
-                throw new IllegalArgumentException("Can't use .equals() to compare GridCoordinate and Position");
+                throw new IllegalArgumentException("Can't use .equals() to compare GridCoordinate and Position" +
+                        "\n Instead use isSameAs()");
 
             return false;
         }
