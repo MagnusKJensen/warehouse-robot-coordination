@@ -20,19 +20,23 @@ public class Simulation {
     private BitmapFont font;
     private OrthographicCamera fontCamera;
 
+    private StorageGrid storageGrid;
+
     private long tickCount = 0L;
+
+    private static final int STORAGE_WIDTH = 40, STORAGE_HEIGHT = 15;
 
     public Simulation(){
         shapeRenderer = new ShapeRenderer();
-        batch = new SpriteBatch();
         font = generateFont();
+        batch = new SpriteBatch();
+        storageGrid = new StorageGrid(STORAGE_WIDTH, STORAGE_HEIGHT);
     }
 
     private BitmapFont generateFont(){
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/OpenSans.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 12;
-        parameter.borderColor = Color.RED;
         parameter.minFilter = Texture.TextureFilter.Linear;
         parameter.magFilter = Texture.TextureFilter.Linear;
         BitmapFont font = generator.generateFont(parameter); // font size 12 pixels
@@ -44,14 +48,10 @@ public class Simulation {
         tickCount += 1;
     }
 
-    public void render(OrthographicCamera camera, OrthographicCamera fontCamera){
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.rect(0,0, 1, 0.2f);
-        shapeRenderer.rect(5,5, 5, 5);
-        shapeRenderer.end();
+    public void render(OrthographicCamera gridCamera, OrthographicCamera fontCamera){
+        storageGrid.render(gridCamera);
 
-        Vector3 textPos = camera.project(new Vector3(0.3f, 0.15f, 0));
+        Vector3 textPos = gridCamera.project(new Vector3(0.3f, 0.15f, 0));
         batch.setProjectionMatrix(fontCamera.combined);
         batch.begin();
         font.setColor(Color.RED);
