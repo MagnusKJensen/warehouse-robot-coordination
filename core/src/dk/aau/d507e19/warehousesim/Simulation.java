@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
-import javafx.scene.Camera;
 
 import java.awt.*;
 
@@ -59,5 +58,4 @@ public class Simulation {
         font.draw(batch, String.valueOf(tickCount), textPos.x, textPos.y);
         batch.end();
     }
-
 }
