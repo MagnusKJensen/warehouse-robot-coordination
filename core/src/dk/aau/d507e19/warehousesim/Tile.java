@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import java.util.Random;
 
-public class Tile implements Renderable{
+public class Tile implements Drawable {
 
     private int posX, posY;
     private Color color;
@@ -27,8 +27,4 @@ public class Tile implements Renderable{
         shapeRenderer.end();
     }
 
-    @Override
-    public void render(OrthographicCamera camera) {
-
-    }
 }

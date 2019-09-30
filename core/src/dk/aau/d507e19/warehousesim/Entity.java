@@ -1,6 +1,6 @@
 package dk.aau.d507e19.warehousesim;
 
-public interface Entity extends Renderable{
+public interface Entity extends Drawable {
 
     void update();
 
