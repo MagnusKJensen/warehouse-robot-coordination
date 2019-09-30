@@ -47,7 +47,7 @@ public class SimulationApp extends ApplicationAdapter {
 		centerCamera(menuCamera);
 
 		simulation = new Simulation();
-		sideMenu = new SideMenu(menuViewport);
+		sideMenu = new SideMenu(menuViewport, this);
 
 		lastUpdateTime = System.currentTimeMillis();
 	}
@@ -143,9 +143,10 @@ public class SimulationApp extends ApplicationAdapter {
 		simulation.render(simulationCamera, simFontCamera);
 	}
 
-	public void switchUpdateMode(UpdateMode newMode){
+	private void switchUpdateMode(UpdateMode newMode){
 		updateMode = newMode;
 		millisSinceUpdate = 0L;
+		lastUpdateTime = System.currentTimeMillis();
 	}
 
 	public void globalStepForward(){
@@ -155,4 +156,19 @@ public class SimulationApp extends ApplicationAdapter {
 		simulation.update();
 	}
 
+	public void globalStepBackWard(){
+		// TODO: 30/09/2019 Maybe exclude this feature?
+	}
+
+	public void pause(){
+		switchUpdateMode(UpdateMode.MANUAL);
+	}
+
+	public void play(){
+		switchUpdateMode(UpdateMode.REAL_TIME);
+	}
+
+	public void fastForward() {
+		switchUpdateMode(UpdateMode.FAST_FORWARD);
+	}
 }

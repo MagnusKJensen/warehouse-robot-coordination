@@ -4,39 +4,93 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class SideMenu {
 
-    private Button pauseButton;
-    private ImageButton playButton;
+    private Button playBtn, pauseBtn, globalStepForwardBtn, globalStepBackBtn, fastForwardBtn;
+
 
     ShapeRenderer shapeRenderer;
     private Stage menuStage;
+    private SimulationApp simulationApp;
+
+    private static final String ICONS_PATH = "icons/";
 
     private Color menuBGColor = new Color(75f / 255f, 75f / 255f, 75f / 255f,  1);
 
-    public SideMenu(Viewport menuViewport){
+    public SideMenu(Viewport menuViewport, final SimulationApp simApp){
+        this.simulationApp = simApp;
+        shapeRenderer = new ShapeRenderer();
         menuStage = new Stage(menuViewport);
         Gdx.input.setInputProcessor(menuStage);
 
-        shapeRenderer = new ShapeRenderer();
+        createButtons();
+    }
 
-        TextureRegion textRegion = new TextureRegion(new Texture(Gdx.files.internal("icons/play.png")));
-        pauseButton = new Button(new TextureRegionDrawable(textRegion));
-        pauseButton.setPosition(45f, 15f);
+    private void createButtons() {
+        pauseBtn = new Button(loadDrawableIcon("pause.png"));
+        playBtn = new Button(loadDrawableIcon("play.png"));
+        fastForwardBtn = new Button(loadDrawableIcon("fast_forward.png"));
+        globalStepBackBtn = new Button(loadDrawableIcon("global_step_back.png"));
+        globalStepForwardBtn = new Button(loadDrawableIcon("global_step_forward.png"));
 
-        menuStage.addActor(pauseButton);
+        int offset = 60;
+        globalStepBackBtn.setPosition(offset, 10);
+        pauseBtn.setPosition(offset + 30, 10);
+        globalStepForwardBtn.setPosition(offset + 60, 10);
+        playBtn.setPosition(offset + 90, 10);
+        fastForwardBtn.setPosition(offset + 120, 10);
+        //fastestForwardBtn.setPosition(15, 15); // TODO: 30/09/2019 add fastest forward
+
+        // TODO: 30/09/2019 Clean the fuck up
+        playBtn.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                simulationApp.play();
+            }
+        });
+        pauseBtn.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                simulationApp.pause();
+            }
+        });
+        globalStepBackBtn.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                simulationApp.globalStepBackWard();
+            }
+        });
+        globalStepForwardBtn.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                simulationApp.globalStepForward();
+            }
+        });
+        fastForwardBtn.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                simulationApp.fastForward();
+            }
+        });
+
+        menuStage.addActor(fastForwardBtn);
+        menuStage.addActor(playBtn);
+        menuStage.addActor(pauseBtn);
+        menuStage.addActor(globalStepBackBtn);
+        menuStage.addActor(globalStepForwardBtn);
+    }
+
+    private TextureRegionDrawable loadDrawableIcon(String iconName) {
+        return new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(ICONS_PATH + iconName))));
     }
 
     public void update(){
