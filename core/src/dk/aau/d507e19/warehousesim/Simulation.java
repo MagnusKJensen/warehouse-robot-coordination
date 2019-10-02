@@ -8,7 +8,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector3;
+import dk.aau.d507e19.warehousesim.controller.robot.Action;
+import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.controller.robot.Task;
 
 import java.util.ArrayList;
 
@@ -22,17 +25,29 @@ public class Simulation {
 
     private long tickCount = 0L;
 
-    private static final int STORAGE_WIDTH = 40, STORAGE_HEIGHT = 15;
-
     public Simulation(){
         font = generateFont();
         batch = new SpriteBatch();
-        storageGrid = new StorageGrid(STORAGE_WIDTH, STORAGE_HEIGHT);
+        storageGrid = new StorageGrid(WarehouseSpecs.wareHouseWidth, WarehouseSpecs.wareHouseHeight);
         initRobots();
     }
 
     private void initRobots() {
+        // Auto generate robots
+        for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++) {
+            robots.add(new Robot(new Position(i,0)));
+        }
 
+        // Generate test task
+        ArrayList<GridCoordinate> taskPath = new ArrayList<>();
+        taskPath.add(new GridCoordinate(0,1));
+        taskPath.add(new GridCoordinate(0,2));
+        taskPath.add(new GridCoordinate(1,2));
+        taskPath.add(new GridCoordinate(2,2));
+        taskPath.add(new GridCoordinate(3,2));
+        taskPath.add(new GridCoordinate(3,3));
+        // Assign test task to first robot
+        robots.get(0).assignTask(new Task(taskPath, Action.PICK_UP));
     }
 
     private BitmapFont generateFont(){
@@ -57,9 +72,11 @@ public class Simulation {
         storageGrid.render(gridCamera);
 
         batch.setProjectionMatrix(gridCamera.combined);
+        batch.begin();
         for(Robot robot : robots){
             robot.render(batch);
         }
+        batch.end();
 
         Vector3 textPos = gridCamera.project(new Vector3(0.3f, 0.15f, 0));
 
