@@ -23,7 +23,8 @@ public class SimulationApp extends ApplicationAdapter {
 	private ScreenViewport simulationViewport;
 
 	// Variables for simulation loop logic
-	private static final int TICKS_PER_SECOND = 10;
+	public static final int TICKS_PER_SECOND = 10;
+	public static final int tileSizeInMeters = 1;
 	private static final long MILLIS_PER_TICK = 1000 / TICKS_PER_SECOND;
 
 	private UpdateMode updateMode = UpdateMode.MANUAL;

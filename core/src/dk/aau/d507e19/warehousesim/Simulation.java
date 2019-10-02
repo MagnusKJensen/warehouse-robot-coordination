@@ -8,7 +8,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector3;
+import dk.aau.d507e19.warehousesim.controller.robot.Action;
+import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.controller.robot.Task;
 
 import java.util.ArrayList;
 
@@ -22,7 +25,7 @@ public class Simulation {
 
     private long tickCount = 0L;
 
-    private static final int STORAGE_WIDTH = 40, STORAGE_HEIGHT = 15;
+    private static final int STORAGE_WIDTH = 40, STORAGE_HEIGHT = 40;
 
     public Simulation(){
         font = generateFont();
@@ -32,7 +35,17 @@ public class Simulation {
     }
 
     private void initRobots() {
+        robots.add(new Robot(new Position(0,0)));
+        robots.add(new Robot(new Position(1,0)));
+        robots.add(new Robot(new Position(2,0)));
+        robots.add(new Robot(new Position(3,0)));
+        robots.add(new Robot(new Position(4,0)));
 
+        ArrayList<GridCoordinate> taskPath = new ArrayList<>();
+        taskPath.add(new GridCoordinate(0,1));
+        taskPath.add(new GridCoordinate(0,2));
+
+        robots.get(0).assignTask(new Task(taskPath, Action.PICK_UP));
     }
 
     private BitmapFont generateFont(){
@@ -57,9 +70,11 @@ public class Simulation {
         storageGrid.render(gridCamera);
 
         batch.setProjectionMatrix(gridCamera.combined);
+        batch.begin();
         for(Robot robot : robots){
             robot.render(batch);
         }
+        batch.end();
 
         Vector3 textPos = gridCamera.project(new Vector3(0.3f, 0.15f, 0));
 
