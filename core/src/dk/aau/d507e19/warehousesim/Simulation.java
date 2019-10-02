@@ -25,12 +25,10 @@ public class Simulation {
 
     private long tickCount = 0L;
 
-    private static final int STORAGE_WIDTH = 40, STORAGE_HEIGHT = 40;
-
     public Simulation(){
         font = generateFont();
         batch = new SpriteBatch();
-        storageGrid = new StorageGrid(STORAGE_WIDTH, STORAGE_HEIGHT);
+        storageGrid = new StorageGrid(WareHouseSpecs.wareHouseWidth, WareHouseSpecs.wareHouseHeight);
         initRobots();
     }
 

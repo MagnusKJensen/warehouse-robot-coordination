@@ -10,7 +10,9 @@ public class Task {
         if(path.isEmpty())
             throw new IllegalArgumentException("Path must have at least one coordinate");
 
-        this.path = path;
+        if(isValidPath()) this.path = path;
+        else throw new IllegalArgumentException("Path must be continuous.");
+
         this.action = action;
     }
 
@@ -27,6 +29,11 @@ public class Task {
             return path.get(path.size() - 1);
         } else
             return null;
+    }
+
+    public boolean isValidPath(){
+        // todo: Check that the path is a continues path without jumps - Philip
+        return true;
     }
 
 }
