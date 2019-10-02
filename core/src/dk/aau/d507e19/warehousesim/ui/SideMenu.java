@@ -19,8 +19,6 @@ import java.util.ArrayList;
 
 public class SideMenu {
 
-    // TODO: 02/10/2019 Play/stepping buttons should be its own class
-
     private static final String ICONS_PATH = "icons/";
 
     private ShapeRenderer shapeRenderer;

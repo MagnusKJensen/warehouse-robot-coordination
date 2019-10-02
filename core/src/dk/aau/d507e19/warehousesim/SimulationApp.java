@@ -39,7 +39,6 @@ public class SimulationApp extends ApplicationAdapter {
 
 	private static final Color simBGColor = new Color(244f/255f, 245f/255f,247f/255f, 1);
 
-	//
 	private Simulation simulation;
 	private SideMenu sideMenu;
 
