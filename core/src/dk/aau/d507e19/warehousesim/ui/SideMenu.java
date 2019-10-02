@@ -155,7 +155,6 @@ public class SideMenu {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.rect(0, 0, camera.viewportWidth, camera.viewportHeight);
         shapeRenderer.end();
-
         menuStage.draw();
     }
 
