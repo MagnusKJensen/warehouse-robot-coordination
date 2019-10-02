@@ -8,11 +8,14 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import dk.aau.d507e19.warehousesim.SimulationApp;
+
+import java.util.ArrayList;
 
 public class SideMenu {
 
@@ -24,9 +27,14 @@ public class SideMenu {
 
     private static final String ICONS_PATH = "icons/";
 
-    private Color menuBGColor = new Color(75f / 255f, 75f / 255f, 75f / 255f,  1);
+    private static final Color disabledButtonColor = new Color(140f / 255f, 140f / 255f, 140f / 255f, 1f);
+    private static final Color defaultButtonColor = new Color(245f / 255f, 245f / 255f, 245f / 255f, 1f);
+    private static final Color selectedButtonColor = new Color(60f / 255f, 175f / 255f, 75f / 255f, 1f);
 
-    public SideMenu(Viewport menuViewport, final SimulationApp simApp){
+    private ArrayList<Button> selectAbleButtons = new ArrayList<>();
+    private Color menuBGColor = new Color(75f / 255f, 75f / 255f, 75f / 255f, 1);
+
+    public SideMenu(Viewport menuViewport, final SimulationApp simApp) {
         this.simulationApp = simApp;
         shapeRenderer = new ShapeRenderer();
         menuStage = new Stage(menuViewport);
@@ -51,37 +59,50 @@ public class SideMenu {
         //fastestForwardBtn.setPosition(15, 15); // TODO: 30/09/2019 add fastest forward
 
         // TODO: 30/09/2019 Clean the fuck up
-        playBtn.addListener(new ClickListener(){
+        playBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 simulationApp.play();
+                disableManualButtons();
+                selectButton(playBtn);
             }
         });
-        pauseBtn.addListener(new ClickListener(){
+        pauseBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 simulationApp.pause();
+                enableManualButtons();
+                selectButton(pauseBtn);
             }
         });
-        globalStepBackBtn.addListener(new ClickListener(){
+        globalStepBackBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 simulationApp.globalStepBackWard();
             }
         });
-        globalStepForwardBtn.addListener(new ClickListener(){
+        globalStepForwardBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 simulationApp.globalStepForward();
             }
         });
-        fastForwardBtn.addListener(new ClickListener(){
+        fastForwardBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 simulationApp.fastForward();
+                disableManualButtons();
+                selectButton(fastForwardBtn);
             }
         });
 
+        pauseBtn.setColor(selectedButtonColor);
+
+        setSelectableButtons();
+        addButtonsToStage();
+    }
+
+    private void addButtonsToStage() {
         menuStage.addActor(fastForwardBtn);
         menuStage.addActor(playBtn);
         menuStage.addActor(pauseBtn);
@@ -89,15 +110,46 @@ public class SideMenu {
         menuStage.addActor(globalStepForwardBtn);
     }
 
-    private TextureRegionDrawable loadDrawableIcon(String iconName) {
-        return new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(ICONS_PATH + iconName))));
+    private void setSelectableButtons() {
+        selectAbleButtons.add(fastForwardBtn);
+        selectAbleButtons.add(playBtn);
+        selectAbleButtons.add(pauseBtn);
     }
 
-    public void update(){
+    private void selectButton(Button selectedButton) {
+        for(Button btn : selectAbleButtons){
+            if(btn.equals(selectedButton))
+                btn.setColor(selectedButtonColor);
+            else
+                btn.setColor(defaultButtonColor);
+        }
+    }
+
+    private void disableManualButtons() {
+        globalStepForwardBtn.setTouchable(Touchable.disabled);
+        globalStepBackBtn.setTouchable(Touchable.disabled);
+        globalStepForwardBtn.setColor(disabledButtonColor);
+        globalStepBackBtn.setColor(disabledButtonColor);
+    }
+
+    private void enableManualButtons() {
+        globalStepForwardBtn.setTouchable(Touchable.enabled);
+        globalStepBackBtn.setTouchable(Touchable.enabled);
+        globalStepForwardBtn.setColor(defaultButtonColor);
+        globalStepBackBtn.setColor(defaultButtonColor);
+    }
+
+    private TextureRegionDrawable loadDrawableIcon(String iconName) {
+        SimulationApp.assetManager.load(ICONS_PATH + iconName, Texture.class);
+        SimulationApp.assetManager.finishLoading();
+        return new TextureRegionDrawable((Texture) SimulationApp.assetManager.get(ICONS_PATH + iconName));
+    }
+
+    public void update() {
         menuStage.act();
     }
 
-    public void render(OrthographicCamera camera){
+    public void render(OrthographicCamera camera) {
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.setColor(menuBGColor);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
