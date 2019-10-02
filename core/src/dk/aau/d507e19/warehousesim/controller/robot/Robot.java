@@ -16,7 +16,8 @@ public class Robot {
     }
 
     public void update(){
-        if(!currentPosition.equals(currentTask.getTarget())){
+
+        if(!currentPosition.isSameAs(currentTask.getTarget())){
 
         }
     }

@@ -2,13 +2,19 @@ package dk.aau.d507e19.warehousesim;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import dk.aau.d507e19.warehousesim.ui.SideMenu;
 
+import java.util.Random;
+
 public class SimulationApp extends ApplicationAdapter {
+
+	private static final long RANDOM_SEED = 123456789L;
+	public static final Random random = new Random(RANDOM_SEED);
 
 	private static final int MENU_WIDTH_IN_PIXELS = 300;
 	// Size of a single square/tile in the grid
@@ -36,6 +42,8 @@ public class SimulationApp extends ApplicationAdapter {
 	//
 	private Simulation simulation;
 	private SideMenu sideMenu;
+
+	public static AssetManager assetManager = new AssetManager();
 
 	@Override
 	public void create () {
