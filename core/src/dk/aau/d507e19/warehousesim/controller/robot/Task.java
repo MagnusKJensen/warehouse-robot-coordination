@@ -3,8 +3,7 @@ package dk.aau.d507e19.warehousesim.controller.robot;
 import java.util.ArrayList;
 
 public class Task {
-
-    private ArrayList<GridCoordinate> path;
+    private ArrayList<GridCoordinate> path = new ArrayList<>();
     private Action action;
 
     public Task(ArrayList<GridCoordinate> path, Action action) {
@@ -24,7 +23,10 @@ public class Task {
     }
 
     public GridCoordinate getTarget(){
-        return path.get(path.size() - 1);
+        if(!path.isEmpty()){
+            return path.get(path.size() - 1);
+        } else
+            return null;
     }
 
 }
