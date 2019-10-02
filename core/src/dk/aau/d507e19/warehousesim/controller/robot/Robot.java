@@ -5,21 +5,23 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import dk.aau.d507e19.warehousesim.Position;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.Tile;
-import dk.aau.d507e19.warehousesim.WareHouseSpecs;
+import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 
 public class Robot {
     private Position currentPosition;
     private Task currentTask;
     private Status currentStatus;
+    private float currentSpeed;
 
     /**
      * Robot STATS
      */
     // Pickup time
-    private final static int pickUpTimeInTicks = SimulationApp.TICKS_PER_SECOND * WareHouseSpecs.robotPickUpSpeedInSeconds;
+    private final static int pickUpTimeInTicks = SimulationApp.TICKS_PER_SECOND * WarehouseSpecs.robotPickUpSpeedInSeconds;
     private int ticksLeftForCurrentTask = 0;
     // Speed
-    private final static float binsPerSecond = WareHouseSpecs.robotTravelSpeed / WareHouseSpecs.binSizeInMeters;
+    private final static float binsPerSecond = WarehouseSpecs.robotTopSpeed / WarehouseSpecs.binSizeInMeters;
+    private final static float accelerationBinSecond = WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters;
 
     public Robot(Position currentPosition) {
         this.currentPosition = currentPosition;
@@ -27,8 +29,11 @@ public class Robot {
     }
 
     public void update(){
+        // todo: if robot gets task, where it is already on top of the product
         if(currentStatus == Status.TASK_ASSIGNED){
-            // If standing on top of pickup
+            /**
+             * If standing on top of product
+             */
             if (currentTask.getPath().isEmpty()){
                 // If done
                 if(ticksLeftForCurrentTask == 0){
@@ -38,10 +43,29 @@ public class Robot {
                     ticksLeftForCurrentTask -= 1;
                 }
             } else {
-                // If movement still needed
-                currentPosition.setX(currentTask.getPath().get(0).getX());
-                currentPosition.setY(currentTask.getPath().get(0).getY());
-                currentTask.getPath().remove(0);
+                /**
+                 * If movement still needed
+                 */
+                // If not moving a full speed, accelerate!
+                if(currentSpeed < WarehouseSpecs.robotTopSpeed){
+                    currentSpeed += accelerationBinSecond / SimulationApp.TICKS_PER_SECOND;
+                }
+                // Moving up the x axis
+                if(currentPosition.getX() < currentTask.getPath().get(0).getX()){
+                    currentPosition.setX(currentPosition.getX() + currentSpeed);
+                }
+                // Moving down the x axis
+                else if (currentPosition.getX() > currentTask.getPath().get(0).getX()){
+                    currentPosition.setX(currentPosition.getX() - currentSpeed);
+                }
+                // Moving up the y axis
+                else if (currentPosition.getY() < currentTask.getPath().get(0).getY()){
+                    currentPosition.setY(currentPosition.getY() + currentSpeed);
+                }
+                // Moving down the y axis
+                else if (currentPosition.getY() > currentTask.getPath().get(0).getY()){
+                    currentPosition.setY(currentPosition.getY() + currentSpeed);
+                }
             }
         }
     }

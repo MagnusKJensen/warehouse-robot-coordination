@@ -13,7 +13,53 @@ public class Task {
         if(isValidPath()) this.path = path;
         else throw new IllegalArgumentException("Path must be continuous.");
 
+        removeAllButCorners();
+
         this.action = action;
+    }
+
+    private void removeAllButCorners() {
+        ArrayList<GridCoordinate> corners = new ArrayList<>();
+
+        System.out.println("BEFORE: ");
+        for (GridCoordinate grid:path) {
+            System.out.println("X: " + grid.getX() + " Y: " + grid.getY());
+        }
+
+        boolean xChanged;
+        boolean yChanged;
+        String lastDirection;
+
+        // If x changed
+        if(path.get(0).getX() != path.get(1).getX()) lastDirection = "x";
+        else lastDirection = "y"; // if y changed
+
+        for (int i = 1; i < path.size(); i++) {
+            xChanged = path.get(i - 1).getX() != path.get(i).getX();
+            yChanged = path.get(i - 1).getY() != path.get(i).getY();
+
+            if(xChanged && lastDirection.equals("y")){
+                corners.add(path.get(i - 1));
+                lastDirection = "x";
+                continue;
+            }
+
+            if(yChanged && lastDirection.equals("x")){
+                corners.add(path.get(i - 1));
+                lastDirection = "y";
+
+            }
+
+        }
+        // add last target
+        corners.add(path.get(path.size() -1));
+
+        System.out.println("AFTER: ");
+        for (GridCoordinate grid : corners) {
+            System.out.println("X: " + grid.getX() + " Y: " + grid.getY());
+        }
+
+        path = corners;
     }
 
     public ArrayList<GridCoordinate> getPath() {

@@ -28,21 +28,25 @@ public class Simulation {
     public Simulation(){
         font = generateFont();
         batch = new SpriteBatch();
-        storageGrid = new StorageGrid(WareHouseSpecs.wareHouseWidth, WareHouseSpecs.wareHouseHeight);
+        storageGrid = new StorageGrid(WarehouseSpecs.wareHouseWidth, WarehouseSpecs.wareHouseHeight);
         initRobots();
     }
 
     private void initRobots() {
-        robots.add(new Robot(new Position(0,0)));
-        robots.add(new Robot(new Position(1,0)));
-        robots.add(new Robot(new Position(2,0)));
-        robots.add(new Robot(new Position(3,0)));
-        robots.add(new Robot(new Position(4,0)));
+        // Auto generate robots
+        for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++) {
+            robots.add(new Robot(new Position(i,0)));
+        }
 
+        // Generate test task
         ArrayList<GridCoordinate> taskPath = new ArrayList<>();
         taskPath.add(new GridCoordinate(0,1));
         taskPath.add(new GridCoordinate(0,2));
-
+        taskPath.add(new GridCoordinate(1,2));
+        taskPath.add(new GridCoordinate(2,2));
+        taskPath.add(new GridCoordinate(3,2));
+        taskPath.add(new GridCoordinate(3,3));
+        // Assign test task to first robot
         robots.get(0).assignTask(new Task(taskPath, Action.PICK_UP));
     }
 
