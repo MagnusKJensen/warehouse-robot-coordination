@@ -13,7 +13,7 @@ public class SimulationApp extends ApplicationAdapter {
 	private static final int MENU_WIDTH_IN_PIXELS = 300;
 	// Size of a single square/tile in the grid
 	private static final int DEFAULT_PIXELS_PER_TILE = 64;
-	private static final int MAX_UPDATES_PER_FRAME = 10;
+	private static final int MAX_UPDATES_PER_FRAME = 30;
 
 	private OrthographicCamera menuCamera = new OrthographicCamera();
 	private OrthographicCamera simulationCamera = new OrthographicCamera();
@@ -23,7 +23,7 @@ public class SimulationApp extends ApplicationAdapter {
 	private ScreenViewport simulationViewport;
 
 	// Variables for simulation loop logic
-	public static final int TICKS_PER_SECOND = 10;
+	public static final int TICKS_PER_SECOND = 30;
 	private static final long MILLIS_PER_TICK = 1000 / TICKS_PER_SECOND;
 
 	private UpdateMode updateMode = UpdateMode.MANUAL;
