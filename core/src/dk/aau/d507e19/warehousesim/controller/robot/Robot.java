@@ -1,12 +1,11 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import dk.aau.d507e19.warehousesim.Position;
-import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.Tile;
+import dk.aau.d507e19.warehousesim.WareHouseSpecs;
 
 public class Robot {
     private Position currentPosition;
@@ -17,16 +16,10 @@ public class Robot {
      * Robot STATS
      */
     // Pickup time
-    private final static int pickUpTimeInSeconds = 1;
-    private final static int pickUpTimeInTicks = SimulationApp.TICKS_PER_SECOND * pickUpTimeInSeconds;
+    private final static int pickUpTimeInTicks = SimulationApp.TICKS_PER_SECOND * WareHouseSpecs.robotPickUpSpeedInSeconds;
     private int ticksLeftForCurrentTask = 0;
-
     // Speed
-    private final static int speedMeterPerSecond = 3;
-    private final static int tilesPerSecond = speedMeterPerSecond / SimulationApp.tileSizeInMeters;
-    // acceleration 0.8m/s^2
-    private final static float acceleration = 0.8F;
-
+    private final static float binsPerSecond = WareHouseSpecs.robotTravelSpeed / WareHouseSpecs.binSizeInMeters;
 
     public Robot(Position currentPosition) {
         this.currentPosition = currentPosition;
