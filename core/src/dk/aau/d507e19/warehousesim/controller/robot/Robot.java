@@ -34,7 +34,7 @@ public class Robot {
             /**
              * If standing on top of product
              */
-            if (currentTask.getPath().isEmpty()){
+            if (currentTask.getStrippedPath().isEmpty()){
                 // If done
                 if(ticksLeftForCurrentTask == 0){
                     currentStatus = Status.CARRYING;
@@ -51,19 +51,19 @@ public class Robot {
                     currentSpeed += accelerationBinSecond / SimulationApp.TICKS_PER_SECOND;
                 }
                 // Moving up the x axis
-                if(currentPosition.getX() < currentTask.getPath().get(0).getX()){
+                if(currentPosition.getX() < currentTask.getStrippedPath().get(0).getX()){
                     currentPosition.setX(currentPosition.getX() + currentSpeed);
                 }
                 // Moving down the x axis
-                else if (currentPosition.getX() > currentTask.getPath().get(0).getX()){
+                else if (currentPosition.getX() > currentTask.getStrippedPath().get(0).getX()){
                     currentPosition.setX(currentPosition.getX() - currentSpeed);
                 }
                 // Moving up the y axis
-                else if (currentPosition.getY() < currentTask.getPath().get(0).getY()){
+                else if (currentPosition.getY() < currentTask.getStrippedPath().get(0).getY()){
                     currentPosition.setY(currentPosition.getY() + currentSpeed);
                 }
                 // Moving down the y axis
-                else if (currentPosition.getY() > currentTask.getPath().get(0).getY()){
+                else if (currentPosition.getY() > currentTask.getStrippedPath().get(0).getY()){
                     currentPosition.setY(currentPosition.getY() + currentSpeed);
                 }
             }

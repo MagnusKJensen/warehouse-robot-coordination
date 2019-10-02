@@ -5,3 +5,7 @@ sourceCompatibility = 1.7
 
 sourceSets.main.java.srcDirs = [ "src/" ]
 sourceSets.test.java.srcDirs = [ "test/" ]
+
+test{
+    testLogging.showStandardStreams = true
+}

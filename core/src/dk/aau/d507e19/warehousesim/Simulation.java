@@ -86,4 +86,8 @@ public class Simulation {
         font.draw(batch, String.valueOf(tickCount), textPos.x, textPos.y);
         batch.end();
     }
+
+    public ArrayList<Robot> getAllRobots() {
+        return robots;
+    }
 }

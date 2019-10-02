@@ -54,15 +54,10 @@ public class Task {
         // add last target
         corners.add(path.get(path.size() -1));
 
-        System.out.println("AFTER: ");
-        for (GridCoordinate grid : corners) {
-            System.out.println("X: " + grid.getX() + " Y: " + grid.getY());
-        }
-
         path = corners;
     }
 
-    public ArrayList<GridCoordinate> getPath() {
+    public ArrayList<GridCoordinate> getStrippedPath() {
         return path;
     }
 
