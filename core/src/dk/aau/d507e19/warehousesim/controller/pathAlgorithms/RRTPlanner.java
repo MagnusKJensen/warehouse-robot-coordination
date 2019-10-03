@@ -19,7 +19,7 @@ public class RRTPlanner {
         root = new Node<Position>(robot.getCurrentPosition(), null);
         //Run until a route is found
         while (!hasRoute) {
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 1; i++) {
                 growRRT(root);
             }
             //traverse tree to see if destination is reachable
@@ -95,8 +95,10 @@ public class RRTPlanner {
             randPos = new Position(
                     SimulationApp.random.nextInt(WarehouseSpecs.wareHouseWidth),
                     SimulationApp.random.nextInt(WarehouseSpecs.wareHouseHeight));
-
+            //System.out.println("X: " + randPos.getX() + " Y: " + randPos.getY());
         } while (doesNodeExist(randPos));
+
+        System.out.println("X: " + randPos.getX() + " Y: " + randPos.getY());
 
         return randPos;
     }

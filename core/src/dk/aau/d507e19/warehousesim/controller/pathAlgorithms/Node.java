@@ -48,7 +48,7 @@ public class Node<T> {
     public boolean containsData(T node){
         if(this.data.equals(node)){
             //If this node is the node we're looking for then no need to traverse tree
-            System.out.println("The node we're looking for is the one we have(goal == start");
+
             return true;
         }
         //if there are no children then return false
