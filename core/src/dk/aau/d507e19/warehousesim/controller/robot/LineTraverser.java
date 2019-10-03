@@ -16,6 +16,7 @@ public class LineTraverser {
         this.robot = robot;
         this.direction = getDirection(startCoordinate.getX(), startCoordinate.getY(),
                 destinationCoordinate.getX(), destinationCoordinate.getY());
+        System.out.println("Direction: " + direction.toString());
         totalDistance = getTotalDistance(startCoordinate, destinationCoordinate);
         this.breakingDistance = breakingDistance();
     }
@@ -56,7 +57,7 @@ public class LineTraverser {
         } else {
             float currentSpeed = robot.getCurrentSpeed() / (float)SimulationApp.TICKS_PER_SECOND;
             robot.move(currentSpeed * direction.xDir, currentSpeed * direction.yDir);
-            distanceTraveled += currentSpeed * direction.xDir + currentSpeed * direction.yDir;
+            distanceTraveled += Math.abs(currentSpeed * direction.xDir + currentSpeed * direction.yDir);
         }
 
     }

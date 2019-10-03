@@ -13,6 +13,11 @@ public class Path {
         if(!isValidPath()) throw new IllegalArgumentException("Paths must be continuous");
 
         removeAllButCorners();
+
+        for (GridCoordinate gc:path) {
+            System.out.println("X: " + gc.getX() + ", Y:" + gc.getY());
+        }
+
     }
 
     private void removeAllButCorners() {
@@ -73,16 +78,16 @@ public class Path {
 
     public boolean isValidPath(){
         for (int i = 0; i < path.size() - 1; i++) {
-            if((path.get(i).getY() == path.get(i + 1).getY() - 1 || path.get(i).getY() == path.get(i + 1).getY() + 1)
-                    && path.get(i).getX() == path.get(i + 1).getX()){
-                continue;
-            }
-
-            if((path.get(i).getX() == path.get(i + 1).getX() - 1 || path.get(i).getX() == path.get(i + 1).getX() + 1)
+            // If moving along the x axis
+            if((Math.abs(path.get(i).getX() - path.get(i + 1).getX()) == 1)
                     && path.get(i).getY() == path.get(i + 1).getY()){
                 continue;
             }
-            System.out.println(path.get(i).getX() + ":" + path.get(i).getY());
+            // If moving along the y axis
+            if((Math.abs(path.get(i).getY() - path.get(i + 1).getY()) == 1)
+                    && path.get(i).getX() == path.get(i + 1).getX()){
+                continue;
+            }
             return false;
         }
         return true;
