@@ -12,4 +12,8 @@ public class Task {
         this.destination = destination;
         this.action = action;
     }
+
+    public GridCoordinate getDestination() {
+        return destination;
+    }
 }
