@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector3;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 
 import java.util.ArrayList;
@@ -32,22 +33,13 @@ public class Simulation {
     private void initRobots() {
         // Auto generate robots
         for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++) {
-            robots.add(new Robot(new Position(i,0)));
+            robots.add(new Robot(new Position(i,0), new DummyPathFinder()));
         }
 
         // Assign test task to first robot
-        robots.get(0).assignTask(new Task(new GridCoordinate(0,5), Action.PICK_UP));
-        ArrayList<GridCoordinate> pathToTarget = new ArrayList<>();
-        pathToTarget.add(new GridCoordinate(0,0));
-        pathToTarget.add(new GridCoordinate(0,1));
-        pathToTarget.add(new GridCoordinate(1,1));
-        pathToTarget.add(new GridCoordinate(2,1));
-        pathToTarget.add(new GridCoordinate(3,1));
-        pathToTarget.add(new GridCoordinate(2,1));
-        pathToTarget.add(new GridCoordinate(1,1));
-        pathToTarget.add(new GridCoordinate(0,1));
-        Path path = new Path(pathToTarget);
-        robots.get(0).setPathToTarget(path);
+        robots.get(0).assignTask(new Task(new GridCoordinate(5,10), Action.PICK_UP));
+        robots.get(1).assignTask(new Task(new GridCoordinate(10,5), Action.PICK_UP));
+        robots.get(2).assignTask(new Task(new GridCoordinate(0,8), Action.PICK_UP));
     }
 
     private BitmapFont generateFont(){
