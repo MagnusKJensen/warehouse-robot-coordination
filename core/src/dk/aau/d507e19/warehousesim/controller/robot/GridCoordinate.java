@@ -6,6 +6,14 @@ public class GridCoordinate {
 
     private int x, y;
 
+    @Override
+    public String toString() {
+        return "GridCoordinate{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+    }
+
     public GridCoordinate(int x, int y) {
         this.x = x;
         this.y = y;

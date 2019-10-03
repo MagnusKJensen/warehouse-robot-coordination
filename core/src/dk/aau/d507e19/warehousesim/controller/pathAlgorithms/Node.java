@@ -45,22 +45,25 @@ public class Node<T> {
         return data;
     }
 
-    public boolean containsData(T node){
-        if(this.data.equals(node)){
+    public boolean containsNodeWithData(Node<T> node, T goal){
+        if(this.data.equals(goal)){
             //If this node is the node we're looking for then no need to traverse tree
-
             return true;
         }
-        //if there are no children then return false
-        if(!children.isEmpty()){
-            for(Node<T> n : children){
-                if(n.data.equals(node)){
-                    return true;
-                }else{
-                    n.containsData(n.data);
-                }
+        for(Node<T> n : node.getChildren()){
+            if(n.getData().equals(goal)){
+                return true;
+            }
+            if(containsNodeWithData(n,goal)){
+                return true;
             }
         }
         return false;
+    }
+    public void printTree(Node<T> node){
+        System.out.println(node.getData().toString());
+        for(Node<T> n : node.getChildren()){
+            printTree(n);
+        }
     }
 }

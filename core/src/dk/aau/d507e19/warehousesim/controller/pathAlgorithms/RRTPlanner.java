@@ -1,7 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
-import dk.aau.d507e19.warehousesim.Position;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Node;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 
@@ -11,27 +11,28 @@ import java.util.List;
 
 public class RRTPlanner {
 
-    public Node<Position> shortestLengthNode;
-    private Node<Position> root;
+    public Node<GridCoordinate> shortestLengthNode;
+    private Node<GridCoordinate> root, destinationNode;
+    private GridCoordinate dest;
+    private boolean foundPath;
 
-    public List<GridCoordinate> generateRRTPath(Robot robot, Position destination) {
+    public List<GridCoordinate> generateRRTPath(Robot robot, GridCoordinate destination) throws InterruptedException {
+        dest = destination;
         boolean hasRoute = false;
-        root = new Node<Position>(robot.getCurrentPosition(), null);
+        root = new Node<GridCoordinate>(new GridCoordinate((int)robot.getCurrentPosition().getX(),(int)robot.getCurrentPosition().getY()), null);
         //Run until a route is found
-        while (!hasRoute) {
+        while (!foundPath) {
             for (int i = 0; i < 1; i++) {
+                //  root.printTree(root);
+                // System.out.println("END");
                 growRRT(root);
             }
-            //traverse tree to see if destination is reachable
-            hasRoute = root.containsData(destination);
         }
-        //Find Destination Node
-        Node<Position> destNode = findDestinationNode(root,destination);
         //Find parents and make list of coords
-        return makePath(destNode);
+        return makePath(destinationNode);
     }
 
-    private List<GridCoordinate> makePath(Node<Position> destNode){
+    private List<GridCoordinate> makePath(Node<GridCoordinate> destNode){
         List<GridCoordinate> path = new ArrayList<>();
         if(destNode.getParent() == null){
             path.add(new GridCoordinate((int) destNode.getData().getX(),(int) destNode.getData().getY()));
@@ -42,28 +43,21 @@ public class RRTPlanner {
         return path;
     }
 
-    private Node<Position> findDestinationNode(Node<Position> root, Position destination){
-        for( Node<Position> n : root.getChildren()){
-            if(n.getData().equals(destination)){
-                return n;
-            }
-            findDestinationNode(n,destination);
-        }
-        throw new RuntimeException("Destination node does not exist");
-    }
-
-    private Node<Position> growRRT(Node<Position> tree) {
+    private void growRRT(Node<GridCoordinate> tree) {
         //Generate a new random location using seeded random
-        Position randPos = generateRandomPos();
+        GridCoordinate randPos = generateRandomPos();
         shortestLengthNode = tree;
-        Node<Position> nearest = findNearestNeighbour(tree, randPos);
-        Node<Position> newNode = generateNewNode(nearest, randPos);
+        Node<GridCoordinate> nearest = findNearestNeighbour(tree, randPos);
+        Node<GridCoordinate> newNode = generateNewNode(nearest, randPos);
         nearest.addChild(newNode);
-        return tree;
+        if(newNode.getData().equals(dest)){
+            foundPath = true;
+            destinationNode = newNode;
+        }
     }
 
-    public Node<Position> findNearestNeighbour(Node<Position> tree, Position randPos) {
-        for (Node<Position> n : tree.getChildren()) {
+    public Node<GridCoordinate> findNearestNeighbour(Node<GridCoordinate> tree, GridCoordinate randPos) {
+        for (Node<GridCoordinate> n : tree.getChildren()) {
             double newDistance = getDistanceBetweenPoints(n.getData(), randPos);
 
             if (newDistance < getDistanceBetweenPoints(shortestLengthNode.getData(), randPos)) {
@@ -74,40 +68,43 @@ public class RRTPlanner {
         return shortestLengthNode;
     }
 
-    private Node<Position> generateNewNode(Node<Position> nearest, Position randPos) {
-        Position pos = nearest.getData();
+    private Node<GridCoordinate> generateNewNode(Node<GridCoordinate> nearest, GridCoordinate randPos) {
+        GridCoordinate originalPos = nearest.getData();
+        GridCoordinate pos = nearest.getData();
         //right
-        pos = getDistanceBetweenPoints(new Position(pos.getX() + 1, pos.getY()), randPos) < getDistanceBetweenPoints(pos, randPos) ? new Position(pos.getX() + 1, pos.getY()) : pos;
+        pos = getDistanceBetweenPoints(new GridCoordinate(pos.getX() + 1, pos.getY()), randPos) < getDistanceBetweenPoints(pos, randPos) ? new GridCoordinate(originalPos.getX() + 1, originalPos.getY()) : pos;
         //left
-        pos = getDistanceBetweenPoints(new Position(pos.getX() - 1, pos.getY()), randPos) < getDistanceBetweenPoints(pos, randPos) ? new Position(pos.getX() + 1, pos.getY()) : pos;
+        pos = getDistanceBetweenPoints(new GridCoordinate(pos.getX() - 1, pos.getY()), randPos) < getDistanceBetweenPoints(pos, randPos) ? new GridCoordinate(originalPos.getX() -1, originalPos.getY()) : pos;
         //up
-        pos = getDistanceBetweenPoints(new Position(pos.getX(), pos.getY() + 1), randPos) < getDistanceBetweenPoints(pos, randPos) ? new Position(pos.getX() + 1, pos.getY()) : pos;
+        pos = getDistanceBetweenPoints(new GridCoordinate(pos.getX(), pos.getY() + 1), randPos) < getDistanceBetweenPoints(pos, randPos) ? new GridCoordinate(originalPos.getX(), originalPos.getY() +1) : pos;
         //down
-        pos = getDistanceBetweenPoints(new Position(pos.getX(), pos.getY() - 1), randPos) < getDistanceBetweenPoints(pos, randPos) ? new Position(pos.getX() + 1, pos.getY()) : pos;
+        pos = getDistanceBetweenPoints(new GridCoordinate(pos.getX(), pos.getY() - 1), randPos) < getDistanceBetweenPoints(pos, randPos) ? new GridCoordinate(originalPos.getX(), originalPos.getY() -1 ) : pos;
 
-        return new Node<Position>(pos, null);
+        //System.out.println("NEW: "+ pos.toString()+"\nNEAR: " + originalPos.toString() + "\nRAND: " + randPos.toString()+"\n");
+        return new Node<>(pos, null);
     }
 
-    private Position generateRandomPos() {
+    private GridCoordinate generateRandomPos() {
         //TODO possible infinite loop if there is a node on every tile
-        Position randPos;
+        GridCoordinate randPos;
         do {
-            randPos = new Position(
+            randPos = new GridCoordinate(
                     SimulationApp.random.nextInt(WarehouseSpecs.wareHouseWidth),
                     SimulationApp.random.nextInt(WarehouseSpecs.wareHouseHeight));
-            //System.out.println("X: " + randPos.getX() + " Y: " + randPos.getY());
-        } while (doesNodeExist(randPos));
-
-        System.out.println("X: " + randPos.getX() + " Y: " + randPos.getY());
+        }while(doesNodeExist(randPos));
 
         return randPos;
     }
 
-    private double getDistanceBetweenPoints(Position pos1, Position pos2) {
+    private double getDistanceBetweenPoints(GridCoordinate pos1, GridCoordinate pos2) {
         return Math.sqrt(Math.pow(pos2.getX() - pos1.getX(), 2) + Math.pow(pos2.getY() - pos1.getY(), 2));
     }
 
-    private boolean doesNodeExist(Position newPos) {
-        return root.containsData(newPos);
+    private boolean doesNodeExist(GridCoordinate newPos) {
+        /*System.out.println("---TREE---");
+        root.printTree(root);
+        System.out.println("---TREE END---");*/
+        //System.out.println("CHECKING FOR: " + newPos.toString() + "RETURN: " + root.containsNodeWithData(root,newPos));
+        return root.containsNodeWithData(root,newPos);
     }
 }
