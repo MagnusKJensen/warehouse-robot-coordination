@@ -140,12 +140,15 @@ public class Astar implements PathFinder {
     public void addFinalPathToList() {
 
         Tile currTile = closedList.get(closedList.size() - 1);
+        Tile prevTile = closedList.get(closedList.size() - 2);
         finalPath.add(new GridCoordinate(currTile.getCurrentXPosition(), currTile.getCurrentYPosition()));
         for (int i = closedList.size() - 2; i > 0; i--) {
-            if (currTile.getPreviousXposition() == closedList.get(i).getCurrentXPosition() && currTile.getGetPreviousYposition() == closedList.get(i).getCurrentYPosition()) {
-                finalPath.add(new GridCoordinate(closedList.get(i).getCurrentXPosition(), closedList.get(i).getCurrentYPosition()));
+            if (currTile.getPreviousXposition() == prevTile.getCurrentXPosition() && currTile.getGetPreviousYposition() == prevTile.getCurrentYPosition()) {
+                finalPath.add(new GridCoordinate(prevTile.getCurrentXPosition(), prevTile.getCurrentYPosition()));
                 currTile = closedList.get(i);
             }
+             prevTile = closedList.get(i-1);
+
         }
         finalPath.add(new GridCoordinate(closedList.get(0).getCurrentXPosition(), closedList.get(0).getCurrentYPosition()));
 
@@ -157,8 +160,6 @@ public class Astar implements PathFinder {
         xEndposition = destination.getX();
         yEndposition = destination.getY();
 
-        // Sets grid size
-        int gridLength = 10;
 
         // Adds the starting tile to closed list.
         addStartTileToClosedList(start.getX(), start.getY());
@@ -168,15 +169,8 @@ public class Astar implements PathFinder {
 
         //adds final path to list
         addFinalPathToList();
-
         //Reverses final path so it is in correct order
         Collections.reverse(finalPath);
-
-        for (GridCoordinate gc: finalPath
-             ) {
-            System.out.println(gc.toString());
-        }
-
         return new Path(finalPath);
     }
 }

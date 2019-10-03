@@ -43,9 +43,9 @@ public class GridCoordinate {
 
     @Override
     public String toString() {
-        return "GridCoordinate{" +
-                "x=" + x +
-                ", y=" + y +
-                '}';
+        return "(" +
+                "" + x +
+                ", " + y +
+                ')';
     }
 }

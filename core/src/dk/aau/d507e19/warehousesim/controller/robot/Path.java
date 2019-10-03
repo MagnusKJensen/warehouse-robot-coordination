@@ -11,7 +11,6 @@ public class Path {
         originalPath.addAll(path);
         if(pathToTarget.isEmpty()) throw new IllegalArgumentException("Path must contain at least one coordinate");
         if(!isValidPath()) throw new IllegalArgumentException("Paths must be continuous");
-
         removeAllButCorners();
     }
 
@@ -72,17 +71,21 @@ public class Path {
     }
 
     public boolean isValidPath(){
-        for (int i = 0; i < path.size() - 1; i++) {
-            if((path.get(i).getY() == path.get(i + 1).getY() - 1 || path.get(i).getY() == path.get(i + 1).getY() + 1)
-                    && path.get(i).getX() == path.get(i + 1).getX()){
+        for (int i = 0; i < originalPath.size() - 1; i++) {
+            // If moving along the x axis
+            if((Math.abs(originalPath.get(i).getX() - originalPath.get(i + 1).getX()) == 1)
+                    && originalPath.get(i).getY() == originalPath.get(i + 1).getY()){
+                continue;
+            }
+            // If moving along the y axis
+            if((Math.abs(originalPath.get(i).getY() - originalPath.get(i + 1).getY()) == 1)
+                    && originalPath.get(i).getX() == originalPath.get(i + 1).getX()){
                 continue;
             }
 
-            if((path.get(i).getX() == path.get(i + 1).getX() - 1 || path.get(i).getX() == path.get(i + 1).getX() + 1)
-                    && path.get(i).getY() == path.get(i + 1).getY()){
-                continue;
-            }
-            System.out.println(path.get(i).getX() + ":" + path.get(i).getY());
+            System.err.println("------------------- PATH INVALID -------------------");
+            System.err.println("Noncontinuous coordinates : " + originalPath.get(i) + " to " + originalPath.get(i + 1));
+            System.err.println("Full Path : " + originalPath);
             return false;
         }
         return true;
