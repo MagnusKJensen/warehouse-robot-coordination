@@ -1,51 +1,32 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
 
-import java.util.ArrayList;
+import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import dk.aau.d507e19.warehousesim.controller.robot.Path;
 
-public class Astar {
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
+public class Astar implements PathFinder {
 
     private Tile[][] grid;
     private int xEndposition;
     private int yEndposition;
-    private int xStartposition;
-    private int yStartposition;
-
+    ArrayList<GridCoordinate> finalPath = new ArrayList<>();
     ArrayList<Tile> openList = new ArrayList<>();
     ArrayList<Tile> closedList = new ArrayList<>();
     private Tile currentTile;
-    private Tile previousTile;
 
-    public Astar(Tile[][] grid, int xStart, int yStart, int xEnd, int yEnd) {
-        this.grid = fillGrid(grid);
-        this.xStartposition = xStart;
-        this.yStartposition = yStart;
-        this.xEndposition = xEnd;
-        this.yEndposition = yEnd;
+    public Astar(int gridLength) {
+        this.grid = fillGrid(gridLength);
+
     }
 
-    public static void main(String[] args) {
-        // Sets grid size
-        int gridLength = 10;
-
-        // Makes new grid
+    public Tile[][] fillGrid(int gridLength) {
         Tile[][] grid = new Tile[gridLength][gridLength];
-
-        // Makes new Astar object and fills grid
-        Astar astar = new Astar(grid, 0, 0, 6, 6);
-
-        // Adds the starting tile to closed list.
-        astar.addStartTileToClosedList();
-
-        // Calculates the optimal A* path
-        astar.calculatePath();
-
-    }
-
-    public Tile[][] fillGrid(Tile[][] grid) {
-
         // Fills grid with tiles matching the coordinates
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid.length; j++) {
+        for (int i = 0; i < gridLength; i++) {
+            for (int j = 0; j < gridLength; j++) {
                 grid[i][j] = new Tile(i, j);
 
             }
@@ -53,7 +34,7 @@ public class Astar {
         return grid;
     }
 
-    public void addStartTileToClosedList() {
+    public void addStartTileToClosedList(int xStartposition, int yStartposition) {
 
         // Adds startTile to closedList
         closedList.add(grid[xStartposition][yStartposition]);
@@ -82,7 +63,7 @@ public class Astar {
     }
 
     public void addNeighborTileToOpenList(Tile neighborTile) {
-       Tile tiletoDelete = null;
+        Tile tiletoDelete = null;
         if (!neighborTile.isBlocked()) {
 
             neighborTile.setPreviousXposition(currentTile.getCurrentXPosition());
@@ -95,13 +76,13 @@ public class Astar {
             for (Tile tile : openList) {
                 if (neighborTile.getCurrentXPosition() == tile.getCurrentXPosition() && neighborTile.getCurrentYPosition() == tile.getCurrentYPosition()) {
                     if (neighborTile.getF() <= tile.getF()) {
-                     tiletoDelete = tile;
+                        tiletoDelete = tile;
                     } else return;
                 }
 
             }
-            if(tiletoDelete != null)
-            openList.remove(tiletoDelete);
+            if (tiletoDelete != null)
+                openList.remove(tiletoDelete);
 
             openList.add(neighborTile);
         }
@@ -130,11 +111,47 @@ public class Astar {
 
             // CurrentTile is now the top tile in closedList
             currentTile = closedList.get(closedList.size() - 1);
-
         }
-        for (Tile tile : closedList) {
-            System.out.println(tile.toString());
+    }
 
+    public void addFinalPathToList() {
+
+        Tile currTile = closedList.get(closedList.size() - 1);
+        finalPath.add(new GridCoordinate(currTile.getCurrentXPosition(), currTile.getCurrentYPosition()));
+        for (int i = closedList.size() - 2; i > 0; i--) {
+            if (currTile.getPreviousXposition() == closedList.get(i).getCurrentXPosition() && currTile.getGetPreviousYposition() == closedList.get(i).getCurrentYPosition()) {
+                finalPath.add(new GridCoordinate(closedList.get(i).getCurrentXPosition(), closedList.get(i).getCurrentYPosition()));
+
+            }
+            currTile = closedList.get(i);
         }
+        finalPath.add(new GridCoordinate(closedList.get(0).getCurrentXPosition(), closedList.get(0).getCurrentYPosition()));
+
+    }
+
+    @Override
+    public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
+        xEndposition = destination.getX();
+        yEndposition = destination.getY();
+        // Sets grid size
+        int gridLength = 10;
+
+        // Makes new grid
+        Tile[][] grid = new Tile[gridLength][gridLength];
+
+        // Makes new Astar object and fills grid
+
+
+        // Adds the starting tile to closed list.
+        addStartTileToClosedList(start.getX(), start.getY());
+
+        // Calculates the optimal A* path
+        calculatePath();
+
+        //adds final path to list
+        addFinalPathToList();
+        //Reverses final path so it is in correct order
+        Collections.reverse(finalPath);
+        return new Path(finalPath);
     }
 }

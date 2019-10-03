@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector3;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 
@@ -33,7 +34,7 @@ public class Simulation {
     private void initRobots() {
         // Auto generate robots
         for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++) {
-            robots.add(new Robot(new Position(i,0), new DummyPathFinder()));
+            robots.add(new Robot(new Position(i,0), new Astar(100)));
         }
 
         robots.add(new Robot(new Position(5,5), new DummyPathFinder()));
