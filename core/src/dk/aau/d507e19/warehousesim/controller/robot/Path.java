@@ -11,13 +11,7 @@ public class Path {
         originalPath.addAll(path);
         if(pathToTarget.isEmpty()) throw new IllegalArgumentException("Path must contain at least one coordinate");
         if(!isValidPath()) throw new IllegalArgumentException("Paths must be continuous");
-
         removeAllButCorners();
-
-        for (GridCoordinate gc:path) {
-            System.out.println("X: " + gc.getX() + ", Y:" + gc.getY());
-        }
-
     }
 
     private void removeAllButCorners() {
