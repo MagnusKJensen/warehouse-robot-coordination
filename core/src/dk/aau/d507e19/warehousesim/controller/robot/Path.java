@@ -77,17 +77,21 @@ public class Path {
     }
 
     public boolean isValidPath(){
-        for (int i = 0; i < path.size() - 1; i++) {
+        for (int i = 0; i < originalPath.size() - 1; i++) {
             // If moving along the x axis
-            if((Math.abs(path.get(i).getX() - path.get(i + 1).getX()) == 1)
-                    && path.get(i).getY() == path.get(i + 1).getY()){
+            if((Math.abs(originalPath.get(i).getX() - originalPath.get(i + 1).getX()) == 1)
+                    && originalPath.get(i).getY() == originalPath.get(i + 1).getY()){
                 continue;
             }
             // If moving along the y axis
-            if((Math.abs(path.get(i).getY() - path.get(i + 1).getY()) == 1)
-                    && path.get(i).getX() == path.get(i + 1).getX()){
+            if((Math.abs(originalPath.get(i).getY() - originalPath.get(i + 1).getY()) == 1)
+                    && originalPath.get(i).getX() == originalPath.get(i + 1).getX()){
                 continue;
             }
+
+            System.err.println("------------------- PATH INVALID -------------------");
+            System.err.println("Noncontinuous coordinates : " + originalPath.get(i) + " to " + originalPath.get(i + 1));
+            System.err.println("Full Path : " + originalPath);
             return false;
         }
         return true;
