@@ -1,12 +1,13 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
 
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import dk.aau.d507e19.warehousesim.controller.robot.Path;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-public class Astar  {
+public class Astar implements PathFinder {
 
     private Tile[][] grid;
     private int xEndposition;
@@ -24,32 +25,6 @@ public class Astar  {
         this.yStartposition = yStart;
         this.xEndposition = xEnd;
         this.yEndposition = yEnd;
-    }
-
-    public static void main(String[] args) {
-        // Sets grid size
-        int gridLength = 10;
-
-        // Makes new grid
-        Tile[][] grid = new Tile[gridLength][gridLength];
-
-        // Makes new Astar object and fills grid
-        Astar astar = new Astar(grid, 0, 0, 0, 4);
-
-        // Adds the starting tile to closed list.
-        astar.addStartTileToClosedList();
-
-        // Calculates the optimal A* path
-        astar.calculatePath();
-
-        //adds final path to list
-        astar.addFinalPathToList();
-        //Reverses final path so it is in correct order
-        Collections.reverse(astar.finalPath);
-        for (GridCoordinate path : astar.finalPath) {
-            System.out.println(path.toString());
-        }
-
     }
 
     public Tile[][] fillGrid(Tile[][] grid) {
@@ -162,5 +137,29 @@ public class Astar  {
         }
         finalPath.add(new GridCoordinate(closedList.get(0).getCurrentXPosition(), closedList.get(0).getCurrentYPosition()));
 
+    }
+
+    @Override
+    public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
+        // Sets grid size
+        int gridLength = 10;
+
+        // Makes new grid
+        Tile[][] grid = new Tile[gridLength][gridLength];
+
+        // Makes new Astar object and fills grid
+        Astar astar = new Astar(grid, start.getX(), start.getY(), destination.getX(), destination.getY());
+
+        // Adds the starting tile to closed list.
+        astar.addStartTileToClosedList();
+
+        // Calculates the optimal A* path
+        astar.calculatePath();
+
+        //adds final path to list
+        astar.addFinalPathToList();
+        //Reverses final path so it is in correct order
+        Collections.reverse(astar.finalPath);
+        return new Path(finalPath) ;
     }
 }
