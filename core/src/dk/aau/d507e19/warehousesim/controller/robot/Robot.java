@@ -22,9 +22,9 @@ public class Robot {
     private final static int pickUpTimeInTicks = SimulationApp.TICKS_PER_SECOND * WarehouseSpecs.robotPickUpSpeedInSeconds;
     private int ticksLeftForCurrentTask = 0;
     // Speed
-    private final static float maxSpeedBinsPerSecond = WarehouseSpecs.robotTopSpeed / WarehouseSpecs.binSizeInMeters;
-    private final static float accelerationBinSecond = WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters;
-    private final static float decelerationBinSecond = WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters;
+    private final float maxSpeedBinsPerSecond = WarehouseSpecs.robotTopSpeed / WarehouseSpecs.binSizeInMeters;
+    private final float accelerationBinSecond = WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters;
+    private final float decelerationBinSecond = WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters;
 
     private LineTraverser currentTraverser;
     private PathFinder pathFinder;
@@ -116,7 +116,6 @@ public class Robot {
     protected void decelerate() {
         if (currentSpeed > 0) {
             currentSpeed -= decelerationBinSecond / (float) SimulationApp.TICKS_PER_SECOND;
-
             if (currentSpeed < 0)
                 currentSpeed = 0;
         }
@@ -125,7 +124,6 @@ public class Robot {
     protected void accelerate() {
         if (currentSpeed < maxSpeedBinsPerSecond) {
             currentSpeed += accelerationBinSecond / (float) SimulationApp.TICKS_PER_SECOND;
-
             if (currentSpeed > maxSpeedBinsPerSecond)
                 currentSpeed = maxSpeedBinsPerSecond;
         }
@@ -135,7 +133,7 @@ public class Robot {
         return accelerationBinSecond;
     }
 
-    public static float getDecelerationBinSecond() {
+    public float getDecelerationBinSecond() {
         return decelerationBinSecond;
     }
 
@@ -143,14 +141,16 @@ public class Robot {
         return currentSpeed;
     }
 
-    public static float getMaxSpeedBinsPerSecond() {
+    public float getMaxSpeedBinsPerSecond() {
         return maxSpeedBinsPerSecond;
     }
 
     public void move(float deltaX, float deltaY) {
         currentPosition.setX(currentPosition.getX() + deltaX);
         currentPosition.setY(currentPosition.getY() + deltaY);
-// // TODO: 03/10/2019 Make sure we don't go beyond target
+    }
 
+    public float getMinimumSpeed(){
+        return WarehouseSpecs.robotMinimumSpeed;
     }
 }
