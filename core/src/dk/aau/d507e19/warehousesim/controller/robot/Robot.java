@@ -20,6 +20,7 @@ public class Robot {
      */
     // Pickup time
     private final static int pickUpTimeInTicks = SimulationApp.TICKS_PER_SECOND * WarehouseSpecs.robotPickUpSpeedInSeconds;
+    private final static int deliverTimeInTicks = SimulationApp.TICKS_PER_SECOND * WarehouseSpecs.robotDeliverToPickerInSeconds;
     private int ticksLeftForCurrentTask = 0;
     // Speed
     private final float maxSpeedBinsPerSecond = WarehouseSpecs.robotTopSpeed / WarehouseSpecs.binSizeInMeters;
@@ -37,31 +38,39 @@ public class Robot {
 
     public void update() {
         // todo: if robot gets task, where it is already on top of the product
-        if (currentStatus == Status.TASK_ASSIGNED) {
+        if (currentStatus == Status.PICK_UP_TASK_ASSIGNED) {
             /**
-             * If destination is reached
+             * If destination is reached start pickup
              */
             if (pathToTarget.getCornersPath().size() == 1) {
                 // If done 
-                if (ticksLeftForCurrentTask == 0) {
-                    currentStatus = Status.CARRYING;
-                } else {
-                    // If still picking up the product
-                    ticksLeftForCurrentTask -= 1;
-                }
+                pickupProduct();
             } else {
                 /**
                  * If movement still needed
                  */
-                currentTraverser.traverse();
-                if (currentTraverser.destinationReached()){
-                    pathToTarget.getCornersPath().remove(0);
-
-                    // Create new traverser for next line in the path
-                    if(pathToTarget.getCornersPath().size() > 1)
-                        assignTraverser();
-                }
+                moveWithLineTraverser();
             }
+        }
+    }
+
+    private void pickupProduct(){
+        if (ticksLeftForCurrentTask == 0) {
+            currentStatus = Status.CARRYING;
+        } else {
+            // If still picking up the product
+            ticksLeftForCurrentTask -= 1;
+        }
+    }
+
+    private void moveWithLineTraverser(){
+        currentTraverser.traverse();
+        if (currentTraverser.destinationReached()){
+            pathToTarget.getCornersPath().remove(0);
+
+            // Create new traverser for next line in the path
+            if(pathToTarget.getCornersPath().size() > 1)
+                assignTraverser();
         }
     }
 
@@ -71,7 +80,7 @@ public class Robot {
             case AVAILABLE:
                 batch.draw(new Texture("Simulation/Robots/robotAvailable.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
-            case TASK_ASSIGNED:
+            case PICK_UP_TASK_ASSIGNED:
                 batch.draw(new Texture("Simulation/Robots/robotTaskAssigned.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
             case TASK_ASSIGNED_CARRYING:
@@ -85,8 +94,18 @@ public class Robot {
 
     public void assignTask(Task task) {
         currentTask = task;
-        currentStatus = Status.TASK_ASSIGNED;
-        ticksLeftForCurrentTask = pickUpTimeInTicks;
+        if(task.getAction() == Action.PICK_UP){
+            currentStatus = Status.PICK_UP_TASK_ASSIGNED;
+            ticksLeftForCurrentTask = pickUpTimeInTicks;
+        } else if (task.getAction() == Action.DELIVER){
+            if(currentStatus != Status.CARRYING) throw new IllegalArgumentException("Robot is not carrying anything");
+            currentStatus = Status.TASK_ASSIGNED_CARRYING;
+            ticksLeftForCurrentTask = deliverTimeInTicks;
+        } else if (task.getAction() == Action.NONE){
+            currentStatus = Status.AVAILABLE;
+            ticksLeftForCurrentTask = 0;
+        }
+
         pathToTarget = pathFinder.calculatePath(
                 new GridCoordinate((int) currentPosition.getX(),(int) currentPosition.getY()), task.getDestination());
 

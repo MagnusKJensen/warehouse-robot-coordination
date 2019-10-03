@@ -13,7 +13,7 @@ public class WarehouseSpecs {
     public static final float robotDeceleration = 2f; // m/s^2
     public static final float robotMinimumSpeed = 0.1f;
     public static final int robotPickUpSpeedInSeconds = 1;
-    public static final int offLoadToPickerInSeconds = 0;
+    public static final int robotDeliverToPickerInSeconds = 0;
     // todo turnover distribution - Philip
     // todo layers? - Philip
 }
