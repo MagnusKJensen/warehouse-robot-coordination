@@ -8,10 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector3;
-import dk.aau.d507e19.warehousesim.controller.robot.Action;
-import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import dk.aau.d507e19.warehousesim.controller.robot.Robot;
-import dk.aau.d507e19.warehousesim.controller.robot.Task;
+import dk.aau.d507e19.warehousesim.controller.robot.*;
 
 import java.util.ArrayList;
 
@@ -38,16 +35,19 @@ public class Simulation {
             robots.add(new Robot(new Position(i,0)));
         }
 
-        // Generate test task
-        ArrayList<GridCoordinate> taskPath = new ArrayList<>();
-        taskPath.add(new GridCoordinate(0,1));
-        taskPath.add(new GridCoordinate(0,2));
-        taskPath.add(new GridCoordinate(1,2));
-        taskPath.add(new GridCoordinate(2,2));
-        taskPath.add(new GridCoordinate(3,2));
-        taskPath.add(new GridCoordinate(3,3));
         // Assign test task to first robot
-        robots.get(0).assignTask(new Task(taskPath, Action.PICK_UP));
+        robots.get(0).assignTask(new Task(new GridCoordinate(0,5), Action.PICK_UP));
+        ArrayList<GridCoordinate> pathToTarget = new ArrayList<>();
+        pathToTarget.add(new GridCoordinate(0,0));
+        pathToTarget.add(new GridCoordinate(0,1));
+        pathToTarget.add(new GridCoordinate(1,1));
+        pathToTarget.add(new GridCoordinate(2,1));
+        pathToTarget.add(new GridCoordinate(3,1));
+        pathToTarget.add(new GridCoordinate(2,1));
+        pathToTarget.add(new GridCoordinate(1,1));
+        pathToTarget.add(new GridCoordinate(0,1));
+        Path path = new Path(pathToTarget);
+        robots.get(0).setPathToTarget(path);
     }
 
     private BitmapFont generateFont(){
@@ -85,5 +85,13 @@ public class Simulation {
         font.setColor(Color.RED);
         font.draw(batch, String.valueOf(tickCount), textPos.x, textPos.y);
         batch.end();
+    }
+
+    public ArrayList<Robot> getAllRobots() {
+        return robots;
+    }
+
+    public void dispose(){
+
     }
 }

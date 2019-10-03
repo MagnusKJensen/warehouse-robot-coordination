@@ -12,6 +12,7 @@ public class Robot {
     private Task currentTask;
     private Status currentStatus;
     private float currentSpeed;
+    private Path pathToTarget;
 
     /**
      * Robot STATS
@@ -34,7 +35,7 @@ public class Robot {
             /**
              * If standing on top of product
              */
-            if (currentTask.getPath().isEmpty()){
+            if (pathToTarget.getCornersPath().isEmpty()){
                 // If done
                 if(ticksLeftForCurrentTask == 0){
                     currentStatus = Status.CARRYING;
@@ -47,27 +48,54 @@ public class Robot {
                  * If movement still needed
                  */
                 // If not moving a full speed, accelerate!
-                if(currentSpeed < WarehouseSpecs.robotTopSpeed){
-                    currentSpeed += accelerationBinSecond / SimulationApp.TICKS_PER_SECOND;
+                if(currentSpeed < binsPerSecond){
+                    currentSpeed += accelerationBinSecond / (float) SimulationApp.TICKS_PER_SECOND;
+
+                    if(currentSpeed > binsPerSecond){
+                        currentSpeed = binsPerSecond;
+                    }
+                }
+                // Target reached. Stop
+                if(targetCloserThanSpeed()) {
+                    currentSpeed = 0;
+                    currentPosition.setX(pathToTarget.getCornersPath().get(0).getX());
+                    currentPosition.setY(pathToTarget.getCornersPath().get(0).getY());
+                    pathToTarget.getCornersPath().remove(0);
                 }
                 // Moving up the x axis
-                if(currentPosition.getX() < currentTask.getPath().get(0).getX()){
-                    currentPosition.setX(currentPosition.getX() + currentSpeed);
+                else if(currentPosition.getX() < pathToTarget.getCornersPath().get(0).getX()){
+                    currentPosition.setX(currentPosition.getX() + (currentSpeed / SimulationApp.TICKS_PER_SECOND));
                 }
                 // Moving down the x axis
-                else if (currentPosition.getX() > currentTask.getPath().get(0).getX()){
-                    currentPosition.setX(currentPosition.getX() - currentSpeed);
+                else if (currentPosition.getX() > pathToTarget.getCornersPath().get(0).getX()){
+                    currentPosition.setX(currentPosition.getX() - (currentSpeed / SimulationApp.TICKS_PER_SECOND));
                 }
                 // Moving up the y axis
-                else if (currentPosition.getY() < currentTask.getPath().get(0).getY()){
-                    currentPosition.setY(currentPosition.getY() + currentSpeed);
+                else if (currentPosition.getY() < pathToTarget.getCornersPath().get(0).getY()){
+                    currentPosition.setY(currentPosition.getY() + (currentSpeed / SimulationApp.TICKS_PER_SECOND));
                 }
                 // Moving down the y axis
-                else if (currentPosition.getY() > currentTask.getPath().get(0).getY()){
-                    currentPosition.setY(currentPosition.getY() + currentSpeed);
+                else if (currentPosition.getY() > pathToTarget.getCornersPath().get(0).getY()){
+                    currentPosition.setY(currentPosition.getY() + (currentSpeed / SimulationApp.TICKS_PER_SECOND));
                 }
             }
         }
+    }
+
+    private boolean targetCloserThanSpeed() {
+        final float delta = 0.01f;
+        // If moving in x direction and target closer than speed
+        if (Math.abs(currentPosition.getX() - pathToTarget.getCornersPath().get(0).getX()) < (currentSpeed / SimulationApp.TICKS_PER_SECOND)
+                && Math.abs(currentPosition.getY() - pathToTarget.getCornersPath().get(0).getY()) < delta){
+            return true;
+        }
+        // If moving in y direction and target closer than speed
+        else if (Math.abs(currentPosition.getY() - pathToTarget.getCornersPath().get(0).getY()) < (currentSpeed / SimulationApp.TICKS_PER_SECOND)
+                && Math.abs(currentPosition.getX() - pathToTarget.getCornersPath().get(0).getX()) < delta){
+            return true;
+        }
+
+        return false;
     }
 
     public void render(SpriteBatch batch){
@@ -91,5 +119,16 @@ public class Robot {
         currentTask = task;
         currentStatus = Status.TASK_ASSIGNED;
         ticksLeftForCurrentTask = pickUpTimeInTicks;
+    }
+
+    public Position getCurrentPosition() {
+        return currentPosition;
+    }
+
+    public void setPathToTarget(Path pathToTarget) {
+        if(!currentPosition.isSameAs(pathToTarget.path.get(0))){
+            throw new IllegalArgumentException("Path does not start at robot position");
+        }
+        this.pathToTarget = pathToTarget;
     }
 }

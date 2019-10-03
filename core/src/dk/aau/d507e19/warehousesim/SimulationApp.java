@@ -2,18 +2,24 @@ package dk.aau.d507e19.warehousesim;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import dk.aau.d507e19.warehousesim.ui.SideMenu;
 
+import java.util.Random;
+
 public class SimulationApp extends ApplicationAdapter {
+
+	private static final long RANDOM_SEED = 123456789L;
+	public static final Random random = new Random(RANDOM_SEED);
 
 	private static final int MENU_WIDTH_IN_PIXELS = 300;
 	// Size of a single square/tile in the grid
 	private static final int DEFAULT_PIXELS_PER_TILE = 64;
-	private static final int MAX_UPDATES_PER_FRAME = 10;
+	private static final int MAX_UPDATES_PER_FRAME = 30;
 
 	private OrthographicCamera menuCamera = new OrthographicCamera();
 	private OrthographicCamera simulationCamera = new OrthographicCamera();
@@ -23,7 +29,7 @@ public class SimulationApp extends ApplicationAdapter {
 	private ScreenViewport simulationViewport;
 
 	// Variables for simulation loop logic
-	public static final int TICKS_PER_SECOND = 10;
+	public static final int TICKS_PER_SECOND = 30;
 	private static final long MILLIS_PER_TICK = 1000 / TICKS_PER_SECOND;
 
 	private UpdateMode updateMode = UpdateMode.MANUAL;
@@ -33,9 +39,10 @@ public class SimulationApp extends ApplicationAdapter {
 
 	private static final Color simBGColor = new Color(244f/255f, 245f/255f,247f/255f, 1);
 
-	//
 	private Simulation simulation;
 	private SideMenu sideMenu;
+
+	public static AssetManager assetManager = new AssetManager();
 
 	@Override
 	public void create () {
@@ -171,5 +178,10 @@ public class SimulationApp extends ApplicationAdapter {
 
 	public void fastForward() {
 		switchUpdateMode(UpdateMode.FAST_FORWARD);
+	}
+
+	@Override
+	public void dispose() {
+		assetManager.dispose();
 	}
 }
