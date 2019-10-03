@@ -83,20 +83,20 @@ public class Astar {
     }
 
     public void checkNeighborValidity() {
-        if (!(currentTile.isBlocked())) {
-            if (currentTile.getCurrentYPosition() - 1 >= 0) {
-                addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() - 1]);
-            } else if (currentTile.getCurrentYPosition() + 1 < grid.length) {
-                addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() + 1]);
-            } else if (currentTile.getCurrentXPosition() - 1 >= 0) {
-                addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() - 1][currentTile.getCurrentYPosition()]);
-            } else if (currentTile.getCurrentXPosition() + 1 < grid.length) {
-                addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() + 1][currentTile.getCurrentYPosition()]);
-            }
+        if (currentTile.getCurrentYPosition() - 1 >= 0) {
+            addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() - 1]);
+        } else if (currentTile.getCurrentYPosition() + 1 < grid.length) {
+            addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() + 1]);
+        } else if (currentTile.getCurrentXPosition() - 1 >= 0) {
+            addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() - 1][currentTile.getCurrentYPosition()]);
+        } else if (currentTile.getCurrentXPosition() + 1 < grid.length) {
+            addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() + 1][currentTile.getCurrentYPosition()]);
         }
     }
 
     public void addNeighborTileToOpenList(Tile neighborTile) {
+
+        if (!neighborTile.isBlocked()){
 
         neighborTile.setPreviousXposition(currentTile.getCurrentXPosition());
         neighborTile.setPreviousYposition(currentTile.getCurrentYPosition());
@@ -115,6 +115,7 @@ public class Astar {
 
         }
         openList.add(neighborTile);
+        }
     }
 
     public void addTilesToClosedList() {
