@@ -21,11 +21,6 @@ public class Task {
     private void removeAllButCorners() {
         ArrayList<GridCoordinate> corners = new ArrayList<>();
 
-        System.out.println("BEFORE: ");
-        for (GridCoordinate grid:path) {
-            System.out.println("X: " + grid.getX() + " Y: " + grid.getY());
-        }
-
         boolean xChanged;
         boolean yChanged;
         String lastDirection;

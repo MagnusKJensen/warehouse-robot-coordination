@@ -45,6 +45,15 @@ public class TaskTest {
         Task task = new Task(allCoordinates, Action.NONE);
     }
 
+
+    @Test
+    public void removeAllButCornersOneLenTest() {
+        ArrayList<GridCoordinate> allCoordinates = new ArrayList<>();
+        allCoordinates.add(new GridCoordinate(0,0));
+        Task task = new Task(allCoordinates, Action.NONE);
+        assertTrue(task.getStrippedPath().isEmpty());
+    }
+
     @Test (expected = IllegalArgumentException.class)
     public void noncontinuousStraightPathTest() {
         ArrayList<GridCoordinate> allCoordinates = new ArrayList<>();
@@ -62,14 +71,6 @@ public class TaskTest {
         allCoordinates.add(new GridCoordinate(3, 1));
         allCoordinates.add(new GridCoordinate(3, 3));
         Task task = new Task(allCoordinates, Action.NONE);
-    }
-
-
-    public void removeAllButCornersOneLenTest() {
-        ArrayList<GridCoordinate> allCoordinates = new ArrayList<>();
-        allCoordinates.add(new GridCoordinate(0,0));
-        Task task = new Task(allCoordinates, Action.NONE);
-        assertTrue(task.getStrippedPath().isEmpty());
     }
 
     @Test

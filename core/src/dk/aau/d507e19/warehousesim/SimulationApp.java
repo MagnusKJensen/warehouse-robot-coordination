@@ -179,4 +179,9 @@ public class SimulationApp extends ApplicationAdapter {
 	public void fastForward() {
 		switchUpdateMode(UpdateMode.FAST_FORWARD);
 	}
+
+	@Override
+	public void dispose() {
+		assetManager.dispose();
+	}
 }

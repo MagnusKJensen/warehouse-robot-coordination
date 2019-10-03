@@ -90,4 +90,8 @@ public class Simulation {
     public ArrayList<Robot> getAllRobots() {
         return robots;
     }
+
+    public void dispose(){
+
+    }
 }
