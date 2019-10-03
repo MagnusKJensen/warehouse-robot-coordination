@@ -1,19 +1,22 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
 
-import java.util.ArrayList;
+import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 
-public class Astar {
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
+public class Astar  {
 
     private Tile[][] grid;
     private int xEndposition;
     private int yEndposition;
     private int xStartposition;
     private int yStartposition;
-
+    ArrayList<GridCoordinate> finalPath = new ArrayList<>();
     ArrayList<Tile> openList = new ArrayList<>();
     ArrayList<Tile> closedList = new ArrayList<>();
     private Tile currentTile;
-    private Tile previousTile;
 
     public Astar(Tile[][] grid, int xStart, int yStart, int xEnd, int yEnd) {
         this.grid = fillGrid(grid);
@@ -31,13 +34,21 @@ public class Astar {
         Tile[][] grid = new Tile[gridLength][gridLength];
 
         // Makes new Astar object and fills grid
-        Astar astar = new Astar(grid, 0, 0, 6, 6);
+        Astar astar = new Astar(grid, 0, 0, 0, 4);
 
         // Adds the starting tile to closed list.
         astar.addStartTileToClosedList();
 
         // Calculates the optimal A* path
         astar.calculatePath();
+
+        //adds final path to list
+        astar.addFinalPathToList();
+        //Reverses final path so it is in correct order
+        Collections.reverse(astar.finalPath);
+        for (GridCoordinate path : astar.finalPath) {
+            System.out.println(path.toString());
+        }
 
     }
 
@@ -82,7 +93,7 @@ public class Astar {
     }
 
     public void addNeighborTileToOpenList(Tile neighborTile) {
-       Tile tiletoDelete = null;
+        Tile tiletoDelete = null;
         if (!neighborTile.isBlocked()) {
 
             neighborTile.setPreviousXposition(currentTile.getCurrentXPosition());
@@ -95,13 +106,13 @@ public class Astar {
             for (Tile tile : openList) {
                 if (neighborTile.getCurrentXPosition() == tile.getCurrentXPosition() && neighborTile.getCurrentYPosition() == tile.getCurrentYPosition()) {
                     if (neighborTile.getF() <= tile.getF()) {
-                     tiletoDelete = tile;
+                        tiletoDelete = tile;
                     } else return;
                 }
 
             }
-            if(tiletoDelete != null)
-            openList.remove(tiletoDelete);
+            if (tiletoDelete != null)
+                openList.remove(tiletoDelete);
 
             openList.add(neighborTile);
         }
@@ -136,5 +147,20 @@ public class Astar {
             System.out.println(tile.toString());
 
         }
+    }
+
+    public void addFinalPathToList() {
+
+        Tile currTile = closedList.get(closedList.size() - 1);
+        finalPath.add(new GridCoordinate(currTile.getCurrentXPosition(), currTile.getCurrentYPosition()));
+        for (int i = closedList.size() - 2; i > 0; i--) {
+            if (currTile.getPreviousXposition() == closedList.get(i).getCurrentXPosition() && currTile.getGetPreviousYposition() == closedList.get(i).getCurrentYPosition()) {
+                finalPath.add(new GridCoordinate(closedList.get(i).getCurrentXPosition(), closedList.get(i).getCurrentYPosition()));
+
+            }
+            currTile = closedList.get(i);
+        }
+        finalPath.add(new GridCoordinate(closedList.get(0).getCurrentXPosition(), closedList.get(0).getCurrentYPosition()));
+
     }
 }

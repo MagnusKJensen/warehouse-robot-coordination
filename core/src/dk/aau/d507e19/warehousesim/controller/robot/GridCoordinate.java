@@ -40,4 +40,12 @@ public class GridCoordinate {
     public int hashCode() {
         return Objects.hash(x, y);
     }
+
+    @Override
+    public String toString() {
+        return "GridCoordinate{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }
