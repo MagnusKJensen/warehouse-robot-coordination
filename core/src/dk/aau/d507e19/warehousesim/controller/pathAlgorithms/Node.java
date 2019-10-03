@@ -23,6 +23,10 @@ public class Node<T> {
         return children;
     }
 
+    public T getData() {
+        return data;
+    }
+
     public boolean containsData(Node<T> node){
         if(this.data.equals(node.data)){
             //If this node is the node we're looking for then no need to traverse tree

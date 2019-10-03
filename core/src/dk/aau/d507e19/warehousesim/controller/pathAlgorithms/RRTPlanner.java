@@ -4,8 +4,11 @@ import dk.aau.d507e19.warehousesim.Position;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import java.lang.Math;
 
 public class RRTPlanner {
+
+    double shortestLength;
 
     void generateRRTroute(Robot robot, Position destination){
         boolean hasRoute = false;
@@ -27,9 +30,26 @@ public class RRTPlanner {
         return tree;
     }
     private Node<Position> findNearestNeighbour(Node<Position> tree, Position randPos){
-        //find nearest neighbour
+        Node<Position> nearestNeighbor;
+        for(Node<Position> n : tree.getChildren()){
+            double newDistance = getDistanceBetweenPoints(n.getData(),randPos);
+            if( newDistance < shortestLength) {
+                shortestLength = newDistance;
+                nearestNeighbor = n;
+            }
+
+        }
         //Todo implement this
         return null;
+    }
+
+    private double getShortestLenght(){
+
+        return null;
+    }
+
+    private double getDistanceBetweenPoints(Position pos1, Position pos2){
+        return Math.sqrt(Math.pow(pos2.getX()-pos1.getX(),2)+Math.pow(pos2.getY()-pos1.getY(),2));
     }
 
 }
