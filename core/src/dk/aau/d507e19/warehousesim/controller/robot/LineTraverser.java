@@ -43,6 +43,16 @@ public class LineTraverser {
             robot.decelerate();
         }*/
 
+        float remainingDistance = (totalDistance - distanceTraveled);
+        System.out.println();
+        if(remainingDistance <= 0.1f) {
+            System.out.println("inside");
+            robot.move(remainingDistance * direction.xDir, remainingDistance * direction.yDir);
+            distanceTraveled = totalDistance;
+        }else{
+            robot.move(0.1f * direction.xDir ,0.1f * direction.yDir);
+            distanceTraveled += 0.1f * direction.xDir + 0.1f * direction.yDir;
+        }
         /*if(targetCloserThanSpeed()) {
             currentSpeed = 0;
             currentPosition.setX(pathToTarget.getCornersPath().get(0).getX());
@@ -51,9 +61,10 @@ public class LineTraverser {
         }*/
 
         //robot.move(robot.getCurrentSpeed() * direction.xDir ,robot.getCurrentSpeed() * direction.yDir);
-        robot.move(0.1f * direction.xDir ,0.1f * direction.yDir);
-        distanceTraveled += 0.1f * direction.xDir + 0.1f * direction.yDir;
+
     }
+
+
 
     private boolean shouldDecelerate() {
 

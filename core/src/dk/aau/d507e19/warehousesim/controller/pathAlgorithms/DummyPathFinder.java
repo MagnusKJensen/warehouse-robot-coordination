@@ -20,7 +20,6 @@ public class DummyPathFinder implements PathFinder {
         ArrayList<GridCoordinate> coordinates = new ArrayList<>();
         for(int i = startX; i <= endX; i++){
             coordinates.add(new GridCoordinate(i, y));
-            System.out.println("x : " + i + " y : " + y);
         }
         return coordinates;
     }
@@ -29,7 +28,6 @@ public class DummyPathFinder implements PathFinder {
         ArrayList<GridCoordinate> coordinates = new ArrayList<>();
         for(int i = startY + 1; i <= endY; i++){
             coordinates.add(new GridCoordinate(x, i));
-            System.out.println("x : " + x + " y : " + i);
         }
         return coordinates;
     }
