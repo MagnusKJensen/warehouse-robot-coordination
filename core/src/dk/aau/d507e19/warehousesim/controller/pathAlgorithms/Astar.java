@@ -12,26 +12,21 @@ public class Astar implements PathFinder {
     private Tile[][] grid;
     private int xEndposition;
     private int yEndposition;
-    private int xStartposition;
-    private int yStartposition;
     ArrayList<GridCoordinate> finalPath = new ArrayList<>();
     ArrayList<Tile> openList = new ArrayList<>();
     ArrayList<Tile> closedList = new ArrayList<>();
     private Tile currentTile;
 
-    public Astar(Tile[][] grid, int xStart, int yStart, int xEnd, int yEnd) {
-        this.grid = fillGrid(grid);
-        this.xStartposition = xStart;
-        this.yStartposition = yStart;
-        this.xEndposition = xEnd;
-        this.yEndposition = yEnd;
+    public Astar(int gridLength) {
+        this.grid = fillGrid(gridLength);
+
     }
 
-    public Tile[][] fillGrid(Tile[][] grid) {
-
+    public Tile[][] fillGrid(int gridLength) {
+        Tile[][] grid = new Tile[gridLength][gridLength];
         // Fills grid with tiles matching the coordinates
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid.length; j++) {
+        for (int i = 0; i < gridLength; i++) {
+            for (int j = 0; j < gridLength; j++) {
                 grid[i][j] = new Tile(i, j);
 
             }
@@ -39,7 +34,7 @@ public class Astar implements PathFinder {
         return grid;
     }
 
-    public void addStartTileToClosedList() {
+    public void addStartTileToClosedList(int xStartposition, int yStartposition) {
 
         // Adds startTile to closedList
         closedList.add(grid[xStartposition][yStartposition]);
@@ -163,6 +158,8 @@ public class Astar implements PathFinder {
 
     @Override
     public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
+        xEndposition = destination.getX();
+        yEndposition = destination.getY();
         // Sets grid size
         int gridLength = 10;
 
@@ -170,18 +167,18 @@ public class Astar implements PathFinder {
         Tile[][] grid = new Tile[gridLength][gridLength];
 
         // Makes new Astar object and fills grid
-        Astar astar = new Astar(grid, start.getX(), start.getY(), destination.getX(), destination.getY());
+
 
         // Adds the starting tile to closed list.
-        astar.addStartTileToClosedList();
+        addStartTileToClosedList(start.getX(), start.getY());
 
         // Calculates the optimal A* path
-        astar.calculatePath();
+        calculatePath();
 
         //adds final path to list
-        astar.addFinalPathToList();
+        addFinalPathToList();
         //Reverses final path so it is in correct order
-        Collections.reverse(astar.finalPath);
-        return new Path(finalPath) ;
+        Collections.reverse(finalPath);
+        return new Path(finalPath);
     }
 }
