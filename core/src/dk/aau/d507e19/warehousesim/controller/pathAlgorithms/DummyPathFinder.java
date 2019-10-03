@@ -15,11 +15,6 @@ public class DummyPathFinder implements PathFinder {
         pathList.remove(pathList.size() - 1);
         pathList.addAll(generateVerticalLine(start.getY(), destination.getY(), destination.getX()));
 
-
-        for (GridCoordinate gc:pathList) {
-            System.out.println("X: " + gc.getX() + ", Y:" + gc.getY());
-        }
-
         return new Path(pathList);
     }
 
@@ -35,11 +30,6 @@ public class DummyPathFinder implements PathFinder {
             }
         }
 
-        System.out.println("CORDS:");
-        for (GridCoordinate gc:coordinates) {
-            System.out.println("X: " + gc.getX() + ", Y:" + gc.getY());
-        }
-        System.out.println("____________________");
         return coordinates;
     }
 
@@ -54,12 +44,6 @@ public class DummyPathFinder implements PathFinder {
                 coordinates.add(new GridCoordinate(x, i));
             }
         }
-
-        System.out.println("CORDS2:");
-        for (GridCoordinate gc:coordinates) {
-            System.out.println("X: " + gc.getX() + ", Y:" + gc.getY());
-        }
-        System.out.println("____________________");
 
         return coordinates;
     }

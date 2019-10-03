@@ -16,7 +16,6 @@ public class LineTraverser {
         this.robot = robot;
         this.direction = getDirection(startCoordinate.getX(), startCoordinate.getY(),
                 destinationCoordinate.getX(), destinationCoordinate.getY());
-        System.out.println("Direction: " + direction.toString());
         totalDistance = getTotalDistance(startCoordinate, destinationCoordinate);
         this.breakingDistance = breakingDistance();
     }
