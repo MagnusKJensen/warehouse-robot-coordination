@@ -35,7 +35,7 @@ public class Robot {
             /**
              * If standing on top of product
              */
-            if (pathToTarget.getPath().isEmpty()){
+            if (pathToTarget.getCornersPath().isEmpty()){
                 // If done
                 if(ticksLeftForCurrentTask == 0){
                     currentStatus = Status.CARRYING;
@@ -58,24 +58,24 @@ public class Robot {
                 // Target reached. Stop
                 if(targetCloserThanSpeed()) {
                     currentSpeed = 0;
-                    currentPosition.setX(pathToTarget.getPath().get(0).getX());
-                    currentPosition.setY(pathToTarget.getPath().get(0).getY());
-                    pathToTarget.getPath().remove(0);
+                    currentPosition.setX(pathToTarget.getCornersPath().get(0).getX());
+                    currentPosition.setY(pathToTarget.getCornersPath().get(0).getY());
+                    pathToTarget.getCornersPath().remove(0);
                 }
                 // Moving up the x axis
-                else if(currentPosition.getX() < pathToTarget.getPath().get(0).getX()){
+                else if(currentPosition.getX() < pathToTarget.getCornersPath().get(0).getX()){
                     currentPosition.setX(currentPosition.getX() + (currentSpeed / SimulationApp.TICKS_PER_SECOND));
                 }
                 // Moving down the x axis
-                else if (currentPosition.getX() > pathToTarget.getPath().get(0).getX()){
+                else if (currentPosition.getX() > pathToTarget.getCornersPath().get(0).getX()){
                     currentPosition.setX(currentPosition.getX() - (currentSpeed / SimulationApp.TICKS_PER_SECOND));
                 }
                 // Moving up the y axis
-                else if (currentPosition.getY() < pathToTarget.getPath().get(0).getY()){
+                else if (currentPosition.getY() < pathToTarget.getCornersPath().get(0).getY()){
                     currentPosition.setY(currentPosition.getY() + (currentSpeed / SimulationApp.TICKS_PER_SECOND));
                 }
                 // Moving down the y axis
-                else if (currentPosition.getY() > pathToTarget.getPath().get(0).getY()){
+                else if (currentPosition.getY() > pathToTarget.getCornersPath().get(0).getY()){
                     currentPosition.setY(currentPosition.getY() + (currentSpeed / SimulationApp.TICKS_PER_SECOND));
                 }
             }
@@ -85,13 +85,13 @@ public class Robot {
     private boolean targetCloserThanSpeed() {
         final float delta = 0.01f;
         // If moving in x direction and target closer than speed
-        if (Math.abs(currentPosition.getX() - pathToTarget.getPath().get(0).getX()) < (currentSpeed / SimulationApp.TICKS_PER_SECOND)
-                && Math.abs(currentPosition.getY() - pathToTarget.getPath().get(0).getY()) < delta){
+        if (Math.abs(currentPosition.getX() - pathToTarget.getCornersPath().get(0).getX()) < (currentSpeed / SimulationApp.TICKS_PER_SECOND)
+                && Math.abs(currentPosition.getY() - pathToTarget.getCornersPath().get(0).getY()) < delta){
             return true;
         }
         // If moving in y direction and target closer than speed
-        else if (Math.abs(currentPosition.getY() - pathToTarget.getPath().get(0).getY()) < (currentSpeed / SimulationApp.TICKS_PER_SECOND)
-                && Math.abs(currentPosition.getX() - pathToTarget.getPath().get(0).getX()) < delta){
+        else if (Math.abs(currentPosition.getY() - pathToTarget.getCornersPath().get(0).getY()) < (currentSpeed / SimulationApp.TICKS_PER_SECOND)
+                && Math.abs(currentPosition.getX() - pathToTarget.getCornersPath().get(0).getX()) < delta){
             return true;
         }
 
