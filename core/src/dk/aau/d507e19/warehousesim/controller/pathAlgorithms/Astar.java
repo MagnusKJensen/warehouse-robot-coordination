@@ -80,7 +80,7 @@ public class Astar {
             }
 
             // Add the valid tiles to openList
-            addTilesToOpenList();
+            checkNeighborValidity();
 
             // Add the lowest cost tile to closedList
             addTilesToClosedList();
@@ -90,60 +90,59 @@ public class Astar {
         }
     }
 
-    public void addTilesToOpenList() {
-
-        // If the current tiles neighbor (x,y-1) is valid, and not blocked (in closedList)
-        if (!(currentTile.getCurrentYPosition() - 1 < 0 || grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() - 1].isBlocked())) {
-
-
-            grid[currentTile.getCurrentXPosition()][currentTile.getCurrentXPosition()].setBlocked(true);
-            if(!(openList.contains(grid[currentTile.getCurrentYPosition() - 1][currentTile.getCurrentXPosition()])|| closedList.contains(grid[currentTile.getCurrentYPosition()-1][currentTile.getCurrentXPosition()])))
-            openList.add(grid[currentTile.getCurrentYPosition() - 1][currentTile.getCurrentXPosition()]);
-
+    public void checkNeighborValidity() {
+        if (!(currentTile.isBlocked())) {
+            if (currentTile.getCurrentYPosition() - 1 >= 0) {
+                addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() - 1]);
+            } else if (currentTile.getCurrentYPosition() + 1 < grid.length) {
+                addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() + 1]);
+            } else if (currentTile.getCurrentXPosition() - 1 >= 0) {
+                addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() - 1][currentTile.getCurrentYPosition()]);
+            } else if (currentTile.getCurrentXPosition() + 1 < grid.length) {
+                addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() + 1][currentTile.getCurrentYPosition()]);
+            }
         }
-        if (!(currentTile.getCurrentYPosition() + 1 > 10 || grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() + 1].isBlocked())) {
-            grid[currentTile.getCurrentYPosition() + 1][currentTile.getCurrentXPosition()].setBlocked(true);
-            if(!(openList.contains(grid[currentTile.getCurrentYPosition() + 1][currentTile.getCurrentXPosition()])|| closedList.contains(grid[currentTile.getCurrentYPosition()+1][currentTile.getCurrentXPosition()])))
-            openList.add(grid[currentTile.getCurrentYPosition() + 1][currentTile.getCurrentXPosition()]);
+    }
 
+    public void addNeighborTileToOpenList(Tile neighborTile) {
 
-        }
-        if (!(currentTile.getCurrentXPosition() - 1 < 0 || grid[currentTile.getCurrentXPosition() - 1][currentTile.getCurrentYPosition()].isBlocked())) {
-            grid[currentTile.getCurrentYPosition()][currentTile.getCurrentXPosition() - 1].setBlocked(true);
-            if(!(openList.contains(grid[currentTile.getCurrentYPosition()][currentTile.getCurrentXPosition() - 1]) || closedList.contains(grid[currentTile.getCurrentYPosition()][currentTile.getCurrentXPosition() -1])))
-                openList.add(grid[currentTile.getCurrentYPosition()][currentTile.getCurrentXPosition() - 1]);
+        neighborTile.setPreviousXposition(currentTile.getCurrentXPosition());
+        neighborTile.setPreviousYposition(currentTile.getCurrentYPosition());
 
+        neighborTile.calculateH(xEndposition, yEndposition);
 
-        }
-        if (!(currentTile.getCurrentXPosition() + 1 > 10 || grid[currentTile.getCurrentXPosition() + 1][currentTile.getCurrentYPosition()].isBlocked())) {
-            grid[currentTile.getCurrentYPosition()][currentTile.getCurrentXPosition() + 1].setBlocked(true);
-            if(!(openList.contains(grid[currentTile.getCurrentYPosition()][currentTile.getCurrentXPosition() + 1]) || closedList.contains(grid[currentTile.getCurrentYPosition()][currentTile.getCurrentXPosition() + 1])))
-            openList.add(grid[currentTile.getCurrentYPosition()][currentTile.getCurrentXPosition() + 1]);
-
-        }
+        neighborTile.calculateG(currentTile.getG());
+        neighborTile.calculateF();
         for (Tile tile : openList) {
-            tile.calculateH(xEndposition, yEndposition);
-            if (closedList.size() > 2)
-                tile.calculateG(previousTile.getG());
-            else
-                tile.calculateG(currentTile.getG());
-        }
-        openList.sort(new OpenListSorter());
-        for (Tile tile : openList) {
-            System.out.println(tile.calculateF());
+            if (neighborTile.getCurrentXPosition() == tile.getCurrentXPosition() && neighborTile.getCurrentYPosition() == tile.getCurrentYPosition()) {
+                if (neighborTile.getF() <= tile.getF()) {
+                    openList.remove(tile);
+
+                } else return;
+            }
 
         }
-        System.out.println("----------------------------------------");
+        openList.add(neighborTile);
     }
 
     public void addTilesToClosedList() {
 
-        openList.get(0).setBlocked(true);
+        grid[openList.get(0).getCurrentXPosition()][openList.get(0).getCurrentYPosition()].setBlocked(true);
         closedList.add(openList.get(0));
         openList.remove(0);
-
     }
 
+/*
+    public void calculatePath() {
+        while (!(currentTile.getCurrentXPosition() == xEndposition && currentTile.getCurrentYPosition() == yEndposition)) {
+            currentTile = closedList.get(closedList.size() - 1);
+            if (closedList.size() > 1)
+                previousTile = closedList.get(closedList.size() - 2);
+            System.out.println(currentTile.getCurrentXPosition() + " " + currentTile.getCurrentYPosition());
+            checkNeighborValidity();
+            openList.sort(new OpenListSorter());
+            addTilesToClosedList();
 
-
+        }
+    }*/
 }

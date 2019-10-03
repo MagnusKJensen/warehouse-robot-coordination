@@ -126,6 +126,9 @@ public class Robot {
     }
 
     public void setPathToTarget(Path pathToTarget) {
+        if(!currentPosition.isSameAs(pathToTarget.path.get(0))){
+            throw new IllegalArgumentException("Path does not start at robot position");
+        }
         this.pathToTarget = pathToTarget;
     }
 }
