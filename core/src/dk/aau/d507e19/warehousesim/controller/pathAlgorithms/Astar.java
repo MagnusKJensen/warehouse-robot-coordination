@@ -71,14 +71,6 @@ public class Astar {
         // While is true if the currentTile does not have the same x coordinate and the same y coordinate as the end Tile.
         while (!(currentTile.getCurrentXPosition() == xEndposition && currentTile.getCurrentYPosition() == yEndposition)) {
 
-            // If the closedList has more than one tile, then set previousTile
-            // Previous tile is the last in closedList
-            if (closedList.size() > 2) {
-                previousTile = closedList.get(closedList.size() - 2);
-                currentTile.setPreviousXposition(previousTile.getCurrentXPosition());
-                currentTile.setPreviousYposition(previousTile.getCurrentYPosition());
-            }
-
             // Add the valid tiles to openList
             checkNeighborValidity();
 
