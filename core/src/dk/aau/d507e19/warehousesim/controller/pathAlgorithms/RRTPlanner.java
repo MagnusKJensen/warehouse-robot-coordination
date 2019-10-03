@@ -8,7 +8,7 @@ import java.lang.Math;
 
 public class RRTPlanner {
 
-    double shortestLength;
+    Node<Position> shortestLengthNode;
 
     void generateRRTroute(Robot robot, Position destination){
         boolean hasRoute = false;
@@ -30,23 +30,18 @@ public class RRTPlanner {
         return tree;
     }
     private Node<Position> findNearestNeighbour(Node<Position> tree, Position randPos){
-        Node<Position> nearestNeighbor;
         for(Node<Position> n : tree.getChildren()){
             double newDistance = getDistanceBetweenPoints(n.getData(),randPos);
-            if( newDistance < shortestLength) {
-                shortestLength = newDistance;
-                nearestNeighbor = n;
-            }
 
+            if( newDistance < getDistanceBetweenPoints(shortestLengthNode.getData(),randPos)){
+                shortestLengthNode = n;
+            }
+            findNearestNeighbour(n, randPos);
         }
         //Todo implement this
-        return null;
+        return shortestLengthNode;
     }
 
-    private double getShortestLenght(){
-
-        return null;
-    }
 
     private double getDistanceBetweenPoints(Position pos1, Position pos2){
         return Math.sqrt(Math.pow(pos2.getX()-pos1.getX(),2)+Math.pow(pos2.getY()-pos1.getY(),2));
