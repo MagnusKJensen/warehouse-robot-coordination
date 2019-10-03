@@ -28,7 +28,6 @@ public class Astar implements PathFinder {
         for (int i = 0; i < gridLength; i++) {
             for (int j = 0; j < gridLength; j++) {
                 grid[i][j] = new Tile(i, j);
-
             }
         }
         return grid;
@@ -90,17 +89,17 @@ public class Astar implements PathFinder {
                     // If a tile with the same coordinates is already in openList, then check which has the lowest F value.
                     // If the existing tile in openList has the highest F, then it is copied into tileToDelete
                     if (neighborTile.getF() <= tile.getF()) {
-                     tileToDelete = tile;
+                        tileToDelete = tile;
 
-                     // If the neighborTile has the highest F, then return and dont add to openList.
+                        // If the neighborTile has the highest F, then return and dont add to openList.
                     } else return;
                 }
 
             }
 
             // If there is a tile to delete, then delete
-            if(tileToDelete != null)
-            openList.remove(tileToDelete);
+            if (tileToDelete != null)
+                openList.remove(tileToDelete);
 
             // Add neighbor tile to openList
             openList.add(neighborTile);
@@ -147,7 +146,7 @@ public class Astar implements PathFinder {
                 finalPath.add(new GridCoordinate(prevTile.getCurrentXPosition(), prevTile.getCurrentYPosition()));
                 currTile = closedList.get(i);
             }
-             prevTile = closedList.get(i-1);
+            prevTile = closedList.get(i - 1);
 
         }
         finalPath.add(new GridCoordinate(closedList.get(0).getCurrentXPosition(), closedList.get(0).getCurrentYPosition()));

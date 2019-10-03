@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 
 
 public class AstarTest {
-
+/*
     int gridLength, xStart, yStart;
     Tile[][] grid;
     Astar astar;
@@ -129,5 +129,5 @@ public class AstarTest {
 
 
 
-    }
+    }*/
 }
