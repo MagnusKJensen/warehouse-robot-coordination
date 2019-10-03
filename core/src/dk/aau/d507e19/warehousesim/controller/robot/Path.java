@@ -22,6 +22,8 @@ public class Path {
         boolean yChanged;
         String lastDirection;
 
+        // Add start position
+        corners.add(path.get(0));
 
         // If x changed
         if(path.get(0).getX() != path.get(1).getX()) lastDirection = "x";

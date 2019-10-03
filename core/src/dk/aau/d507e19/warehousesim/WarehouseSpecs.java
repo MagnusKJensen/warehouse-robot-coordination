@@ -10,6 +10,7 @@ public class WarehouseSpecs {
     public static final int numberOfRobots = 5;
     public static final int robotTopSpeed = 3; // Meters/second
     public static final float robotAcceleration = 0.8F; // m/s^2
+    public static final float robotDeceleration = 1.5F; // m/s^2
     public static final int robotPickUpSpeedInSeconds = 1;
     public static final int offLoadToPickerInSeconds = 0;
     // todo turnover distribution - Philip
