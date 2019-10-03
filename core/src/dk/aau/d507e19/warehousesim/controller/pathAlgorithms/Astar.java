@@ -111,11 +111,6 @@ public class Astar implements PathFinder {
 
             // CurrentTile is now the top tile in closedList
             currentTile = closedList.get(closedList.size() - 1);
-
-        }
-        for (Tile tile : closedList) {
-            System.out.println(tile.toString());
-
         }
     }
 
