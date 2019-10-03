@@ -34,13 +34,18 @@ public class Simulation {
     private void initRobots() {
         // Auto generate robots
         for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++) {
-            robots.add(new Robot(new Position(i,0), new Astar(100)));
+            robots.add(new Robot(new Position(i,0), new Astar(WarehouseSpecs.wareHouseWidth)));
         }
+
+        robots.add(new Robot(new Position(5,5), new Astar(WarehouseSpecs.wareHouseWidth)));
 
         // Assign test task to first robot
         robots.get(0).assignTask(new Task(new GridCoordinate(3,6), Action.PICK_UP));
         robots.get(1).assignTask(new Task(new GridCoordinate(10,5), Action.PICK_UP));
         robots.get(2).assignTask(new Task(new GridCoordinate(0,8), Action.PICK_UP));
+        robots.get(3).assignTask(new Task(new GridCoordinate(3,3), Action.PICK_UP));
+        robots.get(4).assignTask(new Task(new GridCoordinate(1,1), Action.PICK_UP));
+        robots.get(robots.size() - 1).assignTask(new Task(new GridCoordinate(0,0), Action.PICK_UP));
     }
 
     private BitmapFont generateFont(){
