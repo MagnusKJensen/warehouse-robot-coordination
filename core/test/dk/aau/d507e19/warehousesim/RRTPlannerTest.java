@@ -17,9 +17,9 @@ public class RRTPlannerTest {
         Node<Position> twooneright = new Node<Position>(new Position(2,1),null);
         tree.addChild(oneleft);
         tree.addChild(oneright);
-        tree.addChild(twoleft);
-        tree.addChild(tworight);
-        tree.addChild(twooneright);
+        oneleft.addChild(twoleft);
+        oneright.addChild(tworight);
+        oneright.addChild(twooneright);
         rrtPlanner.shortestLengthNode = tree;
 
         assertSame(rrtPlanner.findNearestNeighbour(tree,new Position(2,3)),twooneright);
