@@ -61,12 +61,7 @@ public class Robot {
                     if(pathToTarget.getCornersPath().size() > 1)
                         assignTraverser();
                 }
-
-
             }
-
-            // If not moving a full speed, accelerate!
-
         }
     }
 
@@ -152,5 +147,9 @@ public class Robot {
 
     public float getMinimumSpeed(){
         return WarehouseSpecs.robotMinimumSpeed;
+    }
+
+    public Status getCurrentStatus() {
+        return currentStatus;
     }
 }

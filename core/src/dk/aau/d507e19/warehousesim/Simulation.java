@@ -37,6 +37,7 @@ public class Simulation {
             robots.add(new Robot(new Position(i,0), new DummyPathFinder()));
         }
 
+        robots.add(new Robot(new Position(7,7), new DummyPathFinder()));
         robots.add(new Robot(new Position(5,5), new DummyPathFinder()));
 
         // Assign test task to first robot
@@ -46,6 +47,7 @@ public class Simulation {
         robots.get(3).assignTask(new Task(new GridCoordinate(3,3), Action.PICK_UP));
         robots.get(4).assignTask(new Task(new GridCoordinate(1,1), Action.PICK_UP));
         robots.get(robots.size() - 1).assignTask(new Task(new GridCoordinate(0,0), Action.PICK_UP));
+        robots.get(robots.size() - 2).assignTask(new Task(new GridCoordinate(2,9), Action.PICK_UP));
     }
 
     private BitmapFont generateFont(){
