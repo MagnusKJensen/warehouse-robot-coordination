@@ -10,6 +10,9 @@ public class Path {
         this.path = pathToTarget;
         originalPath.addAll(path);
         if(pathToTarget.isEmpty()) throw new IllegalArgumentException("Path must contain at least one coordinate");
+        for (GridCoordinate gc:path) {
+            System.out.println("X: " + gc.getX() + ", Y:" + gc.getY());
+        }
         if(!isValidPath()) throw new IllegalArgumentException("Paths must be continuous");
 
         removeAllButCorners();
