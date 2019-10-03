@@ -15,6 +15,8 @@ public class Tile {
         this.currentYPosition = currentYPosition;
     }
 
+    //Setters
+
     public void setPreviousXposition(int previousXposition) {
         this.previousXposition = previousXposition;
     }
@@ -26,6 +28,8 @@ public class Tile {
     public void setBlocked(boolean blocked) {
         isBlocked = blocked;
     }
+
+    //Getters
 
     public int getCurrentXPosition() {
         return currentXPosition;
@@ -43,10 +47,6 @@ public class Tile {
         return getPreviousYposition;
     }
 
-    public boolean isBlocked() {
-        return isBlocked;
-    }
-
     public int getG() {
         return G;
     }
@@ -57,6 +57,12 @@ public class Tile {
 
     public int getF() {
         return F;
+    }
+
+    //Methods
+
+    public boolean isBlocked() {
+        return isBlocked;
     }
 
     public void calculateH(int xFinalPosition, int yFinalPosition) {

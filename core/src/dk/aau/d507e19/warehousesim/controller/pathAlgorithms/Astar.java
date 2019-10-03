@@ -3,112 +3,138 @@ package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
 import java.util.ArrayList;
 
 public class Astar {
-    private int gridLength = 10;
-    private Tile grid[][] = new Tile[gridLength][gridLength];
-    private int xEndposition = 0;
-    private int yEndposition = 4;
-    private int xStartposition = 0;
-    private int yStartposition = 0;
+
+    private Tile[][] grid;
+    private int xEndposition;
+    private int yEndposition;
+    private int xStartposition;
+    private int yStartposition;
 
     ArrayList<Tile> openList = new ArrayList<>();
     ArrayList<Tile> closedList = new ArrayList<>();
     private Tile currentTile;
     private Tile previousTile;
 
+    public Astar(Tile[][] grid, int xStart, int yStart, int xEnd, int yEnd) {
+        this.grid = fillGrid(grid);
+        this.xStartposition = xStart;
+        this.yStartposition = yStart;
+        this.xEndposition = xEnd;
+        this.yEndposition = yEnd;
+    }
+
     public static void main(String[] args) {
-        Astar astar = new Astar();
-        astar.fillGrid();
+        // Sets grid size
+        int gridLength = 10;
+
+        // Makes new grid
+        Tile[][] grid = new Tile[gridLength][gridLength];
+
+        // Makes new Astar object and fills grid
+        Astar astar = new Astar(grid, 0, 0, 6, 6);
+
+        // Adds the starting tile to closed list.
         astar.addStartTileToClosedList();
-        astar.currentTile = astar.closedList.get(astar.closedList.size() - 1);
+
+        // Calculates the optimal A* path
         astar.calculatePath();
 
     }
 
-    public void fillGrid() {
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
+    public Tile[][] fillGrid(Tile[][] grid) {
+
+        // Fills grid with tiles matching the coordinates
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid.length; j++) {
                 grid[i][j] = new Tile(i, j);
 
             }
         }
+        return grid;
     }
 
     public void addStartTileToClosedList() {
 
+        // Adds startTile to closedList
         closedList.add(grid[xStartposition][yStartposition]);
+
+        // Blocks startTile so that it cannot be used anymore
         grid[xStartposition][yStartposition].setBlocked(true);
+
+        // Sets currentTile to the top tile in closedList (startTile)
+        currentTile = closedList.get(closedList.size() - 1);
+
     }
 
-    public void addTilesToOpenList() {
-
-        if (!(currentTile.getCurrentYPosition() - 1 < 0 || grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() - 1].isBlocked() == true)) {
-            grid[currentTile.getCurrentYPosition() - 1][currentTile.getCurrentXPosition()].setPreviousYposition(currentTile.getCurrentYPosition());
-            grid[currentTile.getCurrentYPosition() - 1][currentTile.getCurrentXPosition()].setPreviousXposition(currentTile.getCurrentXPosition());
-            grid[currentTile.getCurrentYPosition() + 1][currentTile.getCurrentXPosition()].setBlocked(true);
-            if(!(openList.contains(grid[currentTile.getCurrentYPosition() - 1][currentTile.getCurrentXPosition()])|| closedList.contains(grid[currentTile.getCurrentYPosition()-1][currentTile.getCurrentXPosition()])))
-            openList.add(grid[currentTile.getCurrentYPosition() - 1][currentTile.getCurrentXPosition()]);
-
+    public void checkNeighborValidity() {
+        if (currentTile.getCurrentYPosition() - 1 >= 0) {
+            addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() - 1]);
         }
-        if (!(currentTile.getCurrentYPosition() + 1 > 10 || grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() + 1].isBlocked() == true)) {
-            grid[currentTile.getCurrentYPosition() + 1][currentTile.getCurrentXPosition()].setPreviousYposition(currentTile.getCurrentYPosition());
-            grid[currentTile.getCurrentYPosition() + 1][currentTile.getCurrentXPosition()].setPreviousXposition(currentTile.getCurrentXPosition());
-            grid[currentTile.getCurrentYPosition() + 1][currentTile.getCurrentXPosition()].setBlocked(true);
-            if(!(openList.contains(grid[currentTile.getCurrentYPosition() + 1][currentTile.getCurrentXPosition()])|| closedList.contains(grid[currentTile.getCurrentYPosition()+1][currentTile.getCurrentXPosition()])))
-            openList.add(grid[currentTile.getCurrentYPosition() + 1][currentTile.getCurrentXPosition()]);
-
-
+        if (currentTile.getCurrentYPosition() + 1 < grid.length) {
+            addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() + 1]);
         }
-        if (!(currentTile.getCurrentXPosition() - 1 < 0 || grid[currentTile.getCurrentXPosition() - 1][currentTile.getCurrentYPosition()].isBlocked() == true)) {
-            grid[currentTile.getCurrentYPosition()][currentTile.getCurrentXPosition() - 1].setPreviousYposition(currentTile.getCurrentYPosition());
-            grid[currentTile.getCurrentYPosition()][currentTile.getCurrentXPosition() - 1].setPreviousXposition(currentTile.getCurrentXPosition());
-            grid[currentTile.getCurrentYPosition()][currentTile.getCurrentXPosition() - 1].setBlocked(true);
-            if(!(openList.contains(grid[currentTile.getCurrentYPosition()][currentTile.getCurrentXPosition() - 1]) || closedList.contains(grid[currentTile.getCurrentYPosition()][currentTile.getCurrentXPosition() -1])))
-                openList.add(grid[currentTile.getCurrentYPosition()][currentTile.getCurrentXPosition() - 1]);
-
-
+        if (currentTile.getCurrentXPosition() - 1 >= 0) {
+            addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() - 1][currentTile.getCurrentYPosition()]);
         }
-        if (!(currentTile.getCurrentXPosition() + 1 > 10 || grid[currentTile.getCurrentXPosition() + 1][currentTile.getCurrentYPosition()].isBlocked() == true)) {
-            grid[currentTile.getCurrentYPosition()][currentTile.getCurrentXPosition() + 1].setBlocked(true);
-            grid[currentTile.getCurrentYPosition()][currentTile.getCurrentXPosition() + 1].setPreviousYposition(currentTile.getCurrentYPosition());
-            grid[currentTile.getCurrentYPosition()][currentTile.getCurrentXPosition() + 1].setPreviousXposition(currentTile.getCurrentXPosition());
-            if(!(openList.contains(grid[currentTile.getCurrentYPosition()][currentTile.getCurrentXPosition() + 1]) || closedList.contains(grid[currentTile.getCurrentYPosition()][currentTile.getCurrentXPosition() + 1])))
-            openList.add(grid[currentTile.getCurrentYPosition()][currentTile.getCurrentXPosition() + 1]);
+        if (currentTile.getCurrentXPosition() + 1 < grid.length) {
+            addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() + 1][currentTile.getCurrentYPosition()]);
+        }
+    }
 
-        }
-        for (Tile tile : openList) {
-            tile.calculateH(xEndposition, yEndposition);
-            if (closedList.size() > 2)
-                tile.calculateG(previousTile.getG());
-            else
-                tile.calculateG(currentTile.getG());
-        }
-        openList.sort(new OpenListSorter());
-        for (Tile tile : openList) {
-            System.out.println(tile.calculateF());
+    public void addNeighborTileToOpenList(Tile neighborTile) {
+       Tile tiletoDelete = null;
+        if (!neighborTile.isBlocked()) {
 
+            neighborTile.setPreviousXposition(currentTile.getCurrentXPosition());
+            neighborTile.setPreviousYposition(currentTile.getCurrentYPosition());
+
+            neighborTile.calculateH(xEndposition, yEndposition);
+
+            neighborTile.calculateG(currentTile.getG());
+            neighborTile.calculateF();
+            for (Tile tile : openList) {
+                if (neighborTile.getCurrentXPosition() == tile.getCurrentXPosition() && neighborTile.getCurrentYPosition() == tile.getCurrentYPosition()) {
+                    if (neighborTile.getF() <= tile.getF()) {
+                     tiletoDelete = tile;
+                    } else return;
+                }
+
+            }
+            if(tiletoDelete != null)
+            openList.remove(tiletoDelete);
+
+            openList.add(neighborTile);
         }
-        System.out.println("----------------------------------------");
     }
 
     public void addTilesToClosedList() {
 
-        openList.get(0).setBlocked(true);
+        grid[openList.get(0).getCurrentXPosition()][openList.get(0).getCurrentYPosition()].setBlocked(true);
         closedList.add(openList.get(0));
         openList.remove(0);
-
     }
-
 
     public void calculatePath() {
-        while (!(currentTile.getCurrentXPosition() == xEndposition && currentTile.getCurrentYPosition() == yEndposition)) {
-            currentTile = closedList.get(closedList.size() - 1);
-            if (closedList.size() > 2)
-                previousTile = closedList.get(closedList.size() - 2);
 
-            addTilesToOpenList();
+        // While is true if the currentTile does not have the same x coordinate and the same y coordinate as the end Tile.
+        while (!(currentTile.getCurrentXPosition() == xEndposition && currentTile.getCurrentYPosition() == yEndposition)) {
+
+            // Add the valid tiles to openList
+            checkNeighborValidity();
+
+            //sorts openlist in ascending order
+            openList.sort(new OpenListSorter());
+
+            // Add the lowest cost tile to closedList
             addTilesToClosedList();
+
+            // CurrentTile is now the top tile in closedList
+            currentTile = closedList.get(closedList.size() - 1);
+
+        }
+        for (Tile tile : closedList) {
+            System.out.println(tile.toString());
+
         }
     }
-
-
 }
