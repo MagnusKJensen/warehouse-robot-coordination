@@ -7,6 +7,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 
 import java.lang.Math;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class RRTPlanner {
@@ -14,7 +15,9 @@ public class RRTPlanner {
     public Node<GridCoordinate> shortestLengthNode;
     private Node<GridCoordinate> root, destinationNode;
     private GridCoordinate dest;
+    public HashMap<GridCoordinate,Node<GridCoordinate>> allNodesMap = new HashMap<>();
     private boolean foundPath;
+    private int count =0;
 
     public List<GridCoordinate> generateRRTPath(Robot robot, GridCoordinate destination) throws InterruptedException {
         dest = destination;
@@ -22,13 +25,12 @@ public class RRTPlanner {
         root = new Node<GridCoordinate>(new GridCoordinate((int)robot.getCurrentPosition().getX(),(int)robot.getCurrentPosition().getY()), null);
         //Run until a route is found
         while (!foundPath) {
-            for (int i = 0; i < 1; i++) {
-                //  root.printTree(root);
-                // System.out.println("END");
-                growRRT(root);
-            }
+            //  root.printTree(root);
+            // System.out.println("END");
+            growRRT(root);
         }
         //Find parents and make list of coords
+        System.out.println(count);
         return makePath(destinationNode);
     }
 
@@ -50,6 +52,7 @@ public class RRTPlanner {
         Node<GridCoordinate> nearest = findNearestNeighbour(tree, randPos);
         Node<GridCoordinate> newNode = generateNewNode(nearest, randPos);
         nearest.addChild(newNode);
+        allNodesMap.put(newNode.getData(),newNode);
         if(newNode.getData().equals(dest)){
             foundPath = true;
             destinationNode = newNode;
@@ -101,10 +104,7 @@ public class RRTPlanner {
     }
 
     private boolean doesNodeExist(GridCoordinate newPos) {
-        /*System.out.println("---TREE---");
-        root.printTree(root);
-        System.out.println("---TREE END---");*/
-        //System.out.println("CHECKING FOR: " + newPos.toString() + "RETURN: " + root.containsNodeWithData(root,newPos));
-        return root.containsNodeWithData(root,newPos);
+        return allNodesMap.containsKey(newPos);
+        //return root.containsNodeWithData(root,newPos);
     }
 }
