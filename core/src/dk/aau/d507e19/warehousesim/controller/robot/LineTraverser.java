@@ -50,7 +50,6 @@ public class LineTraverser {
         }
 
         float remainingDistance = (totalDistance - distanceTraveled);
-        // TODO: 04/10/2019 This doesn't work, if the tick rate is too low. 
         if (remainingDistance <= robot.getCurrentSpeed() / (float)SimulationApp.TICKS_PER_SECOND) {
             robot.move(remainingDistance * direction.xDir, remainingDistance * direction.yDir);
             distanceTraveled = totalDistance;

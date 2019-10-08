@@ -26,5 +26,4 @@ public class Tile implements Drawable {
         shapeRenderer.rect(posX, posY, TILE_SIZE, TILE_SIZE);
         shapeRenderer.end();
     }
-
 }

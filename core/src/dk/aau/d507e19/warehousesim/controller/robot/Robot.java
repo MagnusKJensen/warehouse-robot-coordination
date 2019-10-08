@@ -38,20 +38,30 @@ public class Robot {
     }
 
     public void update() {
-        // todo: if robot gets task, where it is already on top of the product
         if (currentStatus == Status.PICK_UP_TASK_ASSIGNED) {
-            /**
-             * If destination is reached start pickup
-             */
-            if (pathToTarget.getCornersPath().size() == 1) {
-                // If done 
-                pickupProduct();
-            } else {
-                /**
-                 * If movement still needed
-                 */
-                moveWithLineTraverser();
-            }
+            // If destination is reached start pickup
+            if (pathToTarget.getCornersPath().size() == 1) pickupProduct();
+            // If movement still needed
+            else moveWithLineTraverser();
+        } else if (currentStatus == Status.TASK_ASSIGNED_CARRYING){
+            // If delivery station already reached
+            if(pathToTarget.getCornersPath().size() == 1) deliverProduct();
+            // If movement still needed
+            else moveWithLineTraverser();
+        } else if (currentStatus == Status.MOVE_TASK_ASSIGNED){
+            // If target reached, show as available
+            if(pathToTarget.getCornersPath().size() == 1) currentStatus = Status.AVAILABLE;
+            // If movement still needed
+            else moveWithLineTraverser();
+        }
+    }
+
+    private void deliverProduct(){
+        if (ticksLeftForCurrentTask == 0) {
+            currentStatus = Status.AVAILABLE;
+        } else {
+            // If still picking up the product
+            ticksLeftForCurrentTask -= 1;
         }
     }
 
@@ -82,6 +92,7 @@ public class Robot {
                 batch.draw(new Texture("Simulation/Robots/robotAvailable.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
             case PICK_UP_TASK_ASSIGNED:
+            case MOVE_TASK_ASSIGNED:
                 batch.draw(new Texture("Simulation/Robots/robotTaskAssigned.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
             case TASK_ASSIGNED_CARRYING:
@@ -100,10 +111,12 @@ public class Robot {
             ticksLeftForCurrentTask = pickUpTimeInTicks;
         } else if (task.getAction() == Action.DELIVER){
             if(currentStatus != Status.CARRYING) throw new IllegalArgumentException("Robot is not carrying anything");
+            // If the target is not a deliveryTile
+            // TODO: 08/10/2019 Throw exception, if the target is not a deliveryTile
             currentStatus = Status.TASK_ASSIGNED_CARRYING;
             ticksLeftForCurrentTask = deliverTimeInTicks;
-        } else if (task.getAction() == Action.NONE){
-            currentStatus = Status.AVAILABLE;
+        } else if (task.getAction() == Action.MOVE){
+            currentStatus = Status.MOVE_TASK_ASSIGNED;
             ticksLeftForCurrentTask = 0;
         }
 
@@ -111,8 +124,7 @@ public class Robot {
                 new GridCoordinate((int) currentPosition.getX(),(int) currentPosition.getY()), task.getDestination());
 
         // If the robot has to move
-        if(pathToTarget.getCornersPath().size() > 1)
-            assignTraverser();
+        if(pathToTarget.getCornersPath().size() > 1) assignTraverser();
     }
 
     private void assignTraverser(){
@@ -128,15 +140,15 @@ public class Robot {
         return currentPosition;
     }
 
-    protected void decelerate() {
+    void decelerate() {
         if (currentSpeed > 0) {
             currentSpeed -= decelerationBinSecond / (float) SimulationApp.TICKS_PER_SECOND;
-            if (currentSpeed < 0)
-                currentSpeed = 0;
+            if (currentSpeed < minSpeedBinsPerSecond)
+                currentSpeed = minSpeedBinsPerSecond;
         }
     }
 
-    protected void accelerate() {
+    void accelerate() {
         if (currentSpeed < maxSpeedBinsPerSecond) {
             currentSpeed += accelerationBinSecond / (float) SimulationApp.TICKS_PER_SECOND;
             if (currentSpeed > maxSpeedBinsPerSecond)

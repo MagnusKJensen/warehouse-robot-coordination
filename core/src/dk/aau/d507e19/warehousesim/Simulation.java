@@ -18,7 +18,6 @@ public class Simulation {
 
     private SpriteBatch batch;
     private BitmapFont font;
-
     private StorageGrid storageGrid;
     private ArrayList<Robot> robots = new ArrayList<>();
 
@@ -43,7 +42,7 @@ public class Simulation {
         // Assign test task to first robot
         robots.get(0).assignTask(new Task(new GridCoordinate(5,10), Action.PICK_UP));
         robots.get(1).assignTask(new Task(new GridCoordinate(10,5), Action.PICK_UP));
-        robots.get(2).assignTask(new Task(new GridCoordinate(0,8), Action.PICK_UP));
+        robots.get(2).assignTask(new Task(new GridCoordinate(0,8), Action.MOVE));
         robots.get(3).assignTask(new Task(new GridCoordinate(3,3), Action.PICK_UP));
         robots.get(4).assignTask(new Task(new GridCoordinate(1,1), Action.PICK_UP));
         robots.get(robots.size() - 1).assignTask(new Task(new GridCoordinate(0,0), Action.PICK_UP));
@@ -93,5 +92,9 @@ public class Simulation {
 
     public void dispose(){
 
+    }
+
+    public StorageGrid getStorageGrid() {
+        return storageGrid;
     }
 }
