@@ -1,0 +1,69 @@
+package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Node<T> {
+    private T data;
+    private Node<T> parent;
+    private List<Node<T>> children = new ArrayList<>();
+
+    public Node(T data, Node<T> parent) {
+        this.data = data;
+        this.parent = parent;
+    }
+
+    public void setParent(Node<T> parent) {
+        this.parent = parent;
+    }
+
+    public void addChild(Node<T> child){
+        children.add(child);
+        if(child.getParent()!=null){
+            child.getParent().removeChild(child);
+        }
+        child.setParent(this);
+    }
+
+    public Node<T> getParent() {
+        if(parent==null){
+            return null;
+        }
+        return parent;
+    }
+
+    public void removeChild(Node<T> child){
+        if(children.contains(child)){
+            children.remove(child);
+        }
+    }
+    public List<Node<T>> getChildren() {
+        return children;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public boolean containsNodeWithData(Node<T> node, T goal){
+        if(this.data.equals(goal)){
+            //If this node is the node we're looking for then no need to traverse tree
+            return true;
+        }
+        for(Node<T> n : node.getChildren()){
+            if(n.getData().equals(goal)){
+                return true;
+            }
+            if(containsNodeWithData(n,goal)){
+                return true;
+            }
+        }
+        return false;
+    }
+    public void printTree(Node<T> node){
+        System.out.println(node.getData().toString());
+        for(Node<T> n : node.getChildren()){
+            printTree(n);
+        }
+    }
+}
