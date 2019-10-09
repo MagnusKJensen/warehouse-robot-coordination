@@ -2,10 +2,13 @@ package dk.aau.d507e19.warehousesim.controller.robot;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.sun.tools.javac.comp.Todo;
 import dk.aau.d507e19.warehousesim.*;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
+import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
 import dk.aau.d507e19.warehousesim.storagegrid.Tile;
+import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 
 public class Robot {
     private Simulation simulation;
@@ -14,6 +17,7 @@ public class Robot {
     private Status currentStatus;
     private float currentSpeed;
     private Path pathToTarget;
+    private Bin bin;
 
     /**
      * Robot STATS
@@ -68,6 +72,14 @@ public class Robot {
 
     private void pickupProduct(){
         if (ticksLeftForCurrentTask == 0) {
+            int x = currentTask.getDestination().getX();
+            int y = currentTask.getDestination().getY();
+
+            Tile tile = simulation.getStorageGrid().getTile(x,y);
+            if(tile instanceof BinTile){
+                ((BinTile) tile).takeBin();
+            }
+            else throw new RuntimeException("Robot could not pick up bin at (" + x + "," + y + ")");
             currentStatus = Status.CARRYING;
         } else {
             // If still picking up the product
@@ -186,5 +198,13 @@ public class Robot {
 
     public Status getCurrentStatus() {
         return currentStatus;
+    }
+
+    public void setCurrentStatus(Status currentStatus) {
+        this.currentStatus = currentStatus;
+    }
+
+    public void setBin(Bin bin) {
+        this.bin = bin;
     }
 }

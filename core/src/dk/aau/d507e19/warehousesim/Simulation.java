@@ -12,6 +12,7 @@ import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
+import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 
 import java.util.ArrayList;
 
@@ -26,7 +27,10 @@ public class Simulation {
     public Simulation(){
         font = GraphicsManager.getFont();
         batch = new SpriteBatch();
-        storageGrid = new StorageGrid(WarehouseSpecs.wareHouseWidth, WarehouseSpecs.wareHouseHeight);
+        ArrayList<GridCoordinate> pickerPoints = new ArrayList<>();
+        pickerPoints.add(new GridCoordinate(0,0));
+        pickerPoints.add(new GridCoordinate(2,0));
+        storageGrid = new StorageGrid(WarehouseSpecs.wareHouseWidth, WarehouseSpecs.wareHouseHeight, pickerPoints);
         initRobots();
     }
 
@@ -44,9 +48,13 @@ public class Simulation {
         robots.get(1).assignTask(new Task(new GridCoordinate(10,5), Action.PICK_UP));
         robots.get(2).assignTask(new Task(new GridCoordinate(0,8), Action.MOVE));
         robots.get(3).assignTask(new Task(new GridCoordinate(3,3), Action.PICK_UP));
-        robots.get(4).assignTask(new Task(new GridCoordinate(1,1), Action.PICK_UP));
-        robots.get(robots.size() - 1).assignTask(new Task(new GridCoordinate(0,0), Action.PICK_UP));
-        robots.get(robots.size() - 2).assignTask(new Task(new GridCoordinate(2,9), Action.PICK_UP));
+        robots.get(4).assignTask(new Task(new GridCoordinate(1,2), Action.PICK_UP));
+
+        // For testing of the bin system
+        robots.get(robots.size() - 1).setBin(new Bin());
+        robots.get(robots.size() - 1).setCurrentStatus(Status.CARRYING);
+        robots.get(robots.size() - 1).assignTask(new Task(new GridCoordinate(2,0), Action.DELIVER));
+        robots.get(robots.size() - 2).assignTask(new Task(new GridCoordinate(1,1), Action.PICK_UP));
     }
 
     public void update(){

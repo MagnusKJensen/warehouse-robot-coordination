@@ -28,6 +28,7 @@ public class GraphicsManager {
 
     public static void disposeAssetManager(){
         assetManager.dispose();
+        defaultFont.dispose();
     }
 
     public static void finishLoading(){
