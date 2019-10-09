@@ -12,6 +12,8 @@ public class BinTile extends Tile {
 
     @Override
     public void render(ShapeRenderer shapeRenderer, SpriteBatch batch) {
+        batch.begin();
         batch.draw(GraphicsManager.getTexture("Simulation/tiles/Bin.png"), this.getPosX(), this.getPosY(), TILE_SIZE, TILE_SIZE);
+        batch.end();
     }
 }

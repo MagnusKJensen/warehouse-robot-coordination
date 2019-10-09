@@ -2,6 +2,7 @@ package dk.aau.d507e19.warehousesim.storagegrid;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import dk.aau.d507e19.warehousesim.Drawable;
@@ -17,6 +18,7 @@ public class Tile implements Drawable {
 
     public static final Color defaultCenterColor = Color.GRAY;
     public static final Color defaultEdgeColor = Color.BLACK;
+    public static final Color overlayColor = new Color(28f / 255f, 217f / 255f, 56f / 255f, 0.2f);
 
     public Tile(int posX, int posY) {
         this.posX = posX;
@@ -41,10 +43,20 @@ public class Tile implements Drawable {
     }
 
     private void renderFilledCenter(ShapeRenderer shapeRenderer, Color centerColor){
+        Gdx.gl.glEnable(GL30.GL_BLEND);
         shapeRenderer.setColor(centerColor);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.rect(posX, posY, TILE_SIZE, TILE_SIZE);
         shapeRenderer.end();
+        Gdx.gl.glDisable(GL30.GL_BLEND);
+    }
+
+    public void renderOverlay(ShapeRenderer shapeRenderer){
+        renderOverlay(shapeRenderer, overlayColor);
+    }
+
+    public void renderOverlay(ShapeRenderer shapeRenderer, Color color){
+        renderFilledCenter(shapeRenderer, color);
     }
 
     public int getPosX() {

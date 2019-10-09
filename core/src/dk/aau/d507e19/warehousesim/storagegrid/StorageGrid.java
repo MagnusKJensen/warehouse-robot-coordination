@@ -4,21 +4,19 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import dk.aau.d507e19.warehousesim.GraphicsManager;
+import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+
+import java.util.ArrayList;
 
 public class StorageGrid {
 
     private final Tile[][] tiles;
     private final int width, height;
 
-    private ShapeRenderer shapeRenderer;
-    private SpriteBatch spriteBatch;
-
     public StorageGrid(int width, int height){
         this.height = height;
         this.width = width;
         this.tiles = new Tile[width][height];
-        this.shapeRenderer = new ShapeRenderer();
-        this.spriteBatch = new SpriteBatch();
         fillGrid();
     }
 
@@ -32,20 +30,24 @@ public class StorageGrid {
         }
     }
 
-    public void render(OrthographicCamera camera){
+    public void render(ShapeRenderer shapeRenderer, SpriteBatch batch){
         // TODO: 30/09/2019 Adapt so that it only renders tiles within view
-        spriteBatch.begin();
-        spriteBatch.setProjectionMatrix(camera.combined);
-        shapeRenderer.setProjectionMatrix(camera.combined);
         for(int y = 0;  y < height; y++){
             for(int x = 0; x < width; x++){
-                tiles[x][y].render(shapeRenderer, spriteBatch);
+                tiles[x][y].render(shapeRenderer, batch);
             }
         }
-        spriteBatch.end();
     }
+
+
+    public void renderPathOverlay(ArrayList<GridCoordinate> coordinates, ShapeRenderer shapeRenderer){
+        for(GridCoordinate gridCoordinate : coordinates)
+            tiles[gridCoordinate.getX()][gridCoordinate.getY()].renderOverlay(shapeRenderer);
+    }
+
 
     public Tile getTile(int x, int y){
         return tiles[x][y];
     }
+
 }
