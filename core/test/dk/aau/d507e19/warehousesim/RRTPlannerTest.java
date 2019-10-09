@@ -6,6 +6,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -44,10 +45,12 @@ public class RRTPlannerTest {
     }
     @Test
     public void generateRRTPathTest() throws InterruptedException {
-        Robot robot = new Robot(new Position(0,0));
-        GridCoordinate dest = new GridCoordinate(99,98);
-        List<GridCoordinate> list = rrtPlanner.generateRRTPath(robot,dest);
-        System.out.println(list.size());
+        GridCoordinate start = new GridCoordinate(0,0);
+        GridCoordinate dest = new GridCoordinate(9,8);
+        ArrayList<GridCoordinate> list = rrtPlanner.generateRRTPath(start,dest);
+        for (GridCoordinate gc : list){
+            System.out.println(gc.toString());
+        }
         //todo make this test more advanced
     }
 

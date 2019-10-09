@@ -2,6 +2,7 @@ package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import dk.aau.d507e19.warehousesim.controller.robot.Path;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 
 import java.lang.Math;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class RRTPlanner {
+public class RRTPlanner implements PathFinder{
 
     public Node<GridCoordinate> shortestLengthNode;
     private Node<GridCoordinate> root, destinationNode;
@@ -18,10 +19,9 @@ public class RRTPlanner {
     private boolean foundPath;
     private int count =0;
 
-    public List<GridCoordinate> generateRRTPath(Robot robot, GridCoordinate destination) throws InterruptedException {
+    public ArrayList<GridCoordinate> generateRRTPath(GridCoordinate start, GridCoordinate destination) {
         dest = destination;
-        boolean hasRoute = false;
-        root = new Node<GridCoordinate>(new GridCoordinate((int)robot.getCurrentPosition().getX(),(int)robot.getCurrentPosition().getY()), null);
+        root = new Node<GridCoordinate>(start, null);
         //add root node to list of nodes
         allNodesMap.put(root.getData(),root);
         //Run until a route is found
@@ -35,8 +35,8 @@ public class RRTPlanner {
         return makePath(destinationNode);
     }
 
-    private List<GridCoordinate> makePath(Node<GridCoordinate> destNode){
-        List<GridCoordinate> path = new ArrayList<>();
+    private ArrayList<GridCoordinate> makePath(Node<GridCoordinate> destNode){
+        ArrayList<GridCoordinate> path = new ArrayList<>();
         if(destNode.getParent() == null){
             path.add(new GridCoordinate((int) destNode.getData().getX(),(int) destNode.getData().getY()));
             return path;
@@ -169,5 +169,11 @@ public class RRTPlanner {
     private boolean doesNodeExist(GridCoordinate newPos) {
         return allNodesMap.containsKey(newPos);
         //return root.containsNodeWithData(root,newPos);
+    }
+
+    @Override
+    public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
+
+        return new Path(generateRRTPath(start,destination));
     }
 }
