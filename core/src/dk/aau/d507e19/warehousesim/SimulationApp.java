@@ -48,7 +48,7 @@ public class SimulationApp extends ApplicationAdapter {
 
 	@Override
 	public void create () {
-        loadAssets();
+        GraphicsManager.loadAssets();
 
         inputMultiplexer = new InputMultiplexer();
         simulationViewport = new ScreenViewport(simulationCamera);
@@ -203,25 +203,5 @@ public class SimulationApp extends ApplicationAdapter {
 		return simulation;
 	}
 
-	private void loadAssets() {
-	    // Robots
-		GraphicsManager.addTexture("Simulation/Robots/robotTaskAssigned.png");
-		GraphicsManager.addTexture("Simulation/Robots/robotAvailable.png");
-		GraphicsManager.addTexture("Simulation/Robots/robotTaskAssignedCarrying.png");
 
-		// Bins
-		GraphicsManager.addTexture("Simulation/tiles/Bin.png");
-		GraphicsManager.addTexture("Simulation/tiles/pickerPoint.png");
-
-		// Icons
-        GraphicsManager.addTexture("icons/fast_forward.png");
-        GraphicsManager.addTexture("icons/fastest_forward.png");
-        GraphicsManager.addTexture("icons/global_step_back.png");
-        GraphicsManager.addTexture("icons/global_step_forward.png");
-        GraphicsManager.addTexture("icons/pause.png");
-        GraphicsManager.addTexture("icons/play.png");
-
-        // finish
-        GraphicsManager.finishLoading();
-	}
 }

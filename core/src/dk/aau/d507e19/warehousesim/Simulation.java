@@ -24,7 +24,7 @@ public class Simulation {
     private long tickCount = 0L;
 
     public Simulation(){
-        font = generateFont();
+        font = GraphicsManager.getFont();
         batch = new SpriteBatch();
         storageGrid = new StorageGrid(WarehouseSpecs.wareHouseWidth, WarehouseSpecs.wareHouseHeight);
         initRobots();
@@ -47,17 +47,6 @@ public class Simulation {
         robots.get(4).assignTask(new Task(new GridCoordinate(1,1), Action.PICK_UP));
         robots.get(robots.size() - 1).assignTask(new Task(new GridCoordinate(0,0), Action.PICK_UP));
         robots.get(robots.size() - 2).assignTask(new Task(new GridCoordinate(2,9), Action.PICK_UP));
-    }
-
-    private BitmapFont generateFont(){
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/OpenSans.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 12;
-        parameter.minFilter = Texture.TextureFilter.Linear;
-        parameter.magFilter = Texture.TextureFilter.Linear;
-        BitmapFont font = generator.generateFont(parameter); // font size 12 pixels
-        generator.dispose();
-        return font;
     }
 
     public void update(){

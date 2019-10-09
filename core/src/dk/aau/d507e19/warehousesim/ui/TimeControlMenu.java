@@ -45,10 +45,15 @@ public class TimeControlMenu {
         globalStepForwardBtn.setPosition(screenXOffset + 60, screenYOffset + 10);
         playBtn.setPosition(screenXOffset + 90, screenYOffset + 10);
         fastForwardBtn.setPosition(screenXOffset + 120, screenYOffset + 10);
-        resetSimulationBtn.setPosition(screenXOffset, screenYOffset + 25);
+        //resetSimulationBtn.setPosition(screenXOffset, screenYOffset + 25);
         //fastestForwardBtn.setPosition(15, 15); // TODO: 30/09/2019 add fastest forward
 
-        // TODO: 30/09/2019 Clean up
+        addButtonListeners();
+        setSelectableButtons();
+        addButtonsToStage();
+    }
+
+    private void addButtonListeners(){
         playBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -91,9 +96,6 @@ public class TimeControlMenu {
         });
 
         pauseBtn.setColor(SideMenu.selectedButtonColor);
-
-        setSelectableButtons();
-        addButtonsToStage();
     }
 
     private void setSelectableButtons() {
