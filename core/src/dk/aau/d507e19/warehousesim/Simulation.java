@@ -23,8 +23,9 @@ public class Simulation {
     private ArrayList<Robot> robots = new ArrayList<>();
 
     private long tickCount = 0L;
+    private float maxSpeedBinsPerSecond;
 
-    public Simulation(){
+    public Simulation() {
         font = generateFont();
         batch = new SpriteBatch();
         storageGrid = new StorageGrid(WarehouseSpecs.wareHouseWidth, WarehouseSpecs.wareHouseHeight);
@@ -34,21 +35,21 @@ public class Simulation {
     private void initRobots() {
         // Auto generate robots
         for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++) {
-            robots.add(new Robot(new Position(i,0), new Astar(WarehouseSpecs.wareHouseWidth)));
+            robots.add(new Robot(new Position(i, 0), new Astar(WarehouseSpecs.wareHouseWidth, getSimulatedTime(), 1,getMaxSpeedBinsPerSecond() ), 1));
         }
 
-        robots.add(new Robot(new Position(5,5), new Astar(WarehouseSpecs.wareHouseWidth)));
+        robots.add(new Robot(new Position(5, 5), new Astar(WarehouseSpecs.wareHouseWidth, getSimulatedTime(), 2,getMaxSpeedBinsPerSecond() ), 2));
 
         // Assign test task to first robot
-        robots.get(0).assignTask(new Task(new GridCoordinate(3,6), Action.PICK_UP));
-        robots.get(1).assignTask(new Task(new GridCoordinate(10,5), Action.PICK_UP));
-        robots.get(2).assignTask(new Task(new GridCoordinate(0,8), Action.PICK_UP));
-        robots.get(3).assignTask(new Task(new GridCoordinate(3,3), Action.PICK_UP));
-        robots.get(4).assignTask(new Task(new GridCoordinate(1,1), Action.PICK_UP));
-        robots.get(robots.size() - 1).assignTask(new Task(new GridCoordinate(0,0), Action.PICK_UP));
+        robots.get(0).assignTask(new Task(new GridCoordinate(11, 11), Action.PICK_UP));
+        robots.get(1).assignTask(new Task(new GridCoordinate(10, 5), Action.PICK_UP));
+        robots.get(2).assignTask(new Task(new GridCoordinate(0, 8), Action.PICK_UP));
+        robots.get(3).assignTask(new Task(new GridCoordinate(3, 3), Action.PICK_UP));
+        robots.get(4).assignTask(new Task(new GridCoordinate(1, 1), Action.PICK_UP));
+        robots.get(robots.size() - 1).assignTask(new Task(new GridCoordinate(0, 0), Action.PICK_UP));
     }
 
-    private BitmapFont generateFont(){
+    private BitmapFont generateFont() {
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/OpenSans.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 12;
@@ -59,19 +60,19 @@ public class Simulation {
         return font;
     }
 
-    public void update(){
+    public void update() {
         tickCount += 1;
-        for(Robot robot : robots){
+        for (Robot robot : robots) {
             robot.update();
         }
     }
 
-    public void render(OrthographicCamera gridCamera, OrthographicCamera fontCamera){
+    public void render(OrthographicCamera gridCamera, OrthographicCamera fontCamera) {
         storageGrid.render(gridCamera);
 
         batch.setProjectionMatrix(gridCamera.combined);
         batch.begin();
-        for(Robot robot : robots){
+        for (Robot robot : robots) {
             robot.render(batch);
         }
         batch.end();
@@ -89,7 +90,17 @@ public class Simulation {
         return robots;
     }
 
-    public void dispose(){
+    public void dispose() {
 
+    }
+
+    public long getSimulatedTime() {
+
+        return tickCount * SimulationApp.MILLIS_PER_TICK;
+    }
+
+    public float getMaxSpeedBinsPerSecond() {
+        maxSpeedBinsPerSecond = WarehouseSpecs.robotTopSpeed / WarehouseSpecs.binSizeInMeters;
+        return maxSpeedBinsPerSecond;
     }
 }

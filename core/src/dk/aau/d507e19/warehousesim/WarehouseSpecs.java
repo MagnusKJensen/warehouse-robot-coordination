@@ -8,9 +8,9 @@ public class WarehouseSpecs {
     public static final int SKUs = 0;
     public static final int productsInStock = 0;
     public static final int numberOfRobots = 15;
-    public static final int robotTopSpeed = 3; // Meters/second
-    public static final float robotAcceleration = 0.8f; // m/s^2
-    public static final float robotDeceleration = 2f; // m/s^2
+    public static final float robotTopSpeed = 3; // Meters/second
+    public static final float robotAcceleration = 1000f; // m/s^2
+    public static final float robotDeceleration = 1000f; // m/s^2
     public static final float robotMinimumSpeed = 0.1f;
     public static final int robotPickUpSpeedInSeconds = 1;
     public static final int offLoadToPickerInSeconds = 0;

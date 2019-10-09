@@ -14,7 +14,7 @@ public class Robot {
     private Status currentStatus;
     private float currentSpeed;
     private Path pathToTarget;
-
+    private int robotID;
     /**
      * Robot STATS
      */
@@ -29,9 +29,10 @@ public class Robot {
     private LineTraverser currentTraverser;
     private PathFinder pathFinder;
 
-    public Robot(Position currentPosition, PathFinder pathFinder) {
+    public Robot(Position currentPosition, PathFinder pathFinder, int robotID) {
         this.currentPosition = currentPosition;
         this.pathFinder = pathFinder;
+        this.robotID = robotID;
         currentStatus = Status.AVAILABLE;
     }
 
@@ -54,11 +55,11 @@ public class Robot {
                  * If movement still needed
                  */
                 currentTraverser.traverse();
-                if (currentTraverser.destinationReached()){
+                if (currentTraverser.destinationReached()) {
                     pathToTarget.getCornersPath().remove(0);
 
                     // Create new traverser for next line in the path
-                    if(pathToTarget.getCornersPath().size() > 1)
+                    if (pathToTarget.getCornersPath().size() > 1)
                         assignTraverser();
                 }
 
@@ -93,14 +94,14 @@ public class Robot {
         currentStatus = Status.TASK_ASSIGNED;
         ticksLeftForCurrentTask = pickUpTimeInTicks;
         pathToTarget = pathFinder.calculatePath(
-                new GridCoordinate((int) currentPosition.getX(),(int) currentPosition.getY()), task.getDestination());
+                new GridCoordinate((int) currentPosition.getX(), (int) currentPosition.getY()), task.getDestination());
 
         // If the robot has to move
-        if(pathToTarget.getCornersPath().size() > 1)
+        if (pathToTarget.getCornersPath().size() > 1)
             assignTraverser();
     }
 
-    private void assignTraverser(){
+    private void assignTraverser() {
         currentTraverser = new LineTraverser(pathToTarget.getCornersPath().get(0),
                 pathToTarget.getCornersPath().get(1), this);
     }
@@ -150,7 +151,11 @@ public class Robot {
         currentPosition.setY(currentPosition.getY() + deltaY);
     }
 
-    public float getMinimumSpeed(){
+    public float getMinimumSpeed() {
         return WarehouseSpecs.robotMinimumSpeed;
+    }
+
+    public int getRobotID() {
+        return robotID;
     }
 }
