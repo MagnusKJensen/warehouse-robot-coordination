@@ -10,6 +10,8 @@ import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
 import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 
+import java.util.ArrayList;
+
 public class Robot {
     private Simulation simulation;
     private Position currentPosition;
@@ -199,6 +201,18 @@ public class Robot {
     public Status getCurrentStatus() {
         return currentStatus;
     }
+
+    public boolean hasPlannedPath(){
+        return pathToTarget != null
+                && (currentStatus == Status.PICK_UP_TASK_ASSIGNED
+                || currentStatus == Status.MOVE_TASK_ASSIGNED
+                || currentStatus == Status.CARRYING);
+    }
+
+    public Path getPathToTarget() {
+        return pathToTarget;
+    }
+
 
     public void setCurrentStatus(Status currentStatus) {
         this.currentStatus = currentStatus;

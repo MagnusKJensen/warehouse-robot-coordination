@@ -10,6 +10,9 @@ import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
 
 import java.util.ArrayList;
+import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+
+import java.util.ArrayList;
 
 public class StorageGrid {
 
@@ -54,16 +57,21 @@ public class StorageGrid {
         }
     }
 
-    public void render(OrthographicCamera camera){
+    public void render(ShapeRenderer shapeRenderer, SpriteBatch batch){
         // TODO: 30/09/2019 Adapt so that it only renders tiles within view
-        spriteBatch.setProjectionMatrix(camera.combined);
-        shapeRenderer.setProjectionMatrix(camera.combined);
         for(int y = 0;  y < height; y++){
             for(int x = 0; x < width; x++){
-                tiles[x][y].render(shapeRenderer, spriteBatch);
+                tiles[x][y].render(shapeRenderer, batch);
             }
         }
     }
+
+
+    public void renderPathOverlay(ArrayList<GridCoordinate> coordinates, ShapeRenderer shapeRenderer){
+        for(GridCoordinate gridCoordinate : coordinates)
+            tiles[gridCoordinate.getX()][gridCoordinate.getY()].renderOverlay(shapeRenderer);
+    }
+
 
     public Tile getTile(int x, int y){
         return tiles[x][y];

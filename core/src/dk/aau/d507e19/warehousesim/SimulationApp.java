@@ -4,13 +4,11 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import dk.aau.d507e19.warehousesim.ui.SideMenu;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class SimulationApp extends ApplicationAdapter {
@@ -84,6 +82,7 @@ public class SimulationApp extends ApplicationAdapter {
 		simFontCamera.viewportWidth = simulationViewport.getScreenWidth();
 		simFontCamera.viewportHeight = simulationViewport.getScreenHeight();
 
+
 		//updateSimulationScreenSize(width, height);
 		//updateMenuScreenSize(width, height);
 		centerCamera(menuCamera);
@@ -154,10 +153,14 @@ public class SimulationApp extends ApplicationAdapter {
 	}
 
 	private void renderSimulation(){
+		Gdx.gl.glEnable(GL30.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
 		simulationCamera.update();
 		simFontCamera.update();
 		simulationViewport.apply();
 		simulation.render(simulationCamera, simFontCamera);
+		Gdx.gl.glDisable(GL30.GL_BLEND);
+
 	}
 
 	private void switchUpdateMode(UpdateMode newMode){
