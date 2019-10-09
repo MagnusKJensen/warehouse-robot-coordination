@@ -19,9 +19,9 @@ public class Node<T> {
 
     public void addChild(Node<T> child){
         children.add(child);
-        if(child.getParent()!=null){
-            child.getParent().removeChild(child);
-        }
+        //if(child.getParent()!=null){
+        //   child.getParent().removeChild(child);
+        //}
         child.setParent(this);
     }
 
