@@ -1,10 +1,9 @@
 package dk.aau.d507e19.warehousesim;
 
-import com.google.gson.Gson;
 
 public class WarehouseSpecs {
-    public static final int wareHouseWidth = 30;
-    public static final int wareHouseHeight = 30;
+    public static final int wareHouseWidth = 10;
+    public static final int wareHouseHeight = 10;
     public static final int wareHousePickUpPoints = 0;
     public static final float binSizeInMeters = 1;
     public static final int SKUs = 0;
