@@ -49,7 +49,7 @@ public class TimeControlMenu {
         globalStepForwardBtn.setPosition(screenXOffset + 60, screenYOffset + 10);
         playBtn.setPosition(screenXOffset + 90, screenYOffset + 10);
         fastForwardBtn.setPosition(screenXOffset + 120, screenYOffset + 10);
-        resetSimulationBtn.setPosition(screenXOffset, screenYOffset + 30);
+        resetSimulationBtn.setPosition(screenXOffset, screenYOffset + 45);
         //fastestForwardBtn.setPosition(15, 15); // TODO: 30/09/2019 add fastest forward
 
         addButtonListeners();
