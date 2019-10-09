@@ -45,21 +45,6 @@ public class Node<T> {
         return data;
     }
 
-    public boolean containsNodeWithData(Node<T> node, T goal){
-        if(this.data.equals(goal)){
-            //If this node is the node we're looking for then no need to traverse tree
-            return true;
-        }
-        for(Node<T> n : node.getChildren()){
-            if(n.getData().equals(goal)){
-                return true;
-            }
-            if(containsNodeWithData(n,goal)){
-                return true;
-            }
-        }
-        return false;
-    }
     public void printTree(Node<T> node){
         System.out.println(node.getData().toString());
         for(Node<T> n : node.getChildren()){

@@ -24,17 +24,4 @@ public class NodeTest {
         twoleft.addChild(twoleftleft);
         twoleftleft.addChild(twoleftleftleft);
     }
-    @Test
-    public void containsNodeWithDataTest(){
-        //Assert that all nodes are reachable
-        for(Node<GridCoordinate> n : root.getChildren()){
-            System.out.println(n.getData().toString());
-        }
-        assertTrue(root.containsNodeWithData(root,root.getData()));
-        assertTrue(root.containsNodeWithData(root,oneleft.getData()));
-        assertTrue(root.containsNodeWithData(root,oneright.getData()));
-        assertTrue(root.containsNodeWithData(root,twoleft.getData()));
-        assertTrue(root.containsNodeWithData(root,twoleftleft.getData()));
-        assertTrue(root.containsNodeWithData(root,twoleftleftleft.getData()));
-    }
 }
