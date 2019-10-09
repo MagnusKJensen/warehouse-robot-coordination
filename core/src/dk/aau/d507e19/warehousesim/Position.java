@@ -4,7 +4,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 
 import java.util.Objects;
 
-public class Position {
+public class    Position {
 
     private float x, y;
 
