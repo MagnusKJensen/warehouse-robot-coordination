@@ -32,9 +32,9 @@ public class Simulation {
 
     private void initRobots() {
         // Auto generate robots
-        for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++) {
+        for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++)
             robots.add(new Robot(new Position(i,0), new DummyPathFinder()));
-        }
+
 
         robots.add(new Robot(new Position(7,7), new DummyPathFinder()));
         robots.add(new Robot(new Position(5,5), new DummyPathFinder()));
@@ -72,13 +72,15 @@ public class Simulation {
 
         batch.setProjectionMatrix(gridCamera.combined);
         batch.begin();
-        for(Robot robot : robots){
+        for(Robot robot : robots)
             robot.render(batch);
-        }
         batch.end();
 
-        Vector3 textPos = gridCamera.project(new Vector3(0.3f, 0.15f, 0));
+        renderTickCount(gridCamera, fontCamera);
+    }
 
+    private void renderTickCount(OrthographicCamera gridCamera, OrthographicCamera fontCamera){
+        Vector3 textPos = gridCamera.project(new Vector3(0.3f, 0.15f, 0));
         batch.setProjectionMatrix(fontCamera.combined);
         batch.begin();
         font.setColor(Color.RED);
