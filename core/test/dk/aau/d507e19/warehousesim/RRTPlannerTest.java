@@ -48,9 +48,35 @@ public class RRTPlannerTest {
         GridCoordinate start = new GridCoordinate(0,0);
         GridCoordinate dest = new GridCoordinate(2,2);
         ArrayList<GridCoordinate> list = rrtPlanner.generateRRTPath(start,dest);
+        assertTrue(isValidPath(start, dest, list));
         Path p = new Path(list);
         //todo make this test more advanced
     }
+    public boolean isValidPath(GridCoordinate start, GridCoordinate destination, ArrayList<GridCoordinate> path){
+        GridCoordinate prev = start;
+        assertEquals(path.get(0), start);
+        for(GridCoordinate gc: path) {
+            if(!isReachable(prev, gc)){
+                return false;
+            }
+            prev = gc;
+        }
+        return true;
+
+    }
+    public boolean isReachable(GridCoordinate prev, GridCoordinate current){
+        if(prev.equals(current)){
+            return true;
+        }
+
+        if(rrtPlanner.getDistanceBetweenPoints(prev, current) == 1.0){
+            return true;
+        }
+        return false;
+
+
+    }
+
 
 
 }

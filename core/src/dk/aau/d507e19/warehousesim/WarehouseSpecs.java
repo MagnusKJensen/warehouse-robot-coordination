@@ -1,6 +1,5 @@
 package dk.aau.d507e19.warehousesim;
 
-import com.google.gson.Gson;
 
 public class WarehouseSpecs {
     public static final int wareHouseWidth = 10;

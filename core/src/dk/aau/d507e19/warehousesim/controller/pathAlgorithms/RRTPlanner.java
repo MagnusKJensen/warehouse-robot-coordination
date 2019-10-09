@@ -160,7 +160,7 @@ public class RRTPlanner implements PathFinder{
         return randPos;
     }
 
-    private double getDistanceBetweenPoints(GridCoordinate pos1, GridCoordinate pos2) {
+    public double getDistanceBetweenPoints(GridCoordinate pos1, GridCoordinate pos2) {
         return Math.sqrt(Math.pow(pos2.getX() - pos1.getX(), 2) + Math.pow(pos2.getY() - pos1.getY(), 2));
     }
 
