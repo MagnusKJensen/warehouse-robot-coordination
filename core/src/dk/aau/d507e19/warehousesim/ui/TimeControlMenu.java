@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import dk.aau.d507e19.warehousesim.GraphicsManager;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 
 import java.util.ArrayList;
@@ -31,11 +32,11 @@ public class TimeControlMenu {
     }
 
     private void createButtons() {
-        pauseBtn = new Button(SideMenu.loadDrawableIcon("pause.png"));
-        playBtn = new Button(SideMenu.loadDrawableIcon("play.png"));
-        fastForwardBtn = new Button(SideMenu.loadDrawableIcon("fast_forward.png"));
-        globalStepBackBtn = new Button(SideMenu.loadDrawableIcon("global_step_back.png"));
-        globalStepForwardBtn = new Button(SideMenu.loadDrawableIcon("global_step_forward.png"));
+        pauseBtn = new Button(GraphicsManager.getTextureRegionDrawable("icons/pause.png"));
+        playBtn = new Button(GraphicsManager.getTextureRegionDrawable("icons/play.png"));
+        fastForwardBtn = new Button(GraphicsManager.getTextureRegionDrawable("icons/fast_forward.png"));
+        globalStepBackBtn = new Button(GraphicsManager.getTextureRegionDrawable("icons/global_step_back.png"));
+        globalStepForwardBtn = new Button(GraphicsManager.getTextureRegionDrawable("icons/global_step_forward.png"));
 
         int screenXOffset = (int) screenOffset.x;
         int screenYOffset = (int) screenOffset.y;

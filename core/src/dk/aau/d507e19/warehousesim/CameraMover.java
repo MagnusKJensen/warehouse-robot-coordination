@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.sun.prism.image.ViewPort;
 import dk.aau.d507e19.warehousesim.controller.robot.Direction;
 
 public class CameraMover implements InputProcessor {

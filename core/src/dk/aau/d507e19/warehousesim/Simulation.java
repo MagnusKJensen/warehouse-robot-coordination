@@ -11,11 +11,11 @@ import com.badlogic.gdx.math.Vector3;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
+import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 
 import java.util.ArrayList;
 
 public class Simulation {
-
     private SpriteBatch batch;
     private BitmapFont font;
     private StorageGrid storageGrid;
@@ -32,15 +32,15 @@ public class Simulation {
 
     private void initRobots() {
         // Auto generate robots
-        for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++)
-            robots.add(new Robot(new Position(i,0), new DummyPathFinder()));
+        for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++) {
+            robots.add(new Robot(new Position(i,0), new Astar(WarehouseSpecs.wareHouseWidth), this));
+        }
 
-
-        robots.add(new Robot(new Position(7,7), new DummyPathFinder()));
-        robots.add(new Robot(new Position(5,5), new DummyPathFinder()));
+        robots.add(new Robot(new Position(7,7), new DummyPathFinder(), this));
+        robots.add(new Robot(new Position(5,5), new DummyPathFinder(), this));
 
         // Assign test task to first robot
-        robots.get(0).assignTask(new Task(new GridCoordinate(5,10), Action.PICK_UP));
+        robots.get(0).assignTask(new Task(new GridCoordinate(3,6), Action.PICK_UP));
         robots.get(1).assignTask(new Task(new GridCoordinate(10,5), Action.PICK_UP));
         robots.get(2).assignTask(new Task(new GridCoordinate(0,8), Action.MOVE));
         robots.get(3).assignTask(new Task(new GridCoordinate(3,3), Action.PICK_UP));
