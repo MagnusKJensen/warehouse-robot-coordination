@@ -36,7 +36,7 @@ public class RRTPlannerTest {
     @Test
     public void generateRRTPathTest() throws InterruptedException {
         Robot robot = new Robot(new Position(0,0));
-        GridCoordinate dest = new GridCoordinate(25,21);
+        GridCoordinate dest = new GridCoordinate(99,90);
         List<GridCoordinate> list = rrtPlanner.generateRRTPath(robot,dest);
         System.out.println(list.size());
         /*for(GridCoordinate gc : list){

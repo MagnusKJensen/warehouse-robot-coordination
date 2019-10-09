@@ -1,7 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Node;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 
@@ -23,6 +22,8 @@ public class RRTPlanner {
         dest = destination;
         boolean hasRoute = false;
         root = new Node<GridCoordinate>(new GridCoordinate((int)robot.getCurrentPosition().getX(),(int)robot.getCurrentPosition().getY()), null);
+        //add root node to list of nodes
+        allNodesMap.put(root.getData(),root);
         //Run until a route is found
         while (!foundPath) {
             //  root.printTree(root);
@@ -60,6 +61,15 @@ public class RRTPlanner {
     }
 
     public Node<GridCoordinate> findNearestNeighbour(Node<GridCoordinate> tree, GridCoordinate randPos) {
+
+        for(Node<GridCoordinate> n : findNodesInSquare(randPos)){
+            double newDistance = getDistanceBetweenPoints(n.getData(),randPos);
+
+            if (newDistance < getDistanceBetweenPoints(shortestLengthNode.getData(),randPos)){
+                shortestLengthNode = n;
+            }
+        }
+        /*
         for (Node<GridCoordinate> n : tree.getChildren()) {
             double newDistance = getDistanceBetweenPoints(n.getData(), randPos);
 
@@ -67,8 +77,52 @@ public class RRTPlanner {
                 shortestLengthNode = n;
             }
             findNearestNeighbour(n, randPos);
-        }
+        } */
         return shortestLengthNode;
+    }
+
+    private List<Node<GridCoordinate>>findNodesInSquare(GridCoordinate randPos){
+        List<Node<GridCoordinate>> listOfNodes =  new ArrayList<>();
+        int radius = 1;
+        //GridCoordinate relativePos = new GridCoordinate(0,0);
+        GridCoordinate topLeft = randPos, bottomRight = randPos;
+        while(listOfNodes.isEmpty()){
+            //check if new corners are out of grid bounds
+            // Create new corners (probably not necessary)
+            topLeft = updateTopLeft(topLeft);
+            bottomRight = updateBottomRight(bottomRight);
+            //check for nodes - if any nodes are found then add to listOfNodes
+            System.out.println("TOPLEFT AND BOTTOM RIGHT");
+            System.out.println(topLeft.toString() + " \n " + bottomRight.toString());
+            for(int i = topLeft.getX(); i <= bottomRight.getX();i++){
+                for(int j = topLeft.getY(); j <= bottomRight.getY();j++){
+                    if(allNodesMap.containsKey(new GridCoordinate(i,j))){
+                        listOfNodes.add(new Node<GridCoordinate>(new GridCoordinate(i,j),null));
+                    }
+                }
+            }
+        }
+        return listOfNodes;
+    }
+
+    private GridCoordinate updateTopLeft(GridCoordinate topLeft){
+        if(topLeft.getX()-1 >= 0){
+            topLeft.setX(topLeft.getX()-1);
+        }
+        if(topLeft.getY()-1 >= 0){
+            topLeft.setX(topLeft.getY()-1);
+        }
+        return topLeft;
+    }
+
+    private GridCoordinate updateBottomRight(GridCoordinate bottomRight){
+        if(bottomRight.getX() + 1 <= WarehouseSpecs.wareHouseWidth){
+            bottomRight.setX(bottomRight.getX()+1);
+        }
+        if(bottomRight.getY() + 1 <= WarehouseSpecs.wareHouseHeight){
+            bottomRight.setY(bottomRight.getY()+1);
+        }
+        return bottomRight;
     }
 
     private Node<GridCoordinate> generateNewNode(Node<GridCoordinate> nearest, GridCoordinate randPos) {
@@ -88,7 +142,7 @@ public class RRTPlanner {
     }
 
     private GridCoordinate generateRandomPos() {
-        //TODO possible infinite loop if there is a node on every tile
+        //TODO possible infinite loop if there is a node on every tile currently prevented since generateRTT func returns as soon as dest node is created
         GridCoordinate randPos;
         do {
             randPos = new GridCoordinate(
