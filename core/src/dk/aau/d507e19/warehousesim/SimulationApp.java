@@ -199,4 +199,9 @@ public class SimulationApp extends ApplicationAdapter {
 	public Simulation getSimulation() {
 		return simulation;
 	}
+
+	public void resetSimulation(){
+		simulation.dispose();
+		simulation = new Simulation();
+	}
 }
