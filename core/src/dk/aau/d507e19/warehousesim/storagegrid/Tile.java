@@ -2,12 +2,10 @@ package dk.aau.d507e19.warehousesim.storagegrid;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
 import dk.aau.d507e19.warehousesim.Drawable;
-
-import java.util.Random;
+import dk.aau.d507e19.warehousesim.GraphicsManager;
 
 public class Tile implements Drawable {
 
@@ -17,21 +15,19 @@ public class Tile implements Drawable {
     private Color color;
     public static final int TILE_SIZE = 1;
 
-    public static final Color defaultCenterColor = Color.WHITE;
+    public static final Color defaultCenterColor = Color.GRAY;
     public static final Color defaultEdgeColor = Color.BLACK;
 
     public Tile(int posX, int posY) {
         this.posX = posX;
         this.posY = posY;
-        Random random = new Random();
-        this.color = new Color(random.nextFloat(), random.nextFloat(), random.nextFloat(), 1);
     }
 
-    public void render(ShapeRenderer shapeRenderer) {
-        render(shapeRenderer, defaultCenterColor);
+    public void render(ShapeRenderer shapeRenderer, SpriteBatch batch) {
+        renderCenterAndBorder(shapeRenderer, defaultCenterColor);
     }
 
-    public void render(ShapeRenderer shapeRenderer, Color centerColor) {
+    public void renderCenterAndBorder(ShapeRenderer shapeRenderer, Color centerColor) {
         renderFilledCenter(shapeRenderer, centerColor);
         renderBorder(shapeRenderer, defaultEdgeColor);
     }

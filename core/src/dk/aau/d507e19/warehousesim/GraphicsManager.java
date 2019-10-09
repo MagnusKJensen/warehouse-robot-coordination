@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
+import java.nio.file.NoSuchFileException;
+
 public class GraphicsManager {
     private static AssetManager assetManager = new AssetManager();
     private static BitmapFont defaultFont;
@@ -16,6 +18,11 @@ public class GraphicsManager {
     }
 
     public static Texture getTexture(String path){
+        if(!assetManager.contains(path)) try {
+            throw new NoSuchFileException("File with path '" + path + "' not found.");
+        } catch (NoSuchFileException e) {
+            e.printStackTrace();
+        }
         return assetManager.get(path, Texture.class);
     }
 
@@ -50,24 +57,24 @@ public class GraphicsManager {
 
     static void loadAssets() {
         // Robots
-        GraphicsManager.addTexture("Simulation/Robots/robotTaskAssigned.png");
-        GraphicsManager.addTexture("Simulation/Robots/robotAvailable.png");
-        GraphicsManager.addTexture("Simulation/Robots/robotTaskAssignedCarrying.png");
+        addTexture("Simulation/Robots/robotTaskAssigned.png");
+        addTexture("Simulation/Robots/robotAvailable.png");
+        addTexture("Simulation/Robots/robotTaskAssignedCarrying.png");
 
-        // Bins
+        // Tiles
         addTexture("Simulation/tiles/Bin.png");
         addTexture("Simulation/tiles/pickerPoint.png");
 
         // Icons
-        GraphicsManager.addTexture("icons/fast_forward.png");
-        GraphicsManager.addTexture("icons/fastest_forward.png");
-        GraphicsManager.addTexture("icons/global_step_back.png");
-        GraphicsManager.addTexture("icons/global_step_forward.png");
-        GraphicsManager.addTexture("icons/pause.png");
-        GraphicsManager.addTexture("icons/play.png");
+        addTexture("icons/fast_forward.png");
+        addTexture("icons/fastest_forward.png");
+        addTexture("icons/global_step_back.png");
+        addTexture("icons/global_step_forward.png");
+        addTexture("icons/pause.png");
+        addTexture("icons/play.png");
 
         // finish
-        GraphicsManager.finishLoading();
+        finishLoading();
 
         defaultFont = loadFont();
     }
