@@ -80,10 +80,10 @@ public class Simulation {
     }
 
     private void renderTickCount(OrthographicCamera gridCamera, OrthographicCamera fontCamera){
-        Vector3 textPos = gridCamera.project(new Vector3(0.3f, 0.15f, 0));
+        Vector3 textPos = new Vector3(15 ,15 , 0);
         batch.setProjectionMatrix(fontCamera.combined);
         batch.begin();
-        font.setColor(Color.RED);
+        font.setColor(Color.BLUE);
         font.draw(batch, String.valueOf(tickCount), textPos.x, textPos.y);
         batch.end();
     }
@@ -93,7 +93,7 @@ public class Simulation {
     }
 
     public void dispose(){
-
+        batch.dispose();
     }
 
     public StorageGrid getStorageGrid() {
