@@ -7,6 +7,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import dk.aau.d507e19.warehousesim.ui.SideMenu;
 
@@ -19,7 +20,7 @@ public class SimulationApp extends ApplicationAdapter {
 
 	private static final int MENU_WIDTH_IN_PIXELS = 300;
 	// Size of a single square/tile in the grid
-	public static final int DEFAULT_PIXELS_PER_TILE = 64;
+	private static final int DEFAULT_PIXELS_PER_TILE = 64;
 	private static final int MAX_UPDATES_PER_FRAME = 30;
 
 	private OrthographicCamera menuCamera = new OrthographicCamera();
@@ -42,14 +43,16 @@ public class SimulationApp extends ApplicationAdapter {
 	private Simulation simulation;
 	private SideMenu sideMenu;
 
-	public static AssetManager assetManager = new AssetManager();
 	private CameraMover cameraMover;
-	private InputMultiplexer inputMultiplexer;
+    private InputMultiplexer inputMultiplexer;
 
 	@Override
 	public void create () {
-		inputMultiplexer = new InputMultiplexer();
-		simulationViewport = new ScreenViewport(simulationCamera);
+        loadAssets();
+
+        inputMultiplexer = new InputMultiplexer();
+        simulationViewport = new ScreenViewport(simulationCamera);
+        simulationViewport.setUnitsPerPixel(1f / (float) DEFAULT_PIXELS_PER_TILE);
 		simulationViewport.setUnitsPerPixel(1f / (float) DEFAULT_PIXELS_PER_TILE);
 
 		menuViewport = new ScreenViewport(menuCamera);
@@ -63,7 +66,7 @@ public class SimulationApp extends ApplicationAdapter {
 		Gdx.input.setInputProcessor(inputMultiplexer);
 		cameraMover = new CameraMover(simulationCamera, simulationViewport);
 		inputMultiplexer.addProcessor(cameraMover);
-		lastUpdateTime = System.currentTimeMillis();
+        lastUpdateTime = System.currentTimeMillis();
 	}
 
 	private void centerCamera(OrthographicCamera camera) {
@@ -188,8 +191,8 @@ public class SimulationApp extends ApplicationAdapter {
 
 	@Override
 	public void dispose() {
-		assetManager.dispose();
 		simulation.dispose();
+		GraphicsManager.disposeAssetManager();
 	}
 
 	public InputMultiplexer getInputMultiplexer() {
@@ -198,5 +201,26 @@ public class SimulationApp extends ApplicationAdapter {
 
 	public Simulation getSimulation() {
 		return simulation;
+	}
+
+	private void loadAssets() {
+	    // Robots
+		GraphicsManager.addTexture("Simulation/Robots/robotTaskAssigned.png");
+		GraphicsManager.addTexture("Simulation/Robots/robotAvailable.png");
+		GraphicsManager.addTexture("Simulation/Robots/robotTaskAssignedCarrying.png");
+
+		// Bins
+		GraphicsManager.addTexture("Simulation/bin/Bin.png");
+
+		// Icons
+        GraphicsManager.addTexture("icons/fast_forward.png");
+        GraphicsManager.addTexture("icons/fastest_forward.png");
+        GraphicsManager.addTexture("icons/global_step_back.png");
+        GraphicsManager.addTexture("icons/global_step_forward.png");
+        GraphicsManager.addTexture("icons/pause.png");
+        GraphicsManager.addTexture("icons/play.png");
+
+        // finish
+        GraphicsManager.finishLoading();
 	}
 }

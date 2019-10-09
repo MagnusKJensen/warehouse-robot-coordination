@@ -1,10 +1,11 @@
-package dk.aau.d507e19.warehousesim;
+package dk.aau.d507e19.warehousesim.storagegrid;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import dk.aau.d507e19.warehousesim.Drawable;
 
 import java.util.Random;
 
@@ -48,5 +49,13 @@ public class Tile implements Drawable {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.rect(posX, posY, TILE_SIZE, TILE_SIZE);
         shapeRenderer.end();
+    }
+
+    public int getPosX() {
+        return posX;
+    }
+
+    public int getPosY() {
+        return posY;
     }
 }

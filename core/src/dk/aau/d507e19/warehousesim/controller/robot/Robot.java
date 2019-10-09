@@ -2,13 +2,13 @@ package dk.aau.d507e19.warehousesim.controller.robot;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import dk.aau.d507e19.warehousesim.Position;
-import dk.aau.d507e19.warehousesim.SimulationApp;
-import dk.aau.d507e19.warehousesim.Tile;
-import dk.aau.d507e19.warehousesim.WarehouseSpecs;
+import dk.aau.d507e19.warehousesim.*;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
+import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
+import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 
 public class Robot {
+    private Simulation simulation;
     private Position currentPosition;
     private Task currentTask;
     private Status currentStatus;
@@ -31,9 +31,10 @@ public class Robot {
     private LineTraverser currentTraverser;
     private PathFinder pathFinder;
 
-    public Robot(Position currentPosition, PathFinder pathFinder) {
+    public Robot(Position currentPosition, PathFinder pathFinder, Simulation simulation) {
         this.currentPosition = currentPosition;
         this.pathFinder = pathFinder;
+        this.simulation = simulation;
         currentStatus = Status.AVAILABLE;
     }
 
@@ -89,15 +90,15 @@ public class Robot {
     public void render(SpriteBatch batch) {
         switch (currentStatus) {
             case AVAILABLE:
-                batch.draw(new Texture("Simulation/Robots/robotAvailable.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
+                batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotAvailable.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
             case PICK_UP_TASK_ASSIGNED:
             case MOVE_TASK_ASSIGNED:
-                batch.draw(new Texture("Simulation/Robots/robotTaskAssigned.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
+                batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotTaskAssigned.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
             case TASK_ASSIGNED_CARRYING:
             case CARRYING:
-                batch.draw(new Texture("Simulation/Robots/robotTaskAssignedCarrying.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
+                batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotTaskAssignedCarrying.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
             default:
                 throw new RuntimeException("Robot status unavailable");
@@ -111,8 +112,10 @@ public class Robot {
             ticksLeftForCurrentTask = pickUpTimeInTicks;
         } else if (task.getAction() == Action.DELIVER){
             if(currentStatus != Status.CARRYING) throw new IllegalArgumentException("Robot is not carrying anything");
-            // If the target is not a deliveryTile
-            // TODO: 08/10/2019 Throw exception, if the target is not a deliveryTile
+            // If target is not a PickerTile
+            if(!(simulation.getStorageGrid().getTile(task.getDestination().getX(), task.getDestination().getY()) instanceof PickerTile)){
+                throw new IllegalArgumentException("Target at (" + task.getDestination().getX() + "," + task.getDestination().getY() + ") is not a PickerTile");
+            }
             currentStatus = Status.TASK_ASSIGNED_CARRYING;
             ticksLeftForCurrentTask = deliverTimeInTicks;
         } else if (task.getAction() == Action.MOVE){

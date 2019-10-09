@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import dk.aau.d507e19.warehousesim.GraphicsManager;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 
 import java.util.ArrayList;
@@ -38,12 +39,6 @@ public class SideMenu {
         menuStage = new Stage(menuViewport);
         simApp.getInputMultiplexer().addProcessor(menuStage);
         timeControlMenu = new TimeControlMenu(menuStage, simulationApp);
-    }
-
-    static TextureRegionDrawable loadDrawableIcon(String iconName) {
-        SimulationApp.assetManager.load(ICONS_PATH + iconName, Texture.class);
-        SimulationApp.assetManager.finishLoading();
-        return new TextureRegionDrawable((Texture) SimulationApp.assetManager.get(ICONS_PATH + iconName));
     }
 
     public void update() {
