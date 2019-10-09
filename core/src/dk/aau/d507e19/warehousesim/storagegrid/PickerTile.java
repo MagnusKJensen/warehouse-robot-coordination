@@ -13,7 +13,7 @@ public class PickerTile extends Tile {
     }
 
     public void render(SpriteBatch batch){
-        batch.draw(GraphicsManager.getTexture("Simulation/bin/Bin.png"), this.getPosX(), this.getPosY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
+        batch.draw(GraphicsManager.getTexture("Simulation/tiles/pickerPoint.png"), this.getPosX(), this.getPosY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
     }
 
     @Override

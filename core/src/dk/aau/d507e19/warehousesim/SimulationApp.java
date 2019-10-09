@@ -210,7 +210,8 @@ public class SimulationApp extends ApplicationAdapter {
 		GraphicsManager.addTexture("Simulation/Robots/robotTaskAssignedCarrying.png");
 
 		// Bins
-		GraphicsManager.addTexture("Simulation/bin/Bin.png");
+		GraphicsManager.addTexture("Simulation/tiles/Bin.png");
+		GraphicsManager.addTexture("Simulation/tiles/pickerPoint.png");
 
 		// Icons
         GraphicsManager.addTexture("icons/fast_forward.png");
