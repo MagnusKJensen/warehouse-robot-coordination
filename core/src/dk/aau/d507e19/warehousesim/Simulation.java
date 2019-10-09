@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector3;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 
 import java.util.ArrayList;
@@ -16,7 +18,6 @@ public class Simulation {
 
     private SpriteBatch batch;
     private BitmapFont font;
-
     private StorageGrid storageGrid;
     private ArrayList<Robot> robots = new ArrayList<>();
 
@@ -31,23 +32,21 @@ public class Simulation {
 
     private void initRobots() {
         // Auto generate robots
-        for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++) {
-            robots.add(new Robot(new Position(i,0)));
-        }
+        for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++)
+            robots.add(new Robot(new Position(i,0), new DummyPathFinder()));
+
+
+        robots.add(new Robot(new Position(7,7), new DummyPathFinder()));
+        robots.add(new Robot(new Position(5,5), new DummyPathFinder()));
 
         // Assign test task to first robot
-        robots.get(0).assignTask(new Task(new GridCoordinate(0,5), Action.PICK_UP));
-        ArrayList<GridCoordinate> pathToTarget = new ArrayList<>();
-        pathToTarget.add(new GridCoordinate(0,0));
-        pathToTarget.add(new GridCoordinate(0,1));
-        pathToTarget.add(new GridCoordinate(1,1));
-        pathToTarget.add(new GridCoordinate(2,1));
-        pathToTarget.add(new GridCoordinate(3,1));
-        pathToTarget.add(new GridCoordinate(2,1));
-        pathToTarget.add(new GridCoordinate(1,1));
-        pathToTarget.add(new GridCoordinate(0,1));
-        Path path = new Path(pathToTarget);
-        robots.get(0).setPathToTarget(path);
+        robots.get(0).assignTask(new Task(new GridCoordinate(5,10), Action.PICK_UP));
+        robots.get(1).assignTask(new Task(new GridCoordinate(10,5), Action.PICK_UP));
+        robots.get(2).assignTask(new Task(new GridCoordinate(0,8), Action.MOVE));
+        robots.get(3).assignTask(new Task(new GridCoordinate(3,3), Action.PICK_UP));
+        robots.get(4).assignTask(new Task(new GridCoordinate(1,1), Action.PICK_UP));
+        robots.get(robots.size() - 1).assignTask(new Task(new GridCoordinate(0,0), Action.PICK_UP));
+        robots.get(robots.size() - 2).assignTask(new Task(new GridCoordinate(2,9), Action.PICK_UP));
     }
 
     private BitmapFont generateFont(){
@@ -73,16 +72,18 @@ public class Simulation {
 
         batch.setProjectionMatrix(gridCamera.combined);
         batch.begin();
-        for(Robot robot : robots){
+        for(Robot robot : robots)
             robot.render(batch);
-        }
         batch.end();
 
-        Vector3 textPos = gridCamera.project(new Vector3(0.3f, 0.15f, 0));
+        renderTickCount(gridCamera, fontCamera);
+    }
 
+    private void renderTickCount(OrthographicCamera gridCamera, OrthographicCamera fontCamera){
+        Vector3 textPos = new Vector3(15 ,15 , 0);
         batch.setProjectionMatrix(fontCamera.combined);
         batch.begin();
-        font.setColor(Color.RED);
+        font.setColor(Color.BLUE);
         font.draw(batch, String.valueOf(tickCount), textPos.x, textPos.y);
         batch.end();
     }
@@ -92,6 +93,10 @@ public class Simulation {
     }
 
     public void dispose(){
+        batch.dispose();
+    }
 
+    public StorageGrid getStorageGrid() {
+        return storageGrid;
     }
 }

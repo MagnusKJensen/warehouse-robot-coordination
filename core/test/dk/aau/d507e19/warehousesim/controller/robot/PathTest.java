@@ -30,6 +30,7 @@ public class PathTest {
 
         // Only the corners
         Collections.addAll(expectedStrippedCoordinates,
+                new GridCoordinate(1, 1),
                 new GridCoordinate(1, 3),
                 new GridCoordinate(2, 3),
                 new GridCoordinate(2, 4),
@@ -73,6 +74,4 @@ public class PathTest {
         allCoordinates.add(new GridCoordinate(3, 3));
         Path path = new Path(allCoordinates);
     }
-
-
 }

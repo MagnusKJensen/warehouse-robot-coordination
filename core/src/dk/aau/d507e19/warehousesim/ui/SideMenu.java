@@ -36,7 +36,7 @@ public class SideMenu {
         this.simulationApp = simApp;
         shapeRenderer = new ShapeRenderer();
         menuStage = new Stage(menuViewport);
-        Gdx.input.setInputProcessor(menuStage);
+        simApp.getInputMultiplexer().addProcessor(menuStage);
         timeControlMenu = new TimeControlMenu(menuStage, simulationApp);
     }
 

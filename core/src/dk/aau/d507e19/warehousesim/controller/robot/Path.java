@@ -11,7 +11,6 @@ public class Path {
         originalPath.addAll(path);
         if(pathToTarget.isEmpty()) throw new IllegalArgumentException("Path must contain at least one coordinate");
         if(!isValidPath()) throw new IllegalArgumentException("Paths must be continuous");
-
         removeAllButCorners();
     }
 
@@ -22,65 +21,73 @@ public class Path {
         boolean yChanged;
         String lastDirection;
 
+        // Add start position
+        corners.add(path.get(0));
 
-        // If x changed
-        if(path.get(0).getX() != path.get(1).getX()) lastDirection = "x";
-        else lastDirection = "y"; // if y changed
+        if(path.size() > 1){
+            // If x changed
+            if(path.get(0).getX() != path.get(1).getX()) lastDirection = "x";
+            else lastDirection = "y"; // if y changed
 
-        for (int i = 1; i < path.size(); i++) {
-            xChanged = path.get(i - 1).getX() != path.get(i).getX();
-            yChanged = path.get(i - 1).getY() != path.get(i).getY();
+            for (int i = 1; i < path.size(); i++) {
+                xChanged = path.get(i - 1).getX() != path.get(i).getX();
+                yChanged = path.get(i - 1).getY() != path.get(i).getY();
 
-            // Check if turned around. It cannot turn around with only 2 moves.
-            if(i > 2){
-                // If turning around the same way in x direction
-                if(path.get(i).getX() == path.get(i - 2).getX()
-                        && path.get(i).getY() == path.get(i - 2).getY()){
+                // Check if turned around. It cannot turn around with only 2 moves.
+                if(i > 2){
+                    // If turning around the same way in x direction
+                    if(path.get(i).getX() == path.get(i - 2).getX()
+                            && path.get(i).getY() == path.get(i - 2).getY()){
+                        corners.add(path.get(i - 1));
+                        lastDirection = "x";
+                        continue;
+                    }
+
+                    // If turning around the same way in y direction
+                    if(path.get(i).getY() == path.get(i - 2).getY()
+                            && path.get(i).getX() == path.get(i - 2).getX()){
+                        corners.add(path.get(i - 1));
+                        lastDirection = "y";
+                        continue;
+                    }
+                }
+
+                if(xChanged && lastDirection.equals("y")){
                     corners.add(path.get(i - 1));
                     lastDirection = "x";
                     continue;
                 }
 
-                // If turning around the same way in y direction
-                if(path.get(i).getY() == path.get(i - 2).getY()
-                        && path.get(i).getX() == path.get(i - 2).getX()){
+                if(yChanged && lastDirection.equals("x")){
                     corners.add(path.get(i - 1));
                     lastDirection = "y";
-                    continue;
+
                 }
-            }
-
-            if(xChanged && lastDirection.equals("y")){
-                corners.add(path.get(i - 1));
-                lastDirection = "x";
-                continue;
-            }
-
-            if(yChanged && lastDirection.equals("x")){
-                corners.add(path.get(i - 1));
-                lastDirection = "y";
 
             }
-
+            // add last target
+            corners.add(path.get(path.size() -1));
         }
-        // add last target
-        corners.add(path.get(path.size() -1));
 
         path = corners;
     }
 
     public boolean isValidPath(){
-        for (int i = 0; i < path.size() - 1; i++) {
-            if((path.get(i).getY() == path.get(i + 1).getY() - 1 || path.get(i).getY() == path.get(i + 1).getY() + 1)
-                    && path.get(i).getX() == path.get(i + 1).getX()){
+        for (int i = 0; i < originalPath.size() - 1; i++) {
+            // If moving along the x axis
+            if((Math.abs(originalPath.get(i).getX() - originalPath.get(i + 1).getX()) == 1)
+                    && originalPath.get(i).getY() == originalPath.get(i + 1).getY()){
+                continue;
+            }
+            // If moving along the y axis
+            if((Math.abs(originalPath.get(i).getY() - originalPath.get(i + 1).getY()) == 1)
+                    && originalPath.get(i).getX() == originalPath.get(i + 1).getX()){
                 continue;
             }
 
-            if((path.get(i).getX() == path.get(i + 1).getX() - 1 || path.get(i).getX() == path.get(i + 1).getX() + 1)
-                    && path.get(i).getY() == path.get(i + 1).getY()){
-                continue;
-            }
-            System.out.println(path.get(i).getX() + ":" + path.get(i).getY());
+            System.err.println("------------------- PATH INVALID -------------------");
+            System.err.println("Noncontinuous coordinates : " + originalPath.get(i) + " to " + originalPath.get(i + 1));
+            System.err.println("Full Path : " + originalPath);
             return false;
         }
         return true;
