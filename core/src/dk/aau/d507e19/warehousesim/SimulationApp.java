@@ -2,6 +2,7 @@ package dk.aau.d507e19.warehousesim;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -18,7 +19,7 @@ public class SimulationApp extends ApplicationAdapter {
 
 	private static final int MENU_WIDTH_IN_PIXELS = 300;
 	// Size of a single square/tile in the grid
-	private static final int DEFAULT_PIXELS_PER_TILE = 64;
+	public static final int DEFAULT_PIXELS_PER_TILE = 64;
 	private static final int MAX_UPDATES_PER_FRAME = 30;
 
 	private OrthographicCamera menuCamera = new OrthographicCamera();
@@ -43,11 +44,13 @@ public class SimulationApp extends ApplicationAdapter {
 
 	public static AssetManager assetManager = new AssetManager();
 	private CameraMover cameraMover;
+	private InputMultiplexer inputMultiplexer;
 
 	@Override
 	public void create () {
+		inputMultiplexer = new InputMultiplexer();
 		simulationViewport = new ScreenViewport(simulationCamera);
-		simulationViewport.setUnitsPerPixel(1f / 64f);
+		simulationViewport.setUnitsPerPixel(1f / (float) DEFAULT_PIXELS_PER_TILE);
 
 		menuViewport = new ScreenViewport(menuCamera);
 
@@ -57,9 +60,10 @@ public class SimulationApp extends ApplicationAdapter {
 		simulation = new Simulation();
 		sideMenu = new SideMenu(menuViewport, this);
 
-		cameraMover = new CameraMover(simulationCamera);
+		Gdx.input.setInputProcessor(inputMultiplexer);
+		cameraMover = new CameraMover(simulationCamera, simulationViewport);
+		inputMultiplexer.addProcessor(cameraMover);
 		lastUpdateTime = System.currentTimeMillis();
-		Gdx.input.setInputProcessor(new CameraMover(simulationCamera));
 	}
 
 	private void centerCamera(OrthographicCamera camera) {
@@ -186,6 +190,10 @@ public class SimulationApp extends ApplicationAdapter {
 	public void dispose() {
 		assetManager.dispose();
 		simulation.dispose();
+	}
+
+	public InputMultiplexer getInputMultiplexer() {
+		return inputMultiplexer;
 	}
 
 	public Simulation getSimulation() {
