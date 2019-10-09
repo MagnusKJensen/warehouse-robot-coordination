@@ -34,9 +34,12 @@ public class Simulation {
         font = GraphicsManager.getFont();
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
+
+        // Just for testing and adding picker points
         ArrayList<GridCoordinate> pickerPoints = new ArrayList<>();
         pickerPoints.add(new GridCoordinate(0,0));
         pickerPoints.add(new GridCoordinate(2,0));
+
         storageGrid = new StorageGrid(WarehouseSpecs.wareHouseWidth, WarehouseSpecs.wareHouseHeight, pickerPoints);
         initRobots();
     }
