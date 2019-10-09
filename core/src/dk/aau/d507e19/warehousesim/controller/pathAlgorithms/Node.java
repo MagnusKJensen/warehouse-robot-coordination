@@ -14,14 +14,14 @@ public class Node<T> {
     }
 
     public void setParent(Node<T> parent) {
+        if(this.getParent()!=null){
+            this.getParent().removeChild(this);
+        }
         this.parent = parent;
     }
 
     public void addChild(Node<T> child){
         children.add(child);
-        //if(child.getParent()!=null){
-        //   child.getParent().removeChild(child);
-        //}
         child.setParent(this);
     }
 
