@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import dk.aau.d507e19.warehousesim.GraphicsManager;
 import dk.aau.d507e19.warehousesim.SimulationApp;
+import javafx.geometry.Side;
 
 import java.util.ArrayList;
 
@@ -23,8 +24,10 @@ public class TimeControlMenu {
     private TextButton resetSimulationBtn;
     private ArrayList<Button> selectAbleButtons = new ArrayList<>();
     private Vector2 screenOffset;
+    private SideMenu sideMenu;
 
-    public TimeControlMenu(Stage menuStage, SimulationApp simulationApp, Vector2 screenOffset) {
+    public TimeControlMenu(Stage menuStage, SimulationApp simulationApp, Vector2 screenOffset, SideMenu sideMenu) {
+        this.sideMenu = sideMenu;
         this.menuStage = menuStage;
         this.simulationApp = simulationApp;
         this.screenOffset = screenOffset;
@@ -37,6 +40,7 @@ public class TimeControlMenu {
         fastForwardBtn = new Button(GraphicsManager.getTextureRegionDrawable("icons/fast_forward.png"));
         globalStepBackBtn = new Button(GraphicsManager.getTextureRegionDrawable("icons/global_step_back.png"));
         globalStepForwardBtn = new Button(GraphicsManager.getTextureRegionDrawable("icons/global_step_forward.png"));
+        resetSimulationBtn = new TextButton("Reset", sideMenu.textButtonStyle);
 
         int screenXOffset = (int) screenOffset.x;
         int screenYOffset = (int) screenOffset.y;
@@ -45,7 +49,7 @@ public class TimeControlMenu {
         globalStepForwardBtn.setPosition(screenXOffset + 60, screenYOffset + 10);
         playBtn.setPosition(screenXOffset + 90, screenYOffset + 10);
         fastForwardBtn.setPosition(screenXOffset + 120, screenYOffset + 10);
-        //resetSimulationBtn.setPosition(screenXOffset, screenYOffset + 25);
+        resetSimulationBtn.setPosition(screenXOffset, screenYOffset + 30);
         //fastestForwardBtn.setPosition(15, 15); // TODO: 30/09/2019 add fastest forward
 
         addButtonListeners();
@@ -95,6 +99,13 @@ public class TimeControlMenu {
             }
         });
 
+        resetSimulationBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                simulationApp.resetSimulation();
+            }
+        });
+
         pauseBtn.setColor(SideMenu.selectedButtonColor);
     }
 
@@ -136,9 +147,7 @@ public class TimeControlMenu {
         menuStage.addActor(pauseBtn);
         menuStage.addActor(globalStepBackBtn);
         menuStage.addActor(globalStepForwardBtn);
+        menuStage.addActor(resetSimulationBtn);
     }
-
-
-
 
 }
