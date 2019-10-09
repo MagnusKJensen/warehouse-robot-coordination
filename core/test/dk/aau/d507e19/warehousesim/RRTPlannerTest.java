@@ -2,6 +2,7 @@ package dk.aau.d507e19.warehousesim;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Node;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.RRTPlanner;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import dk.aau.d507e19.warehousesim.controller.robot.Path;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,10 +48,9 @@ public class RRTPlannerTest {
         GridCoordinate start = new GridCoordinate(0,0);
         GridCoordinate dest = new GridCoordinate(2,2);
         ArrayList<GridCoordinate> list = rrtPlanner.generateRRTPath(start,dest);
-        for (GridCoordinate gc : list){
-            System.out.println(gc.toString());
-        }
+        Path p = new Path(list);
         //todo make this test more advanced
     }
+
 
 }
