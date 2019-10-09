@@ -33,6 +33,7 @@ public class Simulation {
     public Simulation(){
         font = GraphicsManager.getFont();
         batch = new SpriteBatch();
+        shapeRenderer = new ShapeRenderer();
         ArrayList<GridCoordinate> pickerPoints = new ArrayList<>();
         pickerPoints.add(new GridCoordinate(0,0));
         pickerPoints.add(new GridCoordinate(2,0));
