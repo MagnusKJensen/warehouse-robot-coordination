@@ -42,6 +42,7 @@ public class SimulationApp extends ApplicationAdapter {
 	private SideMenu sideMenu;
 
 	public static AssetManager assetManager = new AssetManager();
+	private CameraMover cameraMover;
 
 	@Override
 	public void create () {
@@ -56,7 +57,9 @@ public class SimulationApp extends ApplicationAdapter {
 		simulation = new Simulation();
 		sideMenu = new SideMenu(menuViewport, this);
 
+		cameraMover = new CameraMover(simulationCamera);
 		lastUpdateTime = System.currentTimeMillis();
+		Gdx.input.setInputProcessor(new CameraMover(simulationCamera));
 	}
 
 	private void centerCamera(OrthographicCamera camera) {
@@ -82,10 +85,10 @@ public class SimulationApp extends ApplicationAdapter {
 		simFontCamera.update();
 	}
 
-
 	@Override
 	// Called repeatedly by the libgdx framework
 	public void render () {
+		cameraMover.update();
 		int updatesSinceLastRender = 0;
 		while(shouldUpdateSimulation() && updatesSinceLastRender < MAX_UPDATES_PER_FRAME){
 			simulation.update();
@@ -137,10 +140,10 @@ public class SimulationApp extends ApplicationAdapter {
 	}
 
 	private void renderMenu(){
+		//cameraMover.update();
 		menuCamera.update();
 		menuViewport.apply();
 		sideMenu.render(menuCamera);
-
 	}
 
 	private void renderSimulation(){
