@@ -34,6 +34,8 @@ public class Robot {
     private final float decelerationBinSecond = WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters;
     private final float minSpeedBinsPerSecond = WarehouseSpecs.robotMinimumSpeed / WarehouseSpecs.binSizeInMeters;
 
+    private final float ROBOT_SIZE = Tile.TILE_SIZE;
+
     private LineTraverser currentTraverser;
     private PathFinder pathFinder;
 
@@ -221,4 +223,16 @@ public class Robot {
     public void setBin(Bin bin) {
         this.bin = bin;
     }
+
+    public boolean collidesWith(Position collider){
+        System.out.println("Collider : " + collider.getX() + " , " + collider.getY());
+        System.out.println("Robot : " + currentPosition.getX() + " , " + collider.getY());
+
+        boolean withInXBounds = collider.getX() >= currentPosition.getX()
+                && collider.getX() <= currentPosition.getX() + ROBOT_SIZE;
+        boolean withInYBounds = collider.getY() >= currentPosition.getY()
+                && collider.getY() <= currentPosition.getY() + ROBOT_SIZE;
+        return withInXBounds && withInYBounds;
+    }
+
 }

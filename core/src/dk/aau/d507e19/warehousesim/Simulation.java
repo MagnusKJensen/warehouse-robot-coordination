@@ -1,6 +1,7 @@
 package dk.aau.d507e19.warehousesim;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -14,6 +15,7 @@ import com.badlogic.gdx.math.Vector3;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
+import dk.aau.d507e19.warehousesim.input.SimulationInputProcessor;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 
@@ -30,7 +32,17 @@ public class Simulation {
 
     private long tickCount = 0L;
 
-    public Simulation(){
+    private OrthographicCamera gridCamera;
+    private OrthographicCamera fontCamera;
+
+    private SimulationInputProcessor inputProcessor;
+
+    public Simulation(SimulationApp simulationApp){
+        this.gridCamera = simulationApp.getWorldCamera();
+        this.fontCamera = simulationApp.getFontCamera();
+
+        inputProcessor = new SimulationInputProcessor(this);
+
         font = GraphicsManager.getFont();
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
@@ -117,4 +129,32 @@ public class Simulation {
     public StorageGrid getStorageGrid() {
         return storageGrid;
     }
+
+    public OrthographicCamera getGridCamera() {
+        return gridCamera;
+    }
+
+    public OrthographicCamera getFontCamera() {
+        return fontCamera;
+    }
+
+    public Position screenToWorldPosition(int screenX, int screenY){
+        Vector3 worldCoords = gridCamera.unproject(new Vector3(screenX, screenY, 0));
+        return new Position(worldCoords.x, worldCoords.y);
+    }
+
+    public SimulationInputProcessor getInputProcessor() {
+        return inputProcessor;
+    }
+
+    public void selectRobot(Robot robot) {
+        if(selectedRobots.contains(robot)){
+            selectedRobots.remove(robot);
+        }else{
+            selectedRobots.add(robot);
+        }
+
+
+    }
+
 }
