@@ -59,8 +59,7 @@ public class RRTPlannerTest {
             if(!isReachable(prev, gc)){
                 return false;
             }
-            prev = gc;
-        }
+            prev = gc;        }
         return true;
 
     }
