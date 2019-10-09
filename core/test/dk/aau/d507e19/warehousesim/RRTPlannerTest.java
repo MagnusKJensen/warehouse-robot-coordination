@@ -27,21 +27,27 @@ public class RRTPlannerTest {
         oneleft.addChild(twoleft);
         oneright.addChild(tworight);
         oneright.addChild(twooneright);
+        rrtPlanner.allNodesMap.put(tree.getData(),tree);
+        rrtPlanner.allNodesMap.put(oneleft.getData(),oneleft);
+        rrtPlanner.allNodesMap.put(oneright.getData(),oneright);
+        rrtPlanner.allNodesMap.put(twoleft.getData(),twoleft);
+        rrtPlanner.allNodesMap.put(tworight.getData(),tworight);
+        rrtPlanner.allNodesMap.put(twooneright.getData(),twooneright);
+
     }
     @Test
     public void findNearestNeighbourTest(){
         rrtPlanner.shortestLengthNode = tree;
-        assertSame(rrtPlanner.findNearestNeighbour(tree,new GridCoordinate(2,3)),twooneright);
+        Node<GridCoordinate> actual = rrtPlanner.findNearestNeighbour(tree,new GridCoordinate(2,3));
+        assertEquals(twooneright.getData(),actual.getData());
+
     }
     @Test
     public void generateRRTPathTest() throws InterruptedException {
         Robot robot = new Robot(new Position(0,0));
-        GridCoordinate dest = new GridCoordinate(99,90);
+        GridCoordinate dest = new GridCoordinate(99,98);
         List<GridCoordinate> list = rrtPlanner.generateRRTPath(robot,dest);
         System.out.println(list.size());
-        /*for(GridCoordinate gc : list){
-            System.out.println(gc.toString());
-        }*/
         //todo make this test more advanced
     }
 

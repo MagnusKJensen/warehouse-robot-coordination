@@ -69,7 +69,7 @@ public class RRTPlanner {
                 shortestLengthNode = n;
             }
         }
-        /*
+         /*
         for (Node<GridCoordinate> n : tree.getChildren()) {
             double newDistance = getDistanceBetweenPoints(n.getData(), randPos);
 
@@ -77,24 +77,31 @@ public class RRTPlanner {
                 shortestLengthNode = n;
             }
             findNearestNeighbour(n, randPos);
-        } */
+        }    */
         return shortestLengthNode;
     }
 
     private List<Node<GridCoordinate>>findNodesInSquare(GridCoordinate randPos){
         List<Node<GridCoordinate>> listOfNodes =  new ArrayList<>();
-        int radius = 1;
         //GridCoordinate relativePos = new GridCoordinate(0,0);
-        GridCoordinate topLeft = randPos, bottomRight = randPos;
+        GridCoordinate topLeft = new GridCoordinate(randPos.getX(),randPos.getY());
+        GridCoordinate bottomRight = new GridCoordinate(randPos.getX(),randPos.getY());
         while(listOfNodes.isEmpty()){
             //check if new corners are out of grid bounds
             // Create new corners (probably not necessary)
             topLeft = updateTopLeft(topLeft);
             bottomRight = updateBottomRight(bottomRight);
             //check for nodes - if any nodes are found then add to listOfNodes
-            System.out.println("TOPLEFT AND BOTTOM RIGHT");
-            System.out.println(topLeft.toString() + " \n " + bottomRight.toString());
             for(int i = topLeft.getX(); i <= bottomRight.getX();i++){
+                if(i!= topLeft.getX() && i!= bottomRight.getX()){
+                    if (allNodesMap.containsKey(new GridCoordinate(i,topLeft.getY()))){
+                        listOfNodes.add(new Node<GridCoordinate>(new GridCoordinate(i,topLeft.getY()),null));
+                    }
+                    if(allNodesMap.containsKey(new GridCoordinate(i,bottomRight.getY()))){
+                        listOfNodes.add(new Node<GridCoordinate>(new GridCoordinate(i,bottomRight.getY()),null));
+                    }
+                    continue;
+                }
                 for(int j = topLeft.getY(); j <= bottomRight.getY();j++){
                     if(allNodesMap.containsKey(new GridCoordinate(i,j))){
                         listOfNodes.add(new Node<GridCoordinate>(new GridCoordinate(i,j),null));
@@ -105,17 +112,19 @@ public class RRTPlanner {
         return listOfNodes;
     }
 
-    private GridCoordinate updateTopLeft(GridCoordinate topLeft){
+    private GridCoordinate updateTopLeft(GridCoordinate old){
+        GridCoordinate topLeft = new GridCoordinate(old.getX(), old.getY());
         if(topLeft.getX()-1 >= 0){
             topLeft.setX(topLeft.getX()-1);
         }
         if(topLeft.getY()-1 >= 0){
-            topLeft.setX(topLeft.getY()-1);
+            topLeft.setY(topLeft.getY()-1);
         }
         return topLeft;
     }
 
-    private GridCoordinate updateBottomRight(GridCoordinate bottomRight){
+    private GridCoordinate updateBottomRight(GridCoordinate old){
+        GridCoordinate bottomRight = new GridCoordinate(old.getX(),old.getY());
         if(bottomRight.getX() + 1 <= WarehouseSpecs.wareHouseWidth){
             bottomRight.setX(bottomRight.getX()+1);
         }
