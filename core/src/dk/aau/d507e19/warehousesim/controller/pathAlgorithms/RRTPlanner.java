@@ -17,7 +17,6 @@ public class RRTPlanner implements PathFinder{
     private GridCoordinate dest;
     public HashMap<GridCoordinate,Node<GridCoordinate>> allNodesMap = new HashMap<>();
     private boolean foundPath;
-    private int count =0;
 
     public ArrayList<GridCoordinate> generateRRTPath(GridCoordinate start, GridCoordinate destination) {
         dest = destination;
@@ -31,18 +30,17 @@ public class RRTPlanner implements PathFinder{
             growRRT(root);
         }
         //Find parents and make list of coords
-        System.out.println(count);
         return makePath(destinationNode);
     }
 
     private ArrayList<GridCoordinate> makePath(Node<GridCoordinate> destNode){
         ArrayList<GridCoordinate> path = new ArrayList<>();
         if(destNode.getParent() == null){
-            path.add(new GridCoordinate((int) destNode.getData().getX(),(int) destNode.getData().getY()));
+            path.add(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY()));
             return path;
         }
         path = makePath(destNode.getParent());
-        path.add(new GridCoordinate((int) destNode.getData().getX(), (int) destNode.getData().getY()));
+        path.add(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY()));
         return path;
     }
 
@@ -77,7 +75,7 @@ public class RRTPlanner implements PathFinder{
                 shortestLengthNode = n;
             }
             findNearestNeighbour(n, randPos);
-        }    */
+        } */
         return shortestLengthNode;
     }
 
@@ -95,16 +93,16 @@ public class RRTPlanner implements PathFinder{
             for(int i = topLeft.getX(); i <= bottomRight.getX();i++){
                 if(i!= topLeft.getX() && i!= bottomRight.getX()){
                     if (allNodesMap.containsKey(new GridCoordinate(i,topLeft.getY()))){
-                        listOfNodes.add(new Node<GridCoordinate>(new GridCoordinate(i,topLeft.getY()),null));
+                        listOfNodes.add(allNodesMap.get(new GridCoordinate(i,topLeft.getY())));
                     }
                     if(allNodesMap.containsKey(new GridCoordinate(i,bottomRight.getY()))){
-                        listOfNodes.add(new Node<GridCoordinate>(new GridCoordinate(i,bottomRight.getY()),null));
+                        listOfNodes.add(allNodesMap.get(new GridCoordinate(i,bottomRight.getY())));
                     }
                     continue;
                 }
                 for(int j = topLeft.getY(); j <= bottomRight.getY();j++){
                     if(allNodesMap.containsKey(new GridCoordinate(i,j))){
-                        listOfNodes.add(new Node<GridCoordinate>(new GridCoordinate(i,j),null));
+                        listOfNodes.add(allNodesMap.get(new GridCoordinate(i,j))); 
                     }
                 }
             }

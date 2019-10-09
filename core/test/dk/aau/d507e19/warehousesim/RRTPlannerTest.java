@@ -14,8 +14,6 @@ import static org.junit.Assert.*;
 public class RRTPlannerTest {
     private Node<GridCoordinate> tree,oneleft,oneright,twoleft,tworight,twooneright;
     private RRTPlanner rrtPlanner = new RRTPlanner();
-
-    @Before
     public void generateTree(){
         tree = new Node<GridCoordinate>(new GridCoordinate(0,0),null);
         oneleft = new Node<GridCoordinate>(new GridCoordinate(0,1),null);
@@ -38,15 +36,16 @@ public class RRTPlannerTest {
     }
     @Test
     public void findNearestNeighbourTest(){
+        generateTree();
         rrtPlanner.shortestLengthNode = tree;
         Node<GridCoordinate> actual = rrtPlanner.findNearestNeighbour(tree,new GridCoordinate(2,3));
         assertEquals(twooneright.getData(),actual.getData());
 
     }
     @Test
-    public void generateRRTPathTest() throws InterruptedException {
+    public void generateRRTPathTest() {
         GridCoordinate start = new GridCoordinate(0,0);
-        GridCoordinate dest = new GridCoordinate(9,8);
+        GridCoordinate dest = new GridCoordinate(2,2);
         ArrayList<GridCoordinate> list = rrtPlanner.generateRRTPath(start,dest);
         for (GridCoordinate gc : list){
             System.out.println(gc.toString());
