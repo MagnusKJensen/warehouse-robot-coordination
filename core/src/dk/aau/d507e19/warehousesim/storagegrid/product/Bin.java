@@ -68,4 +68,11 @@ public class Bin {
 
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "Bin{" +
+                "products=" + products +
+                '}';
+    }
 }

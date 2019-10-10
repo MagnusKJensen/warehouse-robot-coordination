@@ -49,4 +49,11 @@ public class BinTile extends Tile {
     public Bin getBin() {
         return bin;
     }
+
+    @Override
+    public String toString() {
+        return "BinTile{" +
+                "bin=" + bin +
+                '}';
+    }
 }

@@ -13,7 +13,10 @@ import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.input.SimulationInputProcessor;
 import dk.aau.d507e19.warehousesim.storagegrid.ProductDistributor;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
+import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
+import dk.aau.d507e19.warehousesim.ui.SideMenu;
+import dk.aau.d507e19.warehousesim.ui.TileInfoMenu;
 
 import java.util.ArrayList;
 
@@ -26,6 +29,7 @@ public class Simulation {
     private StorageGrid storageGrid;
     private ArrayList<Robot> robots = new ArrayList<>();
     private ArrayList<Robot> selectedRobots = new ArrayList<>();
+    private Tile selectedTile;
 
     private long tickCount = 0L;
 
@@ -33,9 +37,12 @@ public class Simulation {
     private OrthographicCamera fontCamera;
     private ScreenViewport gridViewport;
 
+    private SimulationApp simulationApp;
+
     private SimulationInputProcessor inputProcessor;
 
     public Simulation(SimulationApp simulationApp){
+        this.simulationApp = simulationApp;
         this.gridCamera = simulationApp.getWorldCamera();
         this.fontCamera = simulationApp.getFontCamera();
         this.gridViewport = simulationApp.getWorldViewport();
@@ -153,6 +160,11 @@ public class Simulation {
         return inputProcessor;
     }
 
+    public void selectTile(Tile tile){
+        selectedTile = tile;
+        simulationApp.getSideMenu().getTileInfoMenu().changeText(selectedTile.toString());
+    }
+
     public void selectRobot(Robot robot) {
         if(selectedRobots.contains(robot)){
             selectedRobots.remove(robot);
@@ -171,5 +183,9 @@ public class Simulation {
 
     public Server getServer() {
         return server;
+    }
+
+    public Tile getSelectedTile() {
+        return selectedTile;
     }
 }

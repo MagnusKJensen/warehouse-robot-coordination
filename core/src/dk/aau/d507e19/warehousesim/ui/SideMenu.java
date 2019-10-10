@@ -24,14 +24,12 @@ import dk.aau.d507e19.warehousesim.SimulationApp;
 import java.util.ArrayList;
 
 public class SideMenu {
-
-    private static final String ICONS_PATH = "icons/";
-
     private ShapeRenderer shapeRenderer;
     private Stage menuStage;
     private SimulationApp simulationApp;
 
     private TimeControlMenu timeControlMenu;
+    private TileInfoMenu tileInfoMenu;
 
     static final Color disabledButtonColor = new Color(140f / 255f, 140f / 255f, 140f / 255f, 1f);
     static final Color defaultButtonColor = new Color(245f / 255f, 245f / 255f, 245f / 255f, 1f);
@@ -41,6 +39,7 @@ public class SideMenu {
 
     private Color menuBGColor = new Color(75f / 255f, 75f / 255f, 75f / 255f, 1);
     private final Vector2 timeControlOffset = new Vector2(70, 0);
+    private final Vector2 tileMenuOffset = new Vector2(10, 700);
 
     public SideMenu(Viewport menuViewport, final SimulationApp simApp) {
         textButtonStyle = new TextButtonStyle();
@@ -51,6 +50,7 @@ public class SideMenu {
         menuStage = new Stage(menuViewport);
         simApp.getInputMultiplexer().addProcessor(menuStage);
         timeControlMenu = new TimeControlMenu(menuStage, simulationApp, timeControlOffset, this);
+        tileInfoMenu = new TileInfoMenu(menuStage, simulationApp, tileMenuOffset, this);
     }
 
     public void update() {
@@ -70,4 +70,7 @@ public class SideMenu {
         shapeRenderer.end();
     }
 
+    public TileInfoMenu getTileInfoMenu() {
+        return tileInfoMenu;
+    }
 }
