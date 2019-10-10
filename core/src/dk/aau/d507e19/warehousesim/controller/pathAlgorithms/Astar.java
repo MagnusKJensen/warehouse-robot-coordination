@@ -12,6 +12,8 @@ public class Astar implements PathFinder {
     private Tile[][] grid;
     private int xEndposition;
     private int yEndposition;
+    int xStart;
+    int yStart;
     ArrayList<GridCoordinate> finalPath = new ArrayList<>();
     ArrayList<Tile> openList = new ArrayList<>();
     ArrayList<Tile> closedList = new ArrayList<>();
@@ -20,6 +22,10 @@ public class Astar implements PathFinder {
     public Astar(int gridLength) {
         this.grid = fillGrid(gridLength);
 
+    }
+
+    public Tile[][] getGrid() {
+        return grid;
     }
 
     public Tile[][] fillGrid(int gridLength) {
@@ -159,6 +165,8 @@ public class Astar implements PathFinder {
         xEndposition = destination.getX();
         yEndposition = destination.getY();
 
+        xStart = start.getX();
+        yStart = start.getY();
 
         // Adds the starting tile to closed list.
         addStartTileToClosedList(start.getX(), start.getY());
