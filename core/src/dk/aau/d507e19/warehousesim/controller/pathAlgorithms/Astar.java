@@ -3,6 +3,8 @@ package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
 
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Path;
+import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.controller.server.Server;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,15 +22,15 @@ public class Astar implements PathFinder {
     private AStarTile currentTile;
     private long simulatedTime;
     private int robotID;
-    private float robotSpeedPerBin;
+    private float robotMaxSpeedPerBin;
     private PathManager pathManager;
 
-    public Astar(int gridLength, int gridHeight, long simulatedTIme, int robotID, float robotSpeedPerBin, PathManager pathManager) {
-        this.grid = fillGrid(gridLength, gridHeight);
-        this.simulatedTime = simulatedTIme;
-        this.robotSpeedPerBin = robotSpeedPerBin;
-        this.robotID = robotID;
-        this.pathManager = pathManager;
+    public Astar(Server server, Robot robot) {
+        this.robotID = robot.getRobotID();
+        this.grid = fillGrid(server.getGridWidth(), server.getGridHeight());
+        this.robotMaxSpeedPerBin = robot.getMaxSpeedBinsPerSecond();
+        this.simulatedTime = server.getTime();
+        this.pathManager = server.getPathManager();
     }
 
     public AStarTile[][] getGrid() {
@@ -85,7 +87,7 @@ public class Astar implements PathFinder {
     public boolean isTileReserved(AStarTile currentTile) {
         ArrayList<Reservation>[][] gridOfResevations = pathManager.getGridOfResevations();
         for (Reservation res : gridOfResevations[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition()]) {
-            if (Math.ceil(simulatedTime + robotSpeedPerBin * currentTile.getG()) == Math.ceil(res.getTimeTileIsReserved()) || res.isReserved) {
+            if (Math.ceil(simulatedTime + robotMaxSpeedPerBin * currentTile.getG()) == Math.ceil(res.getTimeTileIsReserved()) || res.isReserved) {
                 return false;
             }
 
@@ -199,7 +201,7 @@ public class Astar implements PathFinder {
         addFinalPathToList();
         //Reverses final path so it is in correct order
         Collections.reverse(finalPath);
-        pathManager.addReservationToList(finalPath, simulatedTime, robotID, robotSpeedPerBin);
+        pathManager.addReservationToList(finalPath, simulatedTime, robotID, robotMaxSpeedPerBin);
         //  pathManager.printReservations();
         return new Path(finalPath);
     }

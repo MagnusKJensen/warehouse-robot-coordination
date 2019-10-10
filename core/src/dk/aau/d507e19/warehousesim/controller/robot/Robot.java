@@ -2,6 +2,7 @@ package dk.aau.d507e19.warehousesim.controller.robot;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import dk.aau.d507e19.warehousesim.*;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
@@ -34,14 +35,16 @@ public class Robot {
     private final float ROBOT_SIZE = Tile.TILE_SIZE;
 
     private LineTraverser currentTraverser;
-    private PathFinder pathFinder;
+    private RobotController robotController;
 
-    public Robot(Position startingPosition, PathFinder pathFinder, int robotID, Simulation simulation) {
+    public Robot(Position startingPosition, int robotID, Simulation simulation) {
         this.currentPosition = startingPosition;
-        this.pathFinder = pathFinder;
         this.simulation = simulation;
         this.robotID = robotID;
         currentStatus = Status.AVAILABLE;
+
+        // Initialize controller for this robot
+        this.robotController = new RobotController(simulation.getServer(), this);
     }
 
     public void update() {
@@ -137,7 +140,7 @@ public class Robot {
             ticksLeftForCurrentTask = 0;
         }
 
-        pathToTarget = pathFinder.calculatePath(
+        pathToTarget = robotController.getPath(
                 new GridCoordinate((int) currentPosition.getX(), (int) currentPosition.getY()), task.getDestination());
 
         // If the robot has to move
