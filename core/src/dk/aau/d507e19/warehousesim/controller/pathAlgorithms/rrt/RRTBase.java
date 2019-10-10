@@ -11,10 +11,9 @@ import java.util.List;
 
 public abstract class RRTBase {
 
-    private Node<GridCoordinate> shortestLengthNode;
-    Node<GridCoordinate> root, destinationNode;
+    public Node<GridCoordinate> root, destinationNode,shortestLengthNode;
     GridCoordinate dest;
-    HashMap<GridCoordinate,Node<GridCoordinate>> allNodesMap = new HashMap<>();
+    public HashMap<GridCoordinate,Node<GridCoordinate>> allNodesMap = new HashMap<>();
 
     protected void growRRT(Node<GridCoordinate> tree, int n) {
         //n is number of iterations
@@ -49,12 +48,12 @@ public abstract class RRTBase {
     }
 
     public Node<GridCoordinate> findNearestNeighbour(Node<GridCoordinate> tree, GridCoordinate randPos) {
-
+        Edge shortestEdge = new Edge(tree.getData(),randPos);
         for(Node<GridCoordinate> n : findNodesInSquare(randPos,allNodesMap.size())){
-            Edge edge = new Edge()
-            double newDistance = getDistanceBetweenPoints(n.getData(),randPos);
+            Edge newEdge = new Edge(n.getData(),randPos);
 
-            if (newDistance < getDistanceBetweenPoints(shortestLengthNode.getData(),randPos)){
+            if (newEdge.getDistance() < shortestEdge.getDistance()){
+                shortestEdge = newEdge;
                 shortestLengthNode = n;
             }
         }

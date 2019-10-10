@@ -1,6 +1,6 @@
 package dk.aau.d507e19.warehousesim;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Node;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRT;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Path;
 import org.junit.Test;
@@ -9,9 +9,9 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
-public class RRTPlannerTest {
+public class RRTTest {
     private Node<GridCoordinate> tree,oneleft,oneright,twoleft,tworight,twooneright;
-    private RRTPlanner rrtPlanner = new RRTPlanner();
+    private RRT rrtPlanner = new RRT();
     public void generateTree(){
         tree = new Node<GridCoordinate>(new GridCoordinate(0,0),null);
         oneleft = new Node<GridCoordinate>(new GridCoordinate(0,1),null);
