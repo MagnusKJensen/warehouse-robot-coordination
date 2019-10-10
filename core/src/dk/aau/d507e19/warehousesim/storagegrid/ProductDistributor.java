@@ -12,14 +12,6 @@ public class ProductDistributor {
 
     public static void distributeProducts(StorageGrid grid){
         int[][] products =  calculateProductsPerSKU();
-
-        int totalProducts = 0;
-        for(int i = 0; i < products.length; i++){
-            System.out.println("SKU: " + products[i][0] + ", number of products: " + products[i][1]);
-            totalProducts += products[i][1];
-        }
-        System.out.println("Total products: " + totalProducts);
-        System.out.println("Total SKUs: " + products.length);
     }
 
     /**

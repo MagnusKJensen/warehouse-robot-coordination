@@ -231,9 +231,6 @@ public class Robot {
     }
 
     public boolean collidesWith(Position collider){
-        System.out.println("Collider : " + collider.getX() + " , " + collider.getY());
-        System.out.println("Robot : " + currentPosition.getX() + " , " + collider.getY());
-
         boolean withInXBounds = collider.getX() >= currentPosition.getX()
                 && collider.getX() <= currentPosition.getX() + ROBOT_SIZE;
         boolean withInYBounds = collider.getY() >= currentPosition.getY()
