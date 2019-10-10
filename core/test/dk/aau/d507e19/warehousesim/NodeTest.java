@@ -1,4 +1,5 @@
 package dk.aau.d507e19.warehousesim;
+
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Node;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import org.junit.Before;
@@ -7,7 +8,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class NodeTest {
-    Node<Object> root,rootLeft,rootRight,rootLeftLeft,rootLeftLeftLeft,rootLeftLeftLeftLeft;
+    Node<Object> root, rootLeft, rootRight, rootLeftLeft, rootLeftLeftLeft, rootLeftLeftLeftLeft;
 
     @Before
     public void makeTree() {
@@ -20,9 +21,9 @@ public class NodeTest {
     }
 
     @Test
-    public void setParentTest(){
+    public void setParentTest() {
         //create node without a parent
-        Node<Object> node1 = new Node<>(new Object(),null);
+        Node<Object> node1 = new Node<>(new Object(), null);
         assertNull(node1.getParent());
         //set root as node1's parent
         node1.setParent(root);
@@ -34,21 +35,21 @@ public class NodeTest {
     }
 
     @Test
-    public void makeRootTest(){
+    public void makeRootTest() {
         rootLeftLeftLeftLeft.makeRoot();
         assertNull(rootLeftLeftLeftLeft.getParent());
         //Assert that the old parent is now a child to the old child
         assertTrue(rootLeftLeftLeftLeft.getChildren().contains(rootLeftLeftLeft));
-        assertEquals(rootLeftLeftLeftLeft,rootLeftLeftLeft.getParent());
+        assertEquals(rootLeftLeftLeftLeft, rootLeftLeftLeft.getParent());
         //Continue for the rest of the tree, until the old root is hit
         assertTrue(rootLeftLeftLeft.getChildren().contains(rootLeftLeft));
-        assertEquals(rootLeftLeftLeft,rootLeftLeft.getParent());
+        assertEquals(rootLeftLeftLeft, rootLeftLeft.getParent());
 
         assertTrue(rootLeftLeft.getChildren().contains(rootLeft));
-        assertEquals(rootLeftLeft,rootLeft.getParent());
+        assertEquals(rootLeftLeft, rootLeft.getParent());
 
         assertTrue(rootLeft.getChildren().contains(root));
-        assertEquals(rootLeft,root.getParent());
+        assertEquals(rootLeft, root.getParent());
 
         //Assert that parent and child is swapped
         assertFalse(rootLeftLeft.getChildren().contains(rootLeftLeftLeft));
@@ -57,20 +58,20 @@ public class NodeTest {
     }
 
     @Test
-    public void removeChildTest(){
+    public void removeChildTest() {
         assertTrue(root.getChildren().contains(rootRight));
-        assertEquals(root,rootRight.getParent());
+        assertEquals(root, rootRight.getParent());
         root.removeChild(rootRight);
         assertFalse(root.getChildren().contains(rootRight));
         assertNotEquals(rootRight.getParent(), root);
     }
 
     @Test
-    public void NodeTest(){
-        Node<Object> node1 = new Node<>(new Object(),null);
+    public void NodeTest() {
+        Node<Object> node1 = new Node<>(new Object(), null);
         Node<Object> node2 = new Node<>(new Object(), node1);
         assertTrue(node1.getChildren().contains(node2));
-        assertEquals(node1,node2.getParent());
+        assertEquals(node1, node2.getParent());
 
     }
 

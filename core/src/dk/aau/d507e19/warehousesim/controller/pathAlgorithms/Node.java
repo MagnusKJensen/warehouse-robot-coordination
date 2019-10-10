@@ -10,22 +10,21 @@ public class Node<T> {
 
     public Node(T data, Node<T> parent) {
         this.data = data;
-        if(parent!=null){
+        if (parent != null) {
             setParent(parent);
-        }else{
+        } else {
             this.parent = parent;
         }
-
     }
 
-    public void makeRoot(){
+    public void makeRoot() {
         this.updateTree(this);
     }
 
-    private void updateTree(Node<T> node){
-        if(this.getParent()!=null){
+    private void updateTree(Node<T> node) {
+        if (this.getParent() != null) {
             this.getParent().updateTree(this);
-            if(node.equals(this)){
+            if (node.equals(this)) {
                 this.removeParent();
                 return;
             }
@@ -38,29 +37,31 @@ public class Node<T> {
     }
 
     public void setParent(Node<T> parent) {
-        if(this.getParent()!=null){
+        if (this.getParent() != null) {
             this.getParent().removeChild(this);
         }
         this.parent = parent;
         this.parent.children.add(this);
     }
-    public void removeParent(){
+
+    public void removeParent() {
         this.parent = null;
     }
 
     public Node<T> getParent() {
-        if(parent==null){
+        if (parent == null) {
             return null;
         }
         return parent;
     }
 
-    public void removeChild(Node<T> child){
-        if(children.contains(child)){
+    public void removeChild(Node<T> child) {
+        if (children.contains(child)) {
             children.remove(child);
             child.removeParent();
         }
     }
+
     public List<Node<T>> getChildren() {
         return children;
     }
@@ -69,9 +70,9 @@ public class Node<T> {
         return data;
     }
 
-    public void printTree(Node<T> node){
+    public void printTree(Node<T> node) {
         System.out.println(node.getData().toString());
-        for(Node<T> n : node.getChildren()){
+        for (Node<T> n : node.getChildren()) {
             printTree(n);
         }
     }
