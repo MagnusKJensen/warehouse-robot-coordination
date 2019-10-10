@@ -223,4 +223,8 @@ public class SimulationApp extends ApplicationAdapter {
 	public OrthographicCamera getFontCamera() {
 		return simFontCamera;
 	}
+
+	public ScreenViewport getWorldViewport() {
+		return simulationViewport;
+	}
 }

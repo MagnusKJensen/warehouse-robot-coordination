@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
@@ -34,12 +35,14 @@ public class Simulation {
 
     private OrthographicCamera gridCamera;
     private OrthographicCamera fontCamera;
+    private ScreenViewport gridViewport;
 
     private SimulationInputProcessor inputProcessor;
 
     public Simulation(SimulationApp simulationApp){
         this.gridCamera = simulationApp.getWorldCamera();
         this.fontCamera = simulationApp.getFontCamera();
+        this.gridViewport = simulationApp.getWorldViewport();
 
         inputProcessor = new SimulationInputProcessor(this);
 
@@ -59,8 +62,8 @@ public class Simulation {
             robots.add(new Robot(new Position(i,0), new Astar(WarehouseSpecs.wareHouseWidth), this));
         }
 
-        robots.add(new Robot(new Position(7,7), new DummyPathFinder(), this));
-        robots.add(new Robot(new Position(5,5), new DummyPathFinder(), this));
+        /*robots.add(new Robot(new Position(7,7), new DummyPathFinder(), this));
+        robots.add(new Robot(new Position(5,5), new DummyPathFinder(), this));*/
 
         // Assign test task to first robot
         robots.get(0).assignTask(new Task(new GridCoordinate(3,6), Action.PICK_UP));
@@ -139,7 +142,7 @@ public class Simulation {
     }
 
     public Position screenToWorldPosition(int screenX, int screenY){
-        Vector3 worldCoords = gridCamera.unproject(new Vector3(screenX, screenY, 0));
+        Vector3 worldCoords = gridViewport.unproject(new Vector3(screenX, screenY, 0));
         return new Position(worldCoords.x, worldCoords.y);
     }
 

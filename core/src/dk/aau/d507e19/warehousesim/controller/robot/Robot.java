@@ -208,7 +208,7 @@ public class Robot {
         return pathToTarget != null
                 && (currentStatus == Status.PICK_UP_TASK_ASSIGNED
                 || currentStatus == Status.MOVE_TASK_ASSIGNED
-                || currentStatus == Status.CARRYING);
+                || currentStatus == Status.TASK_ASSIGNED_CARRYING);
     }
 
     public Path getPathToTarget() {
