@@ -14,6 +14,7 @@ public class PathManager {
         this.gridLength = gridLength;
         this.gridHeight = gridHeight;
         gridOfResevations = new ArrayList[gridLength][gridHeight];
+        addReservationListsToGrid();
     }
 
     public void addReservationToList(ArrayList<GridCoordinate> arrayList, float simulatedtime, int robotID, float robotSpeedPerBin) {

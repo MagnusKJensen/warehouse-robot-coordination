@@ -1,11 +1,14 @@
 package dk.aau.d507e19.warehousesim.ui;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import dk.aau.d507e19.warehousesim.GraphicsManager;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 
 import java.util.ArrayList;
@@ -17,30 +20,43 @@ public class TimeControlMenu {
     private SimulationApp simulationApp;
 
     private Button playBtn, pauseBtn, globalStepForwardBtn, globalStepBackBtn, fastForwardBtn;
+    private TextButton resetSimulationBtn;
     private ArrayList<Button> selectAbleButtons = new ArrayList<>();
+    private Vector2 screenOffset;
+    private SideMenu sideMenu;
 
-    public TimeControlMenu(Stage menuStage, SimulationApp simulationApp) {
+    public TimeControlMenu(Stage menuStage, SimulationApp simulationApp, Vector2 screenOffset, SideMenu sideMenu) {
+        this.sideMenu = sideMenu;
         this.menuStage = menuStage;
         this.simulationApp = simulationApp;
+        this.screenOffset = screenOffset;
         createButtons();
     }
 
     private void createButtons() {
-        pauseBtn = new Button(SideMenu.loadDrawableIcon("pause.png"));
-        playBtn = new Button(SideMenu.loadDrawableIcon("play.png"));
-        fastForwardBtn = new Button(SideMenu.loadDrawableIcon("fast_forward.png"));
-        globalStepBackBtn = new Button(SideMenu.loadDrawableIcon("global_step_back.png"));
-        globalStepForwardBtn = new Button(SideMenu.loadDrawableIcon("global_step_forward.png"));
+        pauseBtn = new Button(GraphicsManager.getTextureRegionDrawable("icons/pause.png"));
+        playBtn = new Button(GraphicsManager.getTextureRegionDrawable("icons/play.png"));
+        fastForwardBtn = new Button(GraphicsManager.getTextureRegionDrawable("icons/fast_forward.png"));
+        globalStepBackBtn = new Button(GraphicsManager.getTextureRegionDrawable("icons/global_step_back.png"));
+        globalStepForwardBtn = new Button(GraphicsManager.getTextureRegionDrawable("icons/global_step_forward.png"));
+        resetSimulationBtn = new TextButton("Reset", sideMenu.textButtonStyle);
 
-        int screenXOffset = 60;
-        globalStepBackBtn.setPosition(screenXOffset, 10);
-        pauseBtn.setPosition(screenXOffset + 30, 10);
-        globalStepForwardBtn.setPosition(screenXOffset + 60, 10);
-        playBtn.setPosition(screenXOffset + 90, 10);
-        fastForwardBtn.setPosition(screenXOffset + 120, 10);
+        int screenXOffset = (int) screenOffset.x;
+        int screenYOffset = (int) screenOffset.y;
+        globalStepBackBtn.setPosition(screenXOffset, screenYOffset + 10);
+        pauseBtn.setPosition(screenXOffset + 30, screenYOffset + 10);
+        globalStepForwardBtn.setPosition(screenXOffset + 60, screenYOffset + 10);
+        playBtn.setPosition(screenXOffset + 90, screenYOffset + 10);
+        fastForwardBtn.setPosition(screenXOffset + 120, screenYOffset + 10);
+        resetSimulationBtn.setPosition(screenXOffset, screenYOffset + 45);
         //fastestForwardBtn.setPosition(15, 15); // TODO: 30/09/2019 add fastest forward
 
-        // TODO: 30/09/2019 Clean up
+        addButtonListeners();
+        setSelectableButtons();
+        addButtonsToStage();
+    }
+
+    private void addButtonListeners(){
         playBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -82,10 +98,14 @@ public class TimeControlMenu {
             }
         });
 
-        pauseBtn.setColor(SideMenu.selectedButtonColor);
+        resetSimulationBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                simulationApp.resetSimulation();
+            }
+        });
 
-        setSelectableButtons();
-        addButtonsToStage();
+        pauseBtn.setColor(SideMenu.selectedButtonColor);
     }
 
     private void setSelectableButtons() {
@@ -126,9 +146,7 @@ public class TimeControlMenu {
         menuStage.addActor(pauseBtn);
         menuStage.addActor(globalStepBackBtn);
         menuStage.addActor(globalStepForwardBtn);
+        menuStage.addActor(resetSimulationBtn);
     }
-
-
-
 
 }

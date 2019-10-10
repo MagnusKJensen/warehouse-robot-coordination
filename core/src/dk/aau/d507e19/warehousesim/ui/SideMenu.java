@@ -4,15 +4,21 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import dk.aau.d507e19.warehousesim.GraphicsManager;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 
 import java.util.ArrayList;
@@ -24,26 +30,27 @@ public class SideMenu {
     private ShapeRenderer shapeRenderer;
     private Stage menuStage;
     private SimulationApp simulationApp;
+
     private TimeControlMenu timeControlMenu;
 
     static final Color disabledButtonColor = new Color(140f / 255f, 140f / 255f, 140f / 255f, 1f);
     static final Color defaultButtonColor = new Color(245f / 255f, 245f / 255f, 245f / 255f, 1f);
     static final Color selectedButtonColor = new Color(60f / 255f, 175f / 255f, 75f / 255f, 1f);
 
+    public final TextButtonStyle textButtonStyle;
+
     private Color menuBGColor = new Color(75f / 255f, 75f / 255f, 75f / 255f, 1);
+    private final Vector2 timeControlOffset = new Vector2(70, 0);
 
     public SideMenu(Viewport menuViewport, final SimulationApp simApp) {
+        textButtonStyle = new TextButtonStyle();
+        textButtonStyle.font = GraphicsManager.getFont();
+
         this.simulationApp = simApp;
         shapeRenderer = new ShapeRenderer();
         menuStage = new Stage(menuViewport);
-        Gdx.input.setInputProcessor(menuStage);
-        timeControlMenu = new TimeControlMenu(menuStage, simulationApp);
-    }
-
-    static TextureRegionDrawable loadDrawableIcon(String iconName) {
-        SimulationApp.assetManager.load(ICONS_PATH + iconName, Texture.class);
-        SimulationApp.assetManager.finishLoading();
-        return new TextureRegionDrawable((Texture) SimulationApp.assetManager.get(ICONS_PATH + iconName));
+        simApp.getInputMultiplexer().addProcessor(menuStage);
+        timeControlMenu = new TimeControlMenu(menuStage, simulationApp, timeControlOffset, this);
     }
 
     public void update() {

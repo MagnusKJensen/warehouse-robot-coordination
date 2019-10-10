@@ -1,89 +1,118 @@
 package dk.aau.d507e19.warehousesim;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathManager;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
+import dk.aau.d507e19.warehousesim.controller.server.Server;
+import dk.aau.d507e19.warehousesim.input.SimulationInputProcessor;
+import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
+import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 
 import java.util.ArrayList;
 
 public class Simulation {
-
     private SpriteBatch batch;
+    private ShapeRenderer shapeRenderer;
     private BitmapFont font;
 
+    private Server server;
     private StorageGrid storageGrid;
     private ArrayList<Robot> robots = new ArrayList<>();
+    private ArrayList<Robot> selectedRobots = new ArrayList<>();
 
     private long tickCount = 0L;
-    private float maxSpeedBinsPerSecond;
 
-    public Simulation() {
-        font = generateFont();
+    private OrthographicCamera gridCamera;
+    private OrthographicCamera fontCamera;
+    private ScreenViewport gridViewport;
+
+    private SimulationInputProcessor inputProcessor;
+
+    public Simulation(SimulationApp simulationApp){
+        this.gridCamera = simulationApp.getWorldCamera();
+        this.fontCamera = simulationApp.getFontCamera();
+        this.gridViewport = simulationApp.getWorldViewport();
+
+        server = new Server(this);
+        inputProcessor = new SimulationInputProcessor(this);
+
+        font = GraphicsManager.getFont();
         batch = new SpriteBatch();
-        storageGrid = new StorageGrid(WarehouseSpecs.wareHouseWidth, WarehouseSpecs.wareHouseHeight);
+        shapeRenderer = new ShapeRenderer();
+
+        // Just for testing and adding picker points
+        ArrayList<GridCoordinate> pickerPoints = new ArrayList<>();
+        pickerPoints.add(new GridCoordinate(0,0));
+        pickerPoints.add(new GridCoordinate(2,0));
+
+        storageGrid = new StorageGrid(WarehouseSpecs.wareHouseWidth, WarehouseSpecs.wareHouseHeight, pickerPoints);
         initRobots();
     }
 
     private void initRobots() {
         // Auto generate robots
-        PathManager pathManager = new PathManager(WarehouseSpecs.wareHouseWidth, WarehouseSpecs.wareHouseHeight);
-        pathManager.addReservationListsToGrid();
-        for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++) {
-            robots.add(new Robot(new Position(i, 0), new Astar(WarehouseSpecs.wareHouseWidth,WarehouseSpecs.wareHouseHeight, getSimulatedTime(), i,getMaxSpeedBinsPerSecond(), pathManager ), i));
-        }
-
-      //  robots.add(new Robot(new Position(5, 5), new Astar(WarehouseSpecs.wareHouseWidth,WarehouseSpecs.wareHouseHeight, getSimulatedTime(), 2,getMaxSpeedBinsPerSecond() ,pathManager), 2));
+        for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++)
+            robots.add(new Robot(new Position(i, 0), i, this));
 
         // Assign test task to first robot
-        robots.get(0).assignTask(new Task(new GridCoordinate(3, 0), Action.PICK_UP));
-        robots.get(1).assignTask(new Task(new GridCoordinate(3, 4), Action.PICK_UP));
-        robots.get(2).assignTask(new Task(new GridCoordinate(2, 2), Action.PICK_UP));
-        robots.get(3).assignTask(new Task(new GridCoordinate(2, 4), Action.PICK_UP));
-        robots.get(robots.size() - 1).assignTask(new Task(new GridCoordinate(0, 0), Action.PICK_UP));
+        robots.get(0).assignTask(new Task(new GridCoordinate(3,6), Action.PICK_UP));
+        robots.get(1).assignTask(new Task(new GridCoordinate(10,5), Action.PICK_UP));
+        robots.get(2).assignTask(new Task(new GridCoordinate(0,8), Action.MOVE));
+        robots.get(3).assignTask(new Task(new GridCoordinate(3,3), Action.PICK_UP));
+        robots.get(4).assignTask(new Task(new GridCoordinate(1,2), Action.PICK_UP));
+
+        // For testing of the bin system
+        robots.get(robots.size() - 1).setBin(new Bin());
+        robots.get(robots.size() - 1).setCurrentStatus(Status.CARRYING);
+        robots.get(robots.size() - 1).assignTask(new Task(new GridCoordinate(2,0), Action.DELIVER));
+        robots.get(robots.size() - 2).assignTask(new Task(new GridCoordinate(1,1), Action.PICK_UP));
+
+        selectedRobots.add(robots.get(0));
+        selectedRobots.add(robots.get(1));
     }
 
-    private BitmapFont generateFont() {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/OpenSans.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 12;
-        parameter.minFilter = Texture.TextureFilter.Linear;
-        parameter.magFilter = Texture.TextureFilter.Linear;
-        BitmapFont font = generator.generateFont(parameter); // font size 12 pixels
-        generator.dispose();
-        return font;
-    }
-
-    public void update() {
+    public void update(){
         tickCount += 1;
-        for (Robot robot : robots) {
+        for(Robot robot : robots){
             robot.update();
         }
     }
 
-    public void render(OrthographicCamera gridCamera, OrthographicCamera fontCamera) {
-        storageGrid.render(gridCamera);
-
+    public void render(OrthographicCamera gridCamera, OrthographicCamera fontCamera){
+        shapeRenderer.setProjectionMatrix(gridCamera.combined);
         batch.setProjectionMatrix(gridCamera.combined);
-        batch.begin();
-        for (Robot robot : robots) {
-            robot.render(batch);
+
+        storageGrid.render(shapeRenderer, batch);
+        renderSelectedRobotsPaths();
+        renderRobots();
+        renderTickCount(gridCamera, fontCamera);
+    }
+
+    private void renderSelectedRobotsPaths() {
+        for(Robot robot : selectedRobots){
+            if(robot.hasPlannedPath())
+                storageGrid.renderPathOverlay(robot.getPathToTarget().getFullPath(), shapeRenderer);
         }
+    }
+
+    private void renderRobots(){
+        batch.begin();
+        for(Robot robot : robots)
+            robot.render(batch);
         batch.end();
+    }
 
-        Vector3 textPos = gridCamera.project(new Vector3(0.3f, 0.15f, 0));
-
+    private void renderTickCount(OrthographicCamera gridCamera, OrthographicCamera fontCamera){
+        Vector3 textPos = new Vector3(15 ,15 , 0);
         batch.setProjectionMatrix(fontCamera.combined);
         batch.begin();
-        font.setColor(Color.RED);
+        font.setColor(Color.BLUE);
         font.draw(batch, String.valueOf(tickCount), textPos.x, textPos.y);
         batch.end();
     }
@@ -92,17 +121,52 @@ public class Simulation {
         return robots;
     }
 
-    public void dispose() {
+    public void dispose(){
+        batch.dispose();
+    }
 
+    public StorageGrid getStorageGrid() {
+        return storageGrid;
+    }
+
+    public OrthographicCamera getGridCamera() {
+        return gridCamera;
+    }
+
+    public OrthographicCamera getFontCamera() {
+        return fontCamera;
     }
 
     public long getSimulatedTime() {
-
         return tickCount * SimulationApp.MILLIS_PER_TICK;
     }
 
-    public float getMaxSpeedBinsPerSecond() {
-        maxSpeedBinsPerSecond =  WarehouseSpecs.binSizeInMeters/WarehouseSpecs.robotTopSpeed;
-        return maxSpeedBinsPerSecond;
+    public Position screenToWorldPosition(int screenX, int screenY){
+        Vector3 worldCoords = gridViewport.unproject(new Vector3(screenX, screenY, 0));
+        return new Position(worldCoords.x, worldCoords.y);
+    }
+
+    public SimulationInputProcessor getInputProcessor() {
+        return inputProcessor;
+    }
+
+    public void selectRobot(Robot robot) {
+        if(selectedRobots.contains(robot)){
+            selectedRobots.remove(robot);
+        }else{
+            selectedRobots.add(robot);
+        }
+    }
+
+    public int getGridHeight() {
+        return WarehouseSpecs.wareHouseHeight; // todo get from storagegrid instead of warehousespecs
+    }
+
+    public int getGridWidth() {
+        return WarehouseSpecs.wareHouseWidth;
+    }
+
+    public Server getServer() {
+        return server;
     }
 }
