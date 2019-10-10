@@ -11,7 +11,7 @@ public class AStarTile {
     private int G = 0;
     private int F;
     private boolean isBlocked = false;
-    private ArrayList<Reservation> listOfResevations = new ArrayList<>();
+
 
     public AStarTile(int currentXPosition, int currentYPosition) {
         this.currentXPosition = currentXPosition;
@@ -85,19 +85,7 @@ public class AStarTile {
         return F;
     }
 
-    public void addReservationoList(Reservation reservation) {
 
-        listOfResevations.add(reservation);
-
-    }
-
-    public void removeReservation(Reservation reservation) {
-        for (Reservation reservationInList : listOfResevations) {
-            if(reservationInList.equals(reservation))
-                listOfResevations.remove(reservationInList);
-
-        }
-    }
 
     @Override
     public String toString() {
