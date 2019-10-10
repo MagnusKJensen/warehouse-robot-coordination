@@ -50,7 +50,7 @@ public class RRTPlanner implements PathFinder{
         shortestLengthNode = tree;
         Node<GridCoordinate> nearest = findNearestNeighbour(tree, randPos);
         Node<GridCoordinate> newNode = generateNewNode(nearest, randPos);
-        nearest.addChild(newNode);
+        newNode.setParent(nearest);
         allNodesMap.put(newNode.getData(),newNode);
         if(newNode.getData().equals(dest)){
             foundPath = true;

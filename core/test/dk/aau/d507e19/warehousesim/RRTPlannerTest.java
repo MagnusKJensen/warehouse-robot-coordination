@@ -22,11 +22,11 @@ public class RRTPlannerTest {
         twoleft = new Node<GridCoordinate>(new GridCoordinate(0,2),null);
         tworight = new Node<GridCoordinate>(new GridCoordinate(2,0),null);
         twooneright = new Node<GridCoordinate>(new GridCoordinate(2,1),null);
-        tree.addChild(oneleft);
-        tree.addChild(oneright);
-        oneleft.addChild(twoleft);
-        oneright.addChild(tworight);
-        oneright.addChild(twooneright);
+        tree.setParent(oneleft);
+        tree.setParent(oneright);
+        oneleft.setParent(twoleft);
+        oneright.setParent(tworight);
+        oneright.setParent(twooneright);
         rrtPlanner.allNodesMap.put(tree.getData(),tree);
         rrtPlanner.allNodesMap.put(oneleft.getData(),oneleft);
         rrtPlanner.allNodesMap.put(oneright.getData(),oneright);
