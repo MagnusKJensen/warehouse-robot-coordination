@@ -54,6 +54,23 @@ public class NodeTest {
         assertFalse(rootLeftLeft.getChildren().contains(rootLeftLeftLeft));
         assertNotEquals(rootLeftLeft, rootLeftLeftLeft.getParent());
 
+    }
+
+    @Test
+    public void removeChildTest(){
+        assertTrue(root.getChildren().contains(rootRight));
+        assertEquals(root,rootRight.getParent());
+        root.removeChild(rootRight);
+        assertFalse(root.getChildren().contains(rootRight));
+        assertNotEquals(rootRight.getParent(), root);
+    }
+
+    @Test
+    public void NodeTest(){
+        Node<Object> node1 = new Node<>(new Object(),null);
+        Node<Object> node2 = new Node<>(new Object(), node1);
+        assertTrue(node1.getChildren().contains(node2));
+        assertEquals(node1,node2.getParent());
 
     }
 
