@@ -35,9 +35,15 @@ public class BinTile extends Tile {
         this.bin = bin;
     }
 
-    public Bin takeBin(){
+    public Bin releaseBin(){
+        // TODO: 09/10/2019 This check should be enabled until real warehouse maps are generated.
+        // if(this.bin == null) throw new RuntimeException("Cannot take bin at (" + getPosX() + "," + getPosY() + ") due to it being empty");
         Bin tempBin = this.bin;
         this.bin = null;
         return tempBin;
+    }
+
+    public boolean hasBin(){
+        return bin != null;
     }
 }

@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Vector3;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
+import dk.aau.d507e19.warehousesim.storagegrid.ProductDistributor;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 
@@ -41,6 +42,8 @@ public class Simulation {
         pickerPoints.add(new GridCoordinate(2,0));
 
         storageGrid = new StorageGrid(WarehouseSpecs.wareHouseWidth, WarehouseSpecs.wareHouseHeight, pickerPoints);
+        ProductDistributor.distributeProducts(storageGrid);
+
         initRobots();
     }
 

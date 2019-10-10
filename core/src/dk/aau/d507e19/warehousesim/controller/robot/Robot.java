@@ -1,16 +1,12 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.sun.tools.javac.comp.Todo;
 import dk.aau.d507e19.warehousesim.*;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
 import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
-
-import java.util.ArrayList;
 
 public class Robot {
     private Simulation simulation;
@@ -19,7 +15,7 @@ public class Robot {
     private Status currentStatus;
     private float currentSpeed;
     private Path pathToTarget;
-    private Bin bin;
+    private Bin bin = null;
 
     /**
      * Robot STATS
@@ -78,10 +74,11 @@ public class Robot {
             int y = currentTask.getDestination().getY();
 
             Tile tile = simulation.getStorageGrid().getTile(x,y);
-            if(tile instanceof BinTile){
-                ((BinTile) tile).takeBin();
+            if(tile instanceof BinTile && ((BinTile) tile).hasBin()){
+                bin = ((BinTile) tile).releaseBin();
             }
-            else throw new RuntimeException("Robot could not pick up bin at (" + x + "," + y + ")");
+            // TODO: 10/10/2019 This exception throw should not be added until tasks are given correctly.
+            // else throw new RuntimeException("Robot could not pick up bin at (" + x + "," + y + ")");
             currentStatus = Status.CARRYING;
         } else {
             // If still picking up the product
