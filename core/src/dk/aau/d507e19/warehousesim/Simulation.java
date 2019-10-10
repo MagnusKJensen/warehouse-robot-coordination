@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector3;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathManager;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 
 import java.util.ArrayList;
@@ -34,18 +35,19 @@ public class Simulation {
 
     private void initRobots() {
         // Auto generate robots
+        PathManager pathManager = new PathManager(WarehouseSpecs.wareHouseWidth, WarehouseSpecs.wareHouseHeight);
+        pathManager.addReservationListsToGrid();
         for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++) {
-            robots.add(new Robot(new Position(i, 0), new Astar(WarehouseSpecs.wareHouseWidth, getSimulatedTime(), 1,getMaxSpeedBinsPerSecond() ), 1));
+            robots.add(new Robot(new Position(i, 0), new Astar(WarehouseSpecs.wareHouseWidth,WarehouseSpecs.wareHouseHeight, getSimulatedTime(), i,getMaxSpeedBinsPerSecond(), pathManager ), i));
         }
 
-        robots.add(new Robot(new Position(5, 5), new Astar(WarehouseSpecs.wareHouseWidth, getSimulatedTime(), 2,getMaxSpeedBinsPerSecond() ), 2));
+      //  robots.add(new Robot(new Position(5, 5), new Astar(WarehouseSpecs.wareHouseWidth,WarehouseSpecs.wareHouseHeight, getSimulatedTime(), 2,getMaxSpeedBinsPerSecond() ,pathManager), 2));
 
         // Assign test task to first robot
-        robots.get(0).assignTask(new Task(new GridCoordinate(11, 11), Action.PICK_UP));
-        robots.get(1).assignTask(new Task(new GridCoordinate(10, 5), Action.PICK_UP));
-        robots.get(2).assignTask(new Task(new GridCoordinate(0, 8), Action.PICK_UP));
-        robots.get(3).assignTask(new Task(new GridCoordinate(3, 3), Action.PICK_UP));
-        robots.get(4).assignTask(new Task(new GridCoordinate(1, 1), Action.PICK_UP));
+        robots.get(0).assignTask(new Task(new GridCoordinate(3, 0), Action.PICK_UP));
+        robots.get(1).assignTask(new Task(new GridCoordinate(3, 4), Action.PICK_UP));
+        robots.get(2).assignTask(new Task(new GridCoordinate(2, 2), Action.PICK_UP));
+        robots.get(3).assignTask(new Task(new GridCoordinate(2, 4), Action.PICK_UP));
         robots.get(robots.size() - 1).assignTask(new Task(new GridCoordinate(0, 0), Action.PICK_UP));
     }
 
@@ -100,7 +102,7 @@ public class Simulation {
     }
 
     public float getMaxSpeedBinsPerSecond() {
-        maxSpeedBinsPerSecond = WarehouseSpecs.robotTopSpeed / WarehouseSpecs.binSizeInMeters;
+        maxSpeedBinsPerSecond =  WarehouseSpecs.binSizeInMeters/WarehouseSpecs.robotTopSpeed;
         return maxSpeedBinsPerSecond;
     }
 }
