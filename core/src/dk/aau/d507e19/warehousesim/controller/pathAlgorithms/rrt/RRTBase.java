@@ -138,6 +138,7 @@ public abstract class RRTBase {
         return allNodesMap.containsKey(newPos);
         //return root.containsNodeWithData(root,newPos);
     }
+
     protected ArrayList<GridCoordinate> makePath(Node<GridCoordinate> destNode){
         ArrayList<GridCoordinate> path = new ArrayList<>();
         if(destNode.getParent() == null){

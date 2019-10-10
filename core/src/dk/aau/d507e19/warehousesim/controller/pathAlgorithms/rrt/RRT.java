@@ -21,6 +21,7 @@ public class RRT extends RRTBase {
             growRRT(root, (int) ((WarehouseSpecs.wareHouseHeight*WarehouseSpecs.wareHouseWidth)*0.1));
             foundPath = doesNodeExist(destination);
         }
+        destinationNode = allNodesMap.get(destination);
         //Find parents and make list of coords
         return makePath(destinationNode);
     }

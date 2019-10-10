@@ -43,7 +43,7 @@ public class RRTTest {
     @Test
     public void generateRRTPathTest() {
         GridCoordinate start = new GridCoordinate(0,0);
-        GridCoordinate dest = new GridCoordinate(2,2);
+        GridCoordinate dest = new GridCoordinate(99,98);
         ArrayList<GridCoordinate> list = rrtPlanner.generateRRTPath(start,dest);
         assertTrue(isValidPath(start, dest, list));
         Path p = new Path(list);
