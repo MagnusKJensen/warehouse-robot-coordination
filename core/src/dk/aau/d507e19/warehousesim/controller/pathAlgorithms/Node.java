@@ -10,7 +10,12 @@ public class Node<T> {
 
     public Node(T data, Node<T> parent) {
         this.data = data;
-        this.parent = parent;
+        if(parent!=null){
+            setParent(parent);
+        }else{
+            this.parent = parent;
+        }
+
     }
 
     public void makeRoot(){
