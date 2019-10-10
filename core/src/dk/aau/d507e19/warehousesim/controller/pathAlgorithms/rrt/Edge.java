@@ -11,7 +11,7 @@ public class Edge {
         this.point2 = point2;
         distance = getDistanceBetweenPoints(this.point1,this.point2);
     }
-    private double getDistanceBetweenPoints(GridCoordinate pos1, GridCoordinate pos2) {
+    protected double getDistanceBetweenPoints(GridCoordinate pos1, GridCoordinate pos2) {
         return Math.sqrt(Math.pow(pos2.getX() - pos1.getX(), 2) + Math.pow(pos2.getY() - pos1.getY(), 2));
     }
 
