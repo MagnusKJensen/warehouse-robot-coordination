@@ -40,7 +40,7 @@ public class AstarTest {
         astar.calculatePath(new GridCoordinate(0,0), new GridCoordinate(0,4));
 
         // Sets startTile into dummy tile
-        Tile startTile = astar.getGrid()[astar.xStart][astar.yStart];
+        AStarTile startTile = astar.getGrid()[astar.xStart][astar.yStart];
 
         // Adds startTile into closedList
         astar.addStartTileToClosedList(astar.xStart,astar.yStart);
@@ -62,9 +62,9 @@ public class AstarTest {
         astar = new Astar(10);
 
         // Dummy neighbors to test
-        Tile neighbor01 = astar.getGrid()[astar.xStart][astar.yStart + 1];
-        Tile neighbor10 = astar.getGrid()[astar.xStart + 1][astar.yStart];
-        Tile neighborWrong = astar.getGrid()[astar.xStart][astar.yStart];
+        AStarTile neighbor01 = astar.getGrid()[astar.xStart][astar.yStart + 1];
+        AStarTile neighbor10 = astar.getGrid()[astar.xStart + 1][astar.yStart];
+        AStarTile neighborWrong = astar.getGrid()[astar.xStart][astar.yStart];
 
         // Adds the first tile to closedList
         astar.addStartTileToClosedList(astar.xStart, astar.yStart);

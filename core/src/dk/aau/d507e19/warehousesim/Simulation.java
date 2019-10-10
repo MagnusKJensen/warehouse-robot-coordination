@@ -62,7 +62,7 @@ public class Simulation {
     private void initRobots() {
         // Auto generate robots
         for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++) {
-            robots.add(new Robot(new Position(i,0), new Astar(WarehouseSpecs.wareHouseWidth), this));
+            robots.add(new Robot(new Position(i,0), new Astar(WarehouseSpecs.wareHouseWidth), i, this));
         }
 
         /*robots.add(new Robot(new Position(7,7), new DummyPathFinder(), this));
@@ -144,15 +144,8 @@ public class Simulation {
         return fontCamera;
     }
 
-    }
-
     public long getSimulatedTime() {
         return tickCount * SimulationApp.MILLIS_PER_TICK;
-    }
-
-    public float getMaxSpeedBinsPerSecond() {
-        maxSpeedBinsPerSecond = WarehouseSpecs.robotTopSpeed / WarehouseSpecs.binSizeInMeters;
-        return maxSpeedBinsPerSecond;
     }
 
     public Position screenToWorldPosition(int screenX, int screenY){

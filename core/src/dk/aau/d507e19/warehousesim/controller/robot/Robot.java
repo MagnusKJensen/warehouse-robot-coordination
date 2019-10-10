@@ -36,8 +36,8 @@ public class Robot {
     private LineTraverser currentTraverser;
     private PathFinder pathFinder;
 
-    public Robot(Position currentPosition, PathFinder pathFinder, Simulation simulation, int robotID) {
-        this.currentPosition = currentPosition;
+    public Robot(Position startingPosition, PathFinder pathFinder, int robotID, Simulation simulation) {
+        this.currentPosition = startingPosition;
         this.pathFinder = pathFinder;
         this.simulation = simulation;
         this.robotID = robotID;
