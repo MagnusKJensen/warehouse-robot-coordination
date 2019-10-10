@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathManager;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.input.SimulationInputProcessor;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
@@ -62,11 +63,10 @@ public class Simulation {
     private void initRobots() {
         // Auto generate robots
         for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++) {
-            robots.add(new Robot(new Position(i,0), new Astar(WarehouseSpecs.wareHouseWidth), i, this));
+            robots.add(new Robot(new Position(i, 0), new Astar(WarehouseSpecs.wareHouseWidth,WarehouseSpecs.wareHouseHeight, getSimulatedTime(), i,getMaxSpeedBinsPerSecond(), pathManager ), i));
         }
 
-        /*robots.add(new Robot(new Position(7,7), new DummyPathFinder(), this));
-        robots.add(new Robot(new Position(5,5), new DummyPathFinder(), this));*/
+      //  robots.add(new Robot(new Position(5, 5), new Astar(WarehouseSpecs.wareHouseWidth,WarehouseSpecs.wareHouseHeight, getSimulatedTime(), 2,getMaxSpeedBinsPerSecond() ,pathManager), 2));
 
         // Assign test task to first robot
         robots.get(0).assignTask(new Task(new GridCoordinate(3,6), Action.PICK_UP));

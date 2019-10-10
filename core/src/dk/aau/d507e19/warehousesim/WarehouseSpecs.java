@@ -19,5 +19,4 @@ public class WarehouseSpecs {
     public static final int robotDeliverToPickerInSeconds = 1;
     // todo turnover distribution - Philip
     // todo layers? - Philip
-
 }

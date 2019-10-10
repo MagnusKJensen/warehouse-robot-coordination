@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
 
+
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Path;
 
@@ -17,21 +18,28 @@ public class Astar implements PathFinder {
     ArrayList<AStarTile> openList = new ArrayList<>();
     ArrayList<AStarTile> closedList = new ArrayList<>();
     private AStarTile currentTile;
+    private long simulatedTime;
+    private int robotID;
+    private float robotSpeedPerBin;
+    private PathManager pathManager;
 
-    public Astar(int gridLength) {
-        this.grid = fillGrid(gridLength);
-
+    public Astar(int gridLength, int gridHeight, long simulatedTIme, int robotID, float robotSpeedPerBin, PathManager pathManager) {
+        this.grid = fillGrid(gridLength, gridHeight);
+        this.simulatedTime = simulatedTIme;
+        this.robotSpeedPerBin = robotSpeedPerBin;
+        this.robotID = robotID;
+        this.pathManager = pathManager;
     }
 
     public AStarTile[][] getGrid() {
         return grid;
     }
 
-    public AStarTile[][] fillGrid(int gridLength) {
-        AStarTile[][] grid = new AStarTile[gridLength][gridLength];
+    public AStarTile[][] fillGrid(int gridLength, int gridHeight) {
+        AStarTile[][] grid = new AStarTile[gridLength][gridHeight];
         // Fills grid with tiles matching the coordinates
         for (int i = 0; i < gridLength; i++) {
-            for (int j = 0; j < gridLength; j++) {
+            for (int j = 0; j < gridHeight; j++) {
                 grid[i][j] = new AStarTile(i, j);
             }
         }
@@ -55,19 +63,34 @@ public class Astar implements PathFinder {
         //Checks every potential neighbor to currentTile the same way.
 
         // Checks if neighbor is valid with a valid coordinate
-        if (currentTile.getCurrentYPosition() - 1 >= 0) {
+        if (currentTile.getCurrentYPosition() - 1 >= 0 && isTileReserved(currentTile)) {
+            //  if (currentTile.getCurrentYPosition() - 1 >= 0 ) {
             // Adds Neighbor to openList if valid
             addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() - 1]);
         }
-        if (currentTile.getCurrentYPosition() + 1 < grid.length) {
+        if (currentTile.getCurrentYPosition() + 1 < grid.length && isTileReserved(currentTile)) {
+            //  if (currentTile.getCurrentYPosition() + 1 < grid.length ) {
             addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() + 1]);
         }
-        if (currentTile.getCurrentXPosition() - 1 >= 0) {
+        if (currentTile.getCurrentXPosition() - 1 >= 0 && isTileReserved(currentTile)) {
+            //  if (currentTile.getCurrentXPosition() - 1 >= 0) {
             addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() - 1][currentTile.getCurrentYPosition()]);
         }
-        if (currentTile.getCurrentXPosition() + 1 < grid.length) {
+        if (currentTile.getCurrentXPosition() + 1 < grid.length && isTileReserved(currentTile)) {
+            //  if (currentTile.getCurrentXPosition() + 1 < grid.length ) {
             addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() + 1][currentTile.getCurrentYPosition()]);
         }
+    }
+
+    public boolean isTileReserved(AStarTile currentTile) {
+        ArrayList<Reservation>[][] gridOfResevations = pathManager.getGridOfResevations();
+        for (Reservation res : gridOfResevations[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition()]) {
+            if (Math.ceil(simulatedTime + robotSpeedPerBin * currentTile.getG()) == Math.ceil(res.getTimeTileIsReserved()) || res.isReserved) {
+                return false;
+            }
+
+        }
+        return true;
     }
 
     public void addNeighborTileToOpenList(AStarTile neighborTile) {
@@ -142,7 +165,6 @@ public class Astar implements PathFinder {
     }
 
     public void addFinalPathToList() {
-
         AStarTile currTile = closedList.get(closedList.size() - 1);
         AStarTile prevTile = closedList.get(closedList.size() - 2);
         finalPath.add(new GridCoordinate(currTile.getCurrentXPosition(), currTile.getCurrentYPosition()));
@@ -177,6 +199,8 @@ public class Astar implements PathFinder {
         addFinalPathToList();
         //Reverses final path so it is in correct order
         Collections.reverse(finalPath);
+        pathManager.addReservationToList(finalPath, simulatedTime, robotID, robotSpeedPerBin);
+        //  pathManager.printReservations();
         return new Path(finalPath);
     }
 }
