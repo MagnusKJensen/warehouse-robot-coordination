@@ -1,6 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
 
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 
 import java.util.ArrayList;
 
@@ -24,8 +25,6 @@ public class PathManager {
             reservation = new Reservation(robotID, simulatedtime + robotSpeedPerBin * i);
             reservation.setxCordinate(gridcordinate.getX());
             reservation.setyCordinate(gridcordinate.getY());
-            if(gridcordinate.equals(arrayList.get(arrayList.size()-1)))
-                reservation.isReserved = true;
 
             gridOfResevations[gridcordinate.getX()][gridcordinate.getY()].add(reservation);
             i += 1;

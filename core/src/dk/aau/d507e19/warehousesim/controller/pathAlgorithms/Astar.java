@@ -4,6 +4,7 @@ package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Path;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 
 import java.util.ArrayList;
@@ -87,7 +88,7 @@ public class Astar implements PathFinder {
     public boolean isTileReserved(AStarTile currentTile) {
         ArrayList<Reservation>[][] gridOfResevations = pathManager.getGridOfResevations();
         for (Reservation res : gridOfResevations[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition()]) {
-            if (Math.ceil(simulatedTime + robotMaxSpeedPerBin * currentTile.getG()) == Math.ceil(res.getTimeTileIsReserved()) || res.isReserved) {
+            if (Math.ceil(simulatedTime + robotMaxSpeedPerBin * currentTile.getG()) == Math.ceil(res.getTimeTileIsReserved())) {
                 return false;
             }
 

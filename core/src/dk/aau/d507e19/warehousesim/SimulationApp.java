@@ -210,7 +210,7 @@ public class SimulationApp extends ApplicationAdapter {
 	public void resetSimulation() {
 		inputMultiplexer.removeProcessor(simulation.getInputProcessor());
 		simulation.dispose();
-
+		pause();
 		simulation = new Simulation(this);
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());
 	}
