@@ -13,6 +13,7 @@ public class Server {
 
     public Server(Simulation simulation){
         this.simulation = simulation;
+        this.pathManager = new PathManager(getGridWidth(), getGridHeight());
     }
 
     public ArrayList<Robot> getAllRobots(){
