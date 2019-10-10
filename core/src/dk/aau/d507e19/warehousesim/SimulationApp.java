@@ -2,11 +2,11 @@ package dk.aau.d507e19.warehousesim;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import dk.aau.d507e19.warehousesim.input.CameraMover;
 import dk.aau.d507e19.warehousesim.ui.SideMenu;
 
 import java.util.Random;
@@ -29,8 +29,8 @@ public class SimulationApp extends ApplicationAdapter {
 	private ScreenViewport simulationViewport;
 
 	// Variables for simulation loop logic
-	public static final int TICKS_PER_SECOND = 25;
-	public static final long MILLIS_PER_TICK = 1000 / TICKS_PER_SECOND;
+	public static final int TICKS_PER_SECOND = 30;
+	private static final long MILLIS_PER_TICK = 1000 / TICKS_PER_SECOND;
 
 	private UpdateMode updateMode = UpdateMode.MANUAL;
 	private long millisSinceUpdate = 0L;
@@ -41,22 +41,32 @@ public class SimulationApp extends ApplicationAdapter {
 	private Simulation simulation;
 	private SideMenu sideMenu;
 
-	public static AssetManager assetManager = new AssetManager();
+	private CameraMover cameraMover;
+    private InputMultiplexer inputMultiplexer;
 
 	@Override
 	public void create () {
-		simulationViewport = new ScreenViewport(simulationCamera);
-		simulationViewport.setUnitsPerPixel(1f / 64f);
+        GraphicsManager.loadAssets();
+
+        inputMultiplexer = new InputMultiplexer();
+        simulationViewport = new ScreenViewport(simulationCamera);
+        simulationViewport.setUnitsPerPixel(1f / (float) DEFAULT_PIXELS_PER_TILE);
+		simulationViewport.setUnitsPerPixel(1f / (float) DEFAULT_PIXELS_PER_TILE);
 
 		menuViewport = new ScreenViewport(menuCamera);
 
 		centerCamera(simulationCamera);
 		centerCamera(menuCamera);
 
-		simulation = new Simulation();
+		simulation = new Simulation(this);
 		sideMenu = new SideMenu(menuViewport, this);
 
-		lastUpdateTime = System.currentTimeMillis();
+		Gdx.input.setInputProcessor(inputMultiplexer);
+		cameraMover = new CameraMover(simulationCamera, simulationViewport);
+
+		inputMultiplexer.addProcessor(cameraMover);
+		inputMultiplexer.addProcessor(simulation.getInputProcessor());
+        lastUpdateTime = System.currentTimeMillis();
 	}
 
 	private void centerCamera(OrthographicCamera camera) {
@@ -82,10 +92,10 @@ public class SimulationApp extends ApplicationAdapter {
 		simFontCamera.update();
 	}
 
-
 	@Override
 	// Called repeatedly by the libgdx framework
 	public void render () {
+		cameraMover.update();
 		int updatesSinceLastRender = 0;
 		while(shouldUpdateSimulation() && updatesSinceLastRender < MAX_UPDATES_PER_FRAME){
 			simulation.update();
@@ -137,17 +147,21 @@ public class SimulationApp extends ApplicationAdapter {
 	}
 
 	private void renderMenu(){
+		//cameraMover.update();
 		menuCamera.update();
 		menuViewport.apply();
 		sideMenu.render(menuCamera);
-
 	}
 
 	private void renderSimulation(){
+		Gdx.gl.glEnable(GL30.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
 		simulationCamera.update();
 		simFontCamera.update();
 		simulationViewport.apply();
 		simulation.render(simulationCamera, simFontCamera);
+		Gdx.gl.glDisable(GL30.GL_BLEND);
+
 	}
 
 	private void switchUpdateMode(UpdateMode newMode){
@@ -181,7 +195,35 @@ public class SimulationApp extends ApplicationAdapter {
 
 	@Override
 	public void dispose() {
-		assetManager.dispose();
 		simulation.dispose();
+		GraphicsManager.disposeAssetManager();
+	}
+
+	public InputMultiplexer getInputMultiplexer() {
+		return inputMultiplexer;
+	}
+
+	public Simulation getSimulation() {
+		return simulation;
+	}
+
+	public void resetSimulation() {
+		inputMultiplexer.removeProcessor(simulation.getInputProcessor());
+		simulation.dispose();
+
+		simulation = new Simulation(this);
+		inputMultiplexer.addProcessor(simulation.getInputProcessor());
+	}
+
+	public OrthographicCamera getWorldCamera() {
+		return simulationCamera;
+	}
+
+	public OrthographicCamera getFontCamera() {
+		return simFontCamera;
+	}
+
+	public ScreenViewport getWorldViewport() {
+		return simulationViewport;
 	}
 }

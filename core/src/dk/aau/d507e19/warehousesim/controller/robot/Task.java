@@ -16,4 +16,8 @@ public class Task {
     public GridCoordinate getDestination() {
         return destination;
     }
+
+    public Action getAction() {
+        return action;
+    }
 }

@@ -4,35 +4,36 @@ import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Path;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 
 public class Astar implements PathFinder {
 
-    private AStarTile[][] grid;
+    private Tile[][] grid;
     private int xEndposition;
     private int yEndposition;
+    int xStart;
+    int yStart;
     ArrayList<GridCoordinate> finalPath = new ArrayList<>();
-    ArrayList<AStarTile> openList = new ArrayList<>();
-    ArrayList<AStarTile> closedList = new ArrayList<>();
-    private AStarTile currentTile;
-    private long simulatedTIme;
-    private int robotID;
-    private float robotSpeedPerBin;
+    ArrayList<Tile> openList = new ArrayList<>();
+    ArrayList<Tile> closedList = new ArrayList<>();
+    private Tile currentTile;
 
-    public Astar(int gridLength, long simulatedTIme, int robotID, float robotSpeedPerBin) {
+    public Astar(int gridLength) {
         this.grid = fillGrid(gridLength);
-        this.simulatedTIme = simulatedTIme;
-        this.robotSpeedPerBin = robotSpeedPerBin;
-        this.robotID = robotID;
 
     }
 
-    public AStarTile[][] fillGrid(int gridLength) {
-        AStarTile[][] grid = new AStarTile[gridLength][gridLength];
+    public Tile[][] getGrid() {
+        return grid;
+    }
+
+    public Tile[][] fillGrid(int gridLength) {
+        Tile[][] grid = new Tile[gridLength][gridLength];
         // Fills grid with tiles matching the coordinates
         for (int i = 0; i < gridLength; i++) {
             for (int j = 0; j < gridLength; j++) {
-                grid[i][j] = new AStarTile(i, j);
+                grid[i][j] = new Tile(i, j);
             }
         }
         return grid;
@@ -70,10 +71,10 @@ public class Astar implements PathFinder {
         }
     }
 
-    public void addNeighborTileToOpenList(AStarTile neighborTile) {
+    public void addNeighborTileToOpenList(Tile neighborTile) {
 
         // Makes new dummy tile
-        AStarTile tileToDelete = null;
+        Tile tileToDelete = null;
 
         // Checks if neighborTile is blocked (Already in closedList)
         if (!neighborTile.isBlocked()) {
@@ -88,7 +89,7 @@ public class Astar implements PathFinder {
             neighborTile.calculateF();
 
             // Checks if neighborTile is already in openList.
-            for (AStarTile tile : openList) {
+            for (Tile tile : openList) {
                 if (neighborTile.getCurrentXPosition() == tile.getCurrentXPosition() && neighborTile.getCurrentYPosition() == tile.getCurrentYPosition()) {
 
                     // If a tile with the same coordinates is already in openList, then check which has the lowest F value.
@@ -143,8 +144,8 @@ public class Astar implements PathFinder {
 
     public void addFinalPathToList() {
 
-        AStarTile currTile = closedList.get(closedList.size() - 1);
-        AStarTile prevTile = closedList.get(closedList.size() - 2);
+        Tile currTile = closedList.get(closedList.size() - 1);
+        Tile prevTile = closedList.get(closedList.size() - 2);
         finalPath.add(new GridCoordinate(currTile.getCurrentXPosition(), currTile.getCurrentYPosition()));
         for (int i = closedList.size() - 2; i > 0; i--) {
             if (currTile.getPreviousXposition() == prevTile.getCurrentXPosition() && currTile.getGetPreviousYposition() == prevTile.getCurrentYPosition()) {
@@ -164,6 +165,8 @@ public class Astar implements PathFinder {
         xEndposition = destination.getX();
         yEndposition = destination.getY();
 
+        xStart = start.getX();
+        yStart = start.getY();
 
         // Adds the starting tile to closed list.
         addStartTileToClosedList(start.getX(), start.getY());
