@@ -88,8 +88,7 @@ public class Robot {
             if(tile instanceof BinTile && ((BinTile) tile).hasBin()){
                 bin = ((BinTile) tile).releaseBin();
             }
-            // TODO: 10/10/2019 This exception throw should not be added until tasks are given correctly.
-            // else throw new RuntimeException("Robot could not pick up bin at (" + x + "," + y + ")");
+            else throw new RuntimeException("Robot could not pick up bin at (" + x + "," + y + ")");
             currentStatus = Status.CARRYING;
         } else {
             // If still picking up the product

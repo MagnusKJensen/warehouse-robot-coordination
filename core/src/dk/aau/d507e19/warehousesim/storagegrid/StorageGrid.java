@@ -45,7 +45,6 @@ public class StorageGrid {
     private void fillGrid(){
         for(int y = 0;  y < height; y++){
             for(int x = 0; x < width; x++){
-                //if(x == 0 && y == 0) tiles[x][y] = new PickerTile(x,y);
                 if(isAPickerPoint(x,y)) tiles[x][y] = new PickerTile(x,y);
                 else if(x == 1 && y == 1){
                     Bin bin = new Bin();

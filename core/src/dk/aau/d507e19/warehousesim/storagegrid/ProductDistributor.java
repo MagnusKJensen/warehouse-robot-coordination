@@ -1,6 +1,11 @@
 package dk.aau.d507e19.warehousesim.storagegrid;
 
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
+import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
+import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
+import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
+
+import java.util.ArrayList;
 
 public class ProductDistributor {
     private static final int totalSKUsInWarehouse = WarehouseSpecs.SKUs;
@@ -11,7 +16,67 @@ public class ProductDistributor {
     private static float[][] SKUDistribution = WarehouseSpecs.skuDistribution;
 
     public static void distributeProducts(StorageGrid grid){
-        int[][] products =  calculateProductsPerSKU();
+        int[][] SKUs =  calculateProductsPerSKU();
+
+        ArrayList<Product> allProducts = generateProducts(SKUs);
+
+        distributeToGrid(allProducts, grid);
+
+        for (Product prod : allProducts){
+            System.out.println(prod.toString());
+        }
+    }
+
+    private static void distributeToGrid(ArrayList<Product> allProducts, StorageGrid grid) {
+        Tile tile;
+        Bin bin;
+
+        // Run though all tiles in the warehouse
+        for(int x = 0; x < WarehouseSpecs.wareHouseWidth; ++x){
+            for(int y = 0; y < WarehouseSpecs.wareHouseHeight; ++y){
+                tile = grid.getTile(x,y);
+                if(tile instanceof BinTile){
+                    // If it does not have a bin, add one
+                    if(!((BinTile) tile).hasBin()) ((BinTile) tile).addBin(new Bin());
+
+                    // Start adding products to bin
+                    bin = ((BinTile) tile).getBin();
+                    // Keep filling the bin
+                    while(!bin.isFull() && !allProducts.isEmpty()){
+                        // If the bin has the SKU and is not full, add the product.
+                        if(bin.hasSKU(allProducts.get(0).getSKU()) && !bin.isFull()) {
+                            bin.addProduct(allProducts.get(0));
+                            allProducts.remove(0);
+                        }
+                        // If the bin is not full and has room for more SKUs
+                        else if(!bin.isFull() && bin.hasRoomForMoreSKUs()){
+                            bin.addProduct(allProducts.get(0));
+                            allProducts.remove(0);
+                        } else break;
+                    }
+                }
+            }
+        }
+
+        if(!allProducts.isEmpty()) throw new RuntimeException("Not enough room for all products." +
+                "Still need room for '" + allProducts.size() + "' products.");
+    }
+
+    /**
+     * Get an ArrayList of all products
+     * @param SKUs Array of int arrays. int[i][0] = SKU name of index i. int[i][1] = number of products for index i.
+     * @return
+     */
+    private static ArrayList<Product> generateProducts(int[][] SKUs) {
+        ArrayList<Product> allProducts = new ArrayList<>();
+
+        for(int i = 0; i < SKUs.length; ++i){
+            for(int j = 0; j < SKUs[i][1]; ++j){
+                allProducts.add(new Product( new SKU(SKUs[i][0] + ""), j));
+            }
+        }
+
+        return allProducts;
     }
 
     /**
