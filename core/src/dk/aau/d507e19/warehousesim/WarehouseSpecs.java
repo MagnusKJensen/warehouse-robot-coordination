@@ -21,5 +21,4 @@ public class WarehouseSpecs {
     public static final float[][] skuDistribution = {{20, 80}, {80,20}};
     // todo turnover distribution - Philip
     // todo layers? - Philip
-
 }

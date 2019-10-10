@@ -1,12 +1,17 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.sun.tools.javac.comp.Todo;
 import dk.aau.d507e19.warehousesim.*;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
 import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
+
+import java.util.ArrayList;
 
 public class Robot {
     private Simulation simulation;
@@ -16,6 +21,7 @@ public class Robot {
     private float currentSpeed;
     private Path pathToTarget;
     private Bin bin = null;
+    private int robotID;
 
     /**
      * Robot STATS
@@ -30,18 +36,23 @@ public class Robot {
     private final float decelerationBinSecond = WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters;
     private final float minSpeedBinsPerSecond = WarehouseSpecs.robotMinimumSpeed / WarehouseSpecs.binSizeInMeters;
 
-    private LineTraverser currentTraverser;
-    private PathFinder pathFinder;
+    private final float ROBOT_SIZE = Tile.TILE_SIZE;
 
-    public Robot(Position currentPosition, PathFinder pathFinder, Simulation simulation) {
-        this.currentPosition = currentPosition;
-        this.pathFinder = pathFinder;
+    private LineTraverser currentTraverser;
+    private RobotController robotController;
+
+    public Robot(Position startingPosition, int robotID, Simulation simulation) {
+        this.currentPosition = startingPosition;
         this.simulation = simulation;
+        this.robotID = robotID;
         currentStatus = Status.AVAILABLE;
+
+        // Initialize controller for this robot
+        this.robotController = new RobotController(simulation.getServer(), this);
     }
 
     public void update() {
-        if (currentStatus == Status.PICK_UP_TASK_ASSIGNED) {
+        if (currentStatus == Status.TASK_ASSIGNED_PICK_UP) {
             // If destination is reached start pickup
             if (pathToTarget.getCornersPath().size() == 1) pickupProduct();
             // If movement still needed
@@ -51,7 +62,7 @@ public class Robot {
             if(pathToTarget.getCornersPath().size() == 1) deliverProduct();
             // If movement still needed
             else moveWithLineTraverser();
-        } else if (currentStatus == Status.MOVE_TASK_ASSIGNED){
+        } else if (currentStatus == Status.TASK_ASSIGNED_MOVE){
             // If target reached, show as available
             if(pathToTarget.getCornersPath().size() == 1) currentStatus = Status.AVAILABLE;
             // If movement still needed
@@ -103,8 +114,8 @@ public class Robot {
             case AVAILABLE:
                 batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotAvailable.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
-            case PICK_UP_TASK_ASSIGNED:
-            case MOVE_TASK_ASSIGNED:
+            case TASK_ASSIGNED_PICK_UP:
+            case TASK_ASSIGNED_MOVE:
                 batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotTaskAssigned.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
             case TASK_ASSIGNED_CARRYING:
@@ -119,7 +130,7 @@ public class Robot {
     public void assignTask(Task task) {
         currentTask = task;
         if(task.getAction() == Action.PICK_UP){
-            currentStatus = Status.PICK_UP_TASK_ASSIGNED;
+            currentStatus = Status.TASK_ASSIGNED_PICK_UP;
             ticksLeftForCurrentTask = pickUpTimeInTicks;
         } else if (task.getAction() == Action.DELIVER){
             if(currentStatus != Status.CARRYING) throw new IllegalArgumentException("Robot is not carrying anything");
@@ -130,18 +141,18 @@ public class Robot {
             currentStatus = Status.TASK_ASSIGNED_CARRYING;
             ticksLeftForCurrentTask = deliverTimeInTicks;
         } else if (task.getAction() == Action.MOVE){
-            currentStatus = Status.MOVE_TASK_ASSIGNED;
+            currentStatus = Status.TASK_ASSIGNED_MOVE;
             ticksLeftForCurrentTask = 0;
         }
 
-        pathToTarget = pathFinder.calculatePath(
-                new GridCoordinate((int) currentPosition.getX(),(int) currentPosition.getY()), task.getDestination());
+        pathToTarget = robotController.getPath(
+                new GridCoordinate((int) currentPosition.getX(), (int) currentPosition.getY()), task.getDestination());
 
         // If the robot has to move
         if(pathToTarget.getCornersPath().size() > 1) assignTraverser();
     }
 
-    private void assignTraverser(){
+    private void assignTraverser() {
         currentTraverser = new LineTraverser(pathToTarget.getCornersPath().get(0),
                 pathToTarget.getCornersPath().get(1), this);
     }
@@ -191,7 +202,7 @@ public class Robot {
         currentPosition.setY(currentPosition.getY() + deltaY);
     }
 
-    public float getMinimumSpeed(){
+    public float getMinimumSpeed() {
         return WarehouseSpecs.robotMinimumSpeed;
     }
 
@@ -201,9 +212,9 @@ public class Robot {
 
     public boolean hasPlannedPath(){
         return pathToTarget != null
-                && (currentStatus == Status.PICK_UP_TASK_ASSIGNED
-                || currentStatus == Status.MOVE_TASK_ASSIGNED
-                || currentStatus == Status.CARRYING);
+                && (currentStatus == Status.TASK_ASSIGNED_PICK_UP
+                || currentStatus == Status.TASK_ASSIGNED_MOVE
+                || currentStatus == Status.TASK_ASSIGNED_CARRYING);
     }
 
     public Path getPathToTarget() {
@@ -217,5 +228,21 @@ public class Robot {
 
     public void setBin(Bin bin) {
         this.bin = bin;
+    }
+
+    public boolean collidesWith(Position collider){
+        System.out.println("Collider : " + collider.getX() + " , " + collider.getY());
+        System.out.println("Robot : " + currentPosition.getX() + " , " + collider.getY());
+
+        boolean withInXBounds = collider.getX() >= currentPosition.getX()
+                && collider.getX() <= currentPosition.getX() + ROBOT_SIZE;
+        boolean withInYBounds = collider.getY() >= currentPosition.getY()
+                && collider.getY() <= currentPosition.getY() + ROBOT_SIZE;
+        return withInXBounds && withInYBounds;
+    }
+
+
+    public int getRobotID() {
+        return robotID;
     }
 }

@@ -1,4 +1,4 @@
-package dk.aau.d507e19.warehousesim;
+package dk.aau.d507e19.warehousesim.input;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;

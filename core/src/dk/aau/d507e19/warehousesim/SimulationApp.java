@@ -3,12 +3,12 @@ package dk.aau.d507e19.warehousesim;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import dk.aau.d507e19.warehousesim.input.CameraMover;
 import dk.aau.d507e19.warehousesim.ui.SideMenu;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 public class SimulationApp extends ApplicationAdapter {
@@ -30,7 +30,7 @@ public class SimulationApp extends ApplicationAdapter {
 
 	// Variables for simulation loop logic
 	public static final int TICKS_PER_SECOND = 30;
-	private static final long MILLIS_PER_TICK = 1000 / TICKS_PER_SECOND;
+	public static final long MILLIS_PER_TICK = 1000 / TICKS_PER_SECOND;
 
 	private UpdateMode updateMode = UpdateMode.MANUAL;
 	private long millisSinceUpdate = 0L;
@@ -58,12 +58,14 @@ public class SimulationApp extends ApplicationAdapter {
 		centerCamera(simulationCamera);
 		centerCamera(menuCamera);
 
-		simulation = new Simulation();
+		simulation = new Simulation(this);
 		sideMenu = new SideMenu(menuViewport, this);
 
 		Gdx.input.setInputProcessor(inputMultiplexer);
 		cameraMover = new CameraMover(simulationCamera, simulationViewport);
+
 		inputMultiplexer.addProcessor(cameraMover);
+		inputMultiplexer.addProcessor(simulation.getInputProcessor());
         lastUpdateTime = System.currentTimeMillis();
 	}
 
@@ -81,7 +83,6 @@ public class SimulationApp extends ApplicationAdapter {
 
 		simFontCamera.viewportWidth = simulationViewport.getScreenWidth();
 		simFontCamera.viewportHeight = simulationViewport.getScreenHeight();
-
 
 		//updateSimulationScreenSize(width, height);
 		//updateMenuScreenSize(width, height);
@@ -207,7 +208,22 @@ public class SimulationApp extends ApplicationAdapter {
 	}
 
 	public void resetSimulation() {
+		inputMultiplexer.removeProcessor(simulation.getInputProcessor());
 		simulation.dispose();
-		simulation = new Simulation();
+
+		simulation = new Simulation(this);
+		inputMultiplexer.addProcessor(simulation.getInputProcessor());
+	}
+
+	public OrthographicCamera getWorldCamera() {
+		return simulationCamera;
+	}
+
+	public OrthographicCamera getFontCamera() {
+		return simFontCamera;
+	}
+
+	public ScreenViewport getWorldViewport() {
+		return simulationViewport;
 	}
 }
