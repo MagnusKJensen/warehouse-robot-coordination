@@ -17,7 +17,7 @@ public class Node<T> {
         if(this.getParent()!=null){
             this.getParent().makeRoot(this);
             if(node.equals(this)){
-                this.setParent(null);
+                this.removeParent();
                 return;
             }
             //make sure we remove the parents child node from list of children before we set the child as the parent of the parent.
@@ -35,6 +35,9 @@ public class Node<T> {
         this.parent = parent;
         this.parent.children.add(this);
     }
+    public void removeParent(){
+        this.parent = null;
+    }
 
     public Node<T> getParent() {
         if(parent==null){
@@ -46,6 +49,7 @@ public class Node<T> {
     public void removeChild(Node<T> child){
         if(children.contains(child)){
             children.remove(child);
+            child.removeParent();
         }
     }
     public List<Node<T>> getChildren() {
