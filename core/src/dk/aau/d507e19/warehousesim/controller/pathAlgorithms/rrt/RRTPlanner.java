@@ -1,16 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt;
-import dk.aau.d507e19.warehousesim.SimulationApp;
-import dk.aau.d507e19.warehousesim.WarehouseSpecs;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Node;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Path;
-import dk.aau.d507e19.warehousesim.controller.robot.Robot;
-
-import java.lang.Math;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class RRTPlanner implements PathFinder {
 

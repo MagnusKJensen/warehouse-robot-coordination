@@ -1,4 +1,4 @@
-package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
+package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt;
 
 import java.util.ArrayList;
 import java.util.List;
