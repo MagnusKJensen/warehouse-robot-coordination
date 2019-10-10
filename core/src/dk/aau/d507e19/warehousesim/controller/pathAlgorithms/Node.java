@@ -20,24 +20,20 @@ public class Node<T> {
                 this.setParent(null);
                 return;
             }
+            //make sure we remove the parents child node from list of children before we set the child as the parent of the parent.
+            this.removeChild(node);
             this.setParent(node);
             return;
         }
         this.setParent(node);
     }
 
-
-
     public void setParent(Node<T> parent) {
         if(this.getParent()!=null){
             this.getParent().removeChild(this);
         }
         this.parent = parent;
-    }
-
-    public void addChild(Node<T> child){
-        children.add(child);
-        child.setParent(this);
+        this.parent.children.add(this);
     }
 
     public Node<T> getParent() {
