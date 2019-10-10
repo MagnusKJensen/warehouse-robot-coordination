@@ -33,4 +33,24 @@ public class NodeTest {
         assertFalse(root.getChildren().contains(node1));
     }
 
+    @Test
+    public void makeRootTest(){
+        rootLeftLeftLeftLeft.makeRoot();
+        assertNull(rootLeftLeftLeftLeft.getParent());
+        //Assert that the old parent is now a child to root
+        assertTrue(rootLeftLeftLeftLeft.getChildren().contains(rootLeftLeftLeft));
+        assertEquals(rootLeftLeftLeftLeft,rootLeftLeftLeft.getParent());
+        //Continue for the rest of the tree, until the old root is hit
+        assertTrue(rootLeftLeftLeft.getChildren().contains(rootLeftLeft));
+        assertEquals(rootLeftLeftLeft,rootLeftLeft.getParent());
+
+        assertTrue(rootLeftLeft.getChildren().contains(rootLeft));
+        assertEquals(rootLeftLeft,rootLeft.getParent());
+
+        assertTrue(rootLeft.getChildren().contains(root));
+        assertEquals(rootLeft,root.getParent());
+
+
+    }
+
 }
