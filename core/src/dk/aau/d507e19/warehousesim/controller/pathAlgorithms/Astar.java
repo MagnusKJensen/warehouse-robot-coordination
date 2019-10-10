@@ -27,7 +27,6 @@ public class Astar implements PathFinder {
         this.robotSpeedPerBin = robotSpeedPerBin;
         this.robotID = robotID;
         this.pathManager = pathManager;
-
     }
 
     public AStarTile[][] fillGrid(int gridLength, int gridHeight) {
@@ -58,38 +57,26 @@ public class Astar implements PathFinder {
         //Checks every potential neighbor to currentTile the same way.
 
         // Checks if neighbor is valid with a valid coordinate
-        if (currentTile.getCurrentYPosition() - 1 >= 0 && isTileReserved(currentTile)) {
+        if (currentTile.getCurrentYPosition() - 1 >= 0 && pathManager.isTileReserved(currentTile, simulatedTime, robotSpeedPerBin)) {
             //  if (currentTile.getCurrentYPosition() - 1 >= 0 ) {
             // Adds Neighbor to openList if valid
             addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() - 1]);
         }
-        if (currentTile.getCurrentYPosition() + 1 < grid.length && isTileReserved(currentTile)) {
+        if (currentTile.getCurrentYPosition() + 1 < grid.length && pathManager.isTileReserved(currentTile, simulatedTime, robotSpeedPerBin)) {
             //  if (currentTile.getCurrentYPosition() + 1 < grid.length ) {
             addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() + 1]);
         }
-        if (currentTile.getCurrentXPosition() - 1 >= 0 && isTileReserved(currentTile)) {
+        if (currentTile.getCurrentXPosition() - 1 >= 0 && pathManager.isTileReserved(currentTile, simulatedTime, robotSpeedPerBin)) {
             //  if (currentTile.getCurrentXPosition() - 1 >= 0) {
             addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() - 1][currentTile.getCurrentYPosition()]);
         }
-        if (currentTile.getCurrentXPosition() + 1 < grid.length && isTileReserved(currentTile)) {
+        if (currentTile.getCurrentXPosition() + 1 < grid.length && pathManager.isTileReserved(currentTile, simulatedTime, robotSpeedPerBin)) {
             //  if (currentTile.getCurrentXPosition() + 1 < grid.length ) {
             addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() + 1][currentTile.getCurrentYPosition()]);
         }
     }
 
-    public boolean isTileReserved(AStarTile currentTile) {
-        ArrayList<Reservation>[][] gridOfResevations = pathManager.getGridOfResevations();
-        for (Reservation res : gridOfResevations[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition()]) {
-            if (Math.ceil(simulatedTime + robotSpeedPerBin * currentTile.getG()) == Math.ceil(res.getTimeTileIsReserved()) || res.isReserved) {
-                return false;
-            }
-
-        }
-        return true;
-    }
-
     public void addNeighborTileToOpenList(AStarTile neighborTile) {
-
         // Makes new dummy tile
         AStarTile tileToDelete = null;
 
@@ -172,15 +159,12 @@ public class Astar implements PathFinder {
 
         }
         finalPath.add(new GridCoordinate(closedList.get(0).getCurrentXPosition(), closedList.get(0).getCurrentYPosition()));
-
     }
 
     @Override
     public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
-
         xEndposition = destination.getX();
         yEndposition = destination.getY();
-
 
         // Adds the starting tile to closed list.
         addStartTileToClosedList(start.getX(), start.getY());

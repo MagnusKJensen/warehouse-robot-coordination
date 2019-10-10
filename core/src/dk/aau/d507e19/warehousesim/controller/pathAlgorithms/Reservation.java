@@ -5,7 +5,6 @@ public class Reservation {
     float timeTileIsReserved;
     int xCordinate;
     int yCordinate;
-    boolean isReserved = false;
 
     public Reservation(int robotID, float timeTileIsReserved) {
         this.robotID = robotID;
