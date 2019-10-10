@@ -65,7 +65,7 @@ public class RRTPlannerTest {
             return true;
         }
 
-        if(rrtPlanner.getDistanceBetweenPoints(prev, current) == 1.0){
+        if(Math.sqrt(Math.pow(current.getX() - prev.getX(), 2) + Math.pow(current.getY() - prev.getY(), 2)) == 1.0){
             return true;
         }
         return false;
