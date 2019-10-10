@@ -13,9 +13,13 @@ public class Node<T> {
         this.parent = parent;
     }
 
-    public void makeRoot(Node<T> node){
+    public void makeRoot(){
+        this.updateTree(this);
+    }
+
+    private void updateTree(Node<T> node){
         if(this.getParent()!=null){
-            this.getParent().makeRoot(this);
+            this.getParent().updateTree(this);
             if(node.equals(this)){
                 this.removeParent();
                 return;
