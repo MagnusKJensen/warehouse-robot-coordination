@@ -71,8 +71,16 @@ public class Bin {
 
     @Override
     public String toString() {
-        return "Bin{" +
-                "products=" + products +
-                '}';
+        if(products.isEmpty()){
+            return "Bin{}";
+        } else {
+            String s;
+            s = "Bin{\n";
+            for (Product prod : products) {
+                s = s.concat(prod + "\n");
+            }
+            s = s.concat("}");
+            return s;
+        }
     }
 }

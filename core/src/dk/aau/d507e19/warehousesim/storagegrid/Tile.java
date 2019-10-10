@@ -75,4 +75,12 @@ public class Tile implements Drawable {
                 && collider.getY() <= getPosY() + TILE_SIZE;
         return withInXBounds && withInYBounds;
     }
+
+    @Override
+    public String toString() {
+        return "Tile{" +
+                "posX=" + posX +
+                ", posY=" + posY +
+                '}';
+    }
 }

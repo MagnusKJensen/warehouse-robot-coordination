@@ -52,8 +52,8 @@ public class BinTile extends Tile {
 
     @Override
     public String toString() {
-        return "BinTile{" +
-                "bin=" + bin +
+        return "BinTile{" + "posX = " + getPosX() + ", posY = " + getPosY() +
+                ", \nbin=" + bin +
                 '}';
     }
 }

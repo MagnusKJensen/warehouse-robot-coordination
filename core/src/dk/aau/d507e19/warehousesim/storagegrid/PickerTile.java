@@ -17,4 +17,10 @@ public class PickerTile extends Tile {
         batch.draw(GraphicsManager.getTexture("Simulation/tiles/pickerPoint.png"), this.getPosX(), this.getPosY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
         batch.end();
     }
+
+    @Override
+    public String toString() {
+        return "PickerTile{posX=" + getPosX() +
+                ", posY=" + getPosY() + "}";
+    }
 }
