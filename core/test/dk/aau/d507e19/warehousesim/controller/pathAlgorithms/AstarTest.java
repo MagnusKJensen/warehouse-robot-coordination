@@ -96,12 +96,7 @@ public class AstarTest {
         //astar.addStartTileToClosedList(xStart, yStart);
 
         // Checks neighbors and adds them to openList
-        astar.checkNeighborValidity();
-
-
-
-
-
+        // astar.checkNeighborValidity();
     }
 
     @Test

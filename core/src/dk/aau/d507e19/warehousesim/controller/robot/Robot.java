@@ -1,16 +1,12 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.sun.tools.javac.comp.Todo;
 import dk.aau.d507e19.warehousesim.*;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
 import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
-
-import java.util.ArrayList;
 
 public class Robot {
     private Simulation simulation;
@@ -47,7 +43,7 @@ public class Robot {
     }
 
     public void update() {
-        if (currentStatus == Status.PICK_UP_TASK_ASSIGNED) {
+        if (currentStatus == Status.TASK_ASSIGNED_PICK_UP) {
             // If destination is reached start pickup
             if (pathToTarget.getCornersPath().size() == 1) pickupProduct();
             // If movement still needed
@@ -57,7 +53,7 @@ public class Robot {
             if(pathToTarget.getCornersPath().size() == 1) deliverProduct();
             // If movement still needed
             else moveWithLineTraverser();
-        } else if (currentStatus == Status.MOVE_TASK_ASSIGNED){
+        } else if (currentStatus == Status.TASK_ASSIGNED_MOVE){
             // If target reached, show as available
             if(pathToTarget.getCornersPath().size() == 1) currentStatus = Status.AVAILABLE;
             // If movement still needed
@@ -108,8 +104,8 @@ public class Robot {
             case AVAILABLE:
                 batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotAvailable.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
-            case PICK_UP_TASK_ASSIGNED:
-            case MOVE_TASK_ASSIGNED:
+            case TASK_ASSIGNED_PICK_UP:
+            case TASK_ASSIGNED_MOVE:
                 batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotTaskAssigned.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
             case TASK_ASSIGNED_CARRYING:
@@ -124,7 +120,7 @@ public class Robot {
     public void assignTask(Task task) {
         currentTask = task;
         if(task.getAction() == Action.PICK_UP){
-            currentStatus = Status.PICK_UP_TASK_ASSIGNED;
+            currentStatus = Status.TASK_ASSIGNED_PICK_UP;
             ticksLeftForCurrentTask = pickUpTimeInTicks;
         } else if (task.getAction() == Action.DELIVER){
             if(currentStatus != Status.CARRYING) throw new IllegalArgumentException("Robot is not carrying anything");
@@ -135,7 +131,7 @@ public class Robot {
             currentStatus = Status.TASK_ASSIGNED_CARRYING;
             ticksLeftForCurrentTask = deliverTimeInTicks;
         } else if (task.getAction() == Action.MOVE){
-            currentStatus = Status.MOVE_TASK_ASSIGNED;
+            currentStatus = Status.TASK_ASSIGNED_MOVE;
             ticksLeftForCurrentTask = 0;
         }
 
@@ -206,8 +202,8 @@ public class Robot {
 
     public boolean hasPlannedPath(){
         return pathToTarget != null
-                && (currentStatus == Status.PICK_UP_TASK_ASSIGNED
-                || currentStatus == Status.MOVE_TASK_ASSIGNED
+                && (currentStatus == Status.TASK_ASSIGNED_PICK_UP
+                || currentStatus == Status.TASK_ASSIGNED_MOVE
                 || currentStatus == Status.TASK_ASSIGNED_CARRYING);
     }
 
