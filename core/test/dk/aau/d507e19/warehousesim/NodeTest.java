@@ -37,7 +37,7 @@ public class NodeTest {
     public void makeRootTest(){
         rootLeftLeftLeftLeft.makeRoot();
         assertNull(rootLeftLeftLeftLeft.getParent());
-        //Assert that the old parent is now a child to root
+        //Assert that the old parent is now a child to the old child
         assertTrue(rootLeftLeftLeftLeft.getChildren().contains(rootLeftLeftLeft));
         assertEquals(rootLeftLeftLeftLeft,rootLeftLeftLeft.getParent());
         //Continue for the rest of the tree, until the old root is hit
@@ -49,6 +49,10 @@ public class NodeTest {
 
         assertTrue(rootLeft.getChildren().contains(root));
         assertEquals(rootLeft,root.getParent());
+
+        //Assert that parent and child is swapped
+        assertFalse(rootLeftLeft.getChildren().contains(rootLeftLeftLeft));
+        assertNotEquals(rootLeftLeft, rootLeftLeftLeft.getParent());
 
 
     }
