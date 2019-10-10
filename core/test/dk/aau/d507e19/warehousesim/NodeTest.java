@@ -7,21 +7,30 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class NodeTest {
-    Node<GridCoordinate> root,oneleft,oneright,twoleft,twoleftleft, twoleftleftleft;
-
+    Node<Object> root,rootLeft,rootRight,rootLeftLeft,rootLeftLeftLeft,rootLeftLeftLeftLeft;
 
     @Before
-    public void makeTree(){
-        root = new Node<>(new GridCoordinate(0,0),null);
-        oneleft = new Node<>(new GridCoordinate(1,0),null);
-        twoleft = new Node<>(new GridCoordinate(1,1),null);
-        oneright = new Node<>(new GridCoordinate(0,1),null);
-        twoleftleft = new Node<>(new GridCoordinate(1,2),null);
-        twoleftleftleft = new Node<>(new GridCoordinate(2,2),null);
-        root.addChild(oneleft);
-        root.addChild(oneright);
-        oneleft.addChild(twoleft);
-        twoleft.addChild(twoleftleft);
-        twoleftleft.addChild(twoleftleftleft);
+    public void makeTree() {
+        root = new Node<>(new Object(), null);
+        rootLeft = new Node<>(new Object(), root);
+        rootRight = new Node<>(new Object(), root);
+        rootLeftLeft = new Node<>(new Object(), rootLeft);
+        rootLeftLeftLeft = new Node<>(new Object(), rootLeftLeft);
+        rootLeftLeftLeftLeft = new Node<>(new Object(), rootLeftLeftLeft);
     }
+
+    @Test
+    public void setParentTest(){
+        //create node without a parent
+        Node<Object> node1 = new Node<>(new Object(),null);
+        assertNull(node1.getParent());
+        //set root as node1's parent
+        node1.setParent(root);
+        assertTrue(root.getChildren().contains(node1));
+        //set rootLeft to be parent instead
+        node1.setParent(rootLeft);
+        assertTrue(rootLeft.getChildren().contains(node1));
+        assertFalse(root.getChildren().contains(node1));
+    }
+
 }
