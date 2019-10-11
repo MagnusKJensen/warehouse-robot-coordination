@@ -69,9 +69,7 @@ public class AStarTile {
     }
 
     public void calculateH(int xFinalPosition, int yFinalPosition) {
-
         H = Math.abs((xFinalPosition - currentXPosition)) + Math.abs((yFinalPosition - currentYPosition));
-
     }
 
     public int calculateG(int previousG) {
@@ -80,12 +78,9 @@ public class AStarTile {
     }
 
     public int calculateF() {
-
         F = G + H;
         return F;
     }
-
-
 
     @Override
     public String toString() {

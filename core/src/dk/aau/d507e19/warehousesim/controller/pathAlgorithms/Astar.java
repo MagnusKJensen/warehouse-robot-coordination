@@ -87,7 +87,7 @@ public class Astar implements PathFinder {
     public boolean isTileReserved(AStarTile currentTile) {
         ArrayList<Reservation>[][] gridOfResevations = pathManager.getGridOfResevations();
         for (Reservation res : gridOfResevations[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition()]) {
-            if (Math.ceil(simulatedTime + robotMaxSpeedPerBin * currentTile.getG()) == Math.ceil(res.getTimeTileIsReserved()) || res.isReserved) {
+            if (Math.ceil(simulatedTime + robotMaxSpeedPerBin * currentTile.getG()) == Math.ceil(res.getTimeTileIsReserved())) {
                 return false;
             }
 
@@ -202,6 +202,7 @@ public class Astar implements PathFinder {
         //Reverses final path so it is in correct order
         Collections.reverse(finalPath);
         pathManager.addReservationToList(finalPath, simulatedTime, robotID, robotMaxSpeedPerBin);
+
         //  pathManager.printReservations();
         return new Path(finalPath);
     }
