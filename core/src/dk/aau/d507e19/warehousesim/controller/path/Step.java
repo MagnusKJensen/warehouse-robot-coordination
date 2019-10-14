@@ -48,8 +48,20 @@ public class Step {
         }
     }
 
+    public boolean isWaitingStep(){
+        return stepType == StepType.WAITING_STEP;
+    }
+
     public GridCoordinate getGridCoordinate(){
         return gridCoordinate;
+    }
+
+    public long getWaitTimeInTicks(){
+        if(!isWaitingStep())
+            throw new IllegalStateException("Cannot call getWaitTimeInTicks() on a non-wait step; " +
+                    "This step is a " + stepType.name());
+
+        return waitTimeInTicks;
     }
 
 }

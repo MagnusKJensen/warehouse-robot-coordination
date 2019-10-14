@@ -78,6 +78,18 @@ public class StepTest {
         assertFalse(secondStep.isStepValidContinuationOf(firstStep));
     }
 
+    @Test (expected = IllegalStateException.class)
+    public void getTimeOnMovementStepTest() {
+        Step step = new Step(8, 9);
+        step.getWaitTimeInTicks();
+    }
+
+    @Test
+    public void getTimeTest() {
+        Step step = new Step(8, 9, 50);
+        assertEquals(50, step.getWaitTimeInTicks());
+    }
+
 
 
 
