@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import dk.aau.d507e19.warehousesim.Drawable;
 import dk.aau.d507e19.warehousesim.GraphicsManager;
+import dk.aau.d507e19.warehousesim.Position;
 
 public class Tile implements Drawable {
 
@@ -65,5 +66,21 @@ public class Tile implements Drawable {
 
     public int getPosY() {
         return posY;
+    }
+
+    public boolean collidesWith(Position collider){
+        boolean withInXBounds = collider.getX() >= getPosX()
+                && collider.getX() <= getPosX() + TILE_SIZE;
+        boolean withInYBounds = collider.getY() >= getPosY()
+                && collider.getY() <= getPosY() + TILE_SIZE;
+        return withInXBounds && withInYBounds;
+    }
+
+    @Override
+    public String toString() {
+        return "Tile{" +
+                "posX=" + posX +
+                ", posY=" + posY +
+                '}';
     }
 }

@@ -1,6 +1,8 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.sun.tools.javac.comp.Todo;
 import dk.aau.d507e19.warehousesim.*;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
@@ -9,6 +11,8 @@ import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
 import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 
+import java.util.ArrayList;
+
 public class Robot {
     private Simulation simulation;
     private Position currentPosition;
@@ -16,7 +20,7 @@ public class Robot {
     private Status currentStatus;
     private float currentSpeed;
     private Path pathToTarget;
-    private Bin bin;
+    private Bin bin = null;
     private int robotID;
 
     /**
@@ -81,8 +85,8 @@ public class Robot {
             int y = currentTask.getDestination().getY();
 
             Tile tile = simulation.getStorageGrid().getTile(x,y);
-            if(tile instanceof BinTile){
-                ((BinTile) tile).takeBin();
+            if(tile instanceof BinTile && ((BinTile) tile).hasBin()){
+                bin = ((BinTile) tile).releaseBin();
             }
             else throw new RuntimeException("Robot could not pick up bin at (" + x + "," + y + ")");
             currentStatus = Status.CARRYING;
@@ -226,9 +230,6 @@ public class Robot {
     }
 
     public boolean collidesWith(Position collider){
-        System.out.println("Collider : " + collider.getX() + " , " + collider.getY());
-        System.out.println("Robot : " + currentPosition.getX() + " , " + collider.getY());
-
         boolean withInXBounds = collider.getX() >= currentPosition.getX()
                 && collider.getX() <= currentPosition.getX() + ROBOT_SIZE;
         boolean withInYBounds = collider.getY() >= currentPosition.getY()
