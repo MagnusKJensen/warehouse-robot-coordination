@@ -21,7 +21,7 @@ public class PathManager {
         Reservation reservation;
         int i = 1;
         for (GridCoordinate gridcordinate : arrayList) {
-            reservation = new Reservation(robotID, simulatedtime + robotSpeedPerBin * i);
+            reservation = new Reservation(robotID, (simulatedtime + robotSpeedPerBin - robotSpeedPerBin / 2) * i, (simulatedtime + robotSpeedPerBin + robotSpeedPerBin / 2) * i);
             reservation.setxCordinate(gridcordinate.getX());
             reservation.setyCordinate(gridcordinate.getY());
             gridOfResevations[gridcordinate.getX()][gridcordinate.getY()].add(reservation);
@@ -67,7 +67,7 @@ public class PathManager {
     public boolean isTileReserved(AStarTile currentTile, float simulatedTime, float robotSpeedPerBin) {
         ArrayList<Reservation>[][] gridOfResevations = getGridOfResevations();
         for (Reservation res : gridOfResevations[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition()]) {
-            if (Math.ceil(simulatedTime + robotSpeedPerBin * currentTile.getG()) == Math.ceil(res.getTimeTileIsReserved())) {
+            if (simulatedTime + robotSpeedPerBin * currentTile.getG() > res.getTimeTileIsReservedFrom() && simulatedTime + robotSpeedPerBin * currentTile.getG() < res.getTimeTileIsReservedTo()) {
                 return false;
             }
         }
