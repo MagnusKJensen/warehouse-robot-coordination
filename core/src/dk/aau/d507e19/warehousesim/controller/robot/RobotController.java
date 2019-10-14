@@ -1,6 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 
@@ -14,7 +15,7 @@ public class RobotController {
     public RobotController(Server server, Robot robot){
         this.server = server;
         this.robot = robot;
-        this.pathFinder = new Astar(server, robot);
+        this.pathFinder = new DummyPathFinder();
     }
 
     public RobotController(Server server, PathFinder pathFinder, TaskManager taskManager, Robot robot){
