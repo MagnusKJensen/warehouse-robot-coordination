@@ -52,7 +52,8 @@ public class GridCoordinate {
 
     public boolean isNeighbourOf(GridCoordinate potentialNeighbour) {
         boolean isConnectedHorizontally = this.x == potentialNeighbour.x + 1 || this.x == potentialNeighbour.x - 1;
-        boolean isConnectedVertically = this.y == potentialNeighbour.y + 1 || this.x == potentialNeighbour.y - 1;
-        return isConnectedHorizontally || isConnectedVertically;
+        boolean isConnectedVertically = this.y == potentialNeighbour.y + 1 || this.y == potentialNeighbour.y - 1;
+        return (isConnectedHorizontally && potentialNeighbour.y == this.y) ||
+                (isConnectedVertically && potentialNeighbour.x == this.x);
     }
 }

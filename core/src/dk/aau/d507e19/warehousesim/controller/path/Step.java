@@ -6,14 +6,20 @@ public class Step {
 
     private final GridCoordinate gridCoordinate;
     private StepType stepType;
+    private long waitTimeInTicks;
 
     public enum StepType {
         WAITING_STEP, MOVEMENT_STEP;
     }
 
     public Step(GridCoordinate gridCoordinate, long waitTimeInTicks){
-        StepType stepType = StepType.WAITING_STEP;
+        this.stepType = StepType.WAITING_STEP;
         this.gridCoordinate = gridCoordinate;
+        this.waitTimeInTicks = waitTimeInTicks;
+
+        if(waitTimeInTicks == 0)
+            throw new IllegalArgumentException("Wait time must not be 0; " +
+                    "Omit the wait time entirely to create a movement step instead of a waiting step");
     }
 
     public Step(GridCoordinate gridCoordinate){
