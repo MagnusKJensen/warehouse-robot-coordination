@@ -123,10 +123,10 @@ public class Robot {
 
     public void assignTask(Task task) {
         currentTask = task;
-        if(task.getAction() == Action.PICK_UP){
+        if(task.getRoboAction() == RoboAction.PICK_UP){
             currentStatus = Status.TASK_ASSIGNED_PICK_UP;
             ticksLeftForCurrentTask = pickUpTimeInTicks;
-        } else if (task.getAction() == Action.DELIVER){
+        } else if (task.getRoboAction() == RoboAction.DELIVER){
             if(currentStatus != Status.CARRYING) throw new IllegalArgumentException("Robot is not carrying anything");
             // If target is not a PickerTile
             if(!(simulation.getStorageGrid().getTile(task.getDestination().getX(), task.getDestination().getY()) instanceof PickerTile)){
@@ -134,7 +134,7 @@ public class Robot {
             }
             currentStatus = Status.TASK_ASSIGNED_CARRYING;
             ticksLeftForCurrentTask = deliverTimeInTicks;
-        } else if (task.getAction() == Action.MOVE){
+        } else if (task.getRoboAction() == RoboAction.MOVE){
             currentStatus = Status.TASK_ASSIGNED_MOVE;
             ticksLeftForCurrentTask = 0;
         }

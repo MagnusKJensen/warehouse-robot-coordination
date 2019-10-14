@@ -1,23 +1,19 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
-import dk.aau.d507e19.warehousesim.Position;
-
-import java.util.ArrayList;
-
 public class Task {
     private GridCoordinate destination;
-    private Action action;
+    private RoboAction roboAction;
 
-    public Task(GridCoordinate destination, Action action) {
+    public Task(GridCoordinate destination, RoboAction roboAction) {
         this.destination = destination;
-        this.action = action;
+        this.roboAction = roboAction;
     }
 
     public GridCoordinate getDestination() {
         return destination;
     }
 
-    public Action getAction() {
-        return action;
+    public RoboAction getRoboAction() {
+        return roboAction;
     }
 }
