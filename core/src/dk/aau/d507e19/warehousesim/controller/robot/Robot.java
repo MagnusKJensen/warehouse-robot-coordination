@@ -1,17 +1,12 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.sun.tools.javac.comp.Todo;
 import dk.aau.d507e19.warehousesim.*;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
+import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
 import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
-
-import java.util.ArrayList;
 
 public class Robot {
     private Simulation simulation;

@@ -1,8 +1,11 @@
-package dk.aau.d507e19.warehousesim.controller.robot;
+package dk.aau.d507e19.warehousesim.controller.path;
+
+import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 
 import java.util.ArrayList;
 
 public class Path {
+
     ArrayList<GridCoordinate> path = new ArrayList<>();
     ArrayList<GridCoordinate> originalPath = new ArrayList<>();
 

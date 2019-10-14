@@ -2,13 +2,10 @@ package dk.aau.d507e19.warehousesim;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Node;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.RRTPlanner;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import dk.aau.d507e19.warehousesim.controller.robot.Path;
-import dk.aau.d507e19.warehousesim.controller.robot.Robot;
-import org.junit.Before;
+import dk.aau.d507e19.warehousesim.controller.path.Path;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.*;
 

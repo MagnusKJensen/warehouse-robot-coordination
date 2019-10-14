@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
+import dk.aau.d507e19.warehousesim.controller.path.Path;
 import org.junit.Test;
 
 import java.util.ArrayList;
