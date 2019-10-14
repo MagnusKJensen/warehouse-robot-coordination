@@ -67,4 +67,8 @@ public class PathTraversal implements Action{
     public boolean isDone() {
         return actions.isEmpty();
     }
+
+    public ArrayList<Action> getRemainingActions(){
+        return actions;
+    }
 }

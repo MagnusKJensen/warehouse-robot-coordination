@@ -159,7 +159,7 @@ public class Robot {
         return currentPosition;
     }
 
-    void decelerate() {
+    public void decelerate() {
         if (currentSpeed > 0) {
             currentSpeed -= decelerationBinSecond / (float) SimulationApp.TICKS_PER_SECOND;
             if (currentSpeed < minSpeedBinsPerSecond)
@@ -167,7 +167,7 @@ public class Robot {
         }
     }
 
-    void accelerate() {
+    public void accelerate() {
         if (currentSpeed < maxSpeedBinsPerSecond) {
             currentSpeed += accelerationBinSecond / (float) SimulationApp.TICKS_PER_SECOND;
             if (currentSpeed > maxSpeedBinsPerSecond)
