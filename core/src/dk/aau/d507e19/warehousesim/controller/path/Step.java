@@ -2,6 +2,9 @@ package dk.aau.d507e19.warehousesim.controller.path;
 
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 
+import java.util.ArrayList;
+import java.util.Objects;
+
 public class Step {
 
     private final GridCoordinate gridCoordinate;
@@ -64,4 +67,34 @@ public class Step {
         return waitTimeInTicks;
     }
 
+    public int getX() {
+        return gridCoordinate.getX();
+    }
+
+    public int getY() {
+        return gridCoordinate.getY();
+    }
+
+    public static ArrayList<Step> fromGridCoordinates(ArrayList<GridCoordinate> gridCoordinates){
+        ArrayList<Step> steps = new ArrayList<>();
+        for(GridCoordinate coord : gridCoordinates){
+           steps.add(new Step(coord));
+        }
+        return steps;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Step step = (Step) o;
+        return waitTimeInTicks == step.waitTimeInTicks &&
+                Objects.equals(gridCoordinate, step.gridCoordinate) &&
+                stepType == step.stepType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(gridCoordinate, stepType, waitTimeInTicks);
+    }
 }

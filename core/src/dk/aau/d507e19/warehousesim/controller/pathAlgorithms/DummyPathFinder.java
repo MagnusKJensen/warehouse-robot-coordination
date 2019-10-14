@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
 
+import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 
@@ -9,11 +10,11 @@ public class DummyPathFinder implements PathFinder {
 
     @Override
     public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
-        ArrayList<GridCoordinate> pathList = new ArrayList<>();
+        ArrayList<Step> pathList = new ArrayList<>();
 
-        pathList.addAll(generateHorizontalLine(start.getX(), destination.getX(), start.getY()));
+        pathList.addAll(Step.fromGridCoordinates(generateHorizontalLine(start.getX(), destination.getX(), start.getY())));
         pathList.remove(pathList.size() - 1);
-        pathList.addAll(generateVerticalLine(start.getY(), destination.getY(), destination.getX()));
+        pathList.addAll(Step.fromGridCoordinates(generateVerticalLine(start.getY(), destination.getY(), destination.getX())));
 
         return new Path(pathList);
     }

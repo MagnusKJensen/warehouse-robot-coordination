@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import dk.aau.d507e19.warehousesim.GraphicsManager;
+import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
@@ -66,9 +67,10 @@ public class StorageGrid {
     }
 
 
-    public void renderPathOverlay(ArrayList<GridCoordinate> coordinates, ShapeRenderer shapeRenderer){
-        for(GridCoordinate gridCoordinate : coordinates)
-            tiles[gridCoordinate.getX()][gridCoordinate.getY()].renderOverlay(shapeRenderer);
+    public void renderPathOverlay(ArrayList<Step> steps, ShapeRenderer shapeRenderer){
+        for(Step step : steps)
+            tiles[step.getX()][step.getY()].renderOverlay(shapeRenderer);
+        // TODO: 14/10/2019 Special color for wait step and for destination
     }
 
 

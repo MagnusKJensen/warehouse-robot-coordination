@@ -49,17 +49,17 @@ public class Robot {
     public void update() {
         if (currentStatus == Status.TASK_ASSIGNED_PICK_UP) {
             // If destination is reached start pickup
-            if (pathToTarget.getCornersPath().size() == 1) pickupProduct();
+            if (pathToTarget.getStrippedPath().size() == 1) pickupProduct();
             // If movement still needed
             else moveWithLineTraverser();
         } else if (currentStatus == Status.TASK_ASSIGNED_CARRYING){
             // If delivery station already reached
-            if(pathToTarget.getCornersPath().size() == 1) deliverProduct();
+            if(pathToTarget.getStrippedPath().size() == 1) deliverProduct();
             // If movement still needed
             else moveWithLineTraverser();
         } else if (currentStatus == Status.TASK_ASSIGNED_MOVE){
             // If target reached, show as available
-            if(pathToTarget.getCornersPath().size() == 1) currentStatus = Status.AVAILABLE;
+            if(pathToTarget.getStrippedPath().size() == 1) currentStatus = Status.AVAILABLE;
             // If movement still needed
             else moveWithLineTraverser();
         }
@@ -94,10 +94,10 @@ public class Robot {
     private void moveWithLineTraverser(){
         currentTraverser.traverse();
         if (currentTraverser.destinationReached()){
-            pathToTarget.getCornersPath().remove(0);
+            pathToTarget.getStrippedPath().remove(0);
 
             // Create new traverser for next line in the path
-            if(pathToTarget.getCornersPath().size() > 1)
+            if(pathToTarget.getStrippedPath().size() > 1)
                 assignTraverser();
         }
     }
@@ -143,12 +143,12 @@ public class Robot {
                 new GridCoordinate((int) currentPosition.getX(), (int) currentPosition.getY()), task.getDestination());
 
         // If the robot has to move
-        if(pathToTarget.getCornersPath().size() > 1) assignTraverser();
+        if(pathToTarget.getStrippedPath().size() > 1) assignTraverser();
     }
 
     private void assignTraverser() {
-        currentTraverser = new LineTraverser(pathToTarget.getCornersPath().get(0),
-                pathToTarget.getCornersPath().get(1), this);
+        currentTraverser = new LineTraverser(pathToTarget.getStrippedPath().get(0).getGridCoordinate(),
+                pathToTarget.getStrippedPath().get(1).getGridCoordinate(), this);
     }
 
     public void cancelTask() {
