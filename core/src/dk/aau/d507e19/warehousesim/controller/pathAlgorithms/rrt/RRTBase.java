@@ -3,12 +3,18 @@ package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public abstract class RRTBase {
+    Robot robot;
+
+    public RRTBase(Robot robot) {
+        this.robot = robot;
+    }
 
     public Node<GridCoordinate> root, destinationNode,shortestLengthNode;
     GridCoordinate dest;

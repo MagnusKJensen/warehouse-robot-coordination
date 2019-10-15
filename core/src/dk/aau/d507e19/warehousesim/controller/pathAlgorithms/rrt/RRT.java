@@ -2,11 +2,15 @@ package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt;
 
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 
 import java.util.ArrayList;
 
 public class RRT extends RRTBase {
 
+    public RRT(Robot robot) {
+        super(robot);
+    }
 
     public ArrayList<GridCoordinate> generateRRTPath(GridCoordinate start, GridCoordinate destination) {
         boolean foundPath = false;
