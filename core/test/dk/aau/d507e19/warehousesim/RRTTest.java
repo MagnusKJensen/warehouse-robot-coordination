@@ -1,10 +1,8 @@
 package dk.aau.d507e19.warehousesim;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRT;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Path;
-import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -43,13 +41,33 @@ public class RRTTest {
 
     }
     @Test
-    public void generateRRTPathTest() {
+    public void generateRRTPathFromEmptyTest() {
         GridCoordinate start = new GridCoordinate(0,0);
         GridCoordinate dest = new GridCoordinate(8,8);
-        ArrayList<GridCoordinate> list = rrt.generateRRTPath(start,dest);
+        ArrayList<GridCoordinate> list = rrt.generateRRTPathFromEmpty(start,dest);
         assertTrue(isValidPath(start, dest, list));
         Path p = new Path(list);
 
+    }
+    @Test
+    public void generateRRTPathTest(){
+        //todo find a way to check that tree is actually re-used
+        GridCoordinate start = new GridCoordinate(0,0);
+        GridCoordinate dest1 = new GridCoordinate(6,8);
+        GridCoordinate dest2 = new GridCoordinate(12,7);
+        ArrayList<GridCoordinate> list;
+        //generate initial path
+        list = rrt.generateRRTPathFromEmpty(start,dest1);
+        assertTrue(isValidPath(start, dest1, list));
+        Path p = new Path(list);
+        //generate second path
+        list = rrt.generateRRTPath(dest1,dest2);
+        assertTrue(isValidPath(dest1,dest2,list));
+        Path p2 = new Path(list);
+        //generate third path
+        list = rrt.generateRRTPath(dest2,start);
+        assertTrue(isValidPath(dest2,start,list));
+        Path p3 = new Path(list);
     }
     public boolean isValidPath(GridCoordinate start, GridCoordinate destination, ArrayList<GridCoordinate> path){
         GridCoordinate prev = start;
