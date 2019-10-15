@@ -25,7 +25,6 @@ public class RRT extends RRTBase {
         return makePath(destinationNode);
     }
     public ArrayList<GridCoordinate> generateRRTPath(GridCoordinate start, GridCoordinate destination){
-        boolean foundPath = false;
         //if tree is empty
         if(allNodesMap.isEmpty()){
             //always returns the first path it finds
