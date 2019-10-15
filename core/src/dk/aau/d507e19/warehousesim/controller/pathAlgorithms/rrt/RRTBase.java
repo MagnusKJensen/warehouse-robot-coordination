@@ -43,7 +43,7 @@ public abstract class RRTBase {
         pos = edge.getDistanceBetweenPoints(new GridCoordinate(pos.getX(), pos.getY() - 1), randPos) < edge.getDistanceBetweenPoints(pos, randPos) ? new GridCoordinate(originalPos.getX(), originalPos.getY() -1 ) : pos;
 
         //System.out.println("NEW: "+ pos.toString()+"\nNEAR: " + originalPos.toString() + "\nRAND: " + randPos.toString()+"\n");
-        return new Node<>(pos, null);
+        return new Node<>(pos, null, false);
     }
 
     public Node<GridCoordinate> findNearestNeighbour(Node<GridCoordinate> tree, GridCoordinate randPos) {
@@ -147,6 +147,11 @@ public abstract class RRTBase {
         path = makePath(destNode.getParent());
         path.add(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY()));
         return path;
+    }
+
+    private void assignBlockedEdge(Node nodeToBeBlocked){
+        if(allNodesMap.containsKey(nodeToBeBlocked)){
+        }
     }
 
 }

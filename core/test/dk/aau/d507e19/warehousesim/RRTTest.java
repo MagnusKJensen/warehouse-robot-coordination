@@ -13,12 +13,12 @@ public class RRTTest {
     private Node<GridCoordinate> tree,oneleft,oneright,twoleft,tworight,twooneright;
     private RRT rrtPlanner = new RRT();
     public void generateTree(){
-        tree = new Node<GridCoordinate>(new GridCoordinate(0,0),null);
-        oneleft = new Node<GridCoordinate>(new GridCoordinate(0,1),null);
-        oneright = new Node<GridCoordinate>(new GridCoordinate(1,0),null);
-        twoleft = new Node<GridCoordinate>(new GridCoordinate(0,2),null);
-        tworight = new Node<GridCoordinate>(new GridCoordinate(2,0),null);
-        twooneright = new Node<GridCoordinate>(new GridCoordinate(2,1),null);
+        tree = new Node<GridCoordinate>(new GridCoordinate(0,0),null, false);
+        oneleft = new Node<GridCoordinate>(new GridCoordinate(0,1),null, false);
+        oneright = new Node<GridCoordinate>(new GridCoordinate(1,0),null, false);
+        twoleft = new Node<GridCoordinate>(new GridCoordinate(0,2),null, false);
+        tworight = new Node<GridCoordinate>(new GridCoordinate(2,0),null, false);
+        twooneright = new Node<GridCoordinate>(new GridCoordinate(2,1),null, false);
         tree.setParent(oneleft);
         tree.setParent(oneright);
         oneleft.setParent(twoleft);

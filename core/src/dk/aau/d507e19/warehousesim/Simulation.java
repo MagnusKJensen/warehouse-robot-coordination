@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 //import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTType;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 
@@ -31,7 +32,7 @@ public class Simulation {
     private void initRobots() {
         // Auto generate robots
         for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++) {
-            robots.add(new Robot(new Position(i,0), new RRTPlanner(), this));
+            robots.add(new Robot(new Position(i,0), new RRTPlanner(RRTType.RRT, null), this));
         }
 
         robots.add(new Robot(new Position(7,7), new DummyPathFinder(), this));

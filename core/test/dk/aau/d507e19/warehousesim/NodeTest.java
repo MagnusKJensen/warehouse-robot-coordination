@@ -11,18 +11,18 @@ public class NodeTest {
 
     @Before
     public void makeTree() {
-        root = new Node<>(new Object(), null);
-        rootLeft = new Node<>(new Object(), root);
-        rootRight = new Node<>(new Object(), root);
-        rootLeftLeft = new Node<>(new Object(), rootLeft);
-        rootLeftLeftLeft = new Node<>(new Object(), rootLeftLeft);
-        rootLeftLeftLeftLeft = new Node<>(new Object(), rootLeftLeftLeft);
+        root = new Node<>(new Object(), null, false);
+        rootLeft = new Node<>(new Object(), root, false);
+        rootRight = new Node<>(new Object(), root,false );
+        rootLeftLeft = new Node<>(new Object(), rootLeft,false);
+        rootLeftLeftLeft = new Node<>(new Object(), rootLeftLeft, false);
+        rootLeftLeftLeftLeft = new Node<>(new Object(), rootLeftLeftLeft, false);
     }
 
     @Test
     public void setParentTest() {
         //create node without a parent
-        Node<Object> node1 = new Node<>(new Object(), null);
+        Node<Object> node1 = new Node<>(new Object(), null, false);
         assertNull(node1.getParent());
         //set root as node1's parent
         node1.setParent(root);
@@ -67,8 +67,8 @@ public class NodeTest {
 
     @Test
     public void NodeTest() {
-        Node<Object> node1 = new Node<>(new Object(), null);
-        Node<Object> node2 = new Node<>(new Object(), node1);
+        Node<Object> node1 = new Node<>(new Object(), null, false);
+        Node<Object> node2 = new Node<>(new Object(), node1, false);
         assertTrue(node1.getChildren().contains(node2));
         assertEquals(node1, node2.getParent());
 

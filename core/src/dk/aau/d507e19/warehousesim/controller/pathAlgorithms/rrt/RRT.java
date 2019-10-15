@@ -11,7 +11,7 @@ public class RRT extends RRTBase {
     public ArrayList<GridCoordinate> generateRRTPath(GridCoordinate start, GridCoordinate destination) {
         boolean foundPath = false;
         dest = destination;
-        root = new Node<GridCoordinate>(start, null);
+        root = new Node<GridCoordinate>(start, null, false);
         //add root node to list of nodes
         allNodesMap.put(root.getData(),root);
         //Run until a route is found

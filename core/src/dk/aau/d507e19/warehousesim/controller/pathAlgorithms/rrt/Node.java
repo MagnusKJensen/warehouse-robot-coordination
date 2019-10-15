@@ -7,14 +7,21 @@ public class Node<T> {
     private T data;
     private Node<T> parent;
     private List<Node<T>> children = new ArrayList<>();
+    private boolean blockedStatus;
 
-    public Node(T data, Node<T> parent) {
+    public Node(T data, Node<T> parent, boolean blockedStatus) {
         this.data = data;
+        this.blockedStatus = blockedStatus;
         if (parent != null) {
             setParent(parent);
+
         } else {
             this.parent = parent;
         }
+    }
+
+    public void setBlockedStatus(boolean blockedStatus) {
+        this.blockedStatus = blockedStatus;
     }
 
     public void makeRoot() {
