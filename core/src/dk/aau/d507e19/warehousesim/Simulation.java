@@ -14,6 +14,8 @@ import dk.aau.d507e19.warehousesim.storagegrid.ProductDistributor;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
+import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
+import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
 
 import java.util.ArrayList;
 
@@ -68,20 +70,18 @@ public class Simulation {
             robots.add(new Robot(new Position(i, 0), i, this));
 
         // Assign test task to first robot
-        robots.get(0).assignOrder(new Order(new GridCoordinate(3,6), RoboAction.PICK_UP));
-        robots.get(1).assignOrder(new Order(new GridCoordinate(10,5), RoboAction.PICK_UP));
-        robots.get(2).assignOrder(new Order(new GridCoordinate(0,8), RoboAction.MOVE));
-        robots.get(3).assignOrder(new Order(new GridCoordinate(3,3), RoboAction.PICK_UP));
-        robots.get(4).assignOrder(new Order(new GridCoordinate(1,2), RoboAction.PICK_UP));
+        robots.get(0).assignOrder(new Order(new Product(new SKU("0"), 0), 1));
+        robots.get(0).assignOrder(new Order(new Product(new SKU("0"), 0), 1));
+        robots.get(1).assignOrder(new Order(new Product(new SKU("1"), 0), 1));
+        robots.get(1).assignOrder(new Order(new Product(new SKU("1"), 0), 1));
+        robots.get(2).assignOrder(new Order(new Product(new SKU("2"), 0), 1));
+        robots.get(2).assignOrder(new Order(new Product(new SKU("2"), 0), 1));
 
         // For testing of the bin system
-        robots.get(robots.size() - 1).setBin(new Bin());
+        /*robots.get(robots.size() - 1).setBin(new Bin());
         robots.get(robots.size() - 1).setCurrentStatus(Status.CARRYING);
         robots.get(robots.size() - 1).assignOrder(new Order(new GridCoordinate(2,0), RoboAction.DELIVER));
-        robots.get(robots.size() - 2).assignOrder(new Order(new GridCoordinate(1,1), RoboAction.PICK_UP));
-
-        selectedRobots.add(robots.get(0));
-        selectedRobots.add(robots.get(1));
+        robots.get(robots.size() - 2).assignOrder(new Order(new GridCoordinate(1,1), RoboAction.PICK_UP));*/
     }
 
     public void update(){

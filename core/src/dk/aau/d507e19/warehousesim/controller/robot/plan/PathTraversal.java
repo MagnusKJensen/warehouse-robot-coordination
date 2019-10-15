@@ -38,6 +38,7 @@ public class PathTraversal implements Action{
                 actions.add(new Pause(currentStep.getWaitTimeInTicks()));
             else
                 actions.add(createLineTraversal(previousStep, currentStep));
+            previousStep = currentStep;
         }
     }
 

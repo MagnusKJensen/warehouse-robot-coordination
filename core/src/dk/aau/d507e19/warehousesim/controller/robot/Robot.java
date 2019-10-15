@@ -52,7 +52,8 @@ public class Robot {
     }
 
     public void update() {
-        if (currentStatus == Status.TASK_ASSIGNED_PICK_UP) {
+        robotController.update();
+        /*if (currentStatus == Status.TASK_ASSIGNED_PICK_UP) {
             // If destination is reached start pickup
             if (pathToTarget.getStrippedPath().size() == 1) pickupProduct();
             // If movement still needed
@@ -67,44 +68,22 @@ public class Robot {
             if(pathToTarget.getStrippedPath().size() == 1) currentStatus = Status.AVAILABLE;
             // If movement still needed
             else moveWithLineTraverser();
-        }
+        }*/
     }
 
-    private void deliverProduct(){
-        if (ticksLeftForCurrentTask == 0) {
-            currentStatus = Status.AVAILABLE;
-        } else {
-            // If still picking up the product
-            ticksLeftForCurrentTask -= 1;
-        }
+    public void deliverBin() {
+        currentStatus = Status.AVAILABLE;
     }
 
-    private void pickupProduct(){
-        if (ticksLeftForCurrentTask == 0) {
-            int x = currentOrder.getDestination().getX();
-            int y = currentOrder.getDestination().getY();
+    public void pickUpBin() {
+        GridCoordinate coordinate = getGridCoordinate();
+        Tile tile = simulation.getStorageGrid().getTile(coordinate.getX(), coordinate.getY());
+        if (tile instanceof BinTile && ((BinTile) tile).hasBin()) {
+            bin = ((BinTile) tile).releaseBin();
+        } else throw new RuntimeException("Robot could not pick up bin at ("
+                + coordinate.getX() + "," + coordinate.getY() + ")");
 
-            Tile tile = simulation.getStorageGrid().getTile(x,y);
-            if(tile instanceof BinTile && ((BinTile) tile).hasBin()){
-                bin = ((BinTile) tile).releaseBin();
-            }
-            else throw new RuntimeException("Robot could not pick up bin at (" + x + "," + y + ")");
-            currentStatus = Status.CARRYING;
-        } else {
-            // If still picking up the product
-            ticksLeftForCurrentTask -= 1;
-        }
-    }
-
-    private void moveWithLineTraverser(){
-        currentTraverser.traverse();
-        if (currentTraverser.destinationReached()){
-            pathToTarget.getStrippedPath().remove(0);
-
-            // Create new traverser for next line in the path
-            if(pathToTarget.getStrippedPath().size() > 1)
-                assignTraverser();
-        }
+        currentStatus = Status.CARRYING;
     }
 
 
@@ -127,35 +106,7 @@ public class Robot {
     }
 
     public void assignOrder(Order order) {
-        currentOrder = order;
         robotController.addToPlan(order);
-
-        if(order.getRoboAction() == RoboAction.PICK_UP){
-            currentStatus = Status.TASK_ASSIGNED_PICK_UP;
-            ticksLeftForCurrentTask = pickUpTimeInTicks;
-        } else if (order.getRoboAction() == RoboAction.DELIVER){
-            if(currentStatus != Status.CARRYING) throw new IllegalArgumentException("Robot is not carrying anything");
-            // If target is not a PickerTile
-            if(!(simulation.getStorageGrid().getTile(order.getDestination().getX(), order.getDestination().getY()) instanceof PickerTile)){
-                throw new IllegalArgumentException("Target at (" + order.getDestination().getX() + "," + order.getDestination().getY() + ") is not a PickerTile");
-            }
-            currentStatus = Status.TASK_ASSIGNED_CARRYING;
-            ticksLeftForCurrentTask = deliverTimeInTicks;
-        } else if (order.getRoboAction() == RoboAction.MOVE){
-            currentStatus = Status.TASK_ASSIGNED_MOVE;
-            ticksLeftForCurrentTask = 0;
-        }
-
-        pathToTarget = robotController.getPath(
-                new GridCoordinate((int) currentPosition.getX(), (int) currentPosition.getY()), order.getDestination());
-
-        // If the robot has to move
-        if(pathToTarget.getStrippedPath().size() > 1) assignTraverser();
-    }
-
-    private void assignTraverser() {
-        currentTraverser = new LineTraverser(pathToTarget.getStrippedPath().get(0).getGridCoordinate(),
-                pathToTarget.getStrippedPath().get(1).getGridCoordinate(), this);
     }
 
     public void cancelTask() {
@@ -211,7 +162,7 @@ public class Robot {
         return currentStatus;
     }
 
-    public boolean hasPlannedPath(){
+    public boolean hasPlannedPath() {
         return pathToTarget != null
                 && (currentStatus == Status.TASK_ASSIGNED_PICK_UP
                 || currentStatus == Status.TASK_ASSIGNED_MOVE
@@ -231,7 +182,7 @@ public class Robot {
         this.bin = bin;
     }
 
-    public boolean collidesWith(Position collider){
+    public boolean collidesWith(Position collider) {
         boolean withInXBounds = collider.getX() >= currentPosition.getX()
                 && collider.getX() <= currentPosition.getX() + ROBOT_SIZE;
         boolean withInYBounds = collider.getY() >= currentPosition.getY()
@@ -248,7 +199,7 @@ public class Robot {
         GridCoordinate gridCoordinate =
                 new GridCoordinate(Math.round(currentPosition.getX()), Math.round(currentPosition.getY()));
 
-        if(!currentPosition.isSameAs(gridCoordinate))
+        if (!currentPosition.isSameAs(gridCoordinate))
             throw new IllegalStateException("Robot is not at the center of a tile. Current position : "
                     + currentPosition
                     + "\n If you want an approximate grid position use getApproximateGridCoordinate()");
@@ -256,15 +207,7 @@ public class Robot {
         return gridCoordinate;
     }
 
-    public GridCoordinate getApproximateGridCoordinate(){
+    public GridCoordinate getApproximateGridCoordinate() {
         return new GridCoordinate(Math.round(currentPosition.getX()), Math.round(currentPosition.getY()));
-    }
-
-    public void pickUpBin() {
-        // TODO: 15/10/2019 pick up bin that robot is currently on top of
-    }
-
-    public void deliverBin() {
-        // TODO: 15/10/2019 Deliver currently held bin
     }
 }

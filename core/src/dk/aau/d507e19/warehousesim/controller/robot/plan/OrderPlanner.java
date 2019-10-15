@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.robot.plan;
 
+import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
@@ -21,12 +22,15 @@ public class OrderPlanner {
         this.pathFinder = robotController.getPathFinder();
         this.server = robotController.getServer();
         this.pathFinder = robotController.getPathFinder();
+        this.robot = robotController.getRobot();
+        this.server = robotController.getServer();
     }
 
     public ArrayList<Action> planPickUp(Order order){
         ArrayList<Action> plan = new ArrayList<>();
         GridCoordinate pickUpPoint = getNearestAvailableProduct(order);
         Path pathToPickUpPoint = pathFinder.calculatePath(robot.getGridCoordinate(), pickUpPoint);
+        System.out.println(pathToPickUpPoint.toString());
 
         plan.add(new PathTraversal(robot, pathToPickUpPoint));
         plan.add(new PickUp(robot));
@@ -54,7 +58,7 @@ public class OrderPlanner {
     private GridCoordinate getNearestAvailableProduct(Order order){
         // TODO: 15/10/2019 Find on grid and check if reserved
         Random rand = new Random();
-        return new GridCoordinate(rand.nextInt(15), rand.nextInt(15));
+        return new GridCoordinate(SimulationApp.random.nextInt(15), SimulationApp.random.nextInt(14) + 1);
     }
 
 

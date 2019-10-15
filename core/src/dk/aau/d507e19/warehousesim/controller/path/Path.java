@@ -104,4 +104,15 @@ public class Path {
         return allSteps;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("(");
+
+        for(Step step : strippedSteps)
+            builder.append( "(" + step.getX() + " : " + step.getY() + ")" + ",");
+
+        builder.append(")");
+        return builder.toString();
+    }
 }
