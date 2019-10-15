@@ -1,6 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.path;
 
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.Pause;
 
 import java.util.ArrayList;
 
@@ -115,4 +116,20 @@ public class Path {
         builder.append(")");
         return builder.toString();
     }
+
+    public ArrayList<Line> getLines(){
+        ArrayList<Line> lines = new ArrayList<>();
+        Step currentStep;
+        Step previousStep = getStrippedPath().get(0);
+
+        for(int i = 1; i < strippedSteps.size(); i++){
+            currentStep = strippedSteps.get(i);
+            lines.add(new Line(previousStep, currentStep));
+            previousStep = currentStep;
+        }
+
+        return lines;
+    }
+
+
 }
