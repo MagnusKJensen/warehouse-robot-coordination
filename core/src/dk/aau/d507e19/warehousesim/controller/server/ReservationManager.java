@@ -37,5 +37,11 @@ public class ReservationManager {
 
     }
 
+    public boolean isBinReserved(GridCoordinate gridCoordinate){
+        // Should maybe be independent of time?
+        return false;
+    }
+
+
 
 }

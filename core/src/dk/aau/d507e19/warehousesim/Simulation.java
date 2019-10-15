@@ -104,10 +104,11 @@ public class Simulation {
     }
 
     private void renderSelectedRobotsPaths() {
-        for(Robot robot : selectedRobots){
+        // TODO: 15/10/2019 render reserved paths
+        /*for(Robot robot : selectedRobots){
             if(robot.hasPlannedPath())
                 storageGrid.renderPathOverlay(robot.getPathToTarget().getFullPath(), shapeRenderer);
-        }
+        }*/
     }
 
     private void renderRobots(){
