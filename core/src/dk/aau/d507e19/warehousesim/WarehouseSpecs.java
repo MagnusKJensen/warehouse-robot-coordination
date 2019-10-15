@@ -19,6 +19,7 @@ public class WarehouseSpecs {
     public static final int robotDeliverToPickerInSeconds = 1;
     // For example 20% of the SKUs = 80% of turnover and 80% of SKUs = 20% turnover
     public static final float[][] skuDistribution = {{20, 50}, {10,30}, {70,20}};
+    public static final boolean isRandomProductDistribution = true;
     // todo turnover distribution - Philip
     // todo layers? - Philip
 }
