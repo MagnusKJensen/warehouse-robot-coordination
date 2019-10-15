@@ -153,17 +153,9 @@ public class Robot {
         return currentStatus;
     }
 
-    public boolean hasPlannedPath() {
-        return pathToTarget != null
-                && (currentStatus == Status.BUSY
-                || currentStatus == Status.TASK_ASSIGNED_MOVE
-                || currentStatus == Status.TASK_ASSIGNED_CARRYING);
-    }
-
     public Path getPathToTarget() {
         return pathToTarget;
     }
-
 
     public void setCurrentStatus(Status currentStatus) {
         this.currentStatus = currentStatus;
