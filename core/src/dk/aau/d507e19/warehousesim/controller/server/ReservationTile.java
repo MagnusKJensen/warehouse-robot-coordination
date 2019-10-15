@@ -1,12 +1,15 @@
 package dk.aau.d507e19.warehousesim.controller.server;
 
+import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+
 import java.util.ArrayList;
 
 public class ReservationTile {
 
-    ArrayList<Reservation> reservations = new ArrayList<>();
+    private ArrayList<Reservation> reservations = new ArrayList<>();
+    private GridCoordinate coordinate;
 
-    public ReservationTile(){
+    public ReservationTile(GridCoordinate coordinate){
 
     }
 

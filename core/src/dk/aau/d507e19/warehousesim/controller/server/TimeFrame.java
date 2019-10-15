@@ -16,22 +16,30 @@ public class TimeFrame {
         timeMode = TimeMode.BOUNDED;
     }
 
+    public static TimeFrame indefiniteTimeFrameFrom(long startTime){
+        return new TimeFrame(startTime);
+    }
+
     private TimeFrame(long startTime){
         this.startTime = startTime;
         this.endTime = -1;
         timeMode = TimeMode.UNBOUNDED;
     }
 
-    public static TimeFrame indefiniteTimeFrameFrom(long startTime){
-        return new TimeFrame(startTime);
-    }
-
     public boolean isWithinTimeFrame(long currentTime){
-        /*if(timeMode == TimeMode.UNBOUNDED)
+        if(timeMode == TimeMode.UNBOUNDED)
             return currentTime >= startTime;
 
-        return currentTime >= startTime && */
-        return false;
+        return currentTime >= startTime && currentTime <= endTime;
+    }
+
+    public boolean isAfterTimeFrame(long currentTime){
+        if(timeMode == TimeMode.UNBOUNDED) return false;
+        return currentTime > endTime;
+    }
+
+    public boolean isBeforeTimeFrame(long currentTime){
+        return currentTime < startTime;
     }
 
 

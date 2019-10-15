@@ -3,8 +3,6 @@ package dk.aau.d507e19.warehousesim.controller.server;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 
-import java.sql.Time;
-
 public class Reservation {
 
     private final TimeFrame timeFrame;
