@@ -17,6 +17,7 @@ public abstract class RRTBase {
     }
 
     public Node<GridCoordinate> root, destinationNode,shortestLengthNode;
+    public ArrayList<GridCoordinate> freeNodeList = populateFreeList();
     GridCoordinate dest;
     public HashMap<GridCoordinate,Node<GridCoordinate>> allNodesMap = new HashMap<>();
 
@@ -49,6 +50,7 @@ public abstract class RRTBase {
         pos = edge.getDistanceBetweenPoints(new GridCoordinate(pos.getX(), pos.getY() - 1), randPos) < edge.getDistanceBetweenPoints(pos, randPos) ? new GridCoordinate(originalPos.getX(), originalPos.getY() -1 ) : pos;
 
         //System.out.println("NEW: "+ pos.toString()+"\nNEAR: " + originalPos.toString() + "\nRAND: " + randPos.toString()+"\n");
+        updateFreeList(pos);
         return new Node<>(pos, null, false);
     }
 
@@ -132,9 +134,7 @@ public abstract class RRTBase {
         //TODO possible infinite loop if there is a node on every tile currently prevented since generateRTT func returns as soon as dest node is created
         GridCoordinate randPos;
         do {
-            randPos = new GridCoordinate(
-                    SimulationApp.random.nextInt(WarehouseSpecs.wareHouseWidth),
-                    SimulationApp.random.nextInt(WarehouseSpecs.wareHouseHeight));
+            randPos = freeNodeList.get(SimulationApp.random.nextInt(freeNodeList.size()));
         }while(doesNodeExist(randPos));
 
         return randPos;
@@ -160,4 +160,20 @@ public abstract class RRTBase {
         }
     }
 
+    private ArrayList<GridCoordinate> populateFreeList(){
+        ArrayList<GridCoordinate> freeListInitializer = new ArrayList<>();
+        for(int i = 0; i < WarehouseSpecs.wareHouseWidth ; i++){
+            for(int j = 0; j < WarehouseSpecs.wareHouseHeight; j++ ){
+                freeListInitializer.add(new GridCoordinate(i,j));
+            }
+        }
+        return freeListInitializer;
+    }
+    private void updateFreeList(GridCoordinate pos){
+        for(int i = 0; i < freeNodeList.size(); i++){
+            if(pos == freeNodeList.get(i)){
+                freeNodeList.remove(i);
+            }
+        }
+    }
 }
