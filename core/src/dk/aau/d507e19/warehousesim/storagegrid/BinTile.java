@@ -31,7 +31,7 @@ public class BinTile extends Tile {
     }
 
     public void addBin(Bin bin){
-        if(this.bin != null) throw new IllegalArgumentException("Tile already has a bin");
+        if(this.bin != null) throw new IllegalArgumentException("Tile at position(" + getPosX() + "," + getPosY() + ") already has a bin");
         this.bin = bin;
     }
 

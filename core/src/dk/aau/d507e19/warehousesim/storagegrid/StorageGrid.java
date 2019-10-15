@@ -47,11 +47,6 @@ public class StorageGrid {
         for(int y = 0;  y < height; y++){
             for(int x = 0; x < width; x++){
                 if(isAPickerPoint(x,y)) tiles[x][y] = new PickerTile(x,y);
-                else if(x == 1 && y == 1){
-                    Bin bin = new Bin();
-                    bin.addProduct(new Product(new SKU("mySKU"), 123));
-                    tiles[x][y] = new BinTile(x,y, bin);
-                }
                 else tiles[x][y] = new BinTile(x, y);
             }
         }

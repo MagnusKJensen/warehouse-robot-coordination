@@ -6,6 +6,7 @@ import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class ProductDistributor {
     private static final int totalSKUsInWarehouse = WarehouseSpecs.SKUs;
@@ -14,17 +15,61 @@ public class ProductDistributor {
     private static final int productsPerBin = WarehouseSpecs.productsPerBin;
     private static final int SKUsPerBin = WarehouseSpecs.SKUsPerBin;
     private static float[][] SKUDistribution = WarehouseSpecs.skuDistribution;
+    private static Random random;
 
     public static void distributeProducts(StorageGrid grid){
-        int[][] SKUs =  calculateProductsPerSKU();
+        int[][] SKUs = calculateProductsPerSKU();
 
         ArrayList<Product> allProducts = generateProducts(SKUs);
 
         distributeToGrid(allProducts, grid);
+    }
 
-        for (Product prod : allProducts){
-            System.out.println(prod.toString());
+    public static void distributeProductsRandomly(StorageGrid grid){
+        int[][] SKUs = calculateProductsPerSKU();
+
+        ArrayList<Product> allProducts = generateProducts(SKUs);
+
+        distributeRandomly(allProducts ,grid);
+
+    }
+
+    private static void distributeRandomly(ArrayList<Product> allProducts, StorageGrid grid) {
+        ArrayList<BinTile> nonFullTiles = getAllBinTiles(grid);
+        random = new Random();
+
+        for(BinTile tile : nonFullTiles){
+            tile.addBin(new Bin());
         }
+
+        // While some tiles are not full, and more products need to be added
+        while(!nonFullTiles.isEmpty() && !allProducts.isEmpty()){
+            int nextTile = random.nextInt(nonFullTiles.size());
+
+            // If the bin already has the SKU or has room for more SKUs
+            if(nonFullTiles.get(nextTile).getBin().hasSKU(allProducts.get(0).getSKU())
+                    || nonFullTiles.get(nextTile).getBin().hasRoomForMoreSKUs()) {
+                nonFullTiles.get(nextTile).getBin().addProduct(allProducts.get(0));
+                allProducts.remove(0);
+            }
+
+            // If the bin is now full, remove it from the nonFullTiles.
+            if(nonFullTiles.get(nextTile).getBin().isFull()){
+                nonFullTiles.remove(nextTile);
+            }
+        }
+    }
+
+    private static ArrayList<BinTile> getAllBinTiles(StorageGrid grid) {
+        ArrayList<BinTile> tiles = new ArrayList<>();
+
+        for(int x = 0; x < WarehouseSpecs.wareHouseWidth; ++x){
+            for(int y = 0; y < WarehouseSpecs.wareHouseHeight; ++y){
+                if(grid.getTile(x,y) instanceof BinTile) tiles.add((BinTile) grid.getTile(x,y));
+            }
+        }
+
+        return tiles;
     }
 
     private static void distributeToGrid(ArrayList<Product> allProducts, StorageGrid grid) {
@@ -96,22 +141,24 @@ public class ProductDistributor {
         int shouldHaveExtraProduct = 0;
         int totalSKUsCounted = 0;
         int totalProductsCounted = 0;
-        // Run through other SKU distributions
+        int SKUsInCategory;
+        int productsInSKUCat;
+        int productPerSKU;
+        // Run through all SKU distributions (See WarehouseSpecs.skuDistribution)
         for(int i = 0; i < numberOfDistributions; ++i){
             // How many SKUs in this category (Total SKUs / SKU turnover in percent)
-            int SKUsInCategory;
             // If this is the last distribution take the rest of the SKUs.
             if(i == numberOfDistributions - 1) SKUsInCategory = totalSKUsInWarehouse - totalSKUsCounted;
             else SKUsInCategory = (int)(totalSKUsInWarehouse * (SKUDistribution[i][0] / 100));
 
-            // Products in this SKU category (Total products / SKU category turnover)
-            int productsInSKUCat;
+
+            //Products in this SKU category (Total products / SKU category turnover)
             // If this is the last distribution, take the rest of the products
             if(i == numberOfDistributions - 1) productsInSKUCat = productsInWarehouse - totalProductsCounted;
             else productsInSKUCat = (int) (productsInWarehouse * (SKUDistribution[i][1] / 100));
 
             // How many products does each SKU in this category have? (products in this SKU / SKUs in category)
-            int productPerSKU = productsInSKUCat / SKUsInCategory;
+            productPerSKU = productsInSKUCat / SKUsInCategory;
 
             // If the products did not divide equally between the SKUs
             if(productPerSKU * SKUsInCategory != productsInSKUCat){

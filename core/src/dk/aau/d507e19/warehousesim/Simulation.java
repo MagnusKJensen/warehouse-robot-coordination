@@ -59,7 +59,9 @@ public class Simulation {
         pickerPoints.add(new GridCoordinate(2,0));
 
         storageGrid = new StorageGrid(WarehouseSpecs.wareHouseWidth, WarehouseSpecs.wareHouseHeight, pickerPoints);
-        ProductDistributor.distributeProducts(storageGrid);
+
+        if(WarehouseSpecs.isRandomProductDistribution) ProductDistributor.distributeProductsRandomly(storageGrid);
+        else ProductDistributor.distributeProducts(storageGrid);
 
         initRobots();
     }
