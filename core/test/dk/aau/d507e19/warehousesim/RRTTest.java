@@ -1,8 +1,10 @@
 package dk.aau.d507e19.warehousesim;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRT;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Path;
+import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -11,7 +13,7 @@ import static org.junit.Assert.*;
 
 public class RRTTest {
     private Node<GridCoordinate> tree,oneleft,oneright,twoleft,tworight,twooneright;
-    private RRT rrtPlanner = new RRT();
+    private RRT rrt = new RRT(null);
     public void generateTree(){
         tree = new Node<GridCoordinate>(new GridCoordinate(0,0),null, false);
         oneleft = new Node<GridCoordinate>(new GridCoordinate(0,1),null, false);
@@ -24,30 +26,30 @@ public class RRTTest {
         oneleft.setParent(twoleft);
         oneright.setParent(tworight);
         oneright.setParent(twooneright);
-        rrtPlanner.allNodesMap.put(tree.getData(),tree);
-        rrtPlanner.allNodesMap.put(oneleft.getData(),oneleft);
-        rrtPlanner.allNodesMap.put(oneright.getData(),oneright);
-        rrtPlanner.allNodesMap.put(twoleft.getData(),twoleft);
-        rrtPlanner.allNodesMap.put(tworight.getData(),tworight);
-        rrtPlanner.allNodesMap.put(twooneright.getData(),twooneright);
+        rrt.allNodesMap.put(tree.getData(),tree);
+        rrt.allNodesMap.put(oneleft.getData(),oneleft);
+        rrt.allNodesMap.put(oneright.getData(),oneright);
+        rrt.allNodesMap.put(twoleft.getData(),twoleft);
+        rrt.allNodesMap.put(tworight.getData(),tworight);
+        rrt.allNodesMap.put(twooneright.getData(),twooneright);
 
     }
     @Test
     public void findNearestNeighbourTest(){
         generateTree();
-        rrtPlanner.shortestLengthNode = tree;
-        Node<GridCoordinate> actual = rrtPlanner.findNearestNeighbour(tree,new GridCoordinate(2,3));
+        rrt.shortestLengthNode = tree;
+        Node<GridCoordinate> actual = rrt.findNearestNeighbour(tree,new GridCoordinate(2,3));
         assertEquals(twooneright.getData(),actual.getData());
 
     }
     @Test
     public void generateRRTPathTest() {
         GridCoordinate start = new GridCoordinate(0,0);
-        GridCoordinate dest = new GridCoordinate(99,98);
-        ArrayList<GridCoordinate> list = rrtPlanner.generateRRTPath(start,dest);
+        GridCoordinate dest = new GridCoordinate(8,8);
+        ArrayList<GridCoordinate> list = rrt.generateRRTPath(start,dest);
         assertTrue(isValidPath(start, dest, list));
         Path p = new Path(list);
-        //todo make this test more advanced
+
     }
     public boolean isValidPath(GridCoordinate start, GridCoordinate destination, ArrayList<GridCoordinate> path){
         GridCoordinate prev = start;

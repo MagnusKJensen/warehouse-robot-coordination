@@ -7,12 +7,14 @@ import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 public class RRTPlanner implements PathFinder {
     Robot robot;
     RRTType algorithm;
-    private RRT rrt = new RRT();
-    private RRTStar rrtStar = new RRTStar();
+    private RRT rrt;
+    private RRTStar rrtStar;
 
     public RRTPlanner(RRTType algorithm, Robot rrtRobot) {
         this.algorithm = algorithm;
         this.robot = rrtRobot;
+        this.rrt = new RRT(this.robot);
+        this.rrtStar = new RRTStar(this.robot);
     }
 
     @Override
