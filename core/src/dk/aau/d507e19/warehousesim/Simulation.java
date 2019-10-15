@@ -68,17 +68,17 @@ public class Simulation {
             robots.add(new Robot(new Position(i, 0), i, this));
 
         // Assign test task to first robot
-        robots.get(0).assignTask(new Task(new GridCoordinate(3,6), RoboAction.PICK_UP));
-        robots.get(1).assignTask(new Task(new GridCoordinate(10,5), RoboAction.PICK_UP));
-        robots.get(2).assignTask(new Task(new GridCoordinate(0,8), RoboAction.MOVE));
-        robots.get(3).assignTask(new Task(new GridCoordinate(3,3), RoboAction.PICK_UP));
-        robots.get(4).assignTask(new Task(new GridCoordinate(1,2), RoboAction.PICK_UP));
+        robots.get(0).assignOrder(new Order(new GridCoordinate(3,6), RoboAction.PICK_UP));
+        robots.get(1).assignOrder(new Order(new GridCoordinate(10,5), RoboAction.PICK_UP));
+        robots.get(2).assignOrder(new Order(new GridCoordinate(0,8), RoboAction.MOVE));
+        robots.get(3).assignOrder(new Order(new GridCoordinate(3,3), RoboAction.PICK_UP));
+        robots.get(4).assignOrder(new Order(new GridCoordinate(1,2), RoboAction.PICK_UP));
 
         // For testing of the bin system
         robots.get(robots.size() - 1).setBin(new Bin());
         robots.get(robots.size() - 1).setCurrentStatus(Status.CARRYING);
-        robots.get(robots.size() - 1).assignTask(new Task(new GridCoordinate(2,0), RoboAction.DELIVER));
-        robots.get(robots.size() - 2).assignTask(new Task(new GridCoordinate(1,1), RoboAction.PICK_UP));
+        robots.get(robots.size() - 1).assignOrder(new Order(new GridCoordinate(2,0), RoboAction.DELIVER));
+        robots.get(robots.size() - 2).assignOrder(new Order(new GridCoordinate(1,1), RoboAction.PICK_UP));
 
         selectedRobots.add(robots.get(0));
         selectedRobots.add(robots.get(1));

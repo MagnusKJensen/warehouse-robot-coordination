@@ -70,7 +70,7 @@ public class LineTraversal implements Action {
         return (totalDistance - distanceTraveled) <= breakingDistance && robot.getCurrentSpeed() > robot.getMinimumSpeed();
     }
 
-    public boolean shouldAccelerate() {
+    private boolean shouldAccelerate() {
         return robot.getCurrentSpeed() < robot.getMaxSpeedBinsPerSecond() &&
                 (totalDistance - distanceTraveled) > breakingDistance;
     }

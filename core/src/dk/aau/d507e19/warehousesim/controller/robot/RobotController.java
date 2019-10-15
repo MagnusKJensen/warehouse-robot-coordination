@@ -3,7 +3,13 @@ package dk.aau.d507e19.warehousesim.controller.robot;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.Action;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.OrderPlanner;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class RobotController {
 
@@ -11,6 +17,9 @@ public class RobotController {
     private PathFinder pathFinder;
     private TaskManager taskManager;
     private Robot robot;
+
+    private LinkedList<Action> robotActions = new LinkedList<>();
+    private LinkedList<Runnable> planningSteps = new LinkedList<>();
 
     public RobotController(Server server, Robot robot){
         this.server = server;
@@ -26,5 +35,45 @@ public class RobotController {
 
     public Path getPath(GridCoordinate gridCoordinate, GridCoordinate destination) {
         return pathFinder.calculatePath(gridCoordinate, destination);
+    }
+
+    public void addToPlan(final Order order) {
+        final OrderPlanner orderPlanner = new OrderPlanner(this);
+        planningSteps.add(() -> robotActions.addAll(orderPlanner.planPickUp(order)));
+        planningSteps.add(() -> robotActions.addAll(orderPlanner.planDelivery()));
+    }
+
+    public void update(){
+        if(robotActions.isEmpty())
+            planNextActions();
+
+        if(robotActions.isEmpty())
+            return;
+
+        Action currentAction = robotActions.peekFirst();
+        currentAction.perform();
+        if(currentAction.isDone())
+            robotActions.removeFirst();
+    }
+
+    private void planNextActions() {
+        if(planningSteps.isEmpty())
+            return;
+
+        Runnable planning = planningSteps.pollFirst();
+        planning.run();
+    }
+
+
+    public PathFinder getPathFinder() {
+        return this.pathFinder;
+    }
+
+    public Server getServer() {
+        return this.server;
+    }
+
+    public Robot getRobot() {
+        return robot;
     }
 }
