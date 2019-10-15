@@ -5,7 +5,6 @@ import dk.aau.d507e19.warehousesim.*;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.Action;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
-import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
 import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 
@@ -14,20 +13,18 @@ import java.util.ArrayList;
 public class Robot {
     private Simulation simulation;
     private Position currentPosition;
-    private Order currentOrder;
     private Status currentStatus;
     private float currentSpeed;
     private Path pathToTarget;
     private Bin bin = null;
     private int robotID;
 
+    // TODO: 15/10/2019 is a temporary solution until it becomes part of the task itself.
+    private GridCoordinate lastPickUp;
+
     /**
      * Robot STATS
      */
-    // Pickup time
-    private final static int pickUpTimeInTicks = SimulationApp.TICKS_PER_SECOND * WarehouseSpecs.robotPickUpSpeedInSeconds;
-    private final static int deliverTimeInTicks = SimulationApp.TICKS_PER_SECOND * WarehouseSpecs.robotDeliverToPickerInSeconds;
-    private int ticksLeftForCurrentTask = 0;
     // Speed
     private final float maxSpeedBinsPerSecond = WarehouseSpecs.robotTopSpeed / WarehouseSpecs.binSizeInMeters;
     private final float accelerationBinSecond = WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters;
@@ -36,7 +33,6 @@ public class Robot {
 
     private final float ROBOT_SIZE = Tile.TILE_SIZE;
 
-    private LineTraverser currentTraverser;
     private RobotController robotController;
 
     private ArrayList<Action> plan = new ArrayList<>();
@@ -53,26 +49,20 @@ public class Robot {
 
     public void update() {
         robotController.update();
-        /*if (currentStatus == Status.TASK_ASSIGNED_PICK_UP) {
-            // If destination is reached start pickup
-            if (pathToTarget.getStrippedPath().size() == 1) pickupProduct();
-            // If movement still needed
-            else moveWithLineTraverser();
-        } else if (currentStatus == Status.TASK_ASSIGNED_CARRYING){
-            // If delivery station already reached
-            if(pathToTarget.getStrippedPath().size() == 1) deliverProduct();
-            // If movement still needed
-            else moveWithLineTraverser();
-        } else if (currentStatus == Status.TASK_ASSIGNED_MOVE){
-            // If target reached, show as available
-            if(pathToTarget.getStrippedPath().size() == 1) currentStatus = Status.AVAILABLE;
-            // If movement still needed
-            else moveWithLineTraverser();
-        }*/
     }
 
     public void deliverBin() {
-        currentStatus = Status.AVAILABLE;
+    }
+
+    public void putDownBin(){
+        GridCoordinate coordinate = getGridCoordinate();
+        Tile tile = simulation.getStorageGrid().getTile(coordinate.getX(), coordinate.getY());
+        if (tile instanceof BinTile && !((BinTile) tile).hasBin()) {
+            ((BinTile) tile).addBin(bin);
+            bin = null;
+        } else throw new RuntimeException("Robot could not put back bin at ("
+                + coordinate.getX() + "," + coordinate.getY() + ")");
+
     }
 
     public void pickUpBin() {
@@ -84,6 +74,7 @@ public class Robot {
                 + coordinate.getX() + "," + coordinate.getY() + ")");
 
         currentStatus = Status.CARRYING;
+        lastPickUp = coordinate;
     }
 
 
@@ -92,7 +83,7 @@ public class Robot {
             case AVAILABLE:
                 batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotAvailable.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
-            case TASK_ASSIGNED_PICK_UP:
+            case BUSY:
             case TASK_ASSIGNED_MOVE:
                 batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotTaskAssigned.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
@@ -164,7 +155,7 @@ public class Robot {
 
     public boolean hasPlannedPath() {
         return pathToTarget != null
-                && (currentStatus == Status.TASK_ASSIGNED_PICK_UP
+                && (currentStatus == Status.BUSY
                 || currentStatus == Status.TASK_ASSIGNED_MOVE
                 || currentStatus == Status.TASK_ASSIGNED_CARRYING);
     }
@@ -209,5 +200,13 @@ public class Robot {
 
     public GridCoordinate getApproximateGridCoordinate() {
         return new GridCoordinate(Math.round(currentPosition.getX()), Math.round(currentPosition.getY()));
+    }
+
+    public GridCoordinate getLastPickUp() {
+        return lastPickUp;
+    }
+
+    public boolean isCarrying(){
+        return bin != null;
     }
 }

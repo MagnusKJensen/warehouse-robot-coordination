@@ -41,17 +41,22 @@ public class RobotController {
         final OrderPlanner orderPlanner = new OrderPlanner(this);
         planningSteps.add(() -> robotActions.addAll(orderPlanner.planPickUp(order)));
         planningSteps.add(() -> robotActions.addAll(orderPlanner.planDelivery()));
+        planningSteps.add(() -> robotActions.addAll(orderPlanner.planBinReturn()));
     }
 
     public void update(){
         if(robotActions.isEmpty())
             planNextActions();
 
-        if(robotActions.isEmpty())
+        // If robot has nothing to do, set status available and return.
+        if(robotActions.isEmpty()){
+            robot.setCurrentStatus(Status.AVAILABLE);
             return;
+        }
 
         Action currentAction = robotActions.peekFirst();
         currentAction.perform();
+        robot.setCurrentStatus(currentAction.getStatus());
         if(currentAction.isDone())
             robotActions.removeFirst();
     }

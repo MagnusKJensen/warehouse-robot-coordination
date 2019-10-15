@@ -49,6 +49,17 @@ public class OrderPlanner {
         return plan;
     }
 
+    public ArrayList<Action> planBinReturn(){
+        ArrayList<Action> plan = new ArrayList<>();
+        // TODO: 15/10/2019 Find empty tile
+        Path pathToEmptyTile = pathFinder.calculatePath(robot.getGridCoordinate(), robot.getLastPickUp());
+
+        plan.add(new PathTraversal(robot, pathToEmptyTile));
+        plan.add(new PlaceBin(robot));
+
+        return plan;
+    }
+
     public GridCoordinate getNearestAvailablePicker(){
         // TODO: 15/10/2019 Find free delivery tile
         Random rand = new Random();

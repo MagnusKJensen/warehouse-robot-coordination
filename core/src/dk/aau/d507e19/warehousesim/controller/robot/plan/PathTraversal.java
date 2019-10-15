@@ -3,6 +3,7 @@ package dk.aau.d507e19.warehousesim.controller.robot.plan;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.controller.robot.Status;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class PathTraversal implements Action{
         for(int i = 1; i < strippedSteps.size(); i++){
             currentStep = strippedSteps.get(i);
             if(currentStep.isWaitingStep())
-                actions.add(new Pause(currentStep.getWaitTimeInTicks()));
+                actions.add(new Pause(currentStep.getWaitTimeInTicks(), robot));
             else
                 actions.add(createLineTraversal(previousStep, currentStep));
             previousStep = currentStep;
@@ -46,7 +47,7 @@ public class PathTraversal implements Action{
         Step firstStep = path.getStrippedPath().get(0);
         // Add pause if the first step is a waiting step
         if(firstStep.isWaitingStep())
-            actions.add(new Pause(firstStep.getWaitTimeInTicks()));
+            actions.add(new Pause(firstStep.getWaitTimeInTicks(), robot));
     }
 
     private Action createLineTraversal(Step previousStep, Step currentStep){
@@ -71,5 +72,11 @@ public class PathTraversal implements Action{
 
     public ArrayList<Action> getRemainingActions(){
         return actions;
+    }
+
+    @Override
+    public Status getStatus() {
+        if(robot.isCarrying()) return Status.TASK_ASSIGNED_CARRYING;
+        else return Status.BUSY;
     }
 }

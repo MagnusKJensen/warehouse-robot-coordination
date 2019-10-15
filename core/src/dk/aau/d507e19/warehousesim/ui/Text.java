@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.ui;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -23,6 +24,7 @@ public class Text extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
+        font.setColor(Color.CORAL);
         font.draw(batch, myString, xOffSet, yOffSet);
     }
 

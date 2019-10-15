@@ -5,6 +5,7 @@ import dk.aau.d507e19.warehousesim.TickTimer;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.robot.Order;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.controller.robot.Status;
 
 public class PickUp implements Action {
 
@@ -27,5 +28,10 @@ public class PickUp implements Action {
     @Override
     public boolean isDone() {
         return tickTimer.isDone();
+    }
+
+    @Override
+    public Status getStatus() {
+        return Status.BUSY;
     }
 }

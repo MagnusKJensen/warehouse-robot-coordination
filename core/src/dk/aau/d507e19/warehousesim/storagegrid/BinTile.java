@@ -46,6 +46,7 @@ public class BinTile extends Tile {
         return bin != null;
     }
 
+
     public Bin getBin() {
         return bin;
     }

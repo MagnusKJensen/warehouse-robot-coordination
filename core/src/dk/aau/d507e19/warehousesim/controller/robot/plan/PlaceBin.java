@@ -3,24 +3,25 @@ package dk.aau.d507e19.warehousesim.controller.robot.plan;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.TickTimer;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
-import dk.aau.d507e19.warehousesim.controller.robot.Order;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.Status;
 
-public class Delivery implements Action {
+public class PlaceBin implements Action {
+
     private Robot robot;
     private TickTimer tickTimer;
 
-    public Delivery(Robot robot) {
+    public PlaceBin(Robot robot) {
         this.robot = robot;
-        tickTimer = new TickTimer(WarehouseSpecs.robotPickUpSpeedInSeconds * SimulationApp.TICKS_PER_SECOND);
+        this.tickTimer = new TickTimer(WarehouseSpecs.robotPickUpSpeedInSeconds * SimulationApp.TICKS_PER_SECOND);
     }
 
     @Override
     public void perform() {
         tickTimer.decrement();
-        if (tickTimer.isDone())
-            robot.deliverBin();
+        if(tickTimer.isDone()) {
+            robot.putDownBin();
+        }
     }
 
     @Override

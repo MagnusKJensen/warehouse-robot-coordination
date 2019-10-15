@@ -4,6 +4,7 @@ import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.robot.Direction;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.controller.robot.Status;
 
 public class LineTraversal implements Action {
 
@@ -78,5 +79,11 @@ public class LineTraversal implements Action {
     @Override
     public boolean isDone() {
         return (distanceTraveled >= (float) totalDistance); // todo Imprecise? Compare with float delta
+    }
+
+    @Override
+    public Status getStatus() {
+        if(robot.isCarrying()) return Status.TASK_ASSIGNED_CARRYING;
+        else return Status.BUSY;
     }
 }
