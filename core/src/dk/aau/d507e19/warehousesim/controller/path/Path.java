@@ -124,7 +124,7 @@ public class Path {
 
         for(int i = 1; i < strippedSteps.size(); i++){
             currentStep = strippedSteps.get(i);
-            lines.add(new Line(previousStep, currentStep));
+            lines.add(new Line(previousStep.getGridCoordinate(), currentStep.getGridCoordinate()));
             previousStep = currentStep;
         }
 

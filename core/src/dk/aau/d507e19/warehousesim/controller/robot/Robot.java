@@ -201,4 +201,9 @@ public class Robot {
     public boolean isCarrying(){
         return bin != null;
     }
+
+    public void setPosition(Position positionAfter) {
+        this.currentPosition = positionAfter;
+        // TODO: 15/10/2019 Check legality
+    }
 }

@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.robot.plan;
 
+import dk.aau.d507e19.warehousesim.controller.path.Line;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
@@ -51,13 +52,13 @@ public class PathTraversal implements Action{
     }
 
     private Action createLineTraversal(Step previousStep, Step currentStep){
-        return new LineTraversal(robot, previousStep.getGridCoordinate(), currentStep.getGridCoordinate());
+        return new LineTraversal(robot, new Line(previousStep.getGridCoordinate(), currentStep.getGridCoordinate()));
     }
 
     @Override
     public void perform() {
         if(isDone())
-            throw new IllegalStateException("Attempted to perform action that was already done");
+            throw new IllegalStateException("Attempted to traverse path that has already finished traversing");
 
         Action currentAction = actions.get(0);
         currentAction.perform();

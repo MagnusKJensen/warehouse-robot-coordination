@@ -69,7 +69,7 @@ public class OrderPlanner {
     private GridCoordinate getNearestAvailableProduct(Order order){
         // TODO: 15/10/2019 Find on grid and check if reserved
         Random rand = new Random();
-        return new GridCoordinate(SimulationApp.random.nextInt(15), SimulationApp.random.nextInt(14) + 1);
+        return new GridCoordinate(SimulationApp.random.nextInt(4), SimulationApp.random.nextInt(5) + 1);
     }
 
 

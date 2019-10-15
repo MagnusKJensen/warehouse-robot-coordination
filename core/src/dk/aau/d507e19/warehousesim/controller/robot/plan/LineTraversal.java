@@ -1,10 +1,8 @@
 package dk.aau.d507e19.warehousesim.controller.robot.plan;
 
 import dk.aau.d507e19.warehousesim.SimulationApp;
-import dk.aau.d507e19.warehousesim.controller.robot.Direction;
-import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import dk.aau.d507e19.warehousesim.controller.robot.Robot;
-import dk.aau.d507e19.warehousesim.controller.robot.Status;
+import dk.aau.d507e19.warehousesim.controller.path.Line;
+import dk.aau.d507e19.warehousesim.controller.robot.*;
 
 public class LineTraversal implements Action {
 
@@ -17,39 +15,27 @@ public class LineTraversal implements Action {
     private float distanceTraveled;
 
     private SpeedCalculator speedCalculator;
+    private long ticksSinceStart = 0;
+    private boolean doneTraversing = false;
 
-    public LineTraversal(Robot robot, GridCoordinate start, GridCoordinate destination) {
+    public LineTraversal(Robot robot, Line line) {
         this.robot = robot;
-        this.direction = getDirection(start.getX(), start.getY(),
-                destination.getX(), destination.getY());
-        this.totalDistance = getTotalDistance(start, destination, direction);
-        this.speedCalculator = new SpeedCalculator(robot, totalDistance);
+        this.speedCalculator = new SpeedCalculator(robot, line);
         this.breakingDistance = speedCalculator.getBreakingDistance();
-    }
-
-    private Direction getDirection(int startX, int startY, int destinationX, int destinationY) {
-        if (startX < destinationX)
-            return Direction.EAST;
-        if (startX > destinationX)
-            return Direction.WEST;
-        if (startY < destinationY)
-            return Direction.NORTH;
-        if (startY > destinationY)
-            return Direction.SOUTH;
-
-        throw new IllegalArgumentException("Destination coordinate must be different from start coordinate");
-    }
-
-    private int getTotalDistance(GridCoordinate startCoordinate, GridCoordinate destinationCoordinate, Direction direction) {
-        if (direction == Direction.EAST || direction == Direction.WEST) {
-            return Math.abs(destinationCoordinate.getX() - startCoordinate.getX());
-        } else {
-            return Math.abs(destinationCoordinate.getY() - startCoordinate.getY());
-        }
     }
 
     @Override
     public void perform() {
+        if(isDone())
+            throw new IllegalStateException("Attempting to perform a line traversal that is already completed");
+
+        robot.setPosition(speedCalculator.getPositionAfter(ticksSinceStart));
+        ticksSinceStart++;
+
+        if(ticksSinceStart >= speedCalculator.getTotalTimeInTicks())
+            doneTraversing = true;
+
+        /*
         if (shouldAccelerate()) {
             robot.accelerate();
         } else if (shouldDecelerate()) {
@@ -64,9 +50,9 @@ public class LineTraversal implements Action {
             float currentSpeed = robot.getCurrentSpeed() / (float)SimulationApp.TICKS_PER_SECOND;
             robot.move(currentSpeed * direction.xDir, currentSpeed * direction.yDir);
             distanceTraveled += Math.abs(currentSpeed * direction.xDir + currentSpeed * direction.yDir);
-        }
+        }*/
     }
-
+/*
     private boolean shouldDecelerate() {
         return (totalDistance - distanceTraveled) <= breakingDistance && robot.getCurrentSpeed() > robot.getMinimumSpeed();
     }
@@ -74,11 +60,11 @@ public class LineTraversal implements Action {
     private boolean shouldAccelerate() {
         return robot.getCurrentSpeed() < robot.getMaxSpeedBinsPerSecond() &&
                 (totalDistance - distanceTraveled) > breakingDistance;
-    }
+    }*/
 
     @Override
     public boolean isDone() {
-        return (distanceTraveled >= (float) totalDistance); // todo Imprecise? Compare with float delta
+        return doneTraversing; //(distanceTraveled >= (float) totalDistance); // todo Imprecise? Compare with float delta
     }
 
     @Override

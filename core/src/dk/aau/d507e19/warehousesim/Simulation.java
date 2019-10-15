@@ -68,16 +68,20 @@ public class Simulation {
 
     private void initRobots() {
         // Auto generate robots
-        for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++)
+        for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++){
             robots.add(new Robot(new Position(i, 0), i, this));
+            // Assign test task to first robot
+            for(int j = 0; j < 5; j++){
+                robots.get(i).assignOrder(new Order(new Product(new SKU("0"), 0), 1));
+            }
 
-        // Assign test task to first robot
-        robots.get(0).assignOrder(new Order(new Product(new SKU("0"), 0), 1));
-        robots.get(0).assignOrder(new Order(new Product(new SKU("0"), 0), 1));
-        robots.get(1).assignOrder(new Order(new Product(new SKU("1"), 0), 1));
+        }
+
+
+        /*robots.get(1).assignOrder(new Order(new Product(new SKU("1"), 0), 1));
         robots.get(1).assignOrder(new Order(new Product(new SKU("1"), 0), 1));
         robots.get(2).assignOrder(new Order(new Product(new SKU("2"), 0), 1));
-        robots.get(2).assignOrder(new Order(new Product(new SKU("2"), 0), 1));
+        robots.get(2).assignOrder(new Order(new Product(new SKU("2"), 0), 1));*/
 
         // For testing of the bin system
         /*robots.get(robots.size() - 1).setBin(new Bin());
