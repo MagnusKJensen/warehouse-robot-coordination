@@ -12,22 +12,46 @@ public class RRT extends RRTBase {
         super(robot);
     }
 
-    public ArrayList<GridCoordinate> generateRRTPath(GridCoordinate start, GridCoordinate destination) {
+    public ArrayList<GridCoordinate> generateRRTPathFromEmpty(GridCoordinate start, GridCoordinate destination) {
         boolean foundPath = false;
         dest = destination;
         root = new Node<GridCoordinate>(start, null, false);
         //add root node to list of nodes
         allNodesMap.put(root.getData(),root);
-        //Run until a route is found
-        while (!foundPath) {
-            //Grow tree by 10% of combined gridsize (could be an issue if grid is very large)
-            growRRT(root, (int) ((WarehouseSpecs.wareHouseHeight*WarehouseSpecs.wareHouseWidth)*0.1));
-            foundPath = doesNodeExist(destination);
-        }
+        //grow until we have a path
+        //when function completes we know that we have a path
+        growUntilPathFound(destination);
         destinationNode = allNodesMap.get(destination);
-        //Find parents and make list of coords
         return makePath(destinationNode);
     }
-
-
+    public ArrayList<GridCoordinate> generateRRTPath(GridCoordinate start, GridCoordinate destination){
+        boolean foundPath = false;
+        //if tree is empty
+        if(allNodesMap.isEmpty()){
+            //always returns the first path it finds
+            return generateRRTPathFromEmpty(start,destination);
+        }
+        //Set root to equal starting point
+        root = allNodesMap.get(start);
+        root.makeRoot();
+        //grow until we have a path
+        //when function completes we know that we have a path
+        growUntilPathFound(destination);
+        destinationNode = allNodesMap.get(destination);
+        return makePath(destinationNode);
+    }
+    private void growUntilPathFound(GridCoordinate destination){
+        boolean foundPath = false;
+        //Run until a route is found
+        while (!foundPath) {
+            //grow tree by one each time(maybe inefficient?)
+            growRRT(root, 1);
+            foundPath = doesNodeExist(destination);
+        }
+    }
+    private void growKtimes(GridCoordinate destination, int k){
+        for(int i = 0; i < k; i++){
+            growRRT(root,k);
+        }
+    }
 }
