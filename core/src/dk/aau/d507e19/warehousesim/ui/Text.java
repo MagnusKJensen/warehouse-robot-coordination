@@ -7,24 +7,28 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import dk.aau.d507e19.warehousesim.GraphicsManager;
 
+import java.util.Objects;
+
 public class Text extends Actor {
     private BitmapFont font;
     private String myString;
     private float xOffSet;
     private float yOffSet;
+    private Color color;
 
 
-    public Text(String str, float xOffSet, float yOffSet){
+    public Text(String str, float xOffSet, float yOffSet, Color color){
         this.font = GraphicsManager.getFont();
         this.myString = str;
         this.xOffSet = xOffSet;
         this.yOffSet = yOffSet;
+        this.color = color;
     }
 
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        font.setColor(Color.CORAL);
+        font.setColor(color);
         font.draw(batch, myString, xOffSet, yOffSet);
     }
 

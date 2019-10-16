@@ -212,4 +212,8 @@ public class Robot {
     }
 
 
+
+    public Bin getBin() {
+        return bin;
+    }
 }

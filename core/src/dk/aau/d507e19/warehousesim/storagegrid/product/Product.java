@@ -15,10 +15,8 @@ public class Product {
 
     @Override
     public String toString() {
-        return "Product{" +
-                "SKU=" + SKU +
-                ", uniqueID=" + uniqueID +
-                '}';
+        return "SKU=" + SKU +
+                ", uniqueID=" + uniqueID;
     }
 
     public SKU getSKU() {
