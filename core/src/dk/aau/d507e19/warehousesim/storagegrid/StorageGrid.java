@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import dk.aau.d507e19.warehousesim.GraphicsManager;
+import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
@@ -22,7 +23,7 @@ public class StorageGrid {
 
     private ShapeRenderer shapeRenderer;
     private SpriteBatch spriteBatch;
-    private ArrayList<GridCoordinate> pickerPoints;
+    private ArrayList<GridCoordinate> pickerPoints = new ArrayList<>();
 
     public StorageGrid(int width, int height){
         this.height = height;
@@ -30,17 +31,20 @@ public class StorageGrid {
         this.tiles = new Tile[width][height];
         this.shapeRenderer = new ShapeRenderer();
         this.spriteBatch = new SpriteBatch();
+        generatePickerPoints();
         fillGrid();
     }
 
-    public StorageGrid(int width, int height, ArrayList<GridCoordinate> pickerPoints){
-        this.height = height;
-        this.width = width;
-        this.tiles = new Tile[width][height];
-        this.shapeRenderer = new ShapeRenderer();
-        this.spriteBatch = new SpriteBatch();
-        this.pickerPoints = pickerPoints;
-        fillGrid();
+    private void generatePickerPoints() {
+        int[][] pickers = WarehouseSpecs.pickerPoints;
+
+        for(int i = 0; i < pickers.length; ++i){
+            GridCoordinate cord = new GridCoordinate(pickers[i][0], pickers[i][1]);
+            if(pickerPoints.contains(cord))
+                throw new RuntimeException("Picker point already present at (" + cord.getX() + "," + cord.getY() +
+                        "). Cannot have two picker points at the same tile");
+            else pickerPoints.add(new GridCoordinate(pickers[i][0], pickers[i][1]));
+        }
     }
 
     private void fillGrid(){

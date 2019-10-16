@@ -59,7 +59,7 @@ public class Simulation {
         pickerPoints.add(new GridCoordinate(0,0));
         pickerPoints.add(new GridCoordinate(2,0));
 
-        storageGrid = new StorageGrid(WarehouseSpecs.wareHouseWidth, WarehouseSpecs.wareHouseHeight, pickerPoints);
+        storageGrid = new StorageGrid(WarehouseSpecs.wareHouseWidth, WarehouseSpecs.wareHouseHeight);
 
         if(WarehouseSpecs.isRandomProductDistribution) ProductDistributor.distributeProductsRandomly(storageGrid);
         else ProductDistributor.distributeProducts(storageGrid);
@@ -75,20 +75,7 @@ public class Simulation {
             for(int j = 0; j < 5; j++){
                 robots.get(i).assignOrder(new Order(new Product(new SKU("0"), 0), 1));
             }
-
         }
-
-
-        /*robots.get(1).assignOrder(new Order(new Product(new SKU("1"), 0), 1));
-        robots.get(1).assignOrder(new Order(new Product(new SKU("1"), 0), 1));
-        robots.get(2).assignOrder(new Order(new Product(new SKU("2"), 0), 1));
-        robots.get(2).assignOrder(new Order(new Product(new SKU("2"), 0), 1));*/
-
-        // For testing of the bin system
-        /*robots.get(robots.size() - 1).setBin(new Bin());
-        robots.get(robots.size() - 1).setCurrentStatus(Status.CARRYING);
-        robots.get(robots.size() - 1).assignOrder(new Order(new GridCoordinate(2,0), RoboAction.DELIVER));
-        robots.get(robots.size() - 2).assignOrder(new Order(new GridCoordinate(1,1), RoboAction.PICK_UP));*/
     }
 
     public void update(){
