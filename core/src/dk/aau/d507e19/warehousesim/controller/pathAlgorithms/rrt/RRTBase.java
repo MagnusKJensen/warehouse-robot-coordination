@@ -17,7 +17,7 @@ public abstract class RRTBase {
         this.robot = robot;
     }
 
-    public Node<GridCoordinate> root, destinationNode,shortestLengthNode;
+    public Node<GridCoordinate> root, destinationNode,shortestLengthNode,latestNode;
     //Free list of all free points in the grid. populateFreeList() intializes the array with grid coordinates.
     public ArrayList<GridCoordinate> freeNodeList = populateFreeList();
     //blockedNodeList
@@ -36,20 +36,20 @@ public abstract class RRTBase {
             Node<GridCoordinate> newNode = generateNewNode(nearest, randPos);
             newNode.setParent(nearest);
             allNodesMap.put(newNode.getData(),newNode);
+            latestNode = newNode;
             //Assign blocked nodes from server
             //assignBlockedNodeStatus(server.getReservedNotes);
         }
-
     }
 
     public void improvePath(GridCoordinate destination){
         List<Node<GridCoordinate>> potentialImprovements;
-        Node<GridCoordinate> currentParent = allNodesMap.get(destination).getParent(),bestParent = currentParent;
-        int steps = currentParent.stepsToRoot();
         if(!allNodesMap.containsKey(destination)){
             throw new RuntimeException("Can't be called if a path does not exist. Call generateRRTPath() before using this");
         }
-        //possible nodes:
+        Node<GridCoordinate> currentParent = allNodesMap.get(destination).getParent();
+        Node<GridCoordinate> bestParent = currentParent;
+        int steps = currentParent.stepsToRoot();
         //use find nodes in square function to find nodes
         potentialImprovements = findNodesInRadius(destination,1);
         if(!potentialImprovements.isEmpty()){
@@ -67,13 +67,12 @@ public abstract class RRTBase {
                 allNodesMap.get(destination).setParent(bestParent);
             }
         }
-        //check if dest node has any other nodes that would be possible to connect to
     }
     private double distance(GridCoordinate pos1, GridCoordinate pos2){
         return Math.sqrt(Math.pow(pos2.getX() - pos1.getX(), 2) + Math.pow(pos2.getY() - pos1.getY(), 2));
     }
 
-    private Node<GridCoordinate> generateNewNode(Node<GridCoordinate> nearest, GridCoordinate randPos) {
+    protected Node<GridCoordinate> generateNewNode(Node<GridCoordinate> nearest, GridCoordinate randPos) {
         GridCoordinate originalPos = nearest.getData();
         GridCoordinate pos = nearest.getData();
         Edge edge = new Edge(pos, randPos);
@@ -189,8 +188,7 @@ public abstract class RRTBase {
         return bottomRight;
     }
 
-    private GridCoordinate generateRandomPos() {
-        //TODO possible infinite loop if there is a node on every tile currently prevented since generateRTT func returns as soon as dest node is created
+    protected GridCoordinate generateRandomPos() {
         GridCoordinate randPos;
         do {
             randPos = freeNodeList.get(SimulationApp.random.nextInt(freeNodeList.size()));
@@ -237,6 +235,15 @@ public abstract class RRTBase {
             }
         }
     }
+    protected void growUntilPathFound(GridCoordinate destination){
+        boolean foundPath = false;
+        //Run until a route is found
+        while (!foundPath) {
+            //grow tree by one each time(maybe inefficient?)
+            growRRT(root, 1);
+            foundPath = doesNodeExist(destination);
+        }
+    }
 
     private ArrayList<GridCoordinate> populateFreeList(){
         ArrayList<GridCoordinate> freeListInitializer = new ArrayList<>();
@@ -250,6 +257,40 @@ public abstract class RRTBase {
     private void updateFreeList(GridCoordinate pos){
         if(freeNodeList.contains(pos)){
             freeNodeList.remove(pos);
+        }
+    }
+    protected ArrayList<GridCoordinate> generatePathFromEmpty(GridCoordinate start, GridCoordinate destination){
+        boolean foundPath = false;
+        dest = destination;
+        root = new Node<GridCoordinate>(start, null, false);
+        //add root node to list of nodes
+        allNodesMap.put(root.getData(),root);
+        //grow until we have a path
+        //when function completes we know that we have a path
+        growUntilPathFound(destination);
+        destinationNode = allNodesMap.get(destination);
+        return makePath(destinationNode);
+    }
+    public ArrayList<GridCoordinate> generatePath(GridCoordinate start, GridCoordinate destination){
+        if(allNodesMap.isEmpty()){
+            return generatePathFromEmpty(start,destination);
+        }
+        root = allNodesMap.get(start);
+        //Set root to equal starting point
+        root = allNodesMap.get(start);
+        //only set root if it isnt already
+        if(!(root.getParent()==null)){
+            root.makeRoot();
+        }
+        //grow until we have a path
+        //when function completes we know that we have a path
+        growUntilPathFound(destination);
+        destinationNode = allNodesMap.get(destination);
+        return makePath(destinationNode);
+    }
+    private void growKtimes(GridCoordinate destination, int k){
+        for(int i = 0; i < k; i++){
+            growRRT(root,k);
         }
     }
 }
