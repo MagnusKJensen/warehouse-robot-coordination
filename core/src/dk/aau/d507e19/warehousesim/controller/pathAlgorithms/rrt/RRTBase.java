@@ -18,7 +18,11 @@ public abstract class RRTBase {
     }
 
     public Node<GridCoordinate> root, destinationNode,shortestLengthNode;
+    //Free list of all free points in the grid. populateFreeList() intializes the array with grid coordinates.
     public ArrayList<GridCoordinate> freeNodeList = populateFreeList();
+    //blockedNodeList TODO: initialize the blockedNodeList with assignBlockedNodeStatus()
+    public ArrayList<GridCoordinate> blockedNodeList;
+
     GridCoordinate dest;
     public HashMap<GridCoordinate,Node<GridCoordinate>> allNodesMap = new HashMap<>();
 
@@ -32,6 +36,8 @@ public abstract class RRTBase {
             Node<GridCoordinate> newNode = generateNewNode(nearest, randPos);
             newNode.setParent(nearest);
             allNodesMap.put(newNode.getData(),newNode);
+            //Assign blocked nodes from server
+            //assignBlockedNodeStatus(server.getReservedNotes);
         }
 
     }
@@ -177,8 +183,28 @@ public abstract class RRTBase {
         return path;
     }
 
-    private void assignBlockedEdge(Node nodeToBeBlocked){
-        if(allNodesMap.containsKey(nodeToBeBlocked)){
+    private void assignBlockedNodeStatus(ArrayList<GridCoordinate> nodesToBeUpdated){
+        //find the nodes to be blocked and set its statuses to true
+        for(GridCoordinate n: nodesToBeUpdated) {
+            if (allNodesMap.containsKey(n)) {
+                //checks if node is already in blockedNodeList
+                if(!blockedNodeList.contains(n)) {
+                    //add blocked node to blockedNodeList and sets the status of node to "blocked"
+                    blockedNodeList.add(n);
+                    allNodesMap.get(n).setBlockedStatus(true);
+                }
+            }
+            //Find nodes that are not blocked anymore, and free them. TODO: make help functions to make function pretty
+            if(blockedNodeList.size() != nodesToBeUpdated.size()){
+                ArrayList<GridCoordinate> freeList = blockedNodeList;
+                freeList.removeAll(nodesToBeUpdated);
+                for(GridCoordinate m: freeList){
+                    if(allNodesMap.containsKey(m)){
+                        allNodesMap.get(m).setBlockedStatus(false);
+                    }
+                }
+
+            }
         }
     }
 
