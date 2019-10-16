@@ -55,8 +55,9 @@ public class RobotController {
         }
 
         Action currentAction = robotActions.peekFirst();
-        currentAction.perform();
+        if(!currentAction.isDone())currentAction.perform();
         robot.setCurrentStatus(currentAction.getStatus());
+
         if(currentAction.isDone())
             robotActions.removeFirst();
     }

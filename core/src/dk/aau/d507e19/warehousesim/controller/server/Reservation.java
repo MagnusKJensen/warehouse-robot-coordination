@@ -9,7 +9,7 @@ public class Reservation {
     private final Robot robot;
     private final GridCoordinate gridCoordinate;
 
-    public Reservation(TimeFrame timeFrame, Robot robot, GridCoordinate gridCoordinate) {
+    public Reservation(Robot robot, GridCoordinate gridCoordinate, TimeFrame timeFrame) {
         this.timeFrame = timeFrame;
         this.robot = robot;
         this.gridCoordinate = gridCoordinate;
@@ -25,5 +25,12 @@ public class Reservation {
 
     public GridCoordinate getGridCoordinate() {
         return gridCoordinate;
+    }
+
+    @Override
+    public String toString() {
+        return "Reservation: " +
+                "from " + timeFrame.getStart() + " to " + timeFrame.getEnd() +
+                ", gridCoordinate = " + gridCoordinate.getX() + ", " + gridCoordinate.getY();
     }
 }

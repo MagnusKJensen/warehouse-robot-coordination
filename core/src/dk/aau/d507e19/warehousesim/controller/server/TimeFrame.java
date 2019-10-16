@@ -42,5 +42,15 @@ public class TimeFrame {
         return currentTime < startTime;
     }
 
+    public long getStart() {
+        return startTime;
+    }
 
+    public long getEnd() {
+        return endTime;
+    }
+
+    public TimeMode getTimeMode() {
+        return timeMode;
+    }
 }

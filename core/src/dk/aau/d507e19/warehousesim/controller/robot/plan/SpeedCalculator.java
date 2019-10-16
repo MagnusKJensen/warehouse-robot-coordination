@@ -156,9 +156,11 @@ public class SpeedCalculator {
             return Phase.FINISHED;
         }
     }
-
     public long amountOfTicksToReach(Position position){
-        float distance = line.distanceFromStart(position);
+        return amountOfTicksToReach(line.distanceFromStart(position));
+    }
+
+    public long amountOfTicksToReach(float distance){
         float timeToReach;
         if(distance <= accelerationDistance)
             timeToReach =  (float) Math.sqrt((2f * distance) / robot.getAccelerationBinSecond());

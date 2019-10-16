@@ -1,12 +1,11 @@
 package dk.aau.d507e19.warehousesim.controller.robot.plan;
 
+import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
-import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import dk.aau.d507e19.warehousesim.controller.robot.Order;
-import dk.aau.d507e19.warehousesim.controller.robot.Robot;
-import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
+import dk.aau.d507e19.warehousesim.controller.robot.*;
+import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 
 import java.util.ArrayList;
@@ -17,6 +16,7 @@ public class OrderPlanner {
     private Robot robot;
     private PathFinder pathFinder;
     private Server server;
+    private RobotController robotController;
 
     public OrderPlanner(RobotController robotController) {
         this.pathFinder = robotController.getPathFinder();
@@ -24,6 +24,7 @@ public class OrderPlanner {
         this.pathFinder = robotController.getPathFinder();
         this.robot = robotController.getRobot();
         this.server = robotController.getServer();
+        this.robotController = robotController;
     }
 
     public ArrayList<Action> planPickUp(Order order){
@@ -34,6 +35,10 @@ public class OrderPlanner {
 
         plan.add(new PathTraversal(robot, pathToPickUpPoint));
         plan.add(new PickUp(robot));
+        ArrayList<Reservation> reservations = MovementPredictor.calculateReservations(robot, pathToPickUpPoint, robotController.getServer().getTime(), 0);
+        for(Reservation res : reservations){
+            System.out.println(res);
+        }
 
         return plan;
     }

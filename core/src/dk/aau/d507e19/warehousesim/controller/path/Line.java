@@ -4,6 +4,8 @@ import dk.aau.d507e19.warehousesim.Position;
 import dk.aau.d507e19.warehousesim.controller.robot.Direction;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 
+import java.util.ArrayList;
+
 public class Line {
 
     private final Direction direction;
@@ -13,6 +15,8 @@ public class Line {
     public Line(GridCoordinate start, GridCoordinate end) {
         this.start = start;
         this.end = end;
+        if(start.equals(end))
+            throw new RuntimeException("A line cannot start and end at the same point");
         this.direction = determineDirection(start, end);
         this.length = calculateLength(start, end, direction);
     }
@@ -57,10 +61,21 @@ public class Line {
     public float distanceFromStart(Position position) {
         float distanceFromStart;
         if (direction == Direction.EAST || direction == Direction.WEST) {
-             distanceFromStart = Math.abs(position.getX() - start.getX());
+            distanceFromStart = Math.abs(position.getX() - start.getX());
         } else {
             distanceFromStart = Math.abs(position.getY() - start.getY());
         }
         return distanceFromStart;
     }
+
+    public ArrayList<GridCoordinate> toCoordinates() {
+        ArrayList<GridCoordinate> coordinates = new ArrayList<>();
+        for (int i = 0; i < length + 1; i++) {
+            int xChange = i * direction.xDir;
+            int yChange = i * direction.yDir;
+            coordinates.add(new GridCoordinate(start.getX() + xChange, start.getY() + yChange));
+        }
+        return coordinates;
+    }
+
 }
