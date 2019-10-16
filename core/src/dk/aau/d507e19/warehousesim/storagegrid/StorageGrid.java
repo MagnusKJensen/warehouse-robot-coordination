@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import dk.aau.d507e19.warehousesim.GraphicsManager;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
@@ -62,10 +63,10 @@ public class StorageGrid {
     }
 
 
-    public void renderPathOverlay(ArrayList<Step> steps, ShapeRenderer shapeRenderer){
-        for(Step step : steps)
-            tiles[step.getX()][step.getY()].renderOverlay(shapeRenderer);
-        // TODO: 14/10/2019 Special color for wait step and for destination
+    public void renderPathOverlay(ArrayList<Reservation> reservations, ShapeRenderer shapeRenderer){
+        for(Reservation reservation : reservations)
+            tiles[reservation.getGridCoordinate().getX()][reservation.getGridCoordinate().getY()].renderOverlay(shapeRenderer);
+
     }
 
 
@@ -81,4 +82,5 @@ public class StorageGrid {
         }
         return false;
     }
+
 }

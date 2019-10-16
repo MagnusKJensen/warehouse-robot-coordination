@@ -22,7 +22,7 @@ public class Astar implements PathFinder {
     ArrayList<AStarTile> openList = new ArrayList<>();
     ArrayList<AStarTile> closedList = new ArrayList<>();
     private AStarTile currentTile;
-    private long simulatedTime;
+    private long simulatedTimeInSeconds;
     private int robotID;
     private float robotMaxSpeedPerBin;
     private final ReservationManager reservationManager;
@@ -32,7 +32,7 @@ public class Astar implements PathFinder {
         this.robotID = robot.getRobotID();
         this.grid = fillGrid(server.getGridWidth(), server.getGridHeight());
         this.robotMaxSpeedPerBin = robot.getMaxSpeedBinsPerSecond();
-        this.simulatedTime = server.getTime();
+        this.simulatedTimeInSeconds = server.getTimeInSeconds();
         this.reservationManager = server.getReservationManager();
     }
 

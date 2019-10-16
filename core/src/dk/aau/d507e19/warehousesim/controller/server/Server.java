@@ -12,7 +12,7 @@ public class Server {
 
     public Server(Simulation simulation){
         this.simulation = simulation;
-        this.reservationManager = new ReservationManager(simulation.getGridWidth(), simulation.getGridHeight());
+        this.reservationManager = new ReservationManager(simulation.getGridWidth(), simulation.getGridHeight(), this);
     }
 
     public ArrayList<Robot> getAllRobots(){
@@ -27,8 +27,12 @@ public class Server {
         return simulation.getGridWidth();
     }
 
-    public long getTime() {
+    public long getTimeInSeconds() {
         return simulation.getSimulatedTime();
+    }
+
+    public long getTimeInTicks(){
+        return simulation.getTimeInTicks();
     }
 
     public ReservationManager getReservationManager(){

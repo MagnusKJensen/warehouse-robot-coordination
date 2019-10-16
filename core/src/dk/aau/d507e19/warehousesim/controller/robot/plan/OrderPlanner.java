@@ -1,6 +1,5 @@
 package dk.aau.d507e19.warehousesim.controller.robot.plan;
 
-import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
@@ -37,7 +36,7 @@ public class OrderPlanner {
         plan.add(new PickUp(robot));
 
         ArrayList<Reservation> reservations =
-                MovementPredictor.calculateReservations(robot, pathToPickUpPoint, server.getTime(), 0);
+                MovementPredictor.calculateReservations(robot, pathToPickUpPoint, server.getTimeInTicks(), 0);
         server.getReservationManager().reserve(reservations);
 
         return plan;
@@ -51,6 +50,10 @@ public class OrderPlanner {
         plan.add(new PathTraversal(robot, pathToDeliveryPoint));
         plan.add(new Delivery(robot));
 
+        ArrayList<Reservation> reservations =
+                MovementPredictor.calculateReservations(robot, pathToDeliveryPoint, server.getTimeInTicks(), 0);
+        server.getReservationManager().reserve(reservations);
+
         return plan;
     }
 
@@ -61,6 +64,10 @@ public class OrderPlanner {
 
         plan.add(new PathTraversal(robot, pathToEmptyTile));
         plan.add(new PlaceBin(robot));
+
+        ArrayList<Reservation> reservations =
+                MovementPredictor.calculateReservations(robot, pathToEmptyTile, server.getTimeInTicks(), 0);
+        server.getReservationManager().reserve(reservations);
 
         return plan;
     }
@@ -74,7 +81,7 @@ public class OrderPlanner {
     private GridCoordinate getNearestAvailableProduct(Order order){
         // TODO: 15/10/2019 Find on grid and check if reserved
         Random rand = new Random();
-        return new GridCoordinate(SimulationApp.random.nextInt(4), SimulationApp.random.nextInt(5) + 1);
+        return new GridCoordinate(SimulationApp.random.nextInt(15), SimulationApp.random.nextInt(14) + 1);
     }
 
 

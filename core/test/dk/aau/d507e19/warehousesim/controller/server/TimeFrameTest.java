@@ -64,27 +64,27 @@ public class TimeFrameTest {
     @Test
     public void afterTimeFrameTrueTest() {
         TimeFrame timeFrame = new TimeFrame(150, 353);
-        assertTrue(timeFrame.isAfterTimeFrame(354));
-        assertTrue(timeFrame.isAfterTimeFrame(1000));
-        assertTrue(timeFrame.isAfterTimeFrame(Long.MAX_VALUE));
+        assertTrue(timeFrame.isOutdated(354));
+        assertTrue(timeFrame.isOutdated(1000));
+        assertTrue(timeFrame.isOutdated(Long.MAX_VALUE));
     }
 
     @Test
     public void afterTimeFrameFalseTest() {
         TimeFrame timeFrame = new TimeFrame(150, 353);
-        assertFalse(timeFrame.isAfterTimeFrame(353));
-        assertFalse(timeFrame.isAfterTimeFrame(216));
-        assertFalse(timeFrame.isAfterTimeFrame(0));
-        assertFalse(timeFrame.isAfterTimeFrame(Long.MIN_VALUE));
+        assertFalse(timeFrame.isOutdated(353));
+        assertFalse(timeFrame.isOutdated(216));
+        assertFalse(timeFrame.isOutdated(0));
+        assertFalse(timeFrame.isOutdated(Long.MIN_VALUE));
     }
 
     @Test
     public void afterTimeFrameUnboundedTest() {
         TimeFrame timeFrame = TimeFrame.indefiniteTimeFrameFrom(3);
-        assertFalse(timeFrame.isAfterTimeFrame(400));
-        assertFalse(timeFrame.isAfterTimeFrame(0));
-        assertFalse(timeFrame.isAfterTimeFrame(-1));
-        assertFalse(timeFrame.isAfterTimeFrame(Long.MAX_VALUE));
+        assertFalse(timeFrame.isOutdated(400));
+        assertFalse(timeFrame.isOutdated(0));
+        assertFalse(timeFrame.isOutdated(-1));
+        assertFalse(timeFrame.isOutdated(Long.MAX_VALUE));
     }
 
 

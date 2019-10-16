@@ -39,7 +39,7 @@ public class TimeFrame {
         return currentTime >= startTime && currentTime <= endTime;
     }
 
-    public boolean isAfterTimeFrame(long currentTime){
+    public boolean isOutdated(long currentTime){
         if(timeMode == TimeMode.UNBOUNDED) return false;
         return currentTime > endTime;
     }

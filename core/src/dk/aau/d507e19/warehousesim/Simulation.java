@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
+import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.input.SimulationInputProcessor;
 import dk.aau.d507e19.warehousesim.storagegrid.ProductDistributor;
@@ -96,8 +97,10 @@ public class Simulation {
     }
 
     private void renderSelectedRobotsPaths() {
-        // TODO: 15/10/2019 render reserved paths
         for(Robot robot : selectedRobots){
+            server.getReservationManager().removeOutdatedReservationsBy(robot); // todo move this elsewhere
+            ArrayList<Reservation> reservations = server.getReservationManager().getReservationsBy(robot);
+            storageGrid.renderPathOverlay(reservations, shapeRenderer);
 
         }
     }
@@ -178,5 +181,9 @@ public class Simulation {
 
     public Tile getSelectedTile() {
         return selectedTile;
+    }
+
+    public long getTimeInTicks() {
+        return tickCount;
     }
 }

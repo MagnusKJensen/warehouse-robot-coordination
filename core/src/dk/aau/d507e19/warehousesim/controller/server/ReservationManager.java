@@ -11,11 +11,13 @@ public class ReservationManager {
 
     private final ReservationTile[][] reservationTiles;
     private final HashMap<Robot, ArrayList<Reservation>> robotReservationsMap;
+    private Server server;
 
-    public ReservationManager(int width, int height){
+    public ReservationManager(int width, int height, Server server){
         reservationTiles = new ReservationTile[width][height];
         robotReservationsMap = new HashMap<>();
         intiTiles(width, height);
+        this.server = server;
     }
 
     private void intiTiles(int width, int height) {
@@ -58,7 +60,25 @@ public class ReservationManager {
     }
 
     public ArrayList<Reservation> getReservationsBy(Robot robot){
+        if(!robotReservationsMap.containsKey(robot))
+            robotReservationsMap.put(robot, new ArrayList<>());
         return robotReservationsMap.get(robot);
+    }
+
+    public void removeOutdatedReservationsBy(Robot robot){
+        ArrayList<Reservation> reservations = getReservationsBy(robot);
+        ArrayList<Reservation> outdatedReservations = new ArrayList<>();
+        for(Reservation reservation : reservations){
+            if(reservation.getTimeFrame().isOutdated(server.getTimeInTicks()))
+                outdatedReservations.add(reservation);
+        }
+
+        reservations.removeAll(outdatedReservations);
+    }
+
+    private void addRobotKeyIfNotPresent(Robot robot){
+        if(robotReservationsMap.containsKey(robot))
+            robotReservationsMap.put(robot, new ArrayList<>());
     }
 
     public void removeReservation(Reservation reservation){
