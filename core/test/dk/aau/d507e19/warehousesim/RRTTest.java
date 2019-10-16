@@ -6,6 +6,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.Path;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -50,23 +51,23 @@ public class RRTTest {
 
     }
     @Test
-    public void generateRRTPathTest(){
+    public void generateRRTPathTest() {
         //todo find a way to check that tree is actually re-used
-        GridCoordinate start = new GridCoordinate(0,0);
-        GridCoordinate dest1 = new GridCoordinate(6,8);
-        GridCoordinate dest2 = new GridCoordinate(12,7);
+        GridCoordinate start = new GridCoordinate(0, 0);
+        GridCoordinate dest1 = new GridCoordinate(6, 8);
+        GridCoordinate dest2 = new GridCoordinate(12, 7);
         ArrayList<GridCoordinate> list;
         //generate initial path
-        list = rrt.generateRRTPathFromEmpty(start,dest1);
+        list = rrt.generateRRTPathFromEmpty(start, dest1);
         assertTrue(isValidPath(start, dest1, list));
         Path p = new Path(list);
         //generate second path
-        list = rrt.generateRRTPath(dest1,dest2);
-        assertTrue(isValidPath(dest1,dest2,list));
+        list = rrt.generateRRTPath(dest1, dest2);
+        assertTrue(isValidPath(dest1, dest2, list));
         Path p2 = new Path(list);
         //generate third path
-        list = rrt.generateRRTPath(dest2,start);
-        assertTrue(isValidPath(dest2,start,list));
+        list = rrt.generateRRTPath(dest2, start);
+        assertTrue(isValidPath(dest2, start, list));
         Path p3 = new Path(list);
     }
     public boolean isValidPath(GridCoordinate start, GridCoordinate destination, ArrayList<GridCoordinate> path){
@@ -91,6 +92,33 @@ public class RRTTest {
         return false;
 
 
+    }
+
+    @Test
+    public void improvePathTest(){
+        Node<GridCoordinate> n0 = new Node<>(new GridCoordinate(0,0),null,false);
+        Node<GridCoordinate> n1 = new Node<>(new GridCoordinate(1,0),n0,false);
+        Node<GridCoordinate> n2 = new Node<>(new GridCoordinate(2,0),n1,false);
+        Node<GridCoordinate> n3 = new Node<>(new GridCoordinate(2,1),n2,false);
+        Node<GridCoordinate> n4 = new Node<>(new GridCoordinate(1,1),n3,false);
+        Node<GridCoordinate> n5 = new Node<>(new GridCoordinate(0,1),n0,false);
+        Node<GridCoordinate> n6 = new Node<>(new GridCoordinate(0,2),n5,false);
+        Node<GridCoordinate> n7 = new Node<>(new GridCoordinate(1,2),n4,false);
+        rrt.allNodesMap.put(n0.getData(),n0);
+        rrt.allNodesMap.put(n1.getData(),n1);
+        rrt.allNodesMap.put(n2.getData(),n2);
+        rrt.allNodesMap.put(n3.getData(),n3);
+        rrt.allNodesMap.put(n4.getData(),n4);
+        rrt.allNodesMap.put(n5.getData(),n5);
+        rrt.allNodesMap.put(n6.getData(),n6);
+        rrt.allNodesMap.put(n7.getData(),n7);
+        ArrayList<GridCoordinate> list = rrt.generateRRTPath(n0.getData(),n7.getData());
+        //assert that the correct route has been found
+        assertEquals(list.size()-1,n7.stepsToRoot());
+        rrt.improvePath(n7.getData());
+        assertNotEquals(list,rrt.generateRRTPath(n0.getData(),n7.getData()));
+        list = rrt.generateRRTPath(n0.getData(),n7.getData());
+        assertEquals(list.size()-1,n7.stepsToRoot());
     }
 
 
