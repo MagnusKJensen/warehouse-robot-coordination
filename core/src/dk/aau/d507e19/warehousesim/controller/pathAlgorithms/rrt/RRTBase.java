@@ -6,6 +6,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -56,7 +57,7 @@ public abstract class RRTBase {
 
     public Node<GridCoordinate> findNearestNeighbour(Node<GridCoordinate> tree, GridCoordinate randPos) {
         Edge shortestEdge = new Edge(tree.getData(),randPos);
-        for(Node<GridCoordinate> n : findNodesInSquare(randPos,allNodesMap.size())){
+        for(Node<GridCoordinate> n : findKNodesInSquare(randPos,allNodesMap.size())){
             Edge newEdge = new Edge(n.getData(),randPos);
 
             if (newEdge.getDistance() < shortestEdge.getDistance()){
@@ -76,34 +77,55 @@ public abstract class RRTBase {
         return shortestLengthNode;
     }
 
-    private List<Node<GridCoordinate>> findNodesInSquare(GridCoordinate randPos, int n){
-        List<Node<GridCoordinate>> listOfNodes =  new ArrayList<>();
+    private List<Node<GridCoordinate>> findKNodesInSquare(GridCoordinate randPos, int k){
+        List<Node<GridCoordinate>> listOfNodes =  new ArrayList<>(),foundNodes;
         //GridCoordinate relativePos = new GridCoordinate(0,0);
         GridCoordinate topLeft = new GridCoordinate(randPos.getX(),randPos.getY());
         GridCoordinate bottomRight = new GridCoordinate(randPos.getX(),randPos.getY());
-        while(listOfNodes.size() < n){
+        while(listOfNodes.size() < k){
             //check if new corners are out of grid bounds
             // Create new corners (probably not necessary)
             topLeft = updateTopLeft(topLeft);
             bottomRight = updateBottomRight(bottomRight);
-            //check for nodes - if any nodes are found then add to listOfNodes
-            for(int i = topLeft.getX(); i <= bottomRight.getX();i++){
-                if(i!= topLeft.getX() && i!= bottomRight.getX()){
-                    if (allNodesMap.containsKey(new GridCoordinate(i,topLeft.getY()))){
-                        listOfNodes.add(allNodesMap.get(new GridCoordinate(i,topLeft.getY())));
-                    }
-                    if(allNodesMap.containsKey(new GridCoordinate(i,bottomRight.getY()))){
-                        listOfNodes.add(allNodesMap.get(new GridCoordinate(i,bottomRight.getY())));
-                    }
-                    continue;
+            foundNodes = findNodes(topLeft,bottomRight);
+            if(!foundNodes.isEmpty()) listOfNodes.addAll(foundNodes);
+        }
+        return listOfNodes;
+    }
+
+    private List<Node<GridCoordinate>> findNodesInRadius(GridCoordinate randPos, int k){
+        List<Node<GridCoordinate>> listOfNodes =  new ArrayList<>();
+        List<Node<GridCoordinate>> foundNodes;
+        GridCoordinate topLeft = new GridCoordinate(randPos.getX(),randPos.getY());
+        GridCoordinate bottomRight = new GridCoordinate(randPos.getX(),randPos.getY());
+        int radiusChecked = 0;
+        while(radiusChecked != k){
+            topLeft = updateTopLeft(topLeft);
+            bottomRight = updateBottomRight(bottomRight);
+            foundNodes = findNodes(topLeft,bottomRight);
+            if(!foundNodes.isEmpty()) listOfNodes.addAll(foundNodes);
+            radiusChecked++;
+        }
+        return listOfNodes;
+    }
+
+    private List<Node<GridCoordinate>> findNodes(GridCoordinate topLeft, GridCoordinate bottomRight){
+        List<Node<GridCoordinate>> listOfNodes = new ArrayList<>();
+        for(int i = topLeft.getX(); i <= bottomRight.getX();i++){
+            if(i!= topLeft.getX() && i!= bottomRight.getX()){
+                if (allNodesMap.containsKey(new GridCoordinate(i,topLeft.getY()))){
+                    listOfNodes.add(allNodesMap.get(new GridCoordinate(i,topLeft.getY())));
                 }
-                for(int j = topLeft.getY(); j <= bottomRight.getY();j++){
-                    if(allNodesMap.containsKey(new GridCoordinate(i,j))){
-                        listOfNodes.add(allNodesMap.get(new GridCoordinate(i,j)));
-                    }
+                if(allNodesMap.containsKey(new GridCoordinate(i,bottomRight.getY()))){
+                    listOfNodes.add(allNodesMap.get(new GridCoordinate(i,bottomRight.getY())));
+                }
+                continue;
+            }
+            for(int j = topLeft.getY(); j <= bottomRight.getY();j++){
+                if(allNodesMap.containsKey(new GridCoordinate(i,j))){
+                    listOfNodes.add(allNodesMap.get(new GridCoordinate(i,j)));
                 }
             }
-
         }
         return listOfNodes;
     }
