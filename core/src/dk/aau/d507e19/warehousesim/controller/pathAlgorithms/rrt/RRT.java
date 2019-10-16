@@ -32,7 +32,10 @@ public class RRT extends RRTBase {
         }
         //Set root to equal starting point
         root = allNodesMap.get(start);
-        root.makeRoot();
+        //only set root if it isnt already
+        if(!(root.getParent()==null)){
+            root.makeRoot();
+        }
         //grow until we have a path
         //when function completes we know that we have a path
         growUntilPathFound(destination);
