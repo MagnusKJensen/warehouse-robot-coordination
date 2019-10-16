@@ -38,7 +38,7 @@ public class SideMenu {
     public final TextButtonStyle textButtonStyle;
 
     private Color menuBGColor = new Color(75f / 255f, 75f / 255f, 75f / 255f, 1);
-    private final Vector2 timeControlOffset = new Vector2(70, 0);
+    private final Vector2 timeControlOffset = new Vector2(10, 0);
     private final Vector2 tileMenuOffset = new Vector2(10, 890);
 
     public SideMenu(Viewport menuViewport, final SimulationApp simApp) {

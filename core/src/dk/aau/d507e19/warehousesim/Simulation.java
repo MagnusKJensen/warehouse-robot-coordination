@@ -160,7 +160,7 @@ public class Simulation {
         Vector3 textPos = new Vector3(15 ,15 , 0);
         batch.setProjectionMatrix(fontCamera.combined);
         batch.begin();
-        font.setColor(Color.BLUE);
+        font.setColor(Color.WHITE);
         font.draw(batch, String.valueOf(tickCount), textPos.x, textPos.y);
         batch.end();
     }
