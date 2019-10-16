@@ -14,7 +14,6 @@ import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.ProductDistributor;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 import dk.aau.d507e19.warehousesim.storagegrid.Tile;
-import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
 
@@ -94,7 +93,7 @@ public class Simulation {
             if(lastSelectedRobot.isCarrying()) prods = lastSelectedRobot.getBin().getProducts();
             else prods = new ArrayList<>();
 
-            simulationApp.getSideMenu().getTileInfoMenu().updateRobotBinContent(prods, lastSelectedRobot.getRobotID());
+            simulationApp.getSideMenu().getBinContentScrollPanes().updateRobotBinContent(prods, lastSelectedRobot.getRobotID());
         }
 
         // Update the tile content
@@ -105,7 +104,7 @@ public class Simulation {
             if(tile.getBin() == null) prods = new ArrayList<>();
             else prods = tile.getBin().getProducts();
 
-            simulationApp.getSideMenu().getTileInfoMenu().updateBinContent(prods, tile.getPosX(), tile.getPosY());
+            simulationApp.getSideMenu().getBinContentScrollPanes().updateBinContent(prods, tile.getPosX(), tile.getPosY());
         }
     }
 
