@@ -35,10 +35,10 @@ public class OrderPlanner {
 
         plan.add(new PathTraversal(robot, pathToPickUpPoint));
         plan.add(new PickUp(robot));
-        ArrayList<Reservation> reservations = MovementPredictor.calculateReservations(robot, pathToPickUpPoint, robotController.getServer().getTime(), 0);
-        for(Reservation res : reservations){
-            System.out.println(res);
-        }
+
+        ArrayList<Reservation> reservations =
+                MovementPredictor.calculateReservations(robot, pathToPickUpPoint, server.getTime(), 0);
+        server.getReservationManager().reserve(reservations);
 
         return plan;
     }

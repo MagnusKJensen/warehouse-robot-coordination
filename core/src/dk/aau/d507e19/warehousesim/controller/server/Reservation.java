@@ -3,6 +3,8 @@ package dk.aau.d507e19.warehousesim.controller.server;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 
+import java.util.Objects;
+
 public class Reservation {
 
     private final TimeFrame timeFrame;
@@ -32,5 +34,20 @@ public class Reservation {
         return "Reservation: " +
                 "from " + timeFrame.getStart() + " to " + timeFrame.getEnd() +
                 ", gridCoordinate = " + gridCoordinate.getX() + ", " + gridCoordinate.getY();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Reservation that = (Reservation) o;
+        return Objects.equals(timeFrame, that.timeFrame) &&
+                Objects.equals(robot, that.robot) &&
+                Objects.equals(gridCoordinate, that.gridCoordinate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(timeFrame, robot, gridCoordinate);
     }
 }

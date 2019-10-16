@@ -2,9 +2,15 @@ package dk.aau.d507e19.warehousesim.controller.server;
 
 public class TimeFrame {
 
+    public static final TimeFrame ALL_TIME = TimeFrame.indefiniteTimeFrameFrom(Long.MIN_VALUE);
     private long startTime;
     private long endTime;
     private TimeMode timeMode;
+
+    public boolean overlaps(TimeFrame otherFrame) {
+        return false;
+        // TODO: 16/10/2019 Functionality
+    }
 
     private enum TimeMode{
         UNBOUNDED, BOUNDED;
