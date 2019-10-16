@@ -58,6 +58,8 @@ public class ProductDistributor {
                 nonFullTiles.remove(nextTile);
             }
         }
+
+        if(nonFullTiles.isEmpty() && !allProducts.isEmpty()) throw new IllegalArgumentException("Could not distribute products. Not enough room.");
     }
 
     private static ArrayList<BinTile> getAllBinTiles(StorageGrid grid) {

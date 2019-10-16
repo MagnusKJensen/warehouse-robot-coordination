@@ -83,4 +83,8 @@ public class Bin {
             return s;
         }
     }
+
+    public ArrayList<Product> getProducts() {
+        return products;
+    }
 }

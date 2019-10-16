@@ -16,7 +16,7 @@ public class SimulationApp extends ApplicationAdapter {
 	private static final long RANDOM_SEED = 123456789L;
 	public static final Random random = new Random(RANDOM_SEED);
 
-	private static final int MENU_WIDTH_IN_PIXELS = 300;
+	public static final int MENU_WIDTH_IN_PIXELS = 300;
 	// Size of a single square/tile in the grid
 	private static final int DEFAULT_PIXELS_PER_TILE = 64;
 	private static final int MAX_UPDATES_PER_FRAME = 30;

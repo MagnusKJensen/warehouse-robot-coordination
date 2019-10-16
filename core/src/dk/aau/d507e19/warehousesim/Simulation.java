@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.input.SimulationInputProcessor;
+import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.ProductDistributor;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 import dk.aau.d507e19.warehousesim.storagegrid.Tile;
@@ -95,6 +96,52 @@ public class Simulation {
         for(Robot robot : robots){
             robot.update();
         }
+        updateSideMenuScrollPanes();
+    }
+
+    private void updateSideMenuScrollPanes() {
+        // Update the robot bin content live
+        if(!selectedRobots.isEmpty()){
+            ArrayList<Product> prods;
+            Robot lastSelectedRobot = selectedRobots.get(selectedRobots.size() - 1);
+            if(lastSelectedRobot.isCarrying()) prods = lastSelectedRobot.getBin().getProducts();
+            else prods = new ArrayList<>();
+
+            simulationApp.getSideMenu().getTileInfoMenu().updateRobotBinContent(prods, lastSelectedRobot.getRobotID());
+        }
+
+        // Update the tile content
+        if(selectedTile instanceof BinTile){
+            BinTile tile = (BinTile) selectedTile;
+
+            ArrayList<Product> prods;
+            if(tile.getBin() == null) prods = new ArrayList<>();
+            else prods = tile.getBin().getProducts();
+
+            simulationApp.getSideMenu().getTileInfoMenu().updateBinContent(prods, tile.getPosX(), tile.getPosY());
+        }
+    }
+
+    public void selectTile(Tile tile){
+        selectedTile = tile;
+
+        // Make sure, that the scroll panes will also update even before the program is running
+        if(tickCount == 0){
+            updateSideMenuScrollPanes();
+        }
+    }
+
+    public void selectRobot(Robot robot) {
+        if(selectedRobots.contains(robot)){
+            selectedRobots.remove(robot);
+        }else{
+            selectedRobots.add(robot);
+        }
+
+        // Make sure, that the scroll panes will also update even before the program is running
+        if(tickCount == 0){
+            updateSideMenuScrollPanes();
+        }
     }
 
     public void render(OrthographicCamera gridCamera, OrthographicCamera fontCamera){
@@ -162,19 +209,6 @@ public class Simulation {
 
     public SimulationInputProcessor getInputProcessor() {
         return inputProcessor;
-    }
-
-    public void selectTile(Tile tile){
-        selectedTile = tile;
-        simulationApp.getSideMenu().getTileInfoMenu().changeText(selectedTile.toString());
-    }
-
-    public void selectRobot(Robot robot) {
-        if(selectedRobots.contains(robot)){
-            selectedRobots.remove(robot);
-        }else{
-            selectedRobots.add(robot);
-        }
     }
 
     public int getGridHeight() {

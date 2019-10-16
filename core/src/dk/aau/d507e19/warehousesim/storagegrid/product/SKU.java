@@ -9,8 +9,6 @@ public class SKU {
 
     @Override
     public String toString() {
-        return "SKU{" +
-                "EAN='" + EAN + '\'' +
-                '}';
+        return "{EAN='" + EAN + '\'' + "}";
     }
 }

@@ -13,8 +13,6 @@ public class SimulationInputProcessor implements InputProcessor {
 
     private Simulation simulation;
 
-    private int lastMouseX, lastMouseY;
-
     public SimulationInputProcessor(Simulation simulation) {
         this.simulation = simulation;
     }
@@ -27,6 +25,7 @@ public class SimulationInputProcessor implements InputProcessor {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         ArrayList<Robot> robots = simulation.getAllRobots();
+
         for(Robot robot : robots){
             if(robot.collidesWith(simulation.screenToWorldPosition(screenX, screenY)))
                 simulation.selectRobot(robot);
@@ -41,6 +40,7 @@ public class SimulationInputProcessor implements InputProcessor {
                 }
             }
         }
+
         return false;
     }
 

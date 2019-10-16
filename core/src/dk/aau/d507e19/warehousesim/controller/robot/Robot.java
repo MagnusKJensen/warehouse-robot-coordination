@@ -206,4 +206,8 @@ public class Robot {
         this.currentPosition = positionAfter;
         // TODO: 15/10/2019 Check legality
     }
+
+    public Bin getBin() {
+        return bin;
+    }
 }
