@@ -164,10 +164,8 @@ public class Astar implements PathFinder {
                 currTile = closedList.get(i);
             }
             prevTile = closedList.get(i - 1);
-
         }
         finalPath.add(new GridCoordinate(closedList.get(0).getCurrentXPosition(), closedList.get(0).getCurrentYPosition()));
-
     }
 
     @Override
@@ -189,7 +187,7 @@ public class Astar implements PathFinder {
         addFinalPathToList();
         //Reverses final path so it is in correct order
         Collections.reverse(finalPath);
-        pathManager.addReservationToList(finalPath, simulatedTime, robotID, robotMaxSpeedPerBin);
+        pathManager.addReservationToList(finalPath, simulatedTime, robotID, robotMaxSpeedPerBin,xEndposition,yEndposition);
 
         //  pathManager.printReservations();
         return new Path(finalPath);

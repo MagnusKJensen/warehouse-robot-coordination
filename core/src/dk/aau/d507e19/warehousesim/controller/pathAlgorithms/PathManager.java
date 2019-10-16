@@ -17,7 +17,7 @@ public class PathManager {
         addReservationListsToGrid();
     }
 
-    public void addReservationToList(ArrayList<GridCoordinate> arrayList, float simulatedtime, int robotID, float robotSpeedPerBin) {
+    public void addReservationToList(ArrayList<GridCoordinate> arrayList, float simulatedtime, int robotID, float robotSpeedPerBin, int xEndPosition, int yEndPosition) {
         Reservation reservation;
         int i = 1;
         for (GridCoordinate gridcordinate : arrayList) {

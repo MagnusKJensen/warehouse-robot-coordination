@@ -12,8 +12,8 @@ public class WarehouseSpecs {
     public static final int productsInStock = 0;
     public static final int numberOfRobots = 7;
     public static final float robotTopSpeed = 3f; // Meters/second
-    public static final float robotAcceleration = 10000f; // m/s^2
-    public static final float robotDeceleration = 10000f; // m/s^2
+    public static final float robotAcceleration = 10000000f; // m/s^2
+    public static final float robotDeceleration = 100000000f; // m/s^2
     public static final float robotMinimumSpeed = 0.1f;
     public static final int robotPickUpSpeedInSeconds = 1;
     public static final int robotDeliverToPickerInSeconds = 1;
