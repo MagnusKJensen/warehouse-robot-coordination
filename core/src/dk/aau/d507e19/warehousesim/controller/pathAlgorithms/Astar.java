@@ -6,7 +6,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-
+/*
 public class Astar implements PathFinder {
 
     private Tile[][] grid;
@@ -173,3 +173,4 @@ public class Astar implements PathFinder {
         return new Path(finalPath);
     }
 }
+*/

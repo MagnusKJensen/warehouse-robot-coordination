@@ -42,6 +42,37 @@ public abstract class RRTBase {
 
     }
 
+    public void improvePath(GridCoordinate destination){
+        List<Node<GridCoordinate>> potentialImprovements;
+        Node<GridCoordinate> currentParent = allNodesMap.get(destination).getParent(),bestParent = currentParent;
+        int steps = currentParent.stepsToRoot();
+        if(!allNodesMap.containsKey(destination)){
+            throw new RuntimeException("Can't be called if a path does not exist. Call generateRRTPath() before using this");
+        }
+        //possible nodes:
+        //use find nodes in square function to find nodes
+        potentialImprovements = findNodesInRadius(destination,1);
+        if(!potentialImprovements.isEmpty()){
+            //check number of steps to root and save the best node
+            for (Node<GridCoordinate> n : potentialImprovements){
+                //check if closer to root and if its in range
+                if((n.stepsToRoot() < steps) && distance(n.getData(),currentParent.getData()) == 1){
+                    steps = n.stepsToRoot();
+                    bestParent = n;
+                }
+            }
+            if(bestParent==currentParent){
+                System.out.println("No better path could be found");
+            }else{
+                allNodesMap.get(destination).setParent(bestParent);
+            }
+        }
+        //check if dest node has any other nodes that would be possible to connect to
+    }
+    private double distance(GridCoordinate pos1, GridCoordinate pos2){
+        return Math.sqrt(Math.pow(pos2.getX() - pos1.getX(), 2) + Math.pow(pos2.getY() - pos1.getY(), 2));
+    }
+
     private Node<GridCoordinate> generateNewNode(Node<GridCoordinate> nearest, GridCoordinate randPos) {
         GridCoordinate originalPos = nearest.getData();
         GridCoordinate pos = nearest.getData();
@@ -218,10 +249,8 @@ public abstract class RRTBase {
         return freeListInitializer;
     }
     private void updateFreeList(GridCoordinate pos){
-        for(int i = 0; i < freeNodeList.size(); i++){
-            if(pos == freeNodeList.get(i)){
-                freeNodeList.remove(i);
-            }
+        if(freeNodeList.contains(pos)){
+            freeNodeList.remove(pos);
         }
     }
 }
