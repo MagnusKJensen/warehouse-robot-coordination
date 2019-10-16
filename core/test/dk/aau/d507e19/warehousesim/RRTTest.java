@@ -5,6 +5,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Path;
 import org.junit.Test;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,8 @@ import static org.junit.Assert.*;
 public class RRTTest {
     private Node<GridCoordinate> tree,oneleft,oneright,twoleft,tworight,twooneright;
     private RRT rrt = new RRT(null);
+    private ArrayList<GridCoordinate> blockedNodeList = new ArrayList<>();
+    private ArrayList<GridCoordinate> nodesToBeBlocked = new ArrayList<>();
     public void generateTree(){
         tree = new Node<GridCoordinate>(new GridCoordinate(0,0),null, false);
         oneleft = new Node<GridCoordinate>(new GridCoordinate(0,1),null, false);
@@ -70,6 +73,25 @@ public class RRTTest {
         assertTrue(isValidPath(dest2, start, list));
         Path p3 = new Path(list);
     }
+    @Test
+    public void assignBlockedNodesTest(){
+        generateTree();
+        //blockedNodesList
+        nodesToBeBlocked.add(oneleft.getData());
+        nodesToBeBlocked.add(oneright.getData());
+        nodesToBeBlocked.add(twoleft.getData());
+
+        rrt.assignBlockedNodeStatus(nodesToBeBlocked);
+
+        assertTrue(oneleft.getBlockedStatus());
+        assertTrue(oneright.getBlockedStatus());
+        assertTrue(twoleft.getBlockedStatus());
+
+        nodesToBeBlocked.remove(oneleft.getData());
+        rrt.assignBlockedNodeStatus(nodesToBeBlocked);
+        assertFalse(oneleft.getBlockedStatus());
+
+    }
     public boolean isValidPath(GridCoordinate start, GridCoordinate destination, ArrayList<GridCoordinate> path){
         GridCoordinate prev = start;
         assertEquals(path.get(0), start);
@@ -90,8 +112,6 @@ public class RRTTest {
             return true;
         }
         return false;
-
-
     }
 
     @Test

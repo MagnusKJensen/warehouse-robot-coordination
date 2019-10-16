@@ -19,6 +19,9 @@ public class Node<T> {
             this.parent = parent;
         }
     }
+    public boolean getBlockedStatus(){
+        return blockedStatus;
+    }
 
     public void setBlockedStatus(boolean blockedStatus) {
         this.blockedStatus = blockedStatus;
