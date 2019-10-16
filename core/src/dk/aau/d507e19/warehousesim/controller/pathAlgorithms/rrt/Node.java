@@ -9,7 +9,7 @@ public class Node<T> {
     private List<Node<T>> children = new ArrayList<>();
     private boolean blockedStatus;
 
-        public Node(T data, Node<T> parent, boolean blockedStatus) {
+    public Node(T data, Node<T> parent, boolean blockedStatus) {
         this.data = data;
         this.blockedStatus = blockedStatus;
         if (parent != null) {
@@ -22,6 +22,13 @@ public class Node<T> {
 
     public void setBlockedStatus(boolean blockedStatus) {
         this.blockedStatus = blockedStatus;
+    }
+
+    public int stepsToRoot(){
+        if(!(this.getParent()==null)){
+            return this.getParent().stepsToRoot()+1;
+        }
+        else return 0;
     }
 
     public void makeRoot() {
