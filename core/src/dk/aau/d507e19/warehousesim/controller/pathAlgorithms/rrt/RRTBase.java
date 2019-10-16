@@ -93,7 +93,7 @@ public abstract class RRTBase {
         return listOfNodes;
     }
 
-    private List<Node<GridCoordinate>> findNodesInRadius(GridCoordinate randPos, int k){
+    public List<Node<GridCoordinate>> findNodesInRadius(GridCoordinate randPos, int k){
         List<Node<GridCoordinate>> listOfNodes =  new ArrayList<>();
         List<Node<GridCoordinate>> foundNodes;
         GridCoordinate topLeft = new GridCoordinate(randPos.getX(),randPos.getY());
