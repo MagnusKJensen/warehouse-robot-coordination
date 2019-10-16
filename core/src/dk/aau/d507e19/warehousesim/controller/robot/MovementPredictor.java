@@ -77,9 +77,9 @@ public class MovementPredictor {
                     "The given reservations had coordinates : " +
                     res1.getGridCoordinate() + " | "  + res2.getGridCoordinate());
 
-        if(res1.getTimeFrame().getStart() > res2.getTimeFrame().getStart())
+        /*if(res1.getTimeFrame().getStart() > res2.getTimeFrame().getStart())
             throw new IllegalArgumentException("The first TimeFrame starts after the seconds time frame : \n TimeFrame 1: " +
-                    res1.getTimeFrame() + " | TimeFrame 2: "  + res2.getTimeFrame());
+                    res1.getTimeFrame() + " | TimeFrame 2: "  + res2.getTimeFrame());*/
 
         TimeFrame newTimeFrame = new TimeFrame(res1.getTimeFrame().getStart(), res2.getTimeFrame().getEnd());
         return new Reservation(res1.getRobot(), res1.getGridCoordinate(), newTimeFrame);

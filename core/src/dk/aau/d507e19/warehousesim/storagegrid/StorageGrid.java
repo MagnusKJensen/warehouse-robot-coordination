@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import dk.aau.d507e19.warehousesim.GraphicsManager;
+import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
@@ -25,13 +26,15 @@ public class StorageGrid {
     private ShapeRenderer shapeRenderer;
     private SpriteBatch spriteBatch;
     private ArrayList<GridCoordinate> pickerPoints = new ArrayList<>();
+    private Simulation simulation;
 
-    public StorageGrid(int width, int height){
+    public StorageGrid(int width, int height, Simulation simulation){
         this.height = height;
         this.width = width;
         this.tiles = new Tile[width][height];
         this.shapeRenderer = new ShapeRenderer();
         this.spriteBatch = new SpriteBatch();
+        this.simulation = simulation;
         generatePickerPoints();
         fillGrid();
     }
@@ -68,8 +71,10 @@ public class StorageGrid {
 
 
     public void renderPathOverlay(ArrayList<Reservation> reservations, ShapeRenderer shapeRenderer){
-        for(Reservation reservation : reservations)
+        for(Reservation reservation : reservations){
+            if(reservation.getTimeFrame().isWithinTimeFrame(simulation.getTimeInTicks()))
             tiles[reservation.getGridCoordinate().getX()][reservation.getGridCoordinate().getY()].renderOverlay(shapeRenderer);
+        }
 
     }
 

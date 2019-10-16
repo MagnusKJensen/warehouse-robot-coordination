@@ -59,4 +59,13 @@ public class TimeFrame {
     public TimeMode getTimeMode() {
         return timeMode;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", timeMode=" + timeMode +
+                '}';
+    }
 }

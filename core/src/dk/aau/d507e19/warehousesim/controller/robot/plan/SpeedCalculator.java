@@ -24,6 +24,7 @@ public class SpeedCalculator {
     private float breakingDistance;
     private float maxSpeedDistance;
     private float accelerationDistance;
+    private float totalDistance;
 
     private enum Phase{
         ACCELERATION_PHASE, MAX_SPEED_PHASE, DECELERATION_PHASE, FINISHED;
@@ -32,7 +33,6 @@ public class SpeedCalculator {
     public SpeedCalculator(Robot robot, Line line) {
         this.robot = robot;
         this.line = line;
-
         calculateConstants();
     }
 
@@ -42,6 +42,7 @@ public class SpeedCalculator {
         breakingDistance = calculateBreakingDistance();
         accelerationDistance = calculateAccelerationDistance();
         maxSpeedDistance = line.getLength() - accelerationDistance - breakingDistance;
+        totalDistance = breakingDistance + maxSpeedDistance + accelerationDistance;
 
         accelerationDuration = achievableSpeed / robot.getAccelerationBinSecond();
         maxSpeedDuration = maxSpeedDistance / robot.getMaxSpeedBinsPerSecond();
@@ -161,17 +162,19 @@ public class SpeedCalculator {
     }
 
     public long amountOfTicksToReach(float distance){
+        /*if(distance > line.getLength())
+            throw new IllegalArgumentException("Given distance exceeds total distance");*/
+
         float timeToReach;
         if(distance <= accelerationDistance)
             timeToReach =  (float) Math.sqrt((2f * distance) / robot.getAccelerationBinSecond());
         else if(distance <= accelerationDistance + maxSpeedDistance){
             float distanceAtMaxSpeed = distance - accelerationDistance;
             timeToReach = accelerationDuration + (distanceAtMaxSpeed / robot.getMaxSpeedBinsPerSecond());
-        }else if(distance < totalDuration){
+        }else if(distance < totalDistance){
             float distanceSpentBreaking = distance - accelerationDistance - maxSpeedDistance;
             float timeSpentBreaking = (float)
-                    (achievableSpeed + Math.sqrt(Math.pow(achievableSpeed, 2) - 2f * distanceSpentBreaking * robot.getAccelerationBinSecond()))
-                    / (robot.getAccelerationBinSecond());
+                    -(-achievableSpeed + (Math.sqrt(Math.pow(achievableSpeed, 2)-(2*distanceSpentBreaking*robot.getDecelerationBinSecond())))) / (robot.getDecelerationBinSecond());
 
             timeToReach = timeSpentBreaking + accelerationDuration + maxSpeedDuration;
         }else{
