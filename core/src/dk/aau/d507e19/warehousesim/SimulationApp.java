@@ -44,6 +44,8 @@ public class SimulationApp extends ApplicationAdapter {
 	private CameraMover cameraMover;
     private InputMultiplexer inputMultiplexer;
 
+	private String pathFinderSelected = "Astar";
+
 	@Override
 	public void create () {
         GraphicsManager.loadAssets();
@@ -213,6 +215,7 @@ public class SimulationApp extends ApplicationAdapter {
 		pause();
 		simulation = new Simulation(this);
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());
+		sideMenu.resetSideMenu();
 	}
 
 	public OrthographicCamera getWorldCamera() {
@@ -233,6 +236,14 @@ public class SimulationApp extends ApplicationAdapter {
 
 	protected UpdateMode getUpdateMode() {
 		return updateMode;
+	}
+
+	public String getPathFinderSelected() {
+		return pathFinderSelected;
+	}
+
+	public void setPathFinderSelected(String pathFinderSelected) {
+		this.pathFinderSelected = pathFinderSelected;
 	}
 
 }

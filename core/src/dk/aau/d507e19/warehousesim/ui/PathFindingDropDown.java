@@ -45,8 +45,8 @@ public class PathFindingDropDown {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 String selected = selectBox.getSelected();
+                simulationApp.setPathFinderSelected(selected);
                 simulationApp.resetSimulation();
-                simulationApp.getSimulation().setPathFinderSelected(selected);
             }
         });
 

@@ -44,7 +44,7 @@ public class Robot {
         currentStatus = Status.AVAILABLE;
 
         // Initialize controller for this robot
-        this.robotController = new RobotController(simulation.getServer(), this, simulation.pathFinderSelected);
+        this.robotController = new RobotController(simulation.getServer(), this, simulation.getSimulationApp().getPathFinderSelected());
     }
 
     public void update() {

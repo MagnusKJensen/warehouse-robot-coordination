@@ -40,7 +40,7 @@ public class RobotController {
         switch (pathFinderString) {
             case "Astar":
                 return new Astar(server, robot);
-            case "RTT*":
+            case "RRT*":
                 return new RRTPlanner(RRTType.RRT_STAR, robot);
             case "RRT":
                 return new RRTPlanner(RRTType.RRT, robot);

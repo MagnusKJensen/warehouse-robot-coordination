@@ -39,8 +39,6 @@ public class Simulation {
 
     private SimulationApp simulationApp;
 
-    public String pathFinderSelected = "Astar";
-
     private SimulationInputProcessor inputProcessor;
 
     public Simulation(SimulationApp simulationApp){
@@ -67,8 +65,6 @@ public class Simulation {
         else ProductDistributor.distributeProducts(storageGrid);
 
         initRobots();
-
-        System.out.println("Selected pathfinder " + pathFinderSelected);
     }
 
     private void initRobots() {
@@ -223,7 +219,7 @@ public class Simulation {
         return tickCount;
     }
 
-    public void setPathFinderSelected(String pathFinderSelected) {
-        this.pathFinderSelected = pathFinderSelected;
+    public SimulationApp getSimulationApp() {
+        return simulationApp;
     }
 }
