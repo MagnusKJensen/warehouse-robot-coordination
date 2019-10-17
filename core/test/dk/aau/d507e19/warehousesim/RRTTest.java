@@ -4,10 +4,12 @@ import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRT;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public class RRTTest {
     private Node<GridCoordinate> tree,oneleft,oneright,twoleft,tworight,twooneright;

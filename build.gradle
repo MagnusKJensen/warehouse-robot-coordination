@@ -64,7 +64,7 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
-        testCompile "junit:junit:4.11"
-        //compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
     }
 }

@@ -1,15 +1,14 @@
 package dk.aau.d507e19.warehousesim.controller.path;
 
-import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class StepTest {
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test
     public void zeroWaitTimeTest() {
-        Step step = new Step(0, 0, 0);
+        assertThrows(IllegalArgumentException.class, () -> new Step(0, 0, 0));
     }
 
     @Test
@@ -78,10 +77,10 @@ public class StepTest {
         assertFalse(secondStep.isStepValidContinuationOf(firstStep));
     }
 
-    @Test (expected = IllegalStateException.class)
+    @Test
     public void getTimeOnMovementStepTest() {
         Step step = new Step(8, 9);
-        step.getWaitTimeInTicks();
+        assertThrows(IllegalArgumentException.class, () -> step.getWaitTimeInTicks());
     }
 
     @Test
@@ -89,8 +88,6 @@ public class StepTest {
         Step step = new Step(8, 9, 50);
         assertEquals(50, step.getWaitTimeInTicks());
     }
-
-
 
 
 }

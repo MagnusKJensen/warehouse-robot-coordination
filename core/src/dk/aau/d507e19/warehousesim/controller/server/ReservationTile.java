@@ -24,6 +24,7 @@ public class ReservationTile {
 
     public ArrayList<Reservation> getReservations(TimeFrame timeFrame){
         ArrayList<Reservation> overlappingReservations = new ArrayList<>();
+
         for(Reservation reservation : reservations){
             if(reservation.getTimeFrame().overlaps(timeFrame))
                 overlappingReservations.add(reservation);

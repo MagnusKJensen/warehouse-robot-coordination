@@ -3,10 +3,13 @@ import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRT;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTStar;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 public class RRTStarTest {
     RRTStar rrtStar = new RRTStar(null);
