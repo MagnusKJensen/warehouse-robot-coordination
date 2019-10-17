@@ -72,8 +72,11 @@ public class StorageGrid {
 
     public void renderPathOverlay(ArrayList<Reservation> reservations, ShapeRenderer shapeRenderer){
         for(Reservation reservation : reservations){
+            int x = reservation.getGridCoordinate().getX(), y = reservation.getGridCoordinate().getY();
             if(reservation.getTimeFrame().isWithinTimeFrame(simulation.getTimeInTicks()))
-            tiles[reservation.getGridCoordinate().getX()][reservation.getGridCoordinate().getY()].renderOverlay(shapeRenderer);
+                tiles[x][y].renderOverlay(shapeRenderer, Tile.overlayColor2);
+            else
+                tiles[x][y].renderOverlay(shapeRenderer);
         }
 
     }
