@@ -89,14 +89,13 @@ public class Astar implements PathFinder {
 
     public boolean isTileReserved(AStarTile currentTile) {
         // TODO: 14/10/2019 Use reservation manager instead
-        /*ArrayList<Reservation>[][] gridOfResevations = pathManager.getGridOfResevations();
+        ArrayList<Reservation>[][] gridOfResevations = pathManager.getGridOfResevations();
         for (Reservation res : gridOfResevations[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition()]) {
             if (Math.ceil(simulatedTime + robotMaxSpeedPerBin * currentTile.getG()) == Math.ceil(res.getTimeTileIsReserved())) {
                 return false;
             }
-
         }
-        return true;*/
+        return true;
         return true;
     }
 
