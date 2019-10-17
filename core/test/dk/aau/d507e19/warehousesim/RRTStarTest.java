@@ -1,4 +1,5 @@
 package dk.aau.d507e19.warehousesim;
+import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRT;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTStar;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
@@ -16,7 +17,7 @@ public class RRTStarTest {
         GridCoordinate start = new GridCoordinate(0, 0);
         GridCoordinate dest1 = new GridCoordinate(10, 10);
         GridCoordinate dest2 = new GridCoordinate(2, 3);
-        ArrayList<GridCoordinate> rrtList,rrtStarList;
+        ArrayList<Step> rrtList,rrtStarList;
         //generate both paths
         rrtList = rrt.generateRRTPath(start,dest1);
         rrtStarList = rrtStar.generatePath(start,dest1);
@@ -41,7 +42,7 @@ public class RRTStarTest {
     public void generatePathFromEmptyTest(){
         GridCoordinate start = new GridCoordinate(0, 0);
         GridCoordinate dest1 = new GridCoordinate(15, 10);
-        ArrayList<GridCoordinate> list;
+        ArrayList<Step> list;
         list = rrtStar.generatePathFromEmpty(start,dest1);
         RRTTest test = new RRTTest();
         assertTrue(test.isValidPath(start,dest1,list));

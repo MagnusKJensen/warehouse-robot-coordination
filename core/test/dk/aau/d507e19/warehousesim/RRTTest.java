@@ -1,8 +1,9 @@
 package dk.aau.d507e19.warehousesim;
+import dk.aau.d507e19.warehousesim.controller.path.Path;
+import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRT;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import dk.aau.d507e19.warehousesim.controller.robot.Path;
 import org.junit.Test;
 import java.util.ArrayList;
 
@@ -45,7 +46,7 @@ public class RRTTest {
     public void generatePathFromEmptyTest() {
         GridCoordinate start = new GridCoordinate(0,0);
         GridCoordinate dest = new GridCoordinate(8,8);
-        ArrayList<GridCoordinate> list = rrt.generateRRTPathFromEmpty(start,dest);
+        ArrayList<Step> list = rrt.generateRRTPathFromEmpty(start,dest);
         assertTrue(isValidPath(start, dest, list));
         Path p = new Path(list);
 
@@ -56,7 +57,7 @@ public class RRTTest {
         GridCoordinate start = new GridCoordinate(0, 0);
         GridCoordinate dest1 = new GridCoordinate(6, 8);
         GridCoordinate dest2 = new GridCoordinate(12, 7);
-        ArrayList<GridCoordinate> list;
+        ArrayList<Step> list;
         //generate initial path
         list = rrt.generateRRTPathFromEmpty(start, dest1);
         assertTrue(isValidPath(start, dest1, list));
@@ -89,14 +90,14 @@ public class RRTTest {
         assertFalse(oneleft.getBlockedStatus());
 
     }
-    public boolean isValidPath(GridCoordinate start, GridCoordinate destination, ArrayList<GridCoordinate> path){
+    public boolean isValidPath(GridCoordinate start, GridCoordinate destination, ArrayList<Step> path){
         GridCoordinate prev = start;
-        assertEquals(path.get(0), start);
-        for(GridCoordinate gc: path) {
-            if(!isReachable(prev, gc)){
+        assertEquals(path.get(0).getGridCoordinate(), start);
+        for(Step gc: path) {
+            if(!isReachable(prev, gc.getGridCoordinate())){
                 return false;
             }
-            prev = gc;        }
+            prev = gc.getGridCoordinate();        }
         return true;
 
     }
@@ -128,7 +129,7 @@ public class RRTTest {
         rrt.allNodesMap.put(n5.getData(),n5);
         rrt.allNodesMap.put(n6.getData(),n6);
         rrt.allNodesMap.put(n7.getData(),n7);
-        ArrayList<GridCoordinate> list = rrt.generateRRTPath(n0.getData(),n7.getData());
+        ArrayList<Step> list = rrt.generateRRTPath(n0.getData(),n7.getData());
         //assert that the correct route has been found
         assertEquals(list.size()-1,n7.stepsToRoot());
         rrt.improvePath(n7.getData());

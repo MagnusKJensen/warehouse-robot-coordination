@@ -10,7 +10,7 @@ import dk.aau.d507e19.warehousesim.controller.server.Server;
 
 import java.util.ArrayList;
 import java.util.Collections;
-/*
+
 public class Astar implements PathFinder {
 
     private AStarTile[][] grid;
@@ -215,4 +215,3 @@ public class Astar implements PathFinder {
         return new Path(Step.fromGridCoordinates(finalPath));
     }
 }
-*/

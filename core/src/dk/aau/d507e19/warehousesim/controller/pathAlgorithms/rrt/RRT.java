@@ -1,6 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt;
 
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
+import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 
@@ -14,10 +15,10 @@ public class RRT extends RRTBase {
         super(robot);
     }
 
-    public ArrayList<GridCoordinate> generateRRTPathFromEmpty(GridCoordinate start, GridCoordinate destination) {
+    public ArrayList<Step> generateRRTPathFromEmpty(GridCoordinate start, GridCoordinate destination) {
         return super.generatePathFromEmpty(start,destination);
     }
-    public ArrayList<GridCoordinate> generateRRTPath(GridCoordinate start, GridCoordinate destination){
+    public ArrayList<Step> generateRRTPath(GridCoordinate start, GridCoordinate destination){
         return super.generatePath(start,destination);
     }
 }

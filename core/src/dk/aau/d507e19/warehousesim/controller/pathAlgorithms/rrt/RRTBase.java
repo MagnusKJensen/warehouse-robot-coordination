@@ -2,6 +2,7 @@ package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt;
 
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
+import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 
@@ -209,14 +210,14 @@ public abstract class RRTBase {
         //return root.containsNodeWithData(root,newPos);
     }
 
-    protected ArrayList<GridCoordinate> makePath(Node<GridCoordinate> destNode){
-        ArrayList<GridCoordinate> path = new ArrayList<>();
+    protected ArrayList<Step> makePath(Node<GridCoordinate> destNode){
+        ArrayList<Step> path = new ArrayList<>();
         if(destNode.getParent() == null){
-            path.add(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY()));
+            path.add(new Step(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY())));
             return path;
         }
         path = makePath(destNode.getParent());
-        path.add(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY()));
+        path.add(new Step(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY())));
         return path;
     }
 
@@ -267,7 +268,7 @@ public abstract class RRTBase {
             freeNodeList.remove(pos);
         }
     }
-    protected ArrayList<GridCoordinate> generatePathFromEmpty(GridCoordinate start, GridCoordinate destination){
+    protected ArrayList<Step> generatePathFromEmpty(GridCoordinate start, GridCoordinate destination){
         boolean foundPath = false;
         dest = destination;
         root = new Node<GridCoordinate>(start, null, false);
@@ -279,7 +280,7 @@ public abstract class RRTBase {
         destinationNode = allNodesMap.get(destination);
         return makePath(destinationNode);
     }
-    public ArrayList<GridCoordinate> generatePath(GridCoordinate start, GridCoordinate destination){
+    public ArrayList<Step> generatePath(GridCoordinate start, GridCoordinate destination){
         if(allNodesMap.isEmpty()){
             return generatePathFromEmpty(start,destination);
         }
