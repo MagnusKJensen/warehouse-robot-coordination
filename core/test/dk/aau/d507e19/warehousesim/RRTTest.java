@@ -40,7 +40,6 @@ public class RRTTest {
         rrt.shortestLengthNode = tree;
         Node<GridCoordinate> actual = rrt.findNearestNeighbour(tree,new GridCoordinate(2,3));
         assertEquals(twooneright.getData(),actual.getData());
-
     }
     @Test
     public void generatePathFromEmptyTest() {
