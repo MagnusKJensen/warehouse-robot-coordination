@@ -18,6 +18,8 @@ import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class Simulation {
@@ -32,6 +34,7 @@ public class Simulation {
     private Tile selectedTile;
 
     private long tickCount = 0L;
+    private long realTimeSinceStartInMS = 0L;
 
     private OrthographicCamera gridCamera;
     private OrthographicCamera fontCamera;
@@ -138,7 +141,7 @@ public class Simulation {
         storageGrid.render(shapeRenderer, batch);
         renderSelectedRobotsPaths();
         renderRobots();
-        renderTickCount(gridCamera, fontCamera);
+        renderTickCountAndRealTime(gridCamera, fontCamera);
     }
 
     private void renderSelectedRobotsPaths() {
@@ -157,12 +160,18 @@ public class Simulation {
         batch.end();
     }
 
-    private void renderTickCount(OrthographicCamera gridCamera, OrthographicCamera fontCamera){
+    private void renderTickCountAndRealTime(OrthographicCamera gridCamera, OrthographicCamera fontCamera){
         Vector3 textPos = new Vector3(15 ,15 , 0);
         batch.setProjectionMatrix(fontCamera.combined);
         batch.begin();
         font.setColor(Color.WHITE);
-        font.draw(batch, String.valueOf(tickCount), textPos.x, textPos.y);
+
+        realTimeSinceStartInMS =  tickCount / SimulationApp.TICKS_PER_SECOND;
+
+        DecimalFormat df = new DecimalFormat("0.000");
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        String tickCountAndSeconds =  "seconds " + df.format((tickCount / (double)SimulationApp.TICKS_PER_SECOND)) + " / " +  tickCount;
+        font.draw(batch, tickCountAndSeconds, textPos.x, textPos.y);
         batch.end();
     }
 

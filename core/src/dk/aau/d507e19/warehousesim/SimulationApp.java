@@ -4,7 +4,6 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import dk.aau.d507e19.warehousesim.input.CameraMover;
 import dk.aau.d507e19.warehousesim.ui.SideMenu;
@@ -31,6 +30,7 @@ public class SimulationApp extends ApplicationAdapter {
 	// Variables for simulation loop logic
 	public static final int TICKS_PER_SECOND = 30;
 	public static final long MILLIS_PER_TICK = 1000 / TICKS_PER_SECOND;
+	public static final int FAST_FORWARD_MULTIPLIER = 5;
 	public UpdateMode updateMode = UpdateMode.MANUAL;
 	private long millisSinceUpdate = 0L;
 	private long lastUpdateTime = 0L;
@@ -108,30 +108,45 @@ public class SimulationApp extends ApplicationAdapter {
 
 		clearScreen();
 		renderMenu();
-		if(updateMode != UpdateMode.FAST_NO_GRAPHICS)
-			renderSimulation();
+		renderSimulation();
 	}
 
 	// Determines whether it is time to update to simulation
 	// by comparing the time that has passed
 	private boolean shouldUpdateSimulation(){
 		// Always update when in fast mode
-		if(updateMode == UpdateMode.FAST_FORWARD || updateMode == UpdateMode.FAST_NO_GRAPHICS)
+		if(updateMode == UpdateMode.FASTEST_FORWARD)
 			return true;
+
+		// Fast forward
+		if(updateMode == UpdateMode.FAST_FORWARD){
+			long currentTime = System.currentTimeMillis();
+			millisSinceUpdate += currentTime - lastUpdateTime;
+			lastUpdateTime = currentTime;
+
+			if(millisSinceUpdate >= MILLIS_PER_TICK / FAST_FORWARD_MULTIPLIER){
+				millisSinceUpdate -= MILLIS_PER_TICK / FAST_FORWARD_MULTIPLIER;
+				return true;
+			}
+		}
 
 		// don't automatically update when in manual mode
 		if(updateMode == UpdateMode.MANUAL)
 			return false;
 
-		long currentTime = System.currentTimeMillis();
-		millisSinceUpdate += currentTime - lastUpdateTime;
-		lastUpdateTime = currentTime;
 
-		// It is only time to update if enough time has passed since last time we rendered/updated
-		if(millisSinceUpdate >= MILLIS_PER_TICK) {
-			millisSinceUpdate -= MILLIS_PER_TICK;
-			return true;
+		if(updateMode == UpdateMode.REAL_TIME){
+			long currentTime = System.currentTimeMillis();
+			millisSinceUpdate += currentTime - lastUpdateTime;
+			lastUpdateTime = currentTime;
+
+			// It is only time to update if enough time has passed since last time we rendered/updated
+			if(millisSinceUpdate >= MILLIS_PER_TICK) {
+				millisSinceUpdate -= MILLIS_PER_TICK;
+				return true;
+			}
 		}
+
 		return false;
 	}
 
@@ -193,6 +208,10 @@ public class SimulationApp extends ApplicationAdapter {
 
 	public void fastForward() {
 		switchUpdateMode(UpdateMode.FAST_FORWARD);
+	}
+
+	public void fastestForward(){
+		switchUpdateMode(UpdateMode.FASTEST_FORWARD);
 	}
 
 	@Override
