@@ -1,13 +1,13 @@
-package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
+package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
 
 public class Reservation {
     int robotID;
-  private   float timeTileIsReservedFrom;
+    private float timeTileIsReservedFrom;
     private float timeTileIsReservedTo;
     int xCordinate;
     int yCordinate;
 
-    public Reservation(int robotID, float timeTileIsReservedFrom,float timeTileIsReservedTo ) {
+    public Reservation(int robotID, float timeTileIsReservedFrom, float timeTileIsReservedTo) {
         this.robotID = robotID;
         this.timeTileIsReservedFrom = timeTileIsReservedFrom;
         this.timeTileIsReservedTo = timeTileIsReservedTo;

@@ -1,6 +1,7 @@
-package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
+package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
 
 
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Path;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
@@ -113,7 +114,6 @@ public class Astar implements PathFinder {
                         // If the neighborTile has the highest F, then return and dont add to openList.
                     } else return;
                 }
-
             }
 
             // If there is a tile to delete, then delete
@@ -144,7 +144,7 @@ public class Astar implements PathFinder {
             checkNeighborValidity();
 
             // Sorts openList in ascending order
-            openList.sort(new OpenListSorter());
+          openList.sort(new OpenListSorter());
 
             // Add the lowest cost tile to closedList
             addTilesToClosedList();

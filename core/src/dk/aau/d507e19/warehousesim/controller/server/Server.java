@@ -1,7 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.server;
 
 import dk.aau.d507e19.warehousesim.Simulation;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathManager;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar.PathManager;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 
 import java.util.ArrayList;

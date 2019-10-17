@@ -7,12 +7,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.input.SimulationInputProcessor;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
-import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 
 import java.util.ArrayList;
 
@@ -61,17 +59,17 @@ public class Simulation {
             robots.add(new Robot(new Position(i, 0), i, this));
 
         // Assign test task to first robot
-        robots.get(0).assignTask(new Task(new GridCoordinate(3,6), Action.PICK_UP));
+        robots.get(4).assignTask(new Task(new GridCoordinate(13,5), Action.PICK_UP));
+        robots.get(3).assignTask(new Task(new GridCoordinate(12,5), Action.PICK_UP));
+        robots.get(2).assignTask(new Task(new GridCoordinate(11,5), Action.MOVE));
         robots.get(1).assignTask(new Task(new GridCoordinate(10,5), Action.PICK_UP));
-        robots.get(2).assignTask(new Task(new GridCoordinate(0,8), Action.MOVE));
-        robots.get(3).assignTask(new Task(new GridCoordinate(3,3), Action.PICK_UP));
-        robots.get(4).assignTask(new Task(new GridCoordinate(1,2), Action.PICK_UP));
+        robots.get(0).assignTask(new Task(new GridCoordinate(9,5), Action.PICK_UP));
 
         // For testing of the bin system
-        robots.get(robots.size() - 1).setBin(new Bin());
+    /*    robots.get(robots.size() - 1).setBin(new Bin());
         robots.get(robots.size() - 1).setCurrentStatus(Status.CARRYING);
         robots.get(robots.size() - 1).assignTask(new Task(new GridCoordinate(2,0), Action.DELIVER));
-        robots.get(robots.size() - 2).assignTask(new Task(new GridCoordinate(1,1), Action.PICK_UP));
+        robots.get(robots.size() - 2).assignTask(new Task(new GridCoordinate(1,1), Action.PICK_UP));*/
 
         selectedRobots.add(robots.get(0));
         selectedRobots.add(robots.get(1));
