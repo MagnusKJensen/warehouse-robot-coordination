@@ -2,30 +2,29 @@ package dk.aau.d507e19.warehousesim.controller.robot;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import dk.aau.d507e19.warehousesim.*;
-
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
+import dk.aau.d507e19.warehousesim.controller.path.Path;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.Action;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
-import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
 import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
+
+import java.util.ArrayList;
 
 public class Robot {
     private Simulation simulation;
     private Position currentPosition;
-    private Task currentTask;
     private Status currentStatus;
     private float currentSpeed;
     private Path pathToTarget;
-    private Bin bin;
+    private Bin bin = null;
     private int robotID;
+
+    // TODO: 15/10/2019 is a temporary solution until it becomes part of the task itself.
+    private GridCoordinate lastPickUp;
 
     /**
      * Robot STATS
      */
-    // Pickup time
-    private final static int pickUpTimeInTicks = SimulationApp.TICKS_PER_SECOND * WarehouseSpecs.robotPickUpSpeedInSeconds;
-    private final static int deliverTimeInTicks = SimulationApp.TICKS_PER_SECOND * WarehouseSpecs.robotDeliverToPickerInSeconds;
-    private int ticksLeftForCurrentTask = 0;
     // Speed
     private final float maxSpeedBinsPerSecond = WarehouseSpecs.robotTopSpeed / WarehouseSpecs.binSizeInMeters;
     private final float accelerationBinSecond = WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters;
@@ -34,8 +33,9 @@ public class Robot {
 
     private final float ROBOT_SIZE = Tile.TILE_SIZE;
 
-    private LineTraverser currentTraverser;
     private RobotController robotController;
+
+    private ArrayList<Action> plan = new ArrayList<>();
 
     public Robot(Position startingPosition, int robotID, Simulation simulation) {
         this.currentPosition = startingPosition;
@@ -48,59 +48,33 @@ public class Robot {
     }
 
     public void update() {
-        if (currentStatus == Status.TASK_ASSIGNED_PICK_UP) {
-            // If destination is reached start pickup
-            if (pathToTarget.getCornersPath().size() == 1) pickupProduct();
-            // If movement still needed
-            else moveWithLineTraverser();
-        } else if (currentStatus == Status.TASK_ASSIGNED_CARRYING){
-            // If delivery station already reached
-            if(pathToTarget.getCornersPath().size() == 1) deliverProduct();
-            // If movement still needed
-            else moveWithLineTraverser();
-        } else if (currentStatus == Status.TASK_ASSIGNED_MOVE){
-            // If target reached, show as available
-            if(pathToTarget.getCornersPath().size() == 1) currentStatus = Status.AVAILABLE;
-            // If movement still needed
-            else moveWithLineTraverser();
-        }
+        robotController.update();
     }
 
-    private void deliverProduct(){
-        if (ticksLeftForCurrentTask == 0) {
-            currentStatus = Status.AVAILABLE;
-        } else {
-            // If still picking up the product
-            ticksLeftForCurrentTask -= 1;
-        }
+    public void deliverBin() {
     }
 
-    private void pickupProduct(){
-        if (ticksLeftForCurrentTask == 0) {
-            int x = currentTask.getDestination().getX();
-            int y = currentTask.getDestination().getY();
+    public void putDownBin(){
+        GridCoordinate coordinate = getGridCoordinate();
+        Tile tile = simulation.getStorageGrid().getTile(coordinate.getX(), coordinate.getY());
+        if (tile instanceof BinTile && !((BinTile) tile).hasBin()) {
+            ((BinTile) tile).addBin(bin);
+            bin = null;
+        } else throw new RuntimeException("Robot could not put back bin at ("
+                + coordinate.getX() + "," + coordinate.getY() + ")");
 
-            Tile tile = simulation.getStorageGrid().getTile(x,y);
-            if(tile instanceof BinTile){
-                ((BinTile) tile).takeBin();
-            }
-            else throw new RuntimeException("Robot could not pick up bin at (" + x + "," + y + ")");
-            currentStatus = Status.CARRYING;
-        } else {
-            // If still picking up the product
-            ticksLeftForCurrentTask -= 1;
-        }
     }
 
-    private void moveWithLineTraverser(){
-        currentTraverser.traverse();
-        if (currentTraverser.destinationReached()){
-            pathToTarget.getCornersPath().remove(0);
+    public void pickUpBin() {
+        GridCoordinate coordinate = getGridCoordinate();
+        Tile tile = simulation.getStorageGrid().getTile(coordinate.getX(), coordinate.getY());
+        if (tile instanceof BinTile && ((BinTile) tile).hasBin()) {
+            bin = ((BinTile) tile).releaseBin();
+        } else throw new RuntimeException("Robot could not pick up bin at ("
+                + coordinate.getX() + "," + coordinate.getY() + ")");
 
-            // Create new traverser for next line in the path
-            if(pathToTarget.getCornersPath().size() > 1)
-                assignTraverser();
-        }
+        currentStatus = Status.CARRYING;
+        lastPickUp = coordinate;
     }
 
 
@@ -109,7 +83,7 @@ public class Robot {
             case AVAILABLE:
                 batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotAvailable.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
-            case TASK_ASSIGNED_PICK_UP:
+            case BUSY:
             case TASK_ASSIGNED_MOVE:
                 batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotTaskAssigned.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
@@ -122,34 +96,8 @@ public class Robot {
         }
     }
 
-    public void assignTask(Task task) {
-        currentTask = task;
-        if(task.getAction() == Action.PICK_UP){
-            currentStatus = Status.TASK_ASSIGNED_PICK_UP;
-            ticksLeftForCurrentTask = pickUpTimeInTicks;
-        } else if (task.getAction() == Action.DELIVER){
-            if(currentStatus != Status.CARRYING) throw new IllegalArgumentException("Robot is not carrying anything");
-            // If target is not a PickerTile
-            if(!(simulation.getStorageGrid().getTile(task.getDestination().getX(), task.getDestination().getY()) instanceof PickerTile)){
-                throw new IllegalArgumentException("Target at (" + task.getDestination().getX() + "," + task.getDestination().getY() + ") is not a PickerTile");
-            }
-            currentStatus = Status.TASK_ASSIGNED_CARRYING;
-            ticksLeftForCurrentTask = deliverTimeInTicks;
-        } else if (task.getAction() == Action.MOVE){
-            currentStatus = Status.TASK_ASSIGNED_MOVE;
-            ticksLeftForCurrentTask = 0;
-        }
-
-        pathToTarget = robotController.getPath(
-                new GridCoordinate((int) currentPosition.getX(), (int) currentPosition.getY()), task.getDestination());
-
-        // If the robot has to move
-        if(pathToTarget.getCornersPath().size() > 1) assignTraverser();
-    }
-
-    private void assignTraverser() {
-        currentTraverser = new LineTraverser(pathToTarget.getCornersPath().get(0),
-                pathToTarget.getCornersPath().get(1), this);
+    public void assignOrder(Order order) {
+        robotController.addToPlan(order);
     }
 
     public void cancelTask() {
@@ -160,7 +108,7 @@ public class Robot {
         return currentPosition;
     }
 
-    void decelerate() {
+    public void decelerate() {
         if (currentSpeed > 0) {
             currentSpeed -= decelerationBinSecond / (float) SimulationApp.TICKS_PER_SECOND;
             if (currentSpeed < minSpeedBinsPerSecond)
@@ -168,7 +116,7 @@ public class Robot {
         }
     }
 
-    void accelerate() {
+    public void accelerate() {
         if (currentSpeed < maxSpeedBinsPerSecond) {
             currentSpeed += accelerationBinSecond / (float) SimulationApp.TICKS_PER_SECOND;
             if (currentSpeed > maxSpeedBinsPerSecond)
@@ -205,17 +153,9 @@ public class Robot {
         return currentStatus;
     }
 
-    public boolean hasPlannedPath(){
-        return pathToTarget != null
-                && (currentStatus == Status.TASK_ASSIGNED_PICK_UP
-                || currentStatus == Status.TASK_ASSIGNED_MOVE
-                || currentStatus == Status.TASK_ASSIGNED_CARRYING);
-    }
-
     public Path getPathToTarget() {
         return pathToTarget;
     }
-
 
     public void setCurrentStatus(Status currentStatus) {
         this.currentStatus = currentStatus;
@@ -225,10 +165,7 @@ public class Robot {
         this.bin = bin;
     }
 
-    public boolean collidesWith(Position collider){
-        System.out.println("Collider : " + collider.getX() + " , " + collider.getY());
-        System.out.println("Robot : " + currentPosition.getX() + " , " + collider.getY());
-
+    public boolean collidesWith(Position collider) {
         boolean withInXBounds = collider.getX() >= currentPosition.getX()
                 && collider.getX() <= currentPosition.getX() + ROBOT_SIZE;
         boolean withInYBounds = collider.getY() >= currentPosition.getY()
@@ -239,5 +176,44 @@ public class Robot {
 
     public int getRobotID() {
         return robotID;
+    }
+
+    public GridCoordinate getGridCoordinate() {
+        GridCoordinate gridCoordinate =
+                new GridCoordinate(Math.round(currentPosition.getX()), Math.round(currentPosition.getY()));
+
+        if (!currentPosition.isSameAs(gridCoordinate))
+            throw new IllegalStateException("Robot is not at the center of a tile. Current position : "
+                    + currentPosition
+                    + "\n If you want an approximate grid position use getApproximateGridCoordinate()");
+
+        return gridCoordinate;
+    }
+
+    public GridCoordinate getApproximateGridCoordinate() {
+        return new GridCoordinate(Math.round(currentPosition.getX()), Math.round(currentPosition.getY()));
+    }
+
+    public GridCoordinate getLastPickUp() {
+        return lastPickUp;
+    }
+
+    public boolean isCarrying(){
+        return bin != null;
+    }
+
+    public void setPosition(Position positionAfter) {
+        this.currentPosition = positionAfter;
+        // TODO: 15/10/2019 Check legality
+    }
+
+    public int getSize() {
+        return 1;
+    }
+
+
+
+    public Bin getBin() {
+        return bin;
     }
 }

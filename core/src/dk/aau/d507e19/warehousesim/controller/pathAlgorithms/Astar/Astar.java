@@ -1,10 +1,11 @@
-package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
+package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
 
 
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
+import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import dk.aau.d507e19.warehousesim.controller.robot.Path;
+import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 
 import java.util.ArrayList;
@@ -21,17 +22,18 @@ public class Astar implements PathFinder {
     ArrayList<AStarTile> openList = new ArrayList<>();
     ArrayList<AStarTile> closedList = new ArrayList<>();
     private AStarTile currentTile;
-    private long simulatedTime;
+    private long simulatedTimeInSeconds;
     private int robotID;
     private float robotMaxSpeedPerBin;
-    private PathManager pathManager;
+    private final ReservationManager reservationManager;
+    //private PathManager pathManager;
 
     public Astar(Server server, Robot robot) {
         this.robotID = robot.getRobotID();
         this.grid = fillGrid(server.getGridWidth(), server.getGridHeight());
         this.robotMaxSpeedPerBin = robot.getMaxSpeedBinsPerSecond();
-        this.simulatedTime = server.getTime();
-        this.pathManager = server.getPathManager();
+        this.simulatedTimeInSeconds = server.getTimeInSeconds();
+        this.reservationManager = server.getReservationManager();
     }
 
     public AStarTile[][] getGrid() {
@@ -85,6 +87,18 @@ public class Astar implements PathFinder {
         }
     }
 
+    public boolean isTileReserved(AStarTile currentTile) {
+        // TODO: 14/10/2019 Use reservation manager instead
+        ArrayList<Reservation>[][] gridOfResevations = pathManager.getGridOfResevations();
+        for (Reservation res : gridOfResevations[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition()]) {
+            if (Math.ceil(simulatedTime + robotMaxSpeedPerBin * currentTile.getG()) == Math.ceil(res.getTimeTileIsReserved())) {
+                return false;
+            }
+        }
+        return true;
+        return true;
+    }
+
     public void addNeighborTileToOpenList(AStarTile neighborTile) {
 
         // Makes new dummy tile
@@ -114,6 +128,7 @@ public class Astar implements PathFinder {
                         // If the neighborTile has the highest F, then return and dont add to openList.
                     } else return;
                 }
+
             }
 
             // If there is a tile to delete, then delete
@@ -144,7 +159,7 @@ public class Astar implements PathFinder {
             checkNeighborValidity();
 
             // Sorts openList in ascending order
-          openList.sort(new OpenListSorter());
+            openList.sort(new OpenListSorter());
 
             // Add the lowest cost tile to closedList
             addTilesToClosedList();
@@ -187,9 +202,15 @@ public class Astar implements PathFinder {
         addFinalPathToList();
         //Reverses final path so it is in correct order
         Collections.reverse(finalPath);
+
+        // TODO: 14/10/2019 Use reservation manager instead
+        //pathManager.addReservationToList(finalPath, simulatedTime, robotID, robotMaxSpeedPerBin);
+
+
+        pathManager.addReservationToList(finalPath, simulatedTime, robotID, robotMaxSpeedPerBin);
         pathManager.addReservationToList(finalPath, simulatedTime, robotID, robotMaxSpeedPerBin,xEndposition,yEndposition);
 
         //  pathManager.printReservations();
-        return new Path(finalPath);
+        return new Path(Step.fromGridCoordinates(finalPath));
     }
 }

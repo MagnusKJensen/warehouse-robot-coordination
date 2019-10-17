@@ -1,6 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
-public enum Action {
+public enum RoboAction {
 
     PICK_UP, DELIVER, MOVE
 

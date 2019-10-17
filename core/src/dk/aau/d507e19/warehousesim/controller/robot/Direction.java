@@ -17,4 +17,14 @@ public enum Direction {
     public int getyDir() {
         return yDir;
     }
+
+    public static Direction getOpposite(Direction direction){
+        switch (direction){
+            case NORTH: return SOUTH;
+            case SOUTH: return NORTH;
+            case WEST: return EAST;
+            case EAST: return WEST;
+        }
+        throw new RuntimeException("Direction does not have an opposite defined");
+    }
 }
