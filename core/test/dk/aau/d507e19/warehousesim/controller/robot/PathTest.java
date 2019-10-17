@@ -2,13 +2,13 @@ package dk.aau.d507e19.warehousesim.controller.robot;
 
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
-import org.junit.Ignore;
-import org.junit.Test;
+import jdk.nashorn.internal.ir.annotations.Ignore;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PathTest {
 
@@ -44,10 +44,12 @@ public class PathTest {
         assertEquals(expectedStrippedCoordinates, path.getStrippedPath());
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test
     public void removeAllButCornersZeroLenTest() {
         ArrayList<GridCoordinate> allCoordinates = new ArrayList<>();
-        Path path = new Path(Step.fromGridCoordinates(allCoordinates));
+        assertThrows(IllegalArgumentException.class, () ->  {
+            Path path = new Path(Step.fromGridCoordinates(allCoordinates));
+        });
     }
 
 
@@ -59,16 +61,16 @@ public class PathTest {
         assertTrue(path.getStrippedPath().isEmpty());
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test
     public void noncontinuousStraightPathTest() {
         ArrayList<Step> allCoordinates = new ArrayList<>();
         allCoordinates.add(new Step(1, 1));
         allCoordinates.add(new Step(4, 1));
         allCoordinates.add(new Step(2, 1));
-        Path path = new Path(allCoordinates);
+        assertThrows(IllegalArgumentException.class, () -> {Path path = new Path(allCoordinates);});
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test
     public void noncontinuousCornerPathTest() {
         ArrayList<Step> allCoordinates = new ArrayList<>();
         allCoordinates.add(new Step(1, 1));

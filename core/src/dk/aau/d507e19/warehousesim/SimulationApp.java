@@ -14,7 +14,7 @@ import java.util.Random;
 public class SimulationApp extends ApplicationAdapter {
 
 	private static final long RANDOM_SEED = 123456789L;
-	public static final Random random = new Random(RANDOM_SEED);
+	public static Random random = new Random(RANDOM_SEED);
 
 	public static final int MENU_WIDTH_IN_PIXELS = 300;
 	// Size of a single square/tile in the grid
@@ -211,6 +211,7 @@ public class SimulationApp extends ApplicationAdapter {
 	public void resetSimulation() {
 		inputMultiplexer.removeProcessor(simulation.getInputProcessor());
 		simulation.dispose();
+		random = new Random(RANDOM_SEED);
 		pause();
 		simulation = new Simulation(this);
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());

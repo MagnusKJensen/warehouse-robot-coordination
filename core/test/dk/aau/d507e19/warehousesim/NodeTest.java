@@ -1,15 +1,17 @@
 package dk.aau.d507e19.warehousesim;
 
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public class NodeTest {
     Node<Object> root, rootLeft, rootRight, rootLeftLeft, rootLeftLeftLeft, rootLeftLeftLeftLeft;
 
-    @Before
+    @BeforeEach
     public void makeTree() {
         root = new Node<>(new Object(), null, false);
         rootLeft = new Node<>(new Object(), root, false);
