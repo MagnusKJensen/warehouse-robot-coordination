@@ -14,7 +14,7 @@ public class Path {
         this.strippedSteps = pathToTarget;
         allSteps.addAll(strippedSteps);
         if(pathToTarget.isEmpty()) throw new IllegalArgumentException("Path must contain at least one coordinate");
-        if(!isValidPath()) throw new IllegalArgumentException("Paths must be continuous");
+        //if(!isValidPath()) throw new IllegalArgumentException("Paths must be continuous");
         removeAllButCorners();
     }
 

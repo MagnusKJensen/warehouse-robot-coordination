@@ -113,7 +113,7 @@ public class Simulation {
         selectedTile = tile;
 
         // Make sure, that the scroll panes will also update even before the program is running
-        if(tickCount == 0){
+        if(simulationApp.getUpdateMode() == UpdateMode.MANUAL){
             updateSideMenuScrollPanes();
         }
     }
@@ -126,7 +126,7 @@ public class Simulation {
         }
 
         // Make sure, that the scroll panes will also update even before the program is running
-        if(tickCount == 0){
+        if(simulationApp.getUpdateMode() == UpdateMode.MANUAL){
             updateSideMenuScrollPanes();
         }
     }
@@ -217,5 +217,9 @@ public class Simulation {
 
     public long getTimeInTicks() {
         return tickCount;
+    }
+
+    public SimulationApp getSimulationApp() {
+        return simulationApp;
     }
 }

@@ -14,7 +14,7 @@ import java.util.Random;
 public class SimulationApp extends ApplicationAdapter {
 
 	private static final long RANDOM_SEED = 123456789L;
-	public static final Random random = new Random(RANDOM_SEED);
+	public static Random random = new Random(RANDOM_SEED);
 
 	public static final int MENU_WIDTH_IN_PIXELS = 300;
 	// Size of a single square/tile in the grid
@@ -31,8 +31,7 @@ public class SimulationApp extends ApplicationAdapter {
 	// Variables for simulation loop logic
 	public static final int TICKS_PER_SECOND = 30;
 	public static final long MILLIS_PER_TICK = 1000 / TICKS_PER_SECOND;
-
-	private UpdateMode updateMode = UpdateMode.MANUAL;
+	public UpdateMode updateMode = UpdateMode.MANUAL;
 	private long millisSinceUpdate = 0L;
 	private long lastUpdateTime = 0L;
 
@@ -44,6 +43,8 @@ public class SimulationApp extends ApplicationAdapter {
 
 	private CameraMover cameraMover;
     private InputMultiplexer inputMultiplexer;
+
+	private String pathFinderSelected = "Astar";
 
 	@Override
 	public void create () {
@@ -211,9 +212,11 @@ public class SimulationApp extends ApplicationAdapter {
 	public void resetSimulation() {
 		inputMultiplexer.removeProcessor(simulation.getInputProcessor());
 		simulation.dispose();
+		random = new Random(RANDOM_SEED);
 		pause();
 		simulation = new Simulation(this);
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());
+		sideMenu.resetSideMenu();
 	}
 
 	public OrthographicCamera getWorldCamera() {
@@ -231,4 +234,17 @@ public class SimulationApp extends ApplicationAdapter {
 	public SideMenu getSideMenu() {
 		return sideMenu;
 	}
+
+	protected UpdateMode getUpdateMode() {
+		return updateMode;
+	}
+
+	public String getPathFinderSelected() {
+		return pathFinderSelected;
+	}
+
+	public void setPathFinderSelected(String pathFinderSelected) {
+		this.pathFinderSelected = pathFinderSelected;
+	}
+
 }

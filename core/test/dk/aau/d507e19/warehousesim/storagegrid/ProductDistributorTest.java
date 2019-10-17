@@ -1,9 +1,10 @@
 package dk.aau.d507e19.warehousesim.storagegrid;
 
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ProductDistributorTest {
 
@@ -29,7 +30,7 @@ public class ProductDistributorTest {
 
         ProductDistributor.setSKUDistribution(distribution);
         int[][] products =  ProductDistributor.calculateProductsPerSKU();
-        assertTrue(products.length == WarehouseSpecs.SKUs);
+        assertEquals(products.length, WarehouseSpecs.SKUs);
     }
 
     @Test
@@ -38,7 +39,7 @@ public class ProductDistributorTest {
 
         ProductDistributor.setSKUDistribution(distribution);
         int[][] products =  ProductDistributor.calculateProductsPerSKU();
-        assertTrue(products.length == WarehouseSpecs.SKUs);
+        assertEquals(products.length, WarehouseSpecs.SKUs);
     }
 
     @Test
@@ -53,6 +54,6 @@ public class ProductDistributorTest {
             numberOfProducts += products[i][1];
         }
 
-        assertTrue(numberOfProducts == WarehouseSpecs.productsInStock);
+        assertEquals(numberOfProducts, WarehouseSpecs.productsInStock);
     }
 }
