@@ -39,6 +39,8 @@ public class Simulation {
 
     private SimulationApp simulationApp;
 
+    public String pathFinderSelected = "Astar";
+
     private SimulationInputProcessor inputProcessor;
 
     public Simulation(SimulationApp simulationApp){
@@ -65,6 +67,8 @@ public class Simulation {
         else ProductDistributor.distributeProducts(storageGrid);
 
         initRobots();
+
+        System.out.println("Selected pathfinder " + pathFinderSelected);
     }
 
     private void initRobots() {
@@ -113,7 +117,7 @@ public class Simulation {
         selectedTile = tile;
 
         // Make sure, that the scroll panes will also update even before the program is running
-        if(tickCount == 0){
+        if(simulationApp.getUpdateMode() == UpdateMode.MANUAL){
             updateSideMenuScrollPanes();
         }
     }
@@ -126,7 +130,7 @@ public class Simulation {
         }
 
         // Make sure, that the scroll panes will also update even before the program is running
-        if(tickCount == 0){
+        if(simulationApp.getUpdateMode() == UpdateMode.MANUAL){
             updateSideMenuScrollPanes();
         }
     }
@@ -217,5 +221,9 @@ public class Simulation {
 
     public long getTimeInTicks() {
         return tickCount;
+    }
+
+    public void setPathFinderSelected(String pathFinderSelected) {
+        this.pathFinderSelected = pathFinderSelected;
     }
 }
