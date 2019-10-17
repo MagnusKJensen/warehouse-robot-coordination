@@ -41,14 +41,15 @@ public class TimeControlMenu {
         globalStepForwardBtn = new Button(GraphicsManager.getTextureRegionDrawable("icons/global_step_forward.png"));
         resetSimulationBtn = new TextButton("Reset", sideMenu.textButtonStyle);
 
-        int screenXOffset = (int) screenOffset.x;
+        int screenXOffset = (int) screenOffset.x + 40;
         int screenYOffset = (int) screenOffset.y;
+
         globalStepBackBtn.setPosition(screenXOffset, screenYOffset + 10);
         pauseBtn.setPosition(screenXOffset + 30, screenYOffset + 10);
         globalStepForwardBtn.setPosition(screenXOffset + 60, screenYOffset + 10);
         playBtn.setPosition(screenXOffset + 90, screenYOffset + 10);
         fastForwardBtn.setPosition(screenXOffset + 120, screenYOffset + 10);
-        resetSimulationBtn.setPosition(screenXOffset, screenYOffset + 45);
+        resetSimulationBtn.setPosition(screenXOffset + 160, screenYOffset + 10);
         //fastestForwardBtn.setPosition(15, 15); // TODO: 30/09/2019 add fastest forward
 
         addButtonListeners();

@@ -23,7 +23,8 @@ public class TileInfoMenu {
     private Text robotBinContentText;
     private final String ROBOT_BIN_CONTENT_PRECURSOR = "robot bin content ";
 
-    private final int SCROLL_PANE_HEIGHT = 300;
+    private final int MENU_HEIGHT = 900;
+    private final int SCROLL_PANE_HEIGHT = 200;
     private final int TEXT_OFFSET = 30;
 
     public TileInfoMenu(Stage menuStage, SimulationApp simulationApp, Vector2 screenOffSet, SideMenu sideMenu) {
@@ -40,9 +41,9 @@ public class TileInfoMenu {
         menuStage.addActor(robotBinContentText);
 
         // Add bin content scroll menu to sidebar
-        binContent = addScrollMenu(SimulationApp.MENU_WIDTH_IN_PIXELS,SCROLL_PANE_HEIGHT,0,570);
+        binContent = addScrollMenu(SimulationApp.MENU_WIDTH_IN_PIXELS,SCROLL_PANE_HEIGHT,0,MENU_HEIGHT - SCROLL_PANE_HEIGHT - TEXT_OFFSET);
         // Add robot bin content scroll menu to sidebar
-        robotBinContent = addScrollMenu(SimulationApp.MENU_WIDTH_IN_PIXELS,SCROLL_PANE_HEIGHT,0,240);
+        robotBinContent = addScrollMenu(SimulationApp.MENU_WIDTH_IN_PIXELS,SCROLL_PANE_HEIGHT,0,MENU_HEIGHT - 2 * SCROLL_PANE_HEIGHT - 2 * TEXT_OFFSET);
     }
 
     private Table addScrollMenu(int width, int height, int posX, int posY) {

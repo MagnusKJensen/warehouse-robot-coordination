@@ -36,7 +36,7 @@ public class SimulationApp extends ApplicationAdapter {
 	private long millisSinceUpdate = 0L;
 	private long lastUpdateTime = 0L;
 
-	private static final Color simBGColor = new Color(244f/255f, 245f/255f,247f/255f, 1);
+	private static final Color simBGColor = Color.GRAY;
 
 	private Simulation simulation;
 
