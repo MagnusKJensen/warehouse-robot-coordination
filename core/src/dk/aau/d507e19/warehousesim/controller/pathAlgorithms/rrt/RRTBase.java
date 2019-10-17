@@ -235,9 +235,9 @@ public abstract class RRTBase {
         }
         //Find nodes that are not blocked anymore, and free them. TODO: make help functions to make function pretty
         if(blockedNodeList.size() != nodesToBeUpdated.size()){
-            ArrayList<GridCoordinate> freeList = blockedNodeList;
-            freeList.removeAll(nodesToBeUpdated);
-            for(GridCoordinate m: freeList){
+            ArrayList<GridCoordinate> tempList = blockedNodeList;
+            tempList.removeAll(nodesToBeUpdated);
+            for(GridCoordinate m: tempList){
                 if(allNodesMap.containsKey(m)){
                     allNodesMap.get(m).setBlockedStatus(false);
                 }
@@ -258,7 +258,8 @@ public abstract class RRTBase {
         ArrayList<GridCoordinate> freeListInitializer = new ArrayList<>();
         for(int i = 0; i < WarehouseSpecs.wareHouseWidth ; i++){
             for(int j = 0; j < WarehouseSpecs.wareHouseHeight; j++ ){
-                freeListInitializer.add(new GridCoordinate(i,j));
+                //ignore root(The robot's position)
+                    freeListInitializer.add(new GridCoordinate(i,j));
             }
         }
         return freeListInitializer;
@@ -269,6 +270,7 @@ public abstract class RRTBase {
         }
     }
     protected ArrayList<Step> generatePathFromEmpty(GridCoordinate start, GridCoordinate destination){
+        updateFreeList(start);
         boolean foundPath = false;
         dest = destination;
         root = new Node<GridCoordinate>(start, null, false);
