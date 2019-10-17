@@ -35,7 +35,8 @@ public class ReservationManager {
         mapReservation(reservation);
     }
 
-    public boolean canReserveIndefinitely(GridCoordinate gridCoordinate){
+    public boolean canReserveIndefinitely(GridCoordinate gridCoordinate, TimeFrame timeFrame){
+
         return false;
     }
 
