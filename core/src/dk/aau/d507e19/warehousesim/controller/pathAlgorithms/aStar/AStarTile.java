@@ -1,6 +1,4 @@
-package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
-
-import java.util.ArrayList;
+package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar;
 
 public class AStarTile {
     private int currentXPosition;

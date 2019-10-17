@@ -1,18 +1,13 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
 import dk.aau.d507e19.warehousesim.controller.path.Path;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar.Astar;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTType;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.Action;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.OrderPlanner;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Queue;
 
 public class RobotController {
 

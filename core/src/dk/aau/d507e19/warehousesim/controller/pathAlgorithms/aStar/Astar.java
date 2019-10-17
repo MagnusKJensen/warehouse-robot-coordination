@@ -1,4 +1,4 @@
-package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
+package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar;
 
 
 import dk.aau.d507e19.warehousesim.controller.path.Step;
@@ -91,7 +91,7 @@ public class Astar implements PathFinder {
 
         // Checks if neighbor is valid with a valid coordinate
         if (downstairsNeigbor.getY() >= 0) {
-            temporaryPath  =createTemporaryPath(currentTile, downstairsNeigbor,temporaryPath);
+            temporaryPath  = createTemporaryPath(currentTile, downstairsNeigbor);
             if (currentTile.getCurrentYPosition() - 1 >= 0 && !(reservationManager.isReserved(downstairsNeigbor, getTimeFrameFromLastReservation(temporaryPath)))) {
                 //  if (currentTile.getCurrentYPosition() - 1 >= 0 ) {
                 // Adds Neighbor to openList if valid
@@ -99,21 +99,21 @@ public class Astar implements PathFinder {
             }
         }
         if (aboveNeighbor.getY() <= server.getGridHeight()) {
-            temporaryPath = createTemporaryPath(currentTile, aboveNeighbor,temporaryPath);
+            temporaryPath = createTemporaryPath(currentTile, aboveNeighbor);
             if (currentTile.getCurrentYPosition() + 1 < grid.length && !(reservationManager.isReserved(aboveNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
                 //  if (currentTile.getCurrentYPosition() + 1 < grid.length ) {
                 addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() + 1]);
             }
         }
         if (leftNeigbor.getX() >= 0) {
-            temporaryPath = createTemporaryPath(currentTile, leftNeigbor,temporaryPath);
+            temporaryPath = createTemporaryPath(currentTile, leftNeigbor);
             if (currentTile.getCurrentXPosition() - 1 >= 0 && !(reservationManager.isReserved(leftNeigbor, getTimeFrameFromLastReservation(temporaryPath)))) {
                 //  if (currentTile.getCurrentXPosition() - 1 >= 0) {
                 addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() - 1][currentTile.getCurrentYPosition()]);
             }
         }
         if (rightNeigbor.getX() <= server.getGridWidth()) {
-            createTemporaryPath(currentTile, rightNeigbor,temporaryPath);
+            createTemporaryPath(currentTile, rightNeigbor);
             if (currentTile.getCurrentXPosition() + 1 < grid.length && !(reservationManager.isReserved(rightNeigbor, getTimeFrameFromLastReservation(temporaryPath)))) {
                 //  if (currentTile.getCurrentXPosition() + 1 < grid.length ) {
                 addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() + 1][currentTile.getCurrentYPosition()]);
@@ -121,10 +121,14 @@ public class Astar implements PathFinder {
         }
     }
 
-    public TimeFrame getTimeFrameFromLastReservation( ArrayList<GridCoordinate> temPath) {
-        Path path = new Path(Step.fromGridCoordinates(temPath));
+    //TODO: Runs two times each time?
+    public TimeFrame getTimeFrameFromLastReservation( ArrayList<GridCoordinate> tempPath) {
+        Path path = new Path(Step.fromGridCoordinates(tempPath));
         ArrayList<Reservation> listOfReservations = new ArrayList<>();
         listOfReservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
+        System.out.println("Current tile: " + currentTile.toString());
+        System.out.println("Neighbor tile: " + listOfReservations.get(listOfReservations.size()-1).getGridCoordinate().toString());
+        System.out.println("-------------------------------------------------------------------------");
         return listOfReservations.get(listOfReservations.size() - 1).getTimeFrame();
 
     }
@@ -188,25 +192,24 @@ public class Astar implements PathFinder {
         openList.remove(0);
     }
 
-    public ArrayList<GridCoordinate> createTemporaryPath(AStarTile currentTile, GridCoordinate neighborTile, ArrayList<GridCoordinate> temporaryPath) {
-        temporaryPath.clear();
+    public ArrayList<GridCoordinate> createTemporaryPath(AStarTile currentTile, GridCoordinate neighborTile) {
+        ArrayList<GridCoordinate> temp = new ArrayList<>();
         if (closedList.size() < 2) {
-            temporaryPath.add(new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition()));
-            temporaryPath.add(neighborTile);
-            return temporaryPath;
+            temp.add(new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition()));
+            temp.add(neighborTile);
+            return temp;
         }
-        AStarTile prevTile = closedList.get(closedList.size() - 2);
-        temporaryPath.add(new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition()));
+        AStarTile prevTempTile = closedList.get(closedList.size() - 2);
+        temp.add(new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition()));
         for (int i = closedList.size() - 2; i > 0; i--) {
-            if (currentTile.getPreviousXposition() == prevTile.getCurrentXPosition() && currentTile.getGetPreviousYposition() == prevTile.getCurrentYPosition()) {
-                temporaryPath.add(new GridCoordinate(prevTile.getCurrentXPosition(), prevTile.getCurrentYPosition()));
+            if (currentTile.getPreviousXposition() == prevTempTile.getCurrentXPosition() && currentTile.getGetPreviousYposition() == prevTempTile.getCurrentYPosition()) {
+                temp.add(new GridCoordinate(prevTempTile.getCurrentXPosition(), prevTempTile.getCurrentYPosition()));
                 currentTile = closedList.get(i);
             }
-            prevTile = closedList.get(i - 1);
+            prevTempTile = closedList.get(i - 1);
         }
-        temporaryPath.add(new GridCoordinate(closedList.get(0).getCurrentXPosition(), closedList.get(0).getCurrentYPosition()));
-        Collections.reverse(temporaryPath);
-        return temporaryPath;
+        temp.add(new GridCoordinate(closedList.get(0).getCurrentXPosition(), closedList.get(0).getCurrentYPosition()));
+        return temp;
     }
 
     public void calculatePath() {

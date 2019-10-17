@@ -1,7 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
 
 
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar.Astar;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar.Astar;
 import org.junit.Test;
 
 
