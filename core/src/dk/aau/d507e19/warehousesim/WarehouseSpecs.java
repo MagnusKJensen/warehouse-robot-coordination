@@ -10,10 +10,10 @@ public class WarehouseSpecs {
     public static final int SKUsPerBin = 9;
     public static final int SKUs = 77;
     public static final int productsInStock = 5000;
-    public static final int numberOfRobots = 1;
+    public static final int numberOfRobots = 15;
     public static final float robotTopSpeed = 3f; // Meters/second
-    public static final float robotAcceleration = 10000000f; // m/s^2
-    public static final float robotDeceleration = 100000000f; // m/s^2
+    public static final float robotAcceleration = 0.8f; // m/s^2
+    public static final float robotDeceleration = 2f; // m/s^2
     public static final float robotMinimumSpeed = 0.1f;
     public static final int robotPickUpSpeedInSeconds = 1;
     public static final int robotDeliverToPickerInSeconds = 1;

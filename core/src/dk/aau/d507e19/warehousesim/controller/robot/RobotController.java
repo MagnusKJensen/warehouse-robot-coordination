@@ -1,6 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
 import dk.aau.d507e19.warehousesim.controller.path.Path;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
@@ -23,13 +24,13 @@ public class RobotController {
     private LinkedList<Action> robotActions = new LinkedList<>();
     private LinkedList<Runnable> planningSteps = new LinkedList<>();
 
-    public RobotController(Server server, Robot robot){
+    public RobotController(Server server, Robot robot) {
         this.server = server;
         this.robot = robot;
-        this.pathFinder = new RRTPlanner(RRTType.RRT_STAR, robot);
+        this.pathFinder = new Astar(server, robot);
     }
 
-    public RobotController(Server server, PathFinder pathFinder, TaskManager taskManager, Robot robot){
+    public RobotController(Server server, PathFinder pathFinder, TaskManager taskManager, Robot robot) {
         this.server = server;
         this.pathFinder = pathFinder;
         this.taskManager = taskManager;
@@ -46,26 +47,26 @@ public class RobotController {
         planningSteps.add(() -> robotActions.addAll(orderPlanner.planBinReturn()));
     }
 
-    public void update(){
-        if(robotActions.isEmpty())
+    public void update() {
+        if (robotActions.isEmpty())
             planNextActions();
 
         // If robot has nothing to do, set status available and return.
-        if(robotActions.isEmpty()){
+        if (robotActions.isEmpty()) {
             robot.setCurrentStatus(Status.AVAILABLE);
             return;
         }
 
         Action currentAction = robotActions.peekFirst();
-        if(!currentAction.isDone())currentAction.perform();
+        if (!currentAction.isDone()) currentAction.perform();
         robot.setCurrentStatus(currentAction.getStatus());
 
-        if(currentAction.isDone())
+        if (currentAction.isDone())
             robotActions.removeFirst();
     }
 
     private void planNextActions() {
-        if(planningSteps.isEmpty())
+        if (planningSteps.isEmpty())
             return;
 
         Runnable planning = planningSteps.pollFirst();

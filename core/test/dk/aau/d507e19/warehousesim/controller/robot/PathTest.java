@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 
 public class PathTest {
 
-
+/*
     @Test
     public void removeAllButCornersPathTest() {
         ArrayList<Step> allSteps = new ArrayList<>();
@@ -76,5 +76,5 @@ public class PathTest {
         allCoordinates.add(new Step(3, 1));
         allCoordinates.add(new Step(3, 3));
         Path path = new Path(allCoordinates);
-    }
+    }*/
 }

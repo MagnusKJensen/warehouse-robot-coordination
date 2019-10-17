@@ -14,7 +14,7 @@ public class Path {
         this.strippedSteps = pathToTarget;
         allSteps.addAll(strippedSteps);
         if(pathToTarget.isEmpty()) throw new IllegalArgumentException("Path must contain at least one coordinate");
-        if(!isValidPath()) throw new IllegalArgumentException("Paths must be continuous");
+      //  if(!isValidPath()) throw new IllegalArgumentException("Paths must be continuous");
         removeAllButCorners();
     }
 
@@ -76,7 +76,7 @@ public class Path {
         strippedSteps = corners;
     }
 
-    public boolean isValidPath(){
+  /*  public boolean isValidPath(){
         for (int i = 0; i < allSteps.size() - 1; i++) {
             // If moving along the x axis
             if((Math.abs(allSteps.get(i).getX() - allSteps.get(i + 1).getX()) == 1)
@@ -95,7 +95,7 @@ public class Path {
             return false;
         }
         return true;
-    }
+    }*/
 
     public ArrayList<Step> getStrippedPath() {
         return strippedSteps;
