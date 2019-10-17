@@ -38,10 +38,6 @@ public class OrderPlanner {
         ArrayList<Reservation> reservations =
                 MovementPredictor.calculateReservations(robot, pathToPickUpPoint, server.getTimeInTicks(), 0);
 
-        for(Reservation reservation :reservations){
-            System.out.println(reservation);
-        }
-
         server.getReservationManager().reserve(reservations);
 
         return plan;
