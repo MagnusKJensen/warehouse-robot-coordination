@@ -4,7 +4,11 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import dk.aau.d507e19.warehousesim.GraphicsManager;
+import dk.aau.d507e19.warehousesim.Simulation;
+import dk.aau.d507e19.warehousesim.WarehouseSpecs;
+import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
@@ -21,37 +25,36 @@ public class StorageGrid {
 
     private ShapeRenderer shapeRenderer;
     private SpriteBatch spriteBatch;
-    private ArrayList<GridCoordinate> pickerPoints;
+    private ArrayList<GridCoordinate> pickerPoints = new ArrayList<>();
+    private Simulation simulation;
 
-    public StorageGrid(int width, int height){
+    public StorageGrid(int width, int height, Simulation simulation){
         this.height = height;
         this.width = width;
         this.tiles = new Tile[width][height];
         this.shapeRenderer = new ShapeRenderer();
         this.spriteBatch = new SpriteBatch();
+        this.simulation = simulation;
+        generatePickerPoints();
         fillGrid();
     }
 
-    public StorageGrid(int width, int height, ArrayList<GridCoordinate> pickerPoints){
-        this.height = height;
-        this.width = width;
-        this.tiles = new Tile[width][height];
-        this.shapeRenderer = new ShapeRenderer();
-        this.spriteBatch = new SpriteBatch();
-        this.pickerPoints = pickerPoints;
-        fillGrid();
+    private void generatePickerPoints() {
+        int[][] pickers = WarehouseSpecs.pickerPoints;
+
+        for(int i = 0; i < pickers.length; ++i){
+            GridCoordinate cord = new GridCoordinate(pickers[i][0], pickers[i][1]);
+            if(pickerPoints.contains(cord))
+                throw new RuntimeException("Picker point already present at (" + cord.getX() + "," + cord.getY() +
+                        "). Cannot have two picker points at the same tile");
+            else pickerPoints.add(new GridCoordinate(pickers[i][0], pickers[i][1]));
+        }
     }
 
     private void fillGrid(){
         for(int y = 0;  y < height; y++){
             for(int x = 0; x < width; x++){
-                //if(x == 0 && y == 0) tiles[x][y] = new PickerTile(x,y);
                 if(isAPickerPoint(x,y)) tiles[x][y] = new PickerTile(x,y);
-                else if(x == 1 && y == 1){
-                    Bin bin = new Bin();
-                    bin.addProduct(new Product(new SKU("mySKU"), 123));
-                    tiles[x][y] = new BinTile(x,y, bin);
-                }
                 else tiles[x][y] = new BinTile(x, y);
             }
         }
@@ -67,9 +70,15 @@ public class StorageGrid {
     }
 
 
-    public void renderPathOverlay(ArrayList<GridCoordinate> coordinates, ShapeRenderer shapeRenderer){
-        for(GridCoordinate gridCoordinate : coordinates)
-            tiles[gridCoordinate.getX()][gridCoordinate.getY()].renderOverlay(shapeRenderer);
+    public void renderPathOverlay(ArrayList<Reservation> reservations, ShapeRenderer shapeRenderer){
+        for(Reservation reservation : reservations){
+            int x = reservation.getGridCoordinate().getX(), y = reservation.getGridCoordinate().getY();
+            if(reservation.getTimeFrame().isWithinTimeFrame(simulation.getTimeInTicks()))
+                tiles[x][y].renderOverlay(shapeRenderer, Tile.overlayColor2);
+            else
+                tiles[x][y].renderOverlay(shapeRenderer);
+        }
+
     }
 
 
@@ -85,4 +94,5 @@ public class StorageGrid {
         }
         return false;
     }
+
 }

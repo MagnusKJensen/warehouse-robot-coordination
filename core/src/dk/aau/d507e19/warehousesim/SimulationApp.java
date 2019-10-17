@@ -16,7 +16,7 @@ public class SimulationApp extends ApplicationAdapter {
 	private static final long RANDOM_SEED = 123456789L;
 	public static final Random random = new Random(RANDOM_SEED);
 
-	private static final int MENU_WIDTH_IN_PIXELS = 300;
+	public static final int MENU_WIDTH_IN_PIXELS = 300;
 	// Size of a single square/tile in the grid
 	private static final int DEFAULT_PIXELS_PER_TILE = 64;
 	private static final int MAX_UPDATES_PER_FRAME = 30;
@@ -36,9 +36,10 @@ public class SimulationApp extends ApplicationAdapter {
 	private long millisSinceUpdate = 0L;
 	private long lastUpdateTime = 0L;
 
-	private static final Color simBGColor = new Color(244f/255f, 245f/255f,247f/255f, 1);
+	private static final Color simBGColor = Color.GRAY;
 
 	private Simulation simulation;
+
 	private SideMenu sideMenu;
 
 	private CameraMover cameraMover;
@@ -210,7 +211,7 @@ public class SimulationApp extends ApplicationAdapter {
 	public void resetSimulation() {
 		inputMultiplexer.removeProcessor(simulation.getInputProcessor());
 		simulation.dispose();
-
+		pause();
 		simulation = new Simulation(this);
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());
 	}
@@ -225,5 +226,9 @@ public class SimulationApp extends ApplicationAdapter {
 
 	public ScreenViewport getWorldViewport() {
 		return simulationViewport;
+	}
+
+	public SideMenu getSideMenu() {
+		return sideMenu;
 	}
 }

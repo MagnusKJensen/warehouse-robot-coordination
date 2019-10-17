@@ -1,5 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
+import dk.aau.d507e19.warehousesim.Position;
+
 import java.util.Objects;
 
 public class GridCoordinate {
@@ -50,4 +52,29 @@ public class GridCoordinate {
     }
 
 
+    public boolean isNeighbourOf(GridCoordinate potentialNeighbour) {
+        boolean isConnectedHorizontally = this.x == potentialNeighbour.x + 1 || this.x == potentialNeighbour.x - 1;
+        boolean isConnectedVertically = this.y == potentialNeighbour.y + 1 || this.y == potentialNeighbour.y - 1;
+        return (isConnectedHorizontally && potentialNeighbour.y == this.y) ||
+                (isConnectedVertically && potentialNeighbour.x == this.x);
+    }
+
+    public Position toPosition() {
+        return new Position(getX(), getY());
+    }
+
+    public int distanceFrom(GridCoordinate comparedCoordinate) {
+        if(this.getX() != comparedCoordinate.getX() && this.getY() != comparedCoordinate.getY())
+            throw new IllegalArgumentException("Coordinates must differ in only one axis");
+
+        int distanceX = Math.abs(getX() - comparedCoordinate.getX());
+        if(distanceX != 0)
+            return distanceX;
+
+        int distanceY = Math.abs(getY() - comparedCoordinate.getY());
+        if(distanceY != 0)
+            return distanceY;
+
+        return 0;
+    }
 }

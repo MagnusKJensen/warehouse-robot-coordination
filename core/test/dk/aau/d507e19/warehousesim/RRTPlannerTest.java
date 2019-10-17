@@ -1,14 +1,12 @@
 package dk.aau.d507e19.warehousesim;
+import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Node;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.RRTPlanner;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import dk.aau.d507e19.warehousesim.controller.robot.Path;
-import dk.aau.d507e19.warehousesim.controller.robot.Robot;
-import org.junit.Before;
+import dk.aau.d507e19.warehousesim.controller.path.Path;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -49,7 +47,7 @@ public class RRTPlannerTest {
         GridCoordinate dest = new GridCoordinate(2,2);
         ArrayList<GridCoordinate> list = rrtPlanner.generateRRTPath(start,dest);
         assertTrue(isValidPath(start, dest, list));
-        Path p = new Path(list);
+        Path p = new Path(Step.fromGridCoordinates(list));
         //todo make this test more advanced
     }
     public boolean isValidPath(GridCoordinate start, GridCoordinate destination, ArrayList<GridCoordinate> path){

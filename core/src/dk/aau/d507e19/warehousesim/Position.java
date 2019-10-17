@@ -36,6 +36,14 @@ public class    Position {
     }
 
     @Override
+    public String toString() {
+        return "(" +
+                "x=" + x +
+                ", y=" + y +
+                ')';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null) return false;

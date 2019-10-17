@@ -12,4 +12,18 @@ public class Product {
     public Product(SKU SKU) {
         this.SKU = SKU;
     }
+
+    @Override
+    public String toString() {
+        return "SKU=" + SKU +
+                ", uniqueID=" + uniqueID;
+    }
+
+    public SKU getSKU() {
+        return SKU;
+    }
+
+    public int getUniqueID() {
+        return uniqueID;
+    }
 }

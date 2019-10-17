@@ -6,7 +6,7 @@ import dk.aau.d507e19.warehousesim.SimulationApp;
 
 public class DesktopLauncher {
 
-	private int screenWidth = 1280, screenHeight = 720;
+	public int screenWidth = 1440, screenHeight = 900;
 
 	public static void main (String[] arg) {
 		DesktopLauncher  desktopLauncher = new DesktopLauncher();

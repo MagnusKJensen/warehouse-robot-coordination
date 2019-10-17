@@ -1,5 +1,8 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
+import dk.aau.d507e19.warehousesim.controller.path.Path;
+import dk.aau.d507e19.warehousesim.controller.path.Step;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -12,66 +15,66 @@ public class PathTest {
 
     @Test
     public void removeAllButCornersPathTest() {
-        ArrayList<GridCoordinate> allCoordinates = new ArrayList<>();
-        ArrayList<GridCoordinate> expectedStrippedCoordinates = new ArrayList<>();
+        ArrayList<Step> allSteps = new ArrayList<>();
+        ArrayList<Step> expectedStrippedCoordinates = new ArrayList<>();
 
         // Full path
-        Collections.addAll(allCoordinates,
-                new GridCoordinate(1, 1),
-                new GridCoordinate(1, 2),
-                new GridCoordinate(1, 3),
-                new GridCoordinate(2, 3),
-                new GridCoordinate(2, 4),
-                new GridCoordinate(3, 4),
-                new GridCoordinate(4, 4),
-                new GridCoordinate(4, 3),
-                new GridCoordinate(4, 2),
-                new GridCoordinate(4, 1));
+        Collections.addAll(allSteps,
+                new Step(1, 1),
+                new Step(1, 2),
+                new Step(1, 3),
+                new Step(2, 3),
+                new Step(2, 4),
+                new Step(3, 4),
+                new Step(4, 4),
+                new Step(4, 3),
+                new Step(4, 2),
+                new Step(4, 1));
 
         // Only the corners
         Collections.addAll(expectedStrippedCoordinates,
-                new GridCoordinate(1, 1),
-                new GridCoordinate(1, 3),
-                new GridCoordinate(2, 3),
-                new GridCoordinate(2, 4),
-                new GridCoordinate(4, 4),
-                new GridCoordinate(4, 1));
+                new Step(1, 1),
+                new Step(1, 3),
+                new Step(2, 3),
+                new Step(2, 4),
+                new Step(4, 4),
+                new Step(4, 1));
 
-        Path path = new Path(allCoordinates);
-        assertEquals(expectedStrippedCoordinates, path.getCornersPath());
+        Path path = new Path(allSteps);
+        assertEquals(expectedStrippedCoordinates, path.getStrippedPath());
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void removeAllButCornersZeroLenTest() {
         ArrayList<GridCoordinate> allCoordinates = new ArrayList<>();
-        Path path = new Path(allCoordinates);
+        Path path = new Path(Step.fromGridCoordinates(allCoordinates));
     }
 
 
-    // TODO: 03/10/2019 Test annotation
+    @Ignore
     public void removeAllButCornersOneLenTest() {
-        ArrayList<GridCoordinate> allCoordinates = new ArrayList<>();
-        allCoordinates.add(new GridCoordinate(0,0));
+        ArrayList<Step> allCoordinates = new ArrayList<>();
+        allCoordinates.add(new Step(0,0));
         Path path = new Path(allCoordinates);
-        assertTrue(path.getCornersPath().isEmpty());
+        assertTrue(path.getStrippedPath().isEmpty());
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void noncontinuousStraightPathTest() {
-        ArrayList<GridCoordinate> allCoordinates = new ArrayList<>();
-        allCoordinates.add(new GridCoordinate(1, 1));
-        allCoordinates.add(new GridCoordinate(2, 1));
-        allCoordinates.add(new GridCoordinate(4, 1));
+        ArrayList<Step> allCoordinates = new ArrayList<>();
+        allCoordinates.add(new Step(1, 1));
+        allCoordinates.add(new Step(4, 1));
+        allCoordinates.add(new Step(2, 1));
         Path path = new Path(allCoordinates);
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void noncontinuousCornerPathTest() {
-        ArrayList<GridCoordinate> allCoordinates = new ArrayList<>();
-        allCoordinates.add(new GridCoordinate(1, 1));
-        allCoordinates.add(new GridCoordinate(2, 1));
-        allCoordinates.add(new GridCoordinate(3, 1));
-        allCoordinates.add(new GridCoordinate(3, 3));
+        ArrayList<Step> allCoordinates = new ArrayList<>();
+        allCoordinates.add(new Step(1, 1));
+        allCoordinates.add(new Step(2, 1));
+        allCoordinates.add(new Step(3, 1));
+        allCoordinates.add(new Step(3, 3));
         Path path = new Path(allCoordinates);
     }
 }

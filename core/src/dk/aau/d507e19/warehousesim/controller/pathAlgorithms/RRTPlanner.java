@@ -1,9 +1,9 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
+import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import dk.aau.d507e19.warehousesim.controller.robot.Path;
-import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.controller.path.Path;
 
 import java.lang.Math;
 import java.util.ArrayList;
@@ -171,7 +171,6 @@ public class RRTPlanner implements PathFinder{
 
     @Override
     public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
-
-        return new Path(generateRRTPath(start,destination));
+        return new Path(Step.fromGridCoordinates(generateRRTPath(start,destination)));
     }
 }
