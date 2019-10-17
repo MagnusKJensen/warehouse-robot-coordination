@@ -14,31 +14,26 @@ public class PathManager {
         this.gridLength = gridLength;
         this.gridHeight = gridHeight;
         gridOfResevations = new ArrayList[gridLength][gridHeight];
+        addReservationListsToGrid();
     }
 
-    public void addReservationToList(ArrayList<GridCoordinate> arrayList, float simulatedtime, int robotID, float robotSpeedPerBin) {
+    public void addReservationToList(ArrayList<GridCoordinate> arrayList, float simulatedtime, int robotID, float robotSpeedPerBin, int xEndPosition, int yEndPosition) {
         Reservation reservation;
         int i = 1;
         for (GridCoordinate gridcordinate : arrayList) {
-            reservation = new Reservation(robotID, simulatedtime + robotSpeedPerBin * i);
+            reservation = new Reservation(robotID, (simulatedtime + robotSpeedPerBin - robotSpeedPerBin / 2) * i, (simulatedtime + robotSpeedPerBin + robotSpeedPerBin / 2) * i);
             reservation.setxCordinate(gridcordinate.getX());
             reservation.setyCordinate(gridcordinate.getY());
-            if(gridcordinate.equals(arrayList.get(arrayList.size()-1)))
-                reservation.isReserved = true;
-
             gridOfResevations[gridcordinate.getX()][gridcordinate.getY()].add(reservation);
             i += 1;
         }
-
     }
 
     public void removeReservation(Reservation reservation, int xCordinate, int yCordinate) {
         for (Reservation reservationInList : gridOfResevations[xCordinate][yCordinate]) {
             if (reservationInList.equals(reservation))
                 listOfResevations.remove(reservationInList);
-
         }
-
     }
 
     public void addReservationListsToGrid() {
@@ -51,14 +46,14 @@ public class PathManager {
     }
 
     public void printReservations() {
-        int g =0;
+        int g = 0;
         for (int i = 0; i < gridLength; i++) {
             for (int j = 0; j < gridHeight; j++) {
                 for (Reservation res : gridOfResevations[i][j]) {
                     if (res.robotID == 1) {
                         System.out.println(g);
                         System.out.println(res.toString());
-                    g++;
+                        g++;
                     }
                 }
             }
@@ -67,5 +62,15 @@ public class PathManager {
 
     public ArrayList<Reservation>[][] getGridOfResevations() {
         return gridOfResevations;
+    }
+
+    public boolean isTileReserved(AStarTile currentTile, float simulatedTime, float robotSpeedPerBin) {
+        ArrayList<Reservation>[][] gridOfResevations = getGridOfResevations();
+        for (Reservation res : gridOfResevations[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition()]) {
+            if (simulatedTime + robotSpeedPerBin * currentTile.getG() > res.getTimeTileIsReservedFrom() && simulatedTime + robotSpeedPerBin * currentTile.getG() < res.getTimeTileIsReservedTo()) {
+                return false;
+            }
+        }
+        return true;
     }
 }

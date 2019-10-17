@@ -50,7 +50,7 @@ public class LineTraverser {
         }
 
         float remainingDistance = (totalDistance - distanceTraveled);
-        if (remainingDistance <= robot.getCurrentSpeed() / SimulationApp.TICKS_PER_SECOND) {
+        if (remainingDistance <= robot.getCurrentSpeed() / (float)SimulationApp.TICKS_PER_SECOND) {
             robot.move(remainingDistance * direction.xDir, remainingDistance * direction.yDir);
             distanceTraveled = totalDistance;
         } else {

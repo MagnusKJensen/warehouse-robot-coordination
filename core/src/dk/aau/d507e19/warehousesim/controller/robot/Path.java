@@ -24,48 +24,50 @@ public class Path {
         // Add start position
         corners.add(path.get(0));
 
-        // If x changed
-        if(path.get(0).getX() != path.get(1).getX()) lastDirection = "x";
-        else lastDirection = "y"; // if y changed
+        if(path.size() > 1){
+            // If x changed
+            if(path.get(0).getX() != path.get(1).getX()) lastDirection = "x";
+            else lastDirection = "y"; // if y changed
 
-        for (int i = 1; i < path.size(); i++) {
-            xChanged = path.get(i - 1).getX() != path.get(i).getX();
-            yChanged = path.get(i - 1).getY() != path.get(i).getY();
+            for (int i = 1; i < path.size(); i++) {
+                xChanged = path.get(i - 1).getX() != path.get(i).getX();
+                yChanged = path.get(i - 1).getY() != path.get(i).getY();
 
-            // Check if turned around. It cannot turn around with only 2 moves.
-            if(i > 2){
-                // If turning around the same way in x direction
-                if(path.get(i).getX() == path.get(i - 2).getX()
-                        && path.get(i).getY() == path.get(i - 2).getY()){
+                // Check if turned around. It cannot turn around with only 2 moves.
+                if(i > 2){
+                    // If turning around the same way in x direction
+                    if(path.get(i).getX() == path.get(i - 2).getX()
+                            && path.get(i).getY() == path.get(i - 2).getY()){
+                        corners.add(path.get(i - 1));
+                        lastDirection = "x";
+                        continue;
+                    }
+
+                    // If turning around the same way in y direction
+                    if(path.get(i).getY() == path.get(i - 2).getY()
+                            && path.get(i).getX() == path.get(i - 2).getX()){
+                        corners.add(path.get(i - 1));
+                        lastDirection = "y";
+                        continue;
+                    }
+                }
+
+                if(xChanged && lastDirection.equals("y")){
                     corners.add(path.get(i - 1));
                     lastDirection = "x";
                     continue;
                 }
 
-                // If turning around the same way in y direction
-                if(path.get(i).getY() == path.get(i - 2).getY()
-                        && path.get(i).getX() == path.get(i - 2).getX()){
+                if(yChanged && lastDirection.equals("x")){
                     corners.add(path.get(i - 1));
                     lastDirection = "y";
-                    continue;
+
                 }
-            }
-
-            if(xChanged && lastDirection.equals("y")){
-                corners.add(path.get(i - 1));
-                lastDirection = "x";
-                continue;
-            }
-
-            if(yChanged && lastDirection.equals("x")){
-                corners.add(path.get(i - 1));
-                lastDirection = "y";
 
             }
-
+            // add last target
+            corners.add(path.get(path.size() -1));
         }
-        // add last target
-        corners.add(path.get(path.size() -1));
 
         path = corners;
     }

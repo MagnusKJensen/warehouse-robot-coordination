@@ -2,22 +2,28 @@ package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
 
 public class Reservation {
     int robotID;
-    float timeTileIsReserved;
+  private   float timeTileIsReservedFrom;
+    private float timeTileIsReservedTo;
     int xCordinate;
     int yCordinate;
-    boolean isReserved = false;
 
-    public Reservation(int robotID, float timeTileIsReserved) {
+    public Reservation(int robotID, float timeTileIsReservedFrom,float timeTileIsReservedTo ) {
         this.robotID = robotID;
-        this.timeTileIsReserved = timeTileIsReserved;
+        this.timeTileIsReservedFrom = timeTileIsReservedFrom;
+        this.timeTileIsReservedTo = timeTileIsReservedTo;
+
     }
 
     public int getRobotID() {
         return robotID;
     }
 
-    public float getTimeTileIsReserved() {
-        return timeTileIsReserved;
+    public float getTimeTileIsReservedFrom() {
+        return timeTileIsReservedFrom;
+    }
+
+    public float getTimeTileIsReservedTo() {
+        return timeTileIsReservedTo;
     }
 
     public int getxCordinate() {
@@ -40,7 +46,8 @@ public class Reservation {
     public String toString() {
         return "Reservation{" +
                 "robotID=" + robotID +
-                ", timeTileIsReserved=" + timeTileIsReserved +
+                ", timeTileIsReservedFrom=" + timeTileIsReservedFrom +
+                ", timeTileIsReservedTo=" + timeTileIsReservedTo +
                 ", xCordinate=" + xCordinate +
                 ", yCordinate=" + yCordinate +
                 '}';
