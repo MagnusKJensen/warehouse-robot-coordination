@@ -56,16 +56,24 @@ public abstract class RRTBase {
             //check number of steps to root and save the best node
             for (Node<GridCoordinate> n : potentialImprovements){
                 //check if closer to root and if its in range
-                if((n.stepsToRoot() < steps) && distance(n.getData(),currentParent.getData()) == 1){
+                if((n.stepsToRoot() < steps) && distance(n.getData(),destination) == 1){
                     steps = n.stepsToRoot();
                     bestParent = n;
                 }
             }
-            if(bestParent==currentParent){
-                System.out.println("No better path could be found");
-            }else{
+            if(!(bestParent==currentParent)){
+                /*System.out.println("Found better path! " +
+                        bestParent.getData() +  " -> " + destination +
+                        " Instead of " + currentParent.getData() +" -> " + destination);*/
                 allNodesMap.get(destination).setParent(bestParent);
             }
+        }
+    }
+
+    public void improveEntirePath(Node<GridCoordinate> destination){
+        if(destination.getParent()!=null){
+            improveEntirePath(destination.getParent());
+            improvePath(destination.getData());
         }
     }
     private double distance(GridCoordinate pos1, GridCoordinate pos2){
