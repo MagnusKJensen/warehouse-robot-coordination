@@ -4,10 +4,7 @@ import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRT;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Path;
 import org.junit.Test;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -45,7 +42,7 @@ public class RRTTest {
 
     }
     @Test
-    public void generateRRTPathFromEmptyTest() {
+    public void generatePathFromEmptyTest() {
         GridCoordinate start = new GridCoordinate(0,0);
         GridCoordinate dest = new GridCoordinate(8,8);
         ArrayList<GridCoordinate> list = rrt.generateRRTPathFromEmpty(start,dest);
@@ -54,7 +51,7 @@ public class RRTTest {
 
     }
     @Test
-    public void generateRRTPathTest() {
+    public void generatePathTest() {
         //todo find a way to check that tree is actually re-used
         GridCoordinate start = new GridCoordinate(0, 0);
         GridCoordinate dest1 = new GridCoordinate(6, 8);
@@ -113,7 +110,6 @@ public class RRTTest {
         }
         return false;
     }
-
     @Test
     public void improvePathTest(){
         Node<GridCoordinate> n0 = new Node<>(new GridCoordinate(0,0),null,false);
@@ -140,7 +136,4 @@ public class RRTTest {
         list = rrt.generateRRTPath(n0.getData(),n7.getData());
         assertEquals(list.size()-1,n7.stepsToRoot());
     }
-
-
-
 }
