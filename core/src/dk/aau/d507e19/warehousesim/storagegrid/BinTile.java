@@ -31,13 +31,30 @@ public class BinTile extends Tile {
     }
 
     public void addBin(Bin bin){
-        if(this.bin != null) throw new IllegalArgumentException("Tile already has a bin");
+        if(this.bin != null) throw new IllegalArgumentException("Tile at position(" + getPosX() + "," + getPosY() + ") already has a bin");
         this.bin = bin;
     }
 
-    public Bin takeBin(){
+    public Bin releaseBin(){
+        if(this.bin == null) throw new RuntimeException("Cannot take bin at (" + getPosX() + "," + getPosY() + ") due to it being empty");
         Bin tempBin = this.bin;
         this.bin = null;
         return tempBin;
+    }
+
+    public boolean hasBin(){
+        return bin != null;
+    }
+
+
+    public Bin getBin() {
+        return bin;
+    }
+
+    @Override
+    public String toString() {
+        return "BinTile{" + "posX = " + getPosX() + ", posY = " + getPosY() +
+                ", \nbin=" + bin +
+                '}';
     }
 }

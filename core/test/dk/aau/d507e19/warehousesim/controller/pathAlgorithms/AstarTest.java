@@ -1,10 +1,8 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
 
 
-import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar.Astar;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 
 public class AstarTest {

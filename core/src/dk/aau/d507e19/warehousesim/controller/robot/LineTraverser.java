@@ -1,8 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
-import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.SimulationApp;
-import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 
 public class LineTraverser {
 
@@ -17,7 +15,7 @@ public class LineTraverser {
         this.direction = getDirection(startCoordinate.getX(), startCoordinate.getY(),
                 destinationCoordinate.getX(), destinationCoordinate.getY());
         totalDistance = getTotalDistance(startCoordinate, destinationCoordinate);
-        this.breakingDistance = breakingDistance();
+        this.breakingDistance = getBreakingDistance();
     }
 
     private Direction getDirection(int startX, int startY, int destinationX, int destinationY) {
@@ -85,7 +83,7 @@ public class LineTraverser {
         return achievableSpeed;
     }
 
-    private float breakingDistance(){
+    private float getBreakingDistance(){
         float breakingTime = calculateAchievableSpeed() / robot.getDecelerationBinSecond();
         float breakingDistance = (float) (0.5f * robot.getDecelerationBinSecond() * Math.pow(breakingTime, 2));
         return breakingDistance;

@@ -6,4 +6,9 @@ public class SKU {
     public SKU(String EAN) {
         this.EAN = EAN;
     }
+
+    @Override
+    public String toString() {
+        return "{EAN='" + EAN + '\'' + "}";
+    }
 }
