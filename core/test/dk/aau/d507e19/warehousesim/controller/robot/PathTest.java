@@ -152,8 +152,18 @@ public class PathTest {
         allCoordinates.add(new Step(3, 2));
         allCoordinates.add(new Step(3, 2, 50));
         allCoordinates.add(new Step(4, 2));
+        allCoordinates.add(new Step(4, 3));
+        allCoordinates.add(new Step(5, 3));
+        allCoordinates.add(new Step(6, 3));
 
-        ArrayList<Step> strippedPath = new ArrayList<>();
+        ArrayList<Step> expectedStrippedPath = new ArrayList<>();
+        expectedStrippedPath.add(new Step(2, 2));
+        expectedStrippedPath.add(new Step(3, 2, 50));
+        expectedStrippedPath.add(new Step(4, 2));
+        expectedStrippedPath.add(new Step(4, 3));
+        expectedStrippedPath.add(new Step(6, 3));
 
+        Path path = new Path(allCoordinates);
+        assertEquals(expectedStrippedPath, path.getStrippedPath());
     }
 }
