@@ -3,6 +3,7 @@ package dk.aau.d507e19.warehousesim.controller.server;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ReservationTile {
 
@@ -18,12 +19,12 @@ public class ReservationTile {
             if(reservation.getTimeFrame().overlaps(timeFrame))
                 return true;
         }
-
         return false;
     }
 
     public ArrayList<Reservation> getReservations(TimeFrame timeFrame){
         ArrayList<Reservation> overlappingReservations = new ArrayList<>();
+
         for(Reservation reservation : reservations){
             if(reservation.getTimeFrame().overlaps(timeFrame))
                 overlappingReservations.add(reservation);
@@ -36,6 +37,7 @@ public class ReservationTile {
         for(Reservation res : reservations){
             // todo Check conflicts
         }
+
         reservations.add(reservation);
     }
 

@@ -150,4 +150,9 @@ public class TimeControlMenu {
         menuStage.addActor(resetSimulationBtn);
     }
 
+    public void resetTimeControlButtons(){
+        setManualButtonsDisabled(false);
+        selectButton(pauseBtn);
+    }
+
 }

@@ -22,7 +22,7 @@ public class RRTPlanner implements PathFinder {
     public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
         switch (algorithm){
             case RRT: return new Path(rrt.generateRRTPath(start,destination));
-            case RRT_STAR: return null;
+            case RRT_STAR: return new Path(rrtStar.generatePath(start, destination));
             default: throw new RuntimeException("No type called " + algorithm);
         }
     }

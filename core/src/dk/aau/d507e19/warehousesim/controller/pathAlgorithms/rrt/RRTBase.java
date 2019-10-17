@@ -258,8 +258,7 @@ public abstract class RRTBase {
         ArrayList<GridCoordinate> freeListInitializer = new ArrayList<>();
         for(int i = 0; i < WarehouseSpecs.wareHouseWidth ; i++){
             for(int j = 0; j < WarehouseSpecs.wareHouseHeight; j++ ){
-                //ignore root(The robot's position)
-                    freeListInitializer.add(new GridCoordinate(i,j));
+                freeListInitializer.add(new GridCoordinate(i,j));
             }
         }
         return freeListInitializer;
