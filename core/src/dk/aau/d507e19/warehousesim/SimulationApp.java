@@ -3,12 +3,10 @@ package dk.aau.d507e19.warehousesim;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import dk.aau.d507e19.warehousesim.input.CameraMover;
 import dk.aau.d507e19.warehousesim.ui.SideMenu;
 
 import java.util.Random;
@@ -18,7 +16,7 @@ public class SimulationApp extends ApplicationAdapter {
 	private static final long RANDOM_SEED = 123456789L;
 	public static final Random random = new Random(RANDOM_SEED);
 
-	private static final int MENU_WIDTH_IN_PIXELS = 300;
+	public static final int MENU_WIDTH_IN_PIXELS = 300;
 	// Size of a single square/tile in the grid
 	private static final int DEFAULT_PIXELS_PER_TILE = 64;
 	private static final int MAX_UPDATES_PER_FRAME = 30;
@@ -32,15 +30,16 @@ public class SimulationApp extends ApplicationAdapter {
 
 	// Variables for simulation loop logic
 	public static final int TICKS_PER_SECOND = 30;
-	private static final long MILLIS_PER_TICK = 1000 / TICKS_PER_SECOND;
+	public static final long MILLIS_PER_TICK = 1000 / TICKS_PER_SECOND;
 
 	private UpdateMode updateMode = UpdateMode.MANUAL;
 	private long millisSinceUpdate = 0L;
 	private long lastUpdateTime = 0L;
 
-	private static final Color simBGColor = new Color(244f/255f, 245f/255f,247f/255f, 1);
+	private static final Color simBGColor = Color.GRAY;
 
 	private Simulation simulation;
+
 	private SideMenu sideMenu;
 
 	private CameraMover cameraMover;
@@ -60,12 +59,14 @@ public class SimulationApp extends ApplicationAdapter {
 		centerCamera(simulationCamera);
 		centerCamera(menuCamera);
 
-		simulation = new Simulation();
+		simulation = new Simulation(this);
 		sideMenu = new SideMenu(menuViewport, this);
 
 		Gdx.input.setInputProcessor(inputMultiplexer);
 		cameraMover = new CameraMover(simulationCamera, simulationViewport);
+
 		inputMultiplexer.addProcessor(cameraMover);
+		inputMultiplexer.addProcessor(simulation.getInputProcessor());
         lastUpdateTime = System.currentTimeMillis();
 	}
 
@@ -154,10 +155,14 @@ public class SimulationApp extends ApplicationAdapter {
 	}
 
 	private void renderSimulation(){
+		Gdx.gl.glEnable(GL30.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
 		simulationCamera.update();
 		simFontCamera.update();
 		simulationViewport.apply();
 		simulation.render(simulationCamera, simFontCamera);
+		Gdx.gl.glDisable(GL30.GL_BLEND);
+
 	}
 
 	private void switchUpdateMode(UpdateMode newMode){
@@ -204,7 +209,26 @@ public class SimulationApp extends ApplicationAdapter {
 	}
 
 	public void resetSimulation() {
+		inputMultiplexer.removeProcessor(simulation.getInputProcessor());
 		simulation.dispose();
-		simulation = new Simulation();
+		pause();
+		simulation = new Simulation(this);
+		inputMultiplexer.addProcessor(simulation.getInputProcessor());
+	}
+
+	public OrthographicCamera getWorldCamera() {
+		return simulationCamera;
+	}
+
+	public OrthographicCamera getFontCamera() {
+		return simFontCamera;
+	}
+
+	public ScreenViewport getWorldViewport() {
+		return simulationViewport;
+	}
+
+	public SideMenu getSideMenu() {
+		return sideMenu;
 	}
 }

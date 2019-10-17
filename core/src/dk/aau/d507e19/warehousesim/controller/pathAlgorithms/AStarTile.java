@@ -1,6 +1,8 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
 
-public class Tile {
+import java.util.ArrayList;
+
+public class AStarTile {
     private int currentXPosition;
     private int currentYPosition;
     private int previousXposition;
@@ -10,7 +12,8 @@ public class Tile {
     private int F;
     private boolean isBlocked = false;
 
-    public Tile(int currentXPosition, int currentYPosition) {
+
+    public AStarTile(int currentXPosition, int currentYPosition) {
         this.currentXPosition = currentXPosition;
         this.currentYPosition = currentYPosition;
     }
@@ -67,18 +70,22 @@ public class Tile {
 
     public void calculateH(int xFinalPosition, int yFinalPosition) {
 
-        H = Math.abs((xFinalPosition - currentXPosition)) + Math.abs((yFinalPosition- currentYPosition));
+        H = Math.abs((xFinalPosition - currentXPosition)) + Math.abs((yFinalPosition - currentYPosition));
 
     }
+
     public int calculateG(int previousG) {
-        G =  previousG + 1;
+        G = previousG + 1;
         return G;
     }
+
     public int calculateF() {
 
-      F = G + H;
+        F = G + H;
         return F;
     }
+
+
 
     @Override
     public String toString() {
