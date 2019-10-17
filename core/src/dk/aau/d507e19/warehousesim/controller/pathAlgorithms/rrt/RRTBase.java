@@ -263,9 +263,7 @@ public abstract class RRTBase {
         for(int i = 0; i < WarehouseSpecs.wareHouseWidth ; i++){
             for(int j = 0; j < WarehouseSpecs.wareHouseHeight; j++ ){
                 //If coordinate is root(The robot's position), dont add.
-                if(!((int)robot.getCurrentPosition().getX() == i && (int)robot.getCurrentPosition().getY() == j)){
-                    freeListInitializer.add(new GridCoordinate(i,j));
-                }
+                freeListInitializer.add(new GridCoordinate(i,j));
             }
         }
         return freeListInitializer;
