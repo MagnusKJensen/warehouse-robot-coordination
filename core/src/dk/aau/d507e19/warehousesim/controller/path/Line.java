@@ -5,6 +5,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.Direction;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Line {
 
@@ -78,4 +79,19 @@ public class Line {
         return coordinates;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Line line = (Line) o;
+        return length == line.length &&
+                direction == line.direction &&
+                start.equals(line.start) &&
+                end.equals(line.end);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(direction, length, start, end);
+    }
 }

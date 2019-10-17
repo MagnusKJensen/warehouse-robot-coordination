@@ -1,8 +1,5 @@
 package dk.aau.d507e19.warehousesim.controller.path;
 
-import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import dk.aau.d507e19.warehousesim.controller.robot.plan.Pause;
-
 import java.util.ArrayList;
 
 public class Path {
@@ -14,11 +11,11 @@ public class Path {
         this.strippedSteps = pathToTarget;
         allSteps.addAll(strippedSteps);
         if(pathToTarget.isEmpty()) throw new IllegalArgumentException("Path must contain at least one coordinate");
-        //if(!isValidPath()) throw new IllegalArgumentException("Paths must be continuous");
-        removeAllButCorners();
+        if(!isValidPath()) throw new IllegalArgumentException("Paths must be continuous");
+        generateStrippedPath();
     }
 
-    private void removeAllButCorners() {
+    private void generateStrippedPath() {
         ArrayList<Step> corners = new ArrayList<>();
 
         boolean xChanged;
@@ -77,22 +74,16 @@ public class Path {
     }
 
     public boolean isValidPath(){
-        for (int i = 0; i < allSteps.size() - 1; i++) {
-            // If moving along the x axis
-            if((Math.abs(allSteps.get(i).getX() - allSteps.get(i + 1).getX()) == 1)
-                    && allSteps.get(i).getY() == allSteps.get(i + 1).getY()){
-                continue;
-            }
-            // If moving along the y axis
-            if((Math.abs(allSteps.get(i).getY() - allSteps.get(i + 1).getY()) == 1)
-                    && allSteps.get(i).getX() == allSteps.get(i + 1).getX()){
-                continue;
-            }
+        Step currentStep;
+        Step previousStep = allSteps.get(0);
 
-            System.err.println("------------------- PATH INVALID -------------------");
-            System.err.println("Noncontinuous coordinates : " + allSteps.get(i) + " to " + allSteps.get(i + 1));
-            System.err.println("Full Path : " + allSteps);
-            return false;
+        for (int i = 1; i < allSteps.size(); i++) {
+            currentStep = allSteps.get(i);
+
+            if(!currentStep.isStepValidContinuationOf(previousStep))
+                return false;
+
+            previousStep = currentStep;
         }
         return true;
     }
