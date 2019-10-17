@@ -1,10 +1,9 @@
 package dk.aau.d507e19.warehousesim.controller.server;
 
+import org.junit.Test;
 
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 public class TimeFrameTest {
 
@@ -87,5 +86,6 @@ public class TimeFrameTest {
         assertFalse(timeFrame.isOutdated(-1));
         assertFalse(timeFrame.isOutdated(Long.MAX_VALUE));
     }
+
 
 }

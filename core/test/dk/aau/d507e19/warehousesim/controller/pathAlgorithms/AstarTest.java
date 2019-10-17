@@ -2,7 +2,7 @@ package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
 
 
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 
 public class AstarTest {

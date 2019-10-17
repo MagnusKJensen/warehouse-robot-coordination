@@ -1,16 +1,15 @@
 package dk.aau.d507e19.warehousesim.storagegrid.product;
 
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import static org.junit.Assert.*;
 
 public class BinTest {
 
-    @Test
+    @Test (expected = IllegalArgumentException.class)
     public void addProducts01() {
         Bin bin = new Bin();
 
@@ -21,10 +20,10 @@ public class BinTest {
         }
 
         // Should throw IllegalArgumentException, since one more SKU is added, than the bin can fit.
-        assertThrows(IllegalArgumentException.class, () -> bin.addProducts(myProducts));
+        bin.addProducts(myProducts);
     }
 
-    @Test
+    @Test (expected = IllegalArgumentException.class)
     public void addProducts02() {
         Bin bin = new Bin();
 
@@ -35,10 +34,10 @@ public class BinTest {
         }
 
         // Should throw IllegalArgumentException, since one more product is added, than the bin can fit.
-        assertThrows(IllegalArgumentException.class, () -> bin.addProducts(myProducts));
+        bin.addProducts(myProducts);
     }
 
-    @Test
+    @Test (expected = IllegalArgumentException.class)
     public void addProduct01() {
         Bin bin = new Bin();
 
@@ -50,11 +49,10 @@ public class BinTest {
         bin.addProducts(myProducts);
 
         // Should throw IllegalArgumentException, since one more product is added, than the bin can fit.
-        assertThrows(IllegalArgumentException.class,
-                () -> bin.addProduct(new Product(new SKU("SKU"), 123)));
+        bin.addProduct(new Product(new SKU("SKU"), 123));
     }
 
-    @Test
+    @Test (expected = IllegalArgumentException.class)
     public void addProduct02() {
         Bin bin = new Bin();
 
@@ -66,7 +64,6 @@ public class BinTest {
         bin.addProducts(myProducts);
 
         // Should throw IllegalArgumentException, since one more SKU is added, than the bin can fit.
-        assertThrows(IllegalArgumentException.class,
-                () -> bin.addProduct(new Product(new SKU("EXTRA SKU"), 123)));
+        bin.addProduct(new Product(new SKU("EXTRA SKU"), 123));
     }
 }

@@ -1,7 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.server;
 
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 public class ReservationManagerTest {
 
