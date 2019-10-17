@@ -209,7 +209,7 @@ public class Simulation {
     }
 
     public int getGridHeight() {
-        return WarehouseSpecs.wareHouseHeight; // todo get from storagegrid instead of warehousespecs
+        return WarehouseSpecs.wareHouseHeight;
     }
 
     public int getGridWidth() {

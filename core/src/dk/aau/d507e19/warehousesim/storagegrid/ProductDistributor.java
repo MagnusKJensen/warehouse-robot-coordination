@@ -14,7 +14,7 @@ public class ProductDistributor {
     private static final int numberOfBins = WarehouseSpecs.wareHouseWidth * WarehouseSpecs.wareHouseHeight;
     private static final int productsPerBin = WarehouseSpecs.productsPerBin;
     private static final int SKUsPerBin = WarehouseSpecs.SKUsPerBin;
-    private static float[][] SKUDistribution = WarehouseSpecs.skuDistribution;
+    private static double[][] SKUDistribution = WarehouseSpecs.skuDistribution;
     private static Random random;
 
     public static void distributeProducts(StorageGrid grid){
@@ -189,18 +189,22 @@ public class ProductDistributor {
     }
 
     public static boolean isValidDistribution() {
-        int SKUSum = 0;
-        int turnoverSum = 0;
+        float SKUSum = 0;
+        float turnoverSum = 0;
+        float delta = 0.01f;
 
         for(int i = 0; i < SKUDistribution.length; ++i){
             SKUSum += SKUDistribution[i][0];
             turnoverSum += SKUDistribution[i][1];
         }
 
-        return SKUSum == 100 && turnoverSum == 100;
+        if(Math.abs(SKUSum - 100) > delta) return false;
+        if(Math.abs(turnoverSum - 100) > delta) return false;
+
+        return true;
     }
 
-    public static void setSKUDistribution(float[][] SKUDistribution) {
+    public static void setSKUDistribution(double[][] SKUDistribution) {
         ProductDistributor.SKUDistribution = SKUDistribution;
     }
 }

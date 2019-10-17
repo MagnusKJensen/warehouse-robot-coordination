@@ -1,20 +1,11 @@
 package dk.aau.d507e19.warehousesim.storagegrid;
 
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import dk.aau.d507e19.warehousesim.GraphicsManager;
 import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
-import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
-import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
-import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
-import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
-
-import java.util.ArrayList;
-import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 
 import java.util.ArrayList;
 
@@ -42,12 +33,25 @@ public class StorageGrid {
     private void generatePickerPoints() {
         int[][] pickers = WarehouseSpecs.pickerPoints;
 
+        // Check to see if all picker points are inside the grid
+        arePickerPointsOutsideGrid(pickers);
+
+        // Go through all picker points and add them, if one is not already present at a given tile.
         for(int i = 0; i < pickers.length; ++i){
             GridCoordinate cord = new GridCoordinate(pickers[i][0], pickers[i][1]);
             if(pickerPoints.contains(cord))
                 throw new RuntimeException("Picker point already present at (" + cord.getX() + "," + cord.getY() +
                         "). Cannot have two picker points at the same tile");
             else pickerPoints.add(new GridCoordinate(pickers[i][0], pickers[i][1]));
+        }
+    }
+
+    private void arePickerPointsOutsideGrid(int[][] pickers) {
+        for(int i = 0; i < pickers.length; ++i){
+            if(pickers[i][0] > WarehouseSpecs.wareHouseWidth - 1 || pickers[i][1] > WarehouseSpecs.wareHouseHeight - 1)
+                throw new IllegalArgumentException("Picker point is outside grid at (" + pickers[i][0] + "," + pickers[i][1] + "). " +
+                        "Gridsize (" + WarehouseSpecs.wareHouseWidth + ", " + WarehouseSpecs.wareHouseHeight + ")" +
+                        " counting from 0 to " + (WarehouseSpecs.wareHouseWidth - 1) + ".");
         }
     }
 

@@ -194,10 +194,6 @@ public class SimulationApp extends ApplicationAdapter {
 		simulation.update();
 	}
 
-	public void globalStepBackWard(){
-		// TODO: 30/09/2019 Maybe exclude this feature?
-	}
-
 	public void pause(){
 		switchUpdateMode(UpdateMode.MANUAL);
 	}
