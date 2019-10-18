@@ -80,19 +80,20 @@ public abstract class RRTBase {
         if(current.stepsToRoot() > possible.stepsToRoot()){
             return true;
         } else if(current.stepsToRoot() == possible.stepsToRoot()){
+            /*
             //Make a copy of our tree(ugh) todo find better way to do this
             Node<GridCoordinate> posTree = root.copy();
             //find possible node in tree
             Node<GridCoordinate> posTreeGoal = posTree.findNode(destinationNode.getData());
-            //make possible node the parent
-            posTreeGoal.setParent(posTree.findNode(possible.getData()));
+            //rewire child node to have possible as parent
+            posTree.findNode(child.getData()).setParent(possible);
             //return the fastest path from either to the goal
-            return calculateTravelTime(current,destinationNode) > calculateTravelTime(posTree,posTreeGoal);
+            return calculateTravelTime(current,destinationNode) > calculateTravelTime(posTree,posTreeGoal);*/
         }
 
         return false;
     }
-    private long calculateTravelTime(Node<GridCoordinate> dest, Node<GridCoordinate> root){
+    private long calculateTravelTime(Node<GridCoordinate> root, Node<GridCoordinate> dest){
         //generate path from root to dest
         //find out how long it takes according to movement predictor
         //return time that it takes
@@ -251,7 +252,7 @@ public abstract class RRTBase {
         //return root.containsNodeWithData(root,newPos);
     }
 
-    protected ArrayList<Step> makePath(Node<GridCoordinate> destNode){
+    public ArrayList<Step> makePath(Node<GridCoordinate> destNode){
         ArrayList<Step> path = new ArrayList<>();
         if(destNode.getParent() == null){
             path.add(new Step(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY())));
@@ -261,9 +262,9 @@ public abstract class RRTBase {
         path.add(new Step(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY())));
         return path;
     }
-    private ArrayList<Step> makePathBetweenTwoNodes(Node<GridCoordinate> startNode, Node<GridCoordinate> destNode){
+    public ArrayList<Step> makePathBetweenTwoNodes(Node<GridCoordinate> startNode, Node<GridCoordinate> destNode){
         ArrayList<Step> path = new ArrayList<>();
-        if(destNode.getParent()== null || destNode.getParent().equals(startNode)){
+        if(destNode.getParent()== null || destNode.equals(startNode)){
             path.add(new Step(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY())));
             return path;
         }
