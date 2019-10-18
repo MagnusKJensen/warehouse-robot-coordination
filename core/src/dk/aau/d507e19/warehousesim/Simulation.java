@@ -50,22 +50,17 @@ public class Simulation {
         this.fontCamera = simulationApp.getFontCamera();
         this.gridViewport = simulationApp.getWorldViewport();
 
-        server = new Server(this);
         inputProcessor = new SimulationInputProcessor(this);
 
         font = GraphicsManager.getFont();
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
 
-        // Just for testing and adding picker points
-        ArrayList<GridCoordinate> pickerPoints = new ArrayList<>();
-        pickerPoints.add(new GridCoordinate(0,0));
-        pickerPoints.add(new GridCoordinate(2,0));
-
         storageGrid = new StorageGrid(WarehouseSpecs.wareHouseWidth, WarehouseSpecs.wareHouseHeight, this);
-
         if(WarehouseSpecs.isRandomProductDistribution) ProductDistributor.distributeProductsRandomly(storageGrid);
         else ProductDistributor.distributeProducts(storageGrid);
+
+        server = new Server(this, storageGrid);
 
         initRobots();
     }
@@ -73,11 +68,7 @@ public class Simulation {
     private void initRobots() {
         // Auto generate robots
         for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++){
-            robots.add(new Robot(new Position(i * 3, 0), i, this));
-            // Assign test task to first robot
-            for(int j = 0; j < 5; j++){
-                robots.get(i).assignOrder(new Order(new Product(new SKU("0"), 0), 1));
-            }
+            robots.add(new Robot(new Position(i, 0), i, this));
         }
     }
 
@@ -87,6 +78,7 @@ public class Simulation {
             robot.update();
         }
         updateSideMenuScrollPanes();
+        server.update();
     }
 
     private void updateSideMenuScrollPanes() {

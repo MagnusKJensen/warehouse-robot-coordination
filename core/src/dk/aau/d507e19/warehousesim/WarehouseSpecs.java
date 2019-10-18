@@ -21,7 +21,7 @@ public class WarehouseSpecs {
     // Both turnover and SKUs should also sum up to 100. Do not enter more than 1 decimal.
     // Do not enter lower distribution, than 100 / SKUs.
     public static final double[][] skuDistribution = {{20.5, 50}, {9.5,30}, {70,20}};
-    public static final boolean isRandomProductDistribution = true;
-    public static final int[][] pickerPoints = {{0,0}, {2,0}, {4,0}};
+    public static final boolean isRandomProductDistribution = false;
+    public static final int[][] pickerPoints = {{0,0}, {2,0}, {4,0}, {6,0}, {8,0}, {10,0}};
     // todo layers? - Philip
 }

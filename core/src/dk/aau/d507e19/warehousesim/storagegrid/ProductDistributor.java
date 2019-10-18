@@ -22,7 +22,9 @@ public class ProductDistributor {
 
         ArrayList<Product> allProducts = generateProducts(SKUs);
 
-        distributeToGrid(allProducts, grid);
+        grid.setAllProducts(allProducts);
+
+        distributeToGrid(new ArrayList<>(allProducts), grid);
     }
 
     public static void distributeProductsRandomly(StorageGrid grid){
@@ -30,7 +32,9 @@ public class ProductDistributor {
 
         ArrayList<Product> allProducts = generateProducts(SKUs);
 
-        distributeRandomly(allProducts ,grid);
+        grid.setAllProducts(allProducts);
+
+        distributeRandomly(new ArrayList<>(allProducts), grid);
 
     }
 
