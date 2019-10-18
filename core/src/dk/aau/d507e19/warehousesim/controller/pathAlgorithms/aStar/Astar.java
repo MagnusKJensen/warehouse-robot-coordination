@@ -37,10 +37,10 @@ public class Astar implements PathFinder {
     Robot robot;
 
     //private PathManager pathManager;
-    GridCoordinate leftNeigbor;
-    GridCoordinate rightNeigbor;
+    GridCoordinate leftNeighbor;
+    GridCoordinate rightNeighbor;
     GridCoordinate aboveNeighbor;
-    GridCoordinate downstairsNeigbor;
+    GridCoordinate downstairsNeighbor;
 
 
     public Astar(Server server, Robot robot) {
@@ -85,38 +85,45 @@ public class Astar implements PathFinder {
         //Checks every potential neighbor to currentTile the same way.
         ArrayList<GridCoordinate> temporaryPath = new ArrayList<>();
         aboveNeighbor = new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition() + 1);
-        downstairsNeigbor = new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition() - 1);
-        leftNeigbor = new GridCoordinate(currentTile.getCurrentXPosition() - 1, currentTile.getCurrentYPosition());
-        rightNeigbor = new GridCoordinate(currentTile.getCurrentXPosition() + 1, currentTile.getCurrentYPosition());
+        downstairsNeighbor = new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition() - 1);
+        leftNeighbor = new GridCoordinate(currentTile.getCurrentXPosition() - 1, currentTile.getCurrentYPosition());
+        rightNeighbor = new GridCoordinate(currentTile.getCurrentXPosition() + 1, currentTile.getCurrentYPosition());
 
         // Checks if neighbor is valid with a valid coordinate
-        if (downstairsNeigbor.getY() >= 0) {
-            temporaryPath  = createTemporaryPath(currentTile, downstairsNeigbor);
-            if (currentTile.getCurrentYPosition() - 1 >= 0 && !(reservationManager.isReserved(downstairsNeigbor, getTimeFrameFromLastReservation(temporaryPath)))) {
-                //  if (currentTile.getCurrentYPosition() - 1 >= 0 ) {
+        if (downstairsNeighbor.getY() >= 0) {
+            temporaryPath  = createTemporaryPath(currentTile, downstairsNeighbor);
+            if (currentTile.getCurrentYPosition() - 1 >= 0 && !(grid[downstairsNeighbor.getX()][downstairsNeighbor.getY()].isBlocked())) {
                 // Adds Neighbor to openList if valid
-                addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() - 1]);
+                if(!(reservationManager.isReserved(downstairsNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
+                    addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() - 1]);
+                }
             }
         }
         if (aboveNeighbor.getY() <= server.getGridHeight()) {
             temporaryPath = createTemporaryPath(currentTile, aboveNeighbor);
-            if (currentTile.getCurrentYPosition() + 1 < grid.length && !(reservationManager.isReserved(aboveNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
-                //  if (currentTile.getCurrentYPosition() + 1 < grid.length ) {
-                addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() + 1]);
+            if (currentTile.getCurrentYPosition() + 1 < grid.length && !(grid[aboveNeighbor.getX()][aboveNeighbor.getY()].isBlocked())) {
+
+                if(!(reservationManager.isReserved(aboveNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
+                    addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() + 1]);
+                }
             }
         }
-        if (leftNeigbor.getX() >= 0) {
-            temporaryPath = createTemporaryPath(currentTile, leftNeigbor);
-            if (currentTile.getCurrentXPosition() - 1 >= 0 && !(reservationManager.isReserved(leftNeigbor, getTimeFrameFromLastReservation(temporaryPath)))) {
-                //  if (currentTile.getCurrentXPosition() - 1 >= 0) {
-                addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() - 1][currentTile.getCurrentYPosition()]);
+        if (leftNeighbor.getX() >= 0) {
+            temporaryPath = createTemporaryPath(currentTile, leftNeighbor);
+            if (currentTile.getCurrentXPosition() - 1 >= 0 && !(grid[leftNeighbor.getX()][leftNeighbor.getY()].isBlocked())) {
+
+                if(!(reservationManager.isReserved(leftNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
+                    addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() - 1][currentTile.getCurrentYPosition()]);
+                }
             }
         }
-        if (rightNeigbor.getX() <= server.getGridWidth()) {
-            createTemporaryPath(currentTile, rightNeigbor);
-            if (currentTile.getCurrentXPosition() + 1 < grid.length && !(reservationManager.isReserved(rightNeigbor, getTimeFrameFromLastReservation(temporaryPath)))) {
-                //  if (currentTile.getCurrentXPosition() + 1 < grid.length ) {
-                addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() + 1][currentTile.getCurrentYPosition()]);
+        if (rightNeighbor.getX() <= server.getGridWidth()) {
+            createTemporaryPath(currentTile, rightNeighbor);
+            if (currentTile.getCurrentXPosition() + 1 < grid.length && !(grid[rightNeighbor.getX()][rightNeighbor.getY()].isBlocked())) {
+
+                if(!(reservationManager.isReserved(rightNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
+                    addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() + 1][currentTile.getCurrentYPosition()]);
+                }
             }
         }
     }
@@ -125,20 +132,6 @@ public class Astar implements PathFinder {
         Path path = new Path(Step.fromGridCoordinates(tempPath));
         ArrayList<Reservation> listOfReservations;
         listOfReservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
-
-        System.out.println("Current tile: " + currentTile.toString());
-        System.out.println("Neighbor tile: " + listOfReservations.get(listOfReservations.size()-1).getGridCoordinate().toString());
-
-        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++");
-
-        for (Reservation res: listOfReservations) {
-            System.out.println(res.toString());
-        }
-        System.out.println("-------------------------------------------------------------------------");
-
-        System.out.println(listOfReservations.get(listOfReservations.size()-1).getTimeFrame().toString());
-
-        System.out.println("-----------------------------------------------------------------------");
 
         return listOfReservations.get(listOfReservations.size()-1).getTimeFrame();
 
@@ -159,39 +152,36 @@ public class Astar implements PathFinder {
         // Makes new dummy tile
         AStarTile tileToDelete = null;
 
-        // Checks if neighborTile is blocked (Already in closedList)
-        if (!neighborTile.isBlocked()) {
+        // Sets the previous coordinates in neighbor tile
+        neighborTile.setPreviousXposition(currentTile.getCurrentXPosition());
+        neighborTile.setPreviousYposition(currentTile.getCurrentYPosition());
 
-            // Sets the previous coordinates in neighbor tile
-            neighborTile.setPreviousXposition(currentTile.getCurrentXPosition());
-            neighborTile.setPreviousYposition(currentTile.getCurrentYPosition());
+        // Calculates neighborTiles H, G and F
+        neighborTile.calculateH(xEndposition, yEndposition);
+        neighborTile.calculateG(currentTile.getG());
+        neighborTile.calculateF();
 
-            // Calculates neighborTiles H, G and F
-            neighborTile.calculateH(xEndposition, yEndposition);
-            neighborTile.calculateG(currentTile.getG());
-            neighborTile.calculateF();
+        // Checks if neighborTile is already in openList.
+        for (AStarTile tile : openList) {
+            if (neighborTile.getCurrentXPosition() == tile.getCurrentXPosition() && neighborTile.getCurrentYPosition() == tile.getCurrentYPosition()) {
 
-            // Checks if neighborTile is already in openList.
-            for (AStarTile tile : openList) {
-                if (neighborTile.getCurrentXPosition() == tile.getCurrentXPosition() && neighborTile.getCurrentYPosition() == tile.getCurrentYPosition()) {
+                // If a tile with the same coordinates is already in openList, then check which has the lowest F value.
+                // If the existing tile in openList has the highest F, then it is copied into tileToDelete
+                if (neighborTile.getF() <= tile.getF()) {
+                    tileToDelete = tile;
 
-                    // If a tile with the same coordinates is already in openList, then check which has the lowest F value.
-                    // If the existing tile in openList has the highest F, then it is copied into tileToDelete
-                    if (neighborTile.getF() <= tile.getF()) {
-                        tileToDelete = tile;
-
-                        // If the neighborTile has the highest F, then return and dont add to openList.
-                    } else return;
-                }
+                    // If the neighborTile has the highest F, then return and dont add to openList.
+                } else return;
             }
-
-            // If there is a tile to delete, then delete
-            if (tileToDelete != null)
-                openList.remove(tileToDelete);
-
-            // Add neighbor tile to openList
-            openList.add(neighborTile);
         }
+
+        // If there is a tile to delete, then delete
+        if (tileToDelete != null)
+            openList.remove(tileToDelete);
+
+        // Add neighbor tile to openList
+        openList.add(neighborTile);
+
     }
 
     public void addTilesToClosedList() {
@@ -222,6 +212,8 @@ public class Astar implements PathFinder {
         }
         temp.add(new GridCoordinate(closedList.get(0).getCurrentXPosition(), closedList.get(0).getCurrentYPosition()));
         Collections.reverse(temp);
+        temp.add(neighborTile);
+        System.out.println("neighbor: " + neighborTile.toString() );
         return temp;
     }
 
@@ -275,11 +267,6 @@ public class Astar implements PathFinder {
 
         xStart = start.getX();
         yStart = start.getY();
-        System.out.println("Start cordinates");
-        System.out.println(xStart + " " + yStart);
-        System.out.println("end cordinates");
-        System.out.println(xEndposition + " " + yEndposition);
-        System.out.println("------------------------------");
         // Adds the starting tile to closed list.
         addStartTileToClosedList(start.getX(), start.getY());
 
