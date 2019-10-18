@@ -77,6 +77,7 @@ public class NodeTest {
 
     @Test
     public void getRootTest(){
+        assertEquals(root,root.getRoot());
         assertEquals(root,rootLeftLeftLeftLeft.getRoot());
         assertEquals(rootLeftLeft.getRoot(),rootRight.getRoot());
     }
