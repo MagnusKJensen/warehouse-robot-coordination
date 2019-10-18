@@ -83,14 +83,14 @@ public class TileInfoMenu {
         }
     }
 
-    public void updateBinContent(ArrayList<Product> products){
+    public void resetScrollPaneContent(){
+        resetBinContent();
+        resetRobotBinContent();
+    }
+
+    private void resetBinContent(){
         binContentText.setText(BIN_CONTENT_PRECURSOR);
         binContent.clear();
-        for (Product prod : products) {
-            Label label = new Label(prod.toString(), this.skin);
-            binContent.add(label).left();
-            binContent.row();
-        }
     }
 
     public void updateRobotBinContent(ArrayList<Product> products, int robotID){
@@ -102,13 +102,9 @@ public class TileInfoMenu {
         }
     }
 
-    public void updateRobotBinContent(ArrayList<Product> products){
+    private void resetRobotBinContent(){
         robotBinContentText.setText(ROBOT_BIN_CONTENT_PRECURSOR);
         robotBinContent.clear();
-        for (Product prod : products) {
-            robotBinContent.add(new Label(prod.toString(), this.skin)).left();
-            robotBinContent.row();
-        }
     }
 
     private EventListener getScrollOnHover(final Actor scrollPane) {

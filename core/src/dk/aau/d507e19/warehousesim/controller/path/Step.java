@@ -97,4 +97,13 @@ public class Step {
     public int hashCode() {
         return Objects.hash(gridCoordinate, stepType, waitTimeInTicks);
     }
+
+    @Override
+    public String toString() {
+        return "Step{" +
+                "gridCoordinate=" + gridCoordinate +
+                ", stepType=" + stepType +
+                ", waitTimeInTicks=" + waitTimeInTicks +
+                '}';
+    }
 }

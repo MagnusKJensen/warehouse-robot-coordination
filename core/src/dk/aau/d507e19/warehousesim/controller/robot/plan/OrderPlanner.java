@@ -31,16 +31,11 @@ public class OrderPlanner {
         GridCoordinate pickUpPoint = getNearestAvailableProduct(order);
         Path pathToPickUpPoint = pathFinder.calculatePath(robot.getGridCoordinate(), pickUpPoint);
 
-
         plan.add(new PathTraversal(robot, pathToPickUpPoint));
         plan.add(new PickUp(robot));
 
         ArrayList<Reservation> reservations =
                 MovementPredictor.calculateReservations(robot, pathToPickUpPoint, server.getTimeInTicks(), 0);
-
-        for(Reservation reservation :reservations){
-            System.out.println(reservation);
-        }
 
         server.getReservationManager().reserve(reservations);
 

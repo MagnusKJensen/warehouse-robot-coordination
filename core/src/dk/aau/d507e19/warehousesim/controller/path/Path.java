@@ -1,8 +1,5 @@
 package dk.aau.d507e19.warehousesim.controller.path;
 
-import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import dk.aau.d507e19.warehousesim.controller.robot.plan.Pause;
-
 import java.util.ArrayList;
 
 public class Path {
@@ -13,89 +10,62 @@ public class Path {
     public Path(ArrayList<Step> pathToTarget) {
         this.strippedSteps = pathToTarget;
         allSteps.addAll(strippedSteps);
-        if(pathToTarget.isEmpty()) throw new IllegalArgumentException("Path must contain at least one coordinate");
-      //  if(!isValidPath()) throw new IllegalArgumentException("Paths must be continuous");
-        removeAllButCorners();
+        if(pathToTarget.isEmpty())
+            throw new IllegalArgumentException("Path must contain at least one coordinate");
+        if(!isValidPath())
+            throw new IllegalArgumentException("Paths must be continuous");
+        strippedSteps = generateStrippedPath(allSteps);
     }
 
-    private void removeAllButCorners() {
-        ArrayList<Step> corners = new ArrayList<>();
+    private static ArrayList<Step> generateStrippedPath(ArrayList<Step> allSteps) {
+        ArrayList<Step> strippedSteps = new ArrayList<>();
 
-        boolean xChanged;
-        boolean yChanged;
-        String lastDirection;
+        // The first step should always be included
+        strippedSteps.add(allSteps.get(0));
 
-        // Add start position
-        corners.add(strippedSteps.get(0));
-
-        if(strippedSteps.size() > 1){
-            // If x changed
-            if(strippedSteps.get(0).getX() != strippedSteps.get(1).getX()) lastDirection = "x";
-            else lastDirection = "y"; // if y changed
-
-            for (int i = 1; i < strippedSteps.size(); i++) {
-                xChanged = strippedSteps.get(i - 1).getX() != strippedSteps.get(i).getX();
-                yChanged = strippedSteps.get(i - 1).getY() != strippedSteps.get(i).getY();
-
-                // Check if turned around. It cannot turn around with only 2 moves.
-                if(i > 2){
-                    // If turning around the same way in x direction
-                    if(strippedSteps.get(i).getX() == strippedSteps.get(i - 2).getX()
-                            && strippedSteps.get(i).getY() == strippedSteps.get(i - 2).getY()){
-                        corners.add(strippedSteps.get(i - 1));
-                        lastDirection = "x";
-                        continue;
-                    }
-
-                    // If turning around the same way in y direction
-                    if(strippedSteps.get(i).getY() == strippedSteps.get(i - 2).getY()
-                            && strippedSteps.get(i).getX() == strippedSteps.get(i - 2).getX()){
-                        corners.add(strippedSteps.get(i - 1));
-                        lastDirection = "y";
-                        continue;
-                    }
-                }
-
-                if(xChanged && lastDirection.equals("y")){
-                    corners.add(strippedSteps.get(i - 1));
-                    lastDirection = "x";
-                    continue;
-                }
-
-                if(yChanged && lastDirection.equals("x")){
-                    corners.add(strippedSteps.get(i - 1));
-                    lastDirection = "y";
-
-                }
-
-            }
-            // add last target
-            corners.add(strippedSteps.get(strippedSteps.size() -1));
+        for(int i = 1; i < allSteps.size(); i++){
+            if(isStoppingPoint(allSteps, i))
+                strippedSteps.add(allSteps.get(i));
         }
 
-        strippedSteps = corners;
+        return strippedSteps;
     }
 
-  /*  public boolean isValidPath(){
-        for (int i = 0; i < allSteps.size() - 1; i++) {
-            // If moving along the x axis
-            if((Math.abs(allSteps.get(i).getX() - allSteps.get(i + 1).getX()) == 1)
-                    && allSteps.get(i).getY() == allSteps.get(i + 1).getY()){
-                continue;
-            }
-            // If moving along the y axis
-            if((Math.abs(allSteps.get(i).getY() - allSteps.get(i + 1).getY()) == 1)
-                    && allSteps.get(i).getX() == allSteps.get(i + 1).getX()){
-                continue;
-            }
+    private static boolean isStoppingPoint(ArrayList<Step> allSteps, int index) {
+        if(index == 0 || index == allSteps.size() - 1) return true; // First & last steps are always stopping points
 
-            System.err.println("------------------- PATH INVALID -------------------");
-            System.err.println("Noncontinuous coordinates : " + allSteps.get(i) + " to " + allSteps.get(i + 1));
-            System.err.println("Full Path : " + allSteps);
+        Step currentStep = allSteps.get(index);
+        if(currentStep.isWaitingStep()) return true;
+
+        Step previousStep = allSteps.get(index - 1);
+        Step nextStep = allSteps.get(index + 1);
+
+        // If next step is the same, then that step is a waiting step; and that will be considered a stopping point
+        // instead of this one
+        if(nextStep.getGridCoordinate().equals(currentStep.getGridCoordinate()))
             return false;
+
+        // Otherwise check if the currentStep is a corner
+        Line fromPrevToCurrent = new Line(previousStep.getGridCoordinate(), currentStep.getGridCoordinate());
+        Line fromCurrentToNext = new Line(currentStep.getGridCoordinate(), nextStep.getGridCoordinate());
+
+        return fromPrevToCurrent.getDirection() != fromCurrentToNext.getDirection();
+    }
+
+    public boolean isValidPath(){
+        Step currentStep;
+        Step previousStep = allSteps.get(0);
+
+        for (int i = 1; i < allSteps.size(); i++) {
+            currentStep = allSteps.get(i);
+
+            if(!currentStep.isStepValidContinuationOf(previousStep))
+                return false;
+
+            previousStep = currentStep;
         }
         return true;
-    }*/
+    }
 
     public ArrayList<Step> getStrippedPath() {
         return strippedSteps;

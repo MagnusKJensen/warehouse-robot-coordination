@@ -38,9 +38,10 @@ public abstract class RRTBase {
             newNode.setParent(nearest);
             allNodesMap.put(newNode.getData(),newNode);
             latestNode = newNode;
+
             //Assign blocked nodes from server
             //assignBlockedNodeStatus(server.getReservedNotes);
-        }
+            }
     }
 
     public void improvePath(GridCoordinate destination){
@@ -96,6 +97,8 @@ public abstract class RRTBase {
         pos = edge.getDistanceBetweenPoints(new GridCoordinate(pos.getX(), pos.getY() - 1), randPos) < edge.getDistanceBetweenPoints(pos, randPos) ? new GridCoordinate(originalPos.getX(), originalPos.getY() -1 ) : pos;
 
         //System.out.println("NEW: "+ pos.toString()+"\nNEAR: " + originalPos.toString() + "\nRAND: " + randPos.toString()+"\n");
+
+        //remove the newly created note from the freeList
         updateFreeList(pos);
         return new Node<>(pos, null, false);
     }
@@ -235,9 +238,10 @@ public abstract class RRTBase {
         }
         //Find nodes that are not blocked anymore, and free them. TODO: make help functions to make function pretty
         if(blockedNodeList.size() != nodesToBeUpdated.size()){
-            ArrayList<GridCoordinate> freeList = blockedNodeList;
-            freeList.removeAll(nodesToBeUpdated);
-            for(GridCoordinate m: freeList){
+            //tempList is used to find the unique nodes
+            ArrayList<GridCoordinate> tempList = blockedNodeList;
+            tempList.removeAll(nodesToBeUpdated);
+            for(GridCoordinate m: tempList){
                 if(allNodesMap.containsKey(m)){
                     allNodesMap.get(m).setBlockedStatus(false);
                 }
@@ -258,6 +262,7 @@ public abstract class RRTBase {
         ArrayList<GridCoordinate> freeListInitializer = new ArrayList<>();
         for(int i = 0; i < WarehouseSpecs.wareHouseWidth ; i++){
             for(int j = 0; j < WarehouseSpecs.wareHouseHeight; j++ ){
+                //If coordinate is root(The robot's position), dont add.
                 freeListInitializer.add(new GridCoordinate(i,j));
             }
         }
@@ -300,6 +305,7 @@ public abstract class RRTBase {
     private void growKtimes(GridCoordinate destination, int k){
         for(int i = 0; i < k; i++){
             growRRT(root,k);
+
         }
     }
 }

@@ -15,7 +15,6 @@ public class Robot {
     private Position currentPosition;
     private Status currentStatus;
     private float currentSpeed;
-    private Path pathToTarget;
     private Bin bin = null;
     private int robotID;
 
@@ -35,8 +34,6 @@ public class Robot {
 
     private RobotController robotController;
 
-    private ArrayList<Action> plan = new ArrayList<>();
-
     public Robot(Position startingPosition, int robotID, Simulation simulation) {
         this.currentPosition = startingPosition;
         this.simulation = simulation;
@@ -44,7 +41,7 @@ public class Robot {
         currentStatus = Status.AVAILABLE;
 
         // Initialize controller for this robot
-        this.robotController = new RobotController(simulation.getServer(), this);
+        this.robotController = new RobotController(simulation.getServer(), this, simulation.getSimulationApp().getPathFinderSelected());
     }
 
     public void update() {
@@ -153,9 +150,6 @@ public class Robot {
         return currentStatus;
     }
 
-    public Path getPathToTarget() {
-        return pathToTarget;
-    }
 
     public void setCurrentStatus(Status currentStatus) {
         this.currentStatus = currentStatus;
@@ -210,8 +204,6 @@ public class Robot {
     public int getSize() {
         return 1;
     }
-
-
 
     public Bin getBin() {
         return bin;
