@@ -28,6 +28,7 @@ public class OrderManager {
             for(int i = 0; i < order.getAmount(); i++){
                 server.getProductsAvailable().remove(order.getProduct());
             }
+            System.out.println("Products left in grid: " + server.getProductsAvailable().size());
             return true;
         }
     }
