@@ -2,8 +2,10 @@ package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt;
 
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
+import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import dk.aau.d507e19.warehousesim.controller.robot.MovementPredictor;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 
 import java.util.ArrayList;
@@ -50,16 +52,15 @@ public abstract class RRTBase {
         }
         Node<GridCoordinate> currentParent = allNodesMap.get(destination).getParent();
         Node<GridCoordinate> bestParent = currentParent;
-        int steps = currentParent.stepsToRoot();
         //use find nodes in square function to find nodes
-        potentialImprovements = findNodesInRadius(destination,1);
+        potentialImprovements = trimImprovementsList(findNodesInRadius(destination,1),destination);
+
         if(!potentialImprovements.isEmpty()){
             //check number of steps to root and save the best node
             for (Node<GridCoordinate> n : potentialImprovements){
                 //check if closer to root and if its in range
-                if((n.stepsToRoot() < steps) && distance(n.getData(),destination) == 1){
-                    steps = n.stepsToRoot();
-                    bestParent = n;
+                if((isBetterParent(currentParent,n,allNodesMap.get(destination)))){
+                        bestParent = n;
                 }
             }
             if(!(bestParent==currentParent)){
@@ -71,10 +72,42 @@ public abstract class RRTBase {
         }
     }
 
+    private boolean isBetterParent(Node<GridCoordinate> current, Node<GridCoordinate> possible, Node<GridCoordinate> child){
+        double curr_dis, pos_dist;
+        curr_dis = distance(current.getData(),root.getData());
+        pos_dist = distance(possible.getData(),root.getData());
+        if( curr_dis>pos_dist){
+            return true;
+        }else if(curr_dis == pos_dist){
+            //instantiate a new tree with pos as parent
+            Node<GridCoordinate> posTree = child;
+            posTree.setParent(possible);
+            if(calculateTravelTime(current,current.getRoot()) > calculateTravelTime(posTree,posTree.getRoot())){
+                //if travel time to current is longer than possible, then possible is better
+                return true;
+            }
+        }
+
+        return false;
+    }
+    private int calculateTravelTime(Node<GridCoordinate> dest, Node<GridCoordinate> root){
+        //Path p = new Path();
+        return 1;
+    }
+    private List<Node<GridCoordinate>> trimImprovementsList(List<Node<GridCoordinate>> list, GridCoordinate dest){
+        if(list.isEmpty()){
+            return list;
+        }
+        list.removeIf(n-> distance(n.getData(),dest) !=1);
+        return list;
+    }
+
     public void improveEntirePath(Node<GridCoordinate> destination){
+        //Optimize for dest, then optimize for this.getparent
         if(destination.getParent()!=null){
-            improveEntirePath(destination.getParent());
             improvePath(destination.getData());
+            improveEntirePath(destination.getParent());
+
         }
     }
     private double distance(GridCoordinate pos1, GridCoordinate pos2){
@@ -253,6 +286,19 @@ public abstract class RRTBase {
             foundPath = doesNodeExist(destination);
         }
     }
+    protected void growUntilAllNodesFound(){
+        boolean fullyExplored = false;
+        while(!fullyExplored){
+            growRRT(root,1);
+            fullyExplored = isFullyExplored();
+        }
+    }
+    private boolean isFullyExplored(){
+        if(allNodesMap.size() == WarehouseSpecs.wareHouseWidth*WarehouseSpecs.wareHouseHeight){
+            return true;
+        }
+        return false;
+    }
 
     private ArrayList<GridCoordinate> populateFreeList(){
         ArrayList<GridCoordinate> freeListInitializer = new ArrayList<>();
@@ -284,7 +330,6 @@ public abstract class RRTBase {
         if(allNodesMap.isEmpty()){
             return generatePathFromEmpty(start,destination);
         }
-        root = allNodesMap.get(start);
         //Set root to equal starting point
         root = allNodesMap.get(start);
         //only set root if it isnt already
@@ -293,7 +338,9 @@ public abstract class RRTBase {
         }
         //grow until we have a path
         //when function completes we know that we have a path
-        growUntilPathFound(destination);
+        if(allNodesMap.size()!=WarehouseSpecs.wareHouseHeight*WarehouseSpecs.wareHouseWidth){
+            growUntilPathFound(destination);
+        }
         destinationNode = allNodesMap.get(destination);
         return makePath(destinationNode);
     }

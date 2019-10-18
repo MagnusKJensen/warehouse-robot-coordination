@@ -21,19 +21,20 @@ public class RRTStar extends RRTBase {
         //make sure we have a path
         super.generatePath(start,destination);
         improveEntirePath(allNodesMap.get(destination));
+
         return makePath(allNodesMap.get(destination));
     }
 
-    //@Override
-    /*protected void growUntilPathFound(GridCoordinate destination){
-        boolean foundPath = false;
+    @Override
+    protected void growUntilPathFound(GridCoordinate destination){
+        growUntilAllNodesFound();
+        /*boolean foundPath = false;
         //Run until a route is found
         while (!foundPath) {
             //grow tree by one each time(maybe inefficient?)
-            growRRT(root, 1);
+            growRRT(root, 500);
             //every time a new node is added, check to see if we can improve it
-            improvePath(latestNode.getData());
             foundPath = doesNodeExist(destination);
-        }
-    }*/
+        }*/
+    }
 }

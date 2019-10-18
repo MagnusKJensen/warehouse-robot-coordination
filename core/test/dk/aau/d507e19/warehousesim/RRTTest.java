@@ -116,11 +116,15 @@ public class RRTTest {
         Node<GridCoordinate> n0 = new Node<>(new GridCoordinate(0,0),null,false);
         Node<GridCoordinate> n1 = new Node<>(new GridCoordinate(1,0),n0,false);
         Node<GridCoordinate> n2 = new Node<>(new GridCoordinate(2,0),n1,false);
-        Node<GridCoordinate> n3 = new Node<>(new GridCoordinate(2,1),n2,false);
-        Node<GridCoordinate> n4 = new Node<>(new GridCoordinate(1,1),n3,false);
-        Node<GridCoordinate> n5 = new Node<>(new GridCoordinate(0,1),n0,false);
-        Node<GridCoordinate> n6 = new Node<>(new GridCoordinate(0,2),n5,false);
-        Node<GridCoordinate> n7 = new Node<>(new GridCoordinate(1,2),n4,false);
+        Node<GridCoordinate> n3 = new Node<>(new GridCoordinate(3,0),n2,false);
+        Node<GridCoordinate> n4 = new Node<>(new GridCoordinate(3,1),n3,false);
+        Node<GridCoordinate> n5 = new Node<>(new GridCoordinate(2,1),n4,false);
+        Node<GridCoordinate> n6 = new Node<>(new GridCoordinate(3,2),n4,false);
+        Node<GridCoordinate> n7 = new Node<>(new GridCoordinate(2,2),n6,false);
+        Node<GridCoordinate> n8 = new Node<>(new GridCoordinate(1,2),n7,false);
+        Node<GridCoordinate> n9 = new Node<>(new GridCoordinate(0,1),n0,false);
+        Node<GridCoordinate> n10 = new Node<>(new GridCoordinate(0,2),n9,false);
+
         rrt.allNodesMap.put(n0.getData(),n0);
         rrt.allNodesMap.put(n1.getData(),n1);
         rrt.allNodesMap.put(n2.getData(),n2);
@@ -129,12 +133,23 @@ public class RRTTest {
         rrt.allNodesMap.put(n5.getData(),n5);
         rrt.allNodesMap.put(n6.getData(),n6);
         rrt.allNodesMap.put(n7.getData(),n7);
-        ArrayList<Step> list = rrt.generateRRTPath(n0.getData(),n7.getData());
+        rrt.allNodesMap.put(n8.getData(),n8);
+        rrt.allNodesMap.put(n9.getData(),n9);
+        rrt.allNodesMap.put(n10.getData(),n10);
+        ArrayList<Step> expected = new ArrayList<>();
+        expected.add(new Step(n0.getData()));
+        expected.add(new Step(n9.getData()));
+        expected.add(new Step(n10.getData()));
+        expected.add(new Step(n8.getData()));
+
+        ArrayList<Step> list = rrt.generateRRTPath(n0.getData(),n8.getData());
         //assert that the correct route has been found
-        assertEquals(list.size()-1,n7.stepsToRoot());
-        rrt.improvePath(n7.getData());
+        assertEquals(list.size()-1,n8.stepsToRoot());
+        System.out.println("before: " + list.size());
+        rrt.improveEntirePath(n8);
         assertNotEquals(list,rrt.generateRRTPath(n0.getData(),n7.getData()));
-        list = rrt.generateRRTPath(n0.getData(),n7.getData());
-        assertEquals(list.size()-1,n7.stepsToRoot());
+        list = rrt.generateRRTPath(n0.getData(),n8.getData());
+        assertEquals(expected,list);
+        System.out.println("after: " + list.size());
     }
 }
