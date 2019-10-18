@@ -66,7 +66,7 @@ public class ReservationManager {
     }
 
     public void removeOutdatedReservationsBy(Robot robot){
-        ArrayList<Reservation> reservations = new ArrayList<>(getReservationsBy(robot));
+        ArrayList<Reservation> reservations = getReservationsBy(robot);
         ArrayList<Reservation> outdatedReservations = new ArrayList<>();
         for(Reservation reservation : reservations){
             if(reservation.getTimeFrame().isOutdated(server.getTimeInTicks()))
