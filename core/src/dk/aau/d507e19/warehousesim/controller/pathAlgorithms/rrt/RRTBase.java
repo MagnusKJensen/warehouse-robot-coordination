@@ -7,6 +7,7 @@ import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.MovementPredictor;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,7 +41,6 @@ public abstract class RRTBase {
             newNode.setParent(nearest);
             allNodesMap.put(newNode.getData(),newNode);
             latestNode = newNode;
-
             //Assign blocked nodes from server
             //assignBlockedNodeStatus(server.getReservedNotes);
             }
@@ -64,7 +64,7 @@ public abstract class RRTBase {
                         bestParent = n;
                 }
             }
-            if(!(bestParent==currentParent)){
+            if(!(bestParent==currentParent && !allNodesMap.get(destination).getChildren().contains(bestParent))){
                 /*System.out.println("Found better path! " +
                         bestParent.getData() +  " -> " + destination +
                         " Instead of " + currentParent.getData() +" -> " + destination);*/
@@ -74,26 +74,31 @@ public abstract class RRTBase {
     }
 
     private boolean isBetterParent(Node<GridCoordinate> current, Node<GridCoordinate> possible, Node<GridCoordinate> child){
-        double curr_dis, pos_dist;
-        curr_dis = distance(current.getData(),root.getData());
-        pos_dist = distance(possible.getData(),root.getData());
-        if( curr_dis>pos_dist){
+        if(current.equals(possible)){
+            return false;
+        }
+        if(current.stepsToRoot() > possible.stepsToRoot()){
             return true;
-        }else if(curr_dis == pos_dist){
-            //instantiate a new tree with pos as parent
-            Node<GridCoordinate> posTree = child;
-            posTree.setParent(possible);
-            if(calculateTravelTime(current,current.getRoot()) > calculateTravelTime(posTree,posTree.getRoot())){
-                //if travel time to current is longer than possible, then possible is better
-                return true;
-            }
+        } else if(current.stepsToRoot() == possible.stepsToRoot()){
+            //Make a copy of our tree(ugh) todo find better way to do this
+            Node<GridCoordinate> posTree = root.copy();
+            //find possible node in tree
+            Node<GridCoordinate> posTreeGoal = posTree.findNode(destinationNode.getData());
+            //make possible node the parent
+            posTreeGoal.setParent(posTree.findNode(possible.getData()));
+            //return the fastest path from either to the goal
+            return calculateTravelTime(current,destinationNode) > calculateTravelTime(posTree,posTreeGoal);
         }
 
         return false;
     }
-    private int calculateTravelTime(Node<GridCoordinate> dest, Node<GridCoordinate> root){
-        //Path p = new Path();
-        return 1;
+    private long calculateTravelTime(Node<GridCoordinate> dest, Node<GridCoordinate> root){
+        //generate path from root to dest
+        //find out how long it takes according to movement predictor
+        //return time that it takes
+        Path p = new Path(makePathBetweenTwoNodes(root,dest));
+        ArrayList<Reservation> list = MovementPredictor.calculateReservations(this.robot,p,0,0);
+        return list.get(list.size()-1).getTimeFrame().getStart();
     }
     private List<Node<GridCoordinate>> trimImprovementsList(List<Node<GridCoordinate>> list, GridCoordinate dest){
         if(list.isEmpty()){
@@ -108,9 +113,9 @@ public abstract class RRTBase {
         if(destination.getParent()!=null){
             improvePath(destination.getData());
             improveEntirePath(destination.getParent());
-
         }
     }
+
     private double distance(GridCoordinate pos1, GridCoordinate pos2){
         return Math.sqrt(Math.pow(pos2.getX() - pos1.getX(), 2) + Math.pow(pos2.getY() - pos1.getY(), 2));
     }
@@ -253,6 +258,16 @@ public abstract class RRTBase {
             return path;
         }
         path = makePath(destNode.getParent());
+        path.add(new Step(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY())));
+        return path;
+    }
+    private ArrayList<Step> makePathBetweenTwoNodes(Node<GridCoordinate> startNode, Node<GridCoordinate> destNode){
+        ArrayList<Step> path = new ArrayList<>();
+        if(destNode.getParent()== null || destNode.getParent().equals(startNode)){
+            path.add(new Step(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY())));
+            return path;
+        }
+        path = makePathBetweenTwoNodes(startNode,destNode.getParent());
         path.add(new Step(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY())));
         return path;
     }
