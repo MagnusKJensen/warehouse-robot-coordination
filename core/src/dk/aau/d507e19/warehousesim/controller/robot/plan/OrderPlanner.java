@@ -31,7 +31,6 @@ public class OrderPlanner {
         GridCoordinate pickUpPoint = getNearestAvailableProduct(order);
         Path pathToPickUpPoint = pathFinder.calculatePath(robot.getGridCoordinate(), pickUpPoint);
 
-
         plan.add(new PathTraversal(robot, pathToPickUpPoint));
         plan.add(new PickUp(robot));
 
