@@ -38,6 +38,14 @@ public class Node<T> {
         this.updateTree(this);
     }
 
+    public Node<T> getRoot(){
+        if(this.getParent()!= null){
+            return this.getParent().getRoot();
+        }else{
+            return this;
+        }
+    }
+
     private void updateTree(Node<T> node) {
         if (this.getParent() != null) {
             this.getParent().updateTree(this);
