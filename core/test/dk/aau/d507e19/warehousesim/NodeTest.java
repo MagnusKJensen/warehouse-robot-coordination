@@ -66,12 +66,18 @@ public class NodeTest {
     }
 
     @Test
-    public void NodeTest() {
+    public void nodeTest() {
         Node<Object> node1 = new Node<>(new Object(), null, false);
         Node<Object> node2 = new Node<>(new Object(), node1, false);
         assertTrue(node1.getChildren().contains(node2));
         assertEquals(node1, node2.getParent());
 
+    }
+
+    @Test
+    public void getRootTest(){
+        assertEquals(root,rootLeftLeftLeftLeft.getRoot());
+        assertEquals(rootLeftLeft.getRoot(),rootRight.getRoot());
     }
 
 }
