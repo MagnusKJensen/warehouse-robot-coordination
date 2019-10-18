@@ -66,6 +66,7 @@ public class GraphicsManager {
         // Tiles
         addTexture("Simulation/tiles/Bin.png");
         addTexture("Simulation/tiles/pickerPoint.png");
+        addTexture("Simulation/tiles/binTileEmpty.png");
 
         // Icons
         addTexture("icons/fast_forward.png");

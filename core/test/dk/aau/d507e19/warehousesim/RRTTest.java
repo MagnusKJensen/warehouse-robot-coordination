@@ -4,6 +4,7 @@ import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRT;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import org.junit.Ignore;
 import org.junit.Test;
 import java.util.ArrayList;
 
@@ -40,7 +41,6 @@ public class RRTTest {
         rrt.shortestLengthNode = tree;
         Node<GridCoordinate> actual = rrt.findNearestNeighbour(tree,new GridCoordinate(2,3));
         assertEquals(twooneright.getData(),actual.getData());
-
     }
     @Test
     public void generatePathFromEmptyTest() {

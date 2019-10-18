@@ -63,6 +63,11 @@ public class SideMenu {
         shapeRenderer.end();
     }
 
+    public void resetSideMenu(){
+        binContentScrollPanes.resetScrollPaneContent();
+        timeControlMenu.resetTimeControlButtons();
+    }
+
     public TileInfoMenu getBinContentScrollPanes() {
         return binContentScrollPanes;
     }
