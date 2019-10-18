@@ -121,15 +121,26 @@ public class Astar implements PathFinder {
         }
     }
 
-    //TODO: Runs two times each time?
     public TimeFrame getTimeFrameFromLastReservation( ArrayList<GridCoordinate> tempPath) {
         Path path = new Path(Step.fromGridCoordinates(tempPath));
-        ArrayList<Reservation> listOfReservations = new ArrayList<>();
+        ArrayList<Reservation> listOfReservations;
         listOfReservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
+
         System.out.println("Current tile: " + currentTile.toString());
         System.out.println("Neighbor tile: " + listOfReservations.get(listOfReservations.size()-1).getGridCoordinate().toString());
+
+        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++");
+
+        for (Reservation res: listOfReservations) {
+            System.out.println(res.toString());
+        }
         System.out.println("-------------------------------------------------------------------------");
-        return listOfReservations.get(listOfReservations.size() - 1).getTimeFrame();
+
+        System.out.println(listOfReservations.get(listOfReservations.size()-1).getTimeFrame().toString());
+
+        System.out.println("-----------------------------------------------------------------------");
+
+        return listOfReservations.get(listOfReservations.size()-1).getTimeFrame();
 
     }
 
@@ -201,6 +212,7 @@ public class Astar implements PathFinder {
         }
         AStarTile prevTempTile = closedList.get(closedList.size() - 2);
         temp.add(new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition()));
+
         for (int i = closedList.size() - 2; i > 0; i--) {
             if (currentTile.getPreviousXposition() == prevTempTile.getCurrentXPosition() && currentTile.getGetPreviousYposition() == prevTempTile.getCurrentYPosition()) {
                 temp.add(new GridCoordinate(prevTempTile.getCurrentXPosition(), prevTempTile.getCurrentYPosition()));
@@ -209,6 +221,7 @@ public class Astar implements PathFinder {
             prevTempTile = closedList.get(i - 1);
         }
         temp.add(new GridCoordinate(closedList.get(0).getCurrentXPosition(), closedList.get(0).getCurrentYPosition()));
+        Collections.reverse(temp);
         return temp;
     }
 
