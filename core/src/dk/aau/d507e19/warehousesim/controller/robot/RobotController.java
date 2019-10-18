@@ -9,6 +9,7 @@ import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTType;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.Action;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.OrderPlanner;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
+import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 
 import java.util.LinkedList;
 
@@ -27,6 +28,7 @@ public class RobotController {
         this.robot = robot;
         this.pathFinder = generatePathFinder(pathFinderString);
         this.pathFinder = new Astar(server, robot);
+        server.getReservationManager().reserve(robot, robot.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks()));
     }
 
     public RobotController(Server server, PathFinder pathFinder, TaskManager taskManager, Robot robot) {

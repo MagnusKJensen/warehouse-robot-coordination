@@ -66,7 +66,7 @@ public class ReservationManager {
     }
 
     public void removeOutdatedReservationsBy(Robot robot){
-        ArrayList<Reservation> reservations = getReservationsBy(robot);
+        ArrayList<Reservation> reservations = new ArrayList<>(getReservationsBy(robot));
         ArrayList<Reservation> outdatedReservations = new ArrayList<>();
         for(Reservation reservation : reservations){
             if(reservation.getTimeFrame().isOutdated(server.getTimeInTicks()))
@@ -84,6 +84,7 @@ public class ReservationManager {
     public void removeReservation(Reservation reservation){
         int x = reservation.getGridCoordinate().getX(), y = reservation.getGridCoordinate().getY();
         reservationTiles[x][y].removeReservation(reservation);
+        robotReservationsMap.get(reservation.getRobot()).remove(reservation);
     }
 
     public boolean isBinReserved(GridCoordinate gridCoordinate){
@@ -92,7 +93,7 @@ public class ReservationManager {
     }
 
     public void reserve(ArrayList<Reservation> reservations) {
-        removeReservationsBy(reservations.get(0).getRobot());
+        removeReservationsBy(reservations.get(0).getRobot()); // TODO VERY TEMPORARY FIX
 
         for(Reservation reservation : reservations){
             int x = reservation.getGridCoordinate().getX(), y = reservation.getGridCoordinate().getY();
@@ -103,8 +104,10 @@ public class ReservationManager {
     }
 
     private void removeReservationsBy(Robot robot) {
-        ArrayList<Reservation> reservations = getReservationsBy(robot);
-        
+        ArrayList<Reservation> reservations = new ArrayList<>(getReservationsBy(robot));
+        for(Reservation res : reservations){
+            removeReservation(res);
+        }
     }
 
     private void mapReservation(Reservation reservation) {
