@@ -8,7 +8,7 @@ public class TimeFrame {
     private TimeMode timeMode;
 
     public boolean overlaps(TimeFrame otherFrame) {
-        return false;
+        return isWithinTimeFrame(otherFrame.startTime) || isWithinTimeFrame(otherFrame.endTime);
         // TODO: 16/10/2019 Functionality
     }
 
