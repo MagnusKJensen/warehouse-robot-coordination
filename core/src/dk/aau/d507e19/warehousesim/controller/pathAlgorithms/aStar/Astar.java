@@ -259,7 +259,6 @@ public class Astar implements PathFinder {
     public void clear() {
         for (AStarTile tile : closedList) {
             tile.setBlocked(false);
-
         }
         openList.clear();
         closedList.clear();

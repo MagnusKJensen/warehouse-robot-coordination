@@ -1,10 +1,11 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
 import dk.aau.d507e19.warehousesim.controller.path.Path;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTType;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.Action;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.OrderPlanner;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
@@ -22,7 +23,6 @@ public class RobotController {
     private LinkedList<Runnable> planningSteps = new LinkedList<>();
 
     public RobotController(Server server, Robot robot, String pathFinderString){
-    public RobotController(Server server, Robot robot) {
         this.server = server;
         this.robot = robot;
         this.pathFinder = generatePathFinder(pathFinderString);

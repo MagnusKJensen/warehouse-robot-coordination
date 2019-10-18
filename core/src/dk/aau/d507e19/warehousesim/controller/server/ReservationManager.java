@@ -36,7 +36,6 @@ public class ReservationManager {
     }
 
     public boolean canReserveIndefinitely(GridCoordinate gridCoordinate, TimeFrame timeFrame){
-
         return false;
     }
 
@@ -93,12 +92,19 @@ public class ReservationManager {
     }
 
     public void reserve(ArrayList<Reservation> reservations) {
+        removeReservationsBy(reservations.get(0).getRobot());
+
         for(Reservation reservation : reservations){
             int x = reservation.getGridCoordinate().getX(), y = reservation.getGridCoordinate().getY();
             reservationTiles[x][y].addReservation(reservation);
             mapReservation(reservation);
 
         }
+    }
+
+    private void removeReservationsBy(Robot robot) {
+        ArrayList<Reservation> reservations = getReservationsBy(robot);
+        
     }
 
     private void mapReservation(Reservation reservation) {
