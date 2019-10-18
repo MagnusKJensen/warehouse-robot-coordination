@@ -4,18 +4,24 @@ import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRT;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+
 import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
 public class RRTTest {
     private Node<GridCoordinate> tree,oneleft,oneright,twoleft,tworight,twooneright;
-    private RRT rrt = new RRT(null);
+    Robot robot = Mockito.mock(Robot.class);
+    private RRT rrt;
     private ArrayList<GridCoordinate> blockedNodeList = new ArrayList<>();
     private ArrayList<GridCoordinate> nodesToBeBlocked = new ArrayList<>();
     public void generateTree(){
+        rrt = new RRT(robot);
         tree = new Node<GridCoordinate>(new GridCoordinate(0,0),null, false);
         oneleft = new Node<GridCoordinate>(new GridCoordinate(0,1),null, false);
         oneright = new Node<GridCoordinate>(new GridCoordinate(1,0),null, false);
@@ -44,6 +50,7 @@ public class RRTTest {
     }
     @Test
     public void generatePathFromEmptyTest() {
+        rrt = new RRT(robot);
         GridCoordinate start = new GridCoordinate(0,0);
         GridCoordinate dest = new GridCoordinate(8,8);
         ArrayList<Step> list = rrt.generateRRTPathFromEmpty(start,dest);
@@ -53,6 +60,7 @@ public class RRTTest {
     }
     @Test
     public void generatePathTest() {
+        rrt = new RRT(robot);
         //todo find a way to check that tree is actually re-used
         GridCoordinate start = new GridCoordinate(0, 0);
         GridCoordinate dest1 = new GridCoordinate(6, 8);
@@ -113,6 +121,7 @@ public class RRTTest {
     }
     @Test
     public void improvePathTest(){
+        rrt = new RRT(robot);
         Node<GridCoordinate> n0 = new Node<>(new GridCoordinate(0,0),null,false);
         Node<GridCoordinate> n1 = new Node<>(new GridCoordinate(1,0),n0,false);
         Node<GridCoordinate> n2 = new Node<>(new GridCoordinate(2,0),n1,false);
@@ -152,4 +161,20 @@ public class RRTTest {
         assertEquals(expected,list);
         System.out.println("after: " + list.size());
     }
+    @Test
+    public void makePathTest(){
+        rrt = new RRT(robot);
+        Node<GridCoordinate> n0 = new Node<>(new GridCoordinate(0,0),null,false);
+        Node<GridCoordinate> n1 = new Node<>(new GridCoordinate(0,1),n0,false);
+        assertEquals(2,rrt.makePath(n1).size());
+    }
+    @Test
+    public void makePathBetweenTwoNodesTest(){
+        rrt = new RRT(robot);
+        Node<GridCoordinate> n0 = new Node<>(new GridCoordinate(0,0),null,false);
+        Node<GridCoordinate> n1 = new Node<>(new GridCoordinate(0,1),n0,false);
+        Node<GridCoordinate> n2 = new Node<>(new GridCoordinate(0,2),n1,false);
+        assertEquals(2,rrt.makePathBetweenTwoNodes(n1,n2).size());
+    }
+
 }

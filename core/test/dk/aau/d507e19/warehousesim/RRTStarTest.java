@@ -3,20 +3,28 @@ import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRT;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTStar;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertNotEquals;
+import static org.mockito.Mockito.when;
 
 public class RRTStarTest {
-    RRTStar rrtStar = new RRTStar(null);
-    RRT rrt = new RRT(null);
+    Robot robot = Mockito.mock(Robot.class);
+    RRT rrt;
+    RRTStar rrtStar;
 
     @Test
     public void generatePathTest(){
+        when(robot.getAccelerationBinSecond()).thenReturn(WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters);
+        when(robot.getDecelerationBinSecond()).thenReturn(WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters);
+        rrtStar = new RRTStar(robot);
+        rrt = new RRT(robot);
         GridCoordinate start = new GridCoordinate(0, 0);
         GridCoordinate dest1 = new GridCoordinate(10, 10);
         GridCoordinate dest2 = new GridCoordinate(2, 3);
@@ -43,6 +51,10 @@ public class RRTStarTest {
     }
     @Test
     public void generatePathFromEmptyTest(){
+        when(robot.getAccelerationBinSecond()).thenReturn(WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters);
+        when(robot.getDecelerationBinSecond()).thenReturn(WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters);
+        rrtStar = new RRTStar(robot);
+        rrt = new RRT(robot);
         GridCoordinate start = new GridCoordinate(0, 0);
         GridCoordinate dest1 = new GridCoordinate(15, 10);
         ArrayList<Step> list;
