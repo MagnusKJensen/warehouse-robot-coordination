@@ -6,6 +6,7 @@ import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
+import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -36,7 +37,7 @@ public class OrderPlanner {
 
         ArrayList<Reservation> reservations =
                 MovementPredictor.calculateReservations(robot, pathToPickUpPoint, server.getTimeInTicks(), 0);
-
+          //  reservations.add(new Reservation(robot,reservations.get(reservations.size()-1).getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(reservations.get(reservations.size()-1).getTimeFrame().getEnd())));
         server.getReservationManager().reserve(reservations);
 
         return plan;
