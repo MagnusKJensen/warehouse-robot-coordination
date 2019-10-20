@@ -1,7 +1,10 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt;
 
+import dk.aau.d507e19.warehousesim.SimulationApp;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Node<T> {
     private T data;
@@ -19,7 +22,8 @@ public class Node<T> {
             this.parent = parent;
         }
     }
-    public boolean getBlockedStatus(){
+
+    public boolean getBlockedStatus() {
         return blockedStatus;
     }
 
@@ -27,15 +31,50 @@ public class Node<T> {
         this.blockedStatus = blockedStatus;
     }
 
-    public int stepsToRoot(){
-        if(!(this.getParent()==null)){
-            return this.getParent().stepsToRoot()+1;
-        }
-        else return 0;
+    public int stepsToRoot() {
+        if (!(this.getParent() == null)) {
+            return this.getParent().stepsToRoot() + 1;
+        } else return 0;
     }
 
     public void makeRoot() {
         this.updateTree(this);
+    }
+
+    public Node<T> getRoot() {
+        if (this.getParent() != null) {
+            return this.getParent().getRoot();
+        } else {
+            return this;
+        }
+    }
+
+    public Node<T> copy() {
+        //RETURNS A TREE WHERE THIS NODE IS ROOT
+        Node<T> copiedNode = new Node<>(this.data, null, false);
+        if (this.children != null) {
+            for (Node<T> n : this.getChildren()) {
+                n.copy().setParent(copiedNode);
+            }
+        }
+        return copiedNode;
+
+    }
+
+    public Node<T> findNode(T data) {
+        //Checks if given Node is a child, returns node if found else returns null
+        if (this.getData().equals(data)) {
+            return this;
+        } else {
+            for (Node<T> n : this.getChildren()) {
+                Node<T> foundNode = n.findNode(data);
+                if (foundNode == null) {
+                    continue;
+                }
+                return foundNode;
+            }
+        }
+        return null;
     }
 
     private void updateTree(Node<T> node) {
@@ -93,4 +132,14 @@ public class Node<T> {
             printTree(n);
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Node<?> node = (Node<?>) o;
+        return Objects.equals(data, node.data) &&
+                Objects.equals(children, node.children);
+    }
+
 }

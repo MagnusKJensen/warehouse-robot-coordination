@@ -1,6 +1,5 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
-import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;

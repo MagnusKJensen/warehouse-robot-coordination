@@ -22,7 +22,9 @@ public class BinTile extends Tile {
     public void render(ShapeRenderer shapeRenderer, SpriteBatch batch) {
         // If it has no bin, it should be rendered as such
         if(this.bin == null){
-            super.render(shapeRenderer, batch);
+            batch.begin();
+            batch.draw(GraphicsManager.getTexture("Simulation/tiles/binTileEmpty.png"), this.getPosX(), this.getPosY(), TILE_SIZE, TILE_SIZE);
+            batch.end();
         } else {
             batch.begin();
             batch.draw(GraphicsManager.getTexture("Simulation/tiles/Bin.png"), this.getPosX(), this.getPosY(), TILE_SIZE, TILE_SIZE);

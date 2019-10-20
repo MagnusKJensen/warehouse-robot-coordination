@@ -2,9 +2,12 @@ package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt;
 
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
+import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import dk.aau.d507e19.warehousesim.controller.robot.MovementPredictor;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,19 +53,18 @@ public abstract class RRTBase {
         }
         Node<GridCoordinate> currentParent = allNodesMap.get(destination).getParent();
         Node<GridCoordinate> bestParent = currentParent;
-        int steps = currentParent.stepsToRoot();
         //use find nodes in square function to find nodes
-        potentialImprovements = findNodesInRadius(destination,1);
+        potentialImprovements = trimImprovementsList(findNodesInRadius(destination,1),destination);
+
         if(!potentialImprovements.isEmpty()){
             //check number of steps to root and save the best node
             for (Node<GridCoordinate> n : potentialImprovements){
                 //check if closer to root and if its in range
-                if((n.stepsToRoot() < steps) && distance(n.getData(),destination) == 1){
-                    steps = n.stepsToRoot();
-                    bestParent = n;
+                if((isBetterParent(currentParent,n,allNodesMap.get(destination)))){
+                        bestParent = n;
                 }
             }
-            if(!(bestParent==currentParent)){
+            if(!(bestParent==currentParent && !allNodesMap.get(destination).getChildren().contains(bestParent))){
                 /*System.out.println("Found better path! " +
                         bestParent.getData() +  " -> " + destination +
                         " Instead of " + currentParent.getData() +" -> " + destination);*/
@@ -71,12 +73,50 @@ public abstract class RRTBase {
         }
     }
 
+    private boolean isBetterParent(Node<GridCoordinate> current, Node<GridCoordinate> possible, Node<GridCoordinate> child){
+        if(current.equals(possible)){
+            return false;
+        }
+        if(current.stepsToRoot() > possible.stepsToRoot()){
+            return true;
+        } else if(current.stepsToRoot() == possible.stepsToRoot()){
+            /*
+            //Make a copy of our tree(ugh) todo find better way to do this
+            Node<GridCoordinate> posTree = root.copy();
+            //find possible node in tree
+            Node<GridCoordinate> posTreeGoal = posTree.findNode(destinationNode.getData());
+            //rewire child node to have possible as parent
+            posTree.findNode(child.getData()).setParent(possible);
+            //return the fastest path from either to the goal
+            return calculateTravelTime(current,destinationNode) > calculateTravelTime(posTree,posTreeGoal);*/
+        }
+
+        return false;
+    }
+    private long calculateTravelTime(Node<GridCoordinate> root, Node<GridCoordinate> dest){
+        //generate path from root to dest
+        //find out how long it takes according to movement predictor
+        //return time that it takes
+        Path p = new Path(makePathBetweenTwoNodes(root,dest));
+        ArrayList<Reservation> list = MovementPredictor.calculateReservations(this.robot,p,0,0);
+        return list.get(list.size()-1).getTimeFrame().getStart();
+    }
+    private List<Node<GridCoordinate>> trimImprovementsList(List<Node<GridCoordinate>> list, GridCoordinate dest){
+        if(list.isEmpty()){
+            return list;
+        }
+        list.removeIf(n-> distance(n.getData(),dest) !=1);
+        return list;
+    }
+
     public void improveEntirePath(Node<GridCoordinate> destination){
+        //Optimize for dest, then optimize for this.getparent
         if(destination.getParent()!=null){
-            improveEntirePath(destination.getParent());
             improvePath(destination.getData());
+            improveEntirePath(destination.getParent());
         }
     }
+
     private double distance(GridCoordinate pos1, GridCoordinate pos2){
         return Math.sqrt(Math.pow(pos2.getX() - pos1.getX(), 2) + Math.pow(pos2.getY() - pos1.getY(), 2));
     }
@@ -210,13 +250,23 @@ public abstract class RRTBase {
         //return root.containsNodeWithData(root,newPos);
     }
 
-    protected ArrayList<Step> makePath(Node<GridCoordinate> destNode){
+    public ArrayList<Step> makePath(Node<GridCoordinate> destNode){
         ArrayList<Step> path = new ArrayList<>();
         if(destNode.getParent() == null){
             path.add(new Step(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY())));
             return path;
         }
         path = makePath(destNode.getParent());
+        path.add(new Step(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY())));
+        return path;
+    }
+    public ArrayList<Step> makePathBetweenTwoNodes(Node<GridCoordinate> startNode, Node<GridCoordinate> destNode){
+        ArrayList<Step> path = new ArrayList<>();
+        if(destNode.getParent()== null || destNode.equals(startNode)){
+            path.add(new Step(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY())));
+            return path;
+        }
+        path = makePathBetweenTwoNodes(startNode,destNode.getParent());
         path.add(new Step(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY())));
         return path;
     }
@@ -253,6 +303,19 @@ public abstract class RRTBase {
             foundPath = doesNodeExist(destination);
         }
     }
+    protected void growUntilAllNodesFound(){
+        boolean fullyExplored = false;
+        while(!fullyExplored){
+            growRRT(root,1);
+            fullyExplored = isFullyExplored();
+        }
+    }
+    private boolean isFullyExplored(){
+        if(allNodesMap.size() == WarehouseSpecs.wareHouseWidth*WarehouseSpecs.wareHouseHeight){
+            return true;
+        }
+        return false;
+    }
 
     private ArrayList<GridCoordinate> populateFreeList(){
         ArrayList<GridCoordinate> freeListInitializer = new ArrayList<>();
@@ -285,7 +348,6 @@ public abstract class RRTBase {
         if(allNodesMap.isEmpty()){
             return generatePathFromEmpty(start,destination);
         }
-        root = allNodesMap.get(start);
         //Set root to equal starting point
         root = allNodesMap.get(start);
         //only set root if it isnt already
@@ -294,7 +356,9 @@ public abstract class RRTBase {
         }
         //grow until we have a path
         //when function completes we know that we have a path
-        growUntilPathFound(destination);
+        if(allNodesMap.size()!=WarehouseSpecs.wareHouseHeight*WarehouseSpecs.wareHouseWidth){
+            growUntilPathFound(destination);
+        }
         destinationNode = allNodesMap.get(destination);
         return makePath(destinationNode);
     }
