@@ -223,15 +223,18 @@ public class Astar implements PathFinder {
     }
 
     public void addFinalPathToList(AStarTile currentTile) {
-        AStarTile prevTile = closedList.get(closedList.size() - 2);
-        finalPath.add(new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition()));
-        for (int i = closedList.size() - 2; i > 0; i--) {
-            if (currentTile.getPreviousXposition() == prevTile.getCurrentXPosition() && currentTile.getGetPreviousYposition() == prevTile.getCurrentYPosition()) {
-                finalPath.add(new GridCoordinate(prevTile.getCurrentXPosition(), prevTile.getCurrentYPosition()));
-                currentTile = closedList.get(i);
+        if (closedList.size() > 1) {
+            AStarTile prevTile = closedList.get(closedList.size() - 2);
+            finalPath.add(new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition()));
+            for (int i = closedList.size() - 2; i > 0; i--) {
+                if (currentTile.getPreviousXposition() == prevTile.getCurrentXPosition() && currentTile.getGetPreviousYposition() == prevTile.getCurrentYPosition()) {
+                    finalPath.add(new GridCoordinate(prevTile.getCurrentXPosition(), prevTile.getCurrentYPosition()));
+                    currentTile = closedList.get(i);
+                }
+                prevTile = closedList.get(i - 1);
             }
-            prevTile = closedList.get(i - 1);
         }
+
         finalPath.add(new GridCoordinate(closedList.get(0).getCurrentXPosition(), closedList.get(0).getCurrentYPosition()));
     }
 
