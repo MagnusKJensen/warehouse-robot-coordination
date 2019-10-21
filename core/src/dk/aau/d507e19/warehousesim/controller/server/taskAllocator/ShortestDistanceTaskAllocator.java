@@ -1,9 +1,8 @@
 package dk.aau.d507e19.warehousesim.controller.server.taskAllocator;
 
-import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import dk.aau.d507e19.warehousesim.controller.robot.Order;
-import dk.aau.d507e19.warehousesim.controller.robot.Robot;
-import dk.aau.d507e19.warehousesim.controller.robot.Status;
+import dk.aau.d507e19.warehousesim.controller.path.Path;
+import dk.aau.d507e19.warehousesim.controller.path.Step;
+import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 
 import java.util.ArrayList;
@@ -20,21 +19,29 @@ public class ShortestDistanceTaskAllocator implements TaskAllocator {
     public Optional<Robot> findOptimalRobot(ArrayList<Robot> robots, Order order) {
         Robot optimalRobot = null;
 
+        // Find idling robots
         ArrayList<Robot> availableRobots = findAvailableRobots(robots);
 
+        // Find tiles containing the correct products
+        // TODO: 21/10/2019 Should check, if the bin is also available, when the robots gets there
         ArrayList<GridCoordinate> tilesWithProducts = grid.tilesWithProducts(order.getProduct(), order.getAmount());
 
+        // Find the robot with the shortest distance to a tile with the products.
+        Path newPath;
         int shortestDistance = -1;
         int newDistance;
         for(Robot robot : availableRobots){
             for(GridCoordinate gc : tilesWithProducts){
-                newDistance = calculateDistance(robot.getGridCoordinate(), gc);
+                newPath = robot.getRobotController().getPath(robot.getGridCoordinate(), gc);
+                newDistance = calculateTotalDistance(newPath);
+
                 if(shortestDistance == -1 || newDistance < shortestDistance) {
                     shortestDistance = newDistance;
                     optimalRobot = robot;
                 }
             }
         }
+
         if(optimalRobot == null) return Optional.empty();
         
         return Optional.of(optimalRobot);
@@ -43,6 +50,23 @@ public class ShortestDistanceTaskAllocator implements TaskAllocator {
     private int calculateDistance(GridCoordinate source, GridCoordinate dest) {
         // distance = abs(ydistance) + abs(xdistance)
         return Math.abs(source.getX() - dest.getX()) + Math.abs(source.getY() - dest.getY());
+    }
+
+    private int calculateTotalDistance(Path path){
+        ArrayList<Step> steps = path.getStrippedPath();
+
+        int totalDistance = 0;
+        for(int i = 0; i < steps.size() - 1; ++i){
+            if(i == 0 && !steps.get(0).isWaitingStep()){
+                totalDistance += calculateDistance(steps.get(i).getGridCoordinate(), steps.get(i + 1).getGridCoordinate());
+            }
+            else if(!steps.get(i).isWaitingStep()) {
+                totalDistance += calculateDistance(steps.get(i).getGridCoordinate(), steps.get(i + 1).getGridCoordinate());
+            }
+
+        }
+
+        return totalDistance;
     }
 
     private ArrayList<Robot> findAvailableRobots(ArrayList<Robot> robots){
