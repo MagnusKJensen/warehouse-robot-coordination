@@ -1,6 +1,7 @@
 package dk.aau.d507e19.warehousesim;
 
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRT;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,6 +10,7 @@ import static org.junit.Assert.*;
 
 public class NodeTest {
     Node<Object> root, rootLeft, rootRight, rootLeftLeft, rootLeftLeftLeft, rootLeftLeftLeftLeft;
+    int count =0;
 
     @Before
     public void makeTree() {
@@ -95,7 +97,7 @@ public class NodeTest {
     }
 
     @Test
-    public void testCopy(){
+    public void testCopy1(){
         //create new Node
         Node<Object> n0 = root.copy();
         //check that they are equal(their data + children is same)
@@ -108,5 +110,26 @@ public class NodeTest {
         assertEquals(n0.getChildren().get(0),root.getChildren().get(0));
         assertNotEquals(n0.getChildren().get(0).hashCode(),root.getChildren().get(0).hashCode());
     }
+    @Test
+    public void testCopy2(){
+        RRT rrt = new RRT(null);
+        GridCoordinate gcStart = new GridCoordinate(0,0);
+        GridCoordinate gcDest = new GridCoordinate(15,29);
+        rrt.generateRRTPathFromEmpty(gcStart, gcDest);
+        Node<GridCoordinate> root = rrt.allNodesMap.get(gcStart);
+        Node<GridCoordinate> rootCopy = root.copy();
+        //loop through all nodes in rootCopy and check that they exist
+        copyLoop(rrt,rootCopy);
+        assertEquals(count,rrt.allNodesMap.size());
+
+    }
+    private void copyLoop(RRT rrt, Node<GridCoordinate> node){
+        count++;
+        for(Node<GridCoordinate> n : node.getChildren()){
+            copyLoop(rrt,n);
+            assertTrue(rrt.allNodesMap.containsKey(n.getData()));
+        }
+    }
+
 
 }
