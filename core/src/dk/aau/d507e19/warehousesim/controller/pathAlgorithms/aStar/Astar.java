@@ -91,9 +91,8 @@ public class Astar implements PathFinder {
 
         // Checks if neighbor is valid with a valid coordinate
         if (downstairsNeigbor.getY() >= 0) {
-            temporaryPath  = createTemporaryPath(currentTile, downstairsNeigbor);
+            temporaryPath = createTemporaryPath(currentTile, downstairsNeigbor);
             if (currentTile.getCurrentYPosition() - 1 >= 0 && !(reservationManager.isReserved(downstairsNeigbor, getTimeFrameFromLastReservation(temporaryPath)))) {
-                //  if (currentTile.getCurrentYPosition() - 1 >= 0 ) {
                 // Adds Neighbor to openList if valid
                 addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() - 1]);
             }
@@ -101,59 +100,29 @@ public class Astar implements PathFinder {
         if (aboveNeighbor.getY() <= server.getGridHeight()) {
             temporaryPath = createTemporaryPath(currentTile, aboveNeighbor);
             if (currentTile.getCurrentYPosition() + 1 < grid.length && !(reservationManager.isReserved(aboveNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
-                //  if (currentTile.getCurrentYPosition() + 1 < grid.length ) {
                 addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() + 1]);
             }
         }
         if (leftNeigbor.getX() >= 0) {
             temporaryPath = createTemporaryPath(currentTile, leftNeigbor);
             if (currentTile.getCurrentXPosition() - 1 >= 0 && !(reservationManager.isReserved(leftNeigbor, getTimeFrameFromLastReservation(temporaryPath)))) {
-                //  if (currentTile.getCurrentXPosition() - 1 >= 0) {
                 addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() - 1][currentTile.getCurrentYPosition()]);
             }
         }
         if (rightNeigbor.getX() <= server.getGridWidth()) {
             createTemporaryPath(currentTile, rightNeigbor);
             if (currentTile.getCurrentXPosition() + 1 < grid.length && !(reservationManager.isReserved(rightNeigbor, getTimeFrameFromLastReservation(temporaryPath)))) {
-                //  if (currentTile.getCurrentXPosition() + 1 < grid.length ) {
                 addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() + 1][currentTile.getCurrentYPosition()]);
             }
         }
     }
 
-    public TimeFrame getTimeFrameFromLastReservation( ArrayList<GridCoordinate> tempPath) {
+    public TimeFrame getTimeFrameFromLastReservation(ArrayList<GridCoordinate> tempPath) {
         Path path = new Path(Step.fromGridCoordinates(tempPath));
         ArrayList<Reservation> listOfReservations;
         listOfReservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
-
-        System.out.println("Current tile: " + currentTile.toString());
-        System.out.println("Neighbor tile: " + listOfReservations.get(listOfReservations.size()-1).getGridCoordinate().toString());
-
-        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++");
-
-        for (Reservation res: listOfReservations) {
-            System.out.println(res.toString());
-        }
-        System.out.println("-------------------------------------------------------------------------");
-
-        System.out.println(listOfReservations.get(listOfReservations.size()-1).getTimeFrame().toString());
-
-        System.out.println("-----------------------------------------------------------------------");
-
-        return listOfReservations.get(listOfReservations.size()-1).getTimeFrame();
-
+        return listOfReservations.get(listOfReservations.size() - 1).getTimeFrame();
     }
-
-   /* public boolean isTileReserved(AStarTile currentTile) {
-        // TODO: 14/10/2019 Use reservation manager instead
-        ArrayList<Reservation>[][] gridOfResevations = pathManager.getGridOfResevations();
-        for (Reservation res : gridOfResevations[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition()]) {
-            if (Math.ceil(simulatedTime + robotMaxSpeedPerBin * currentTile.getG()) == Math.ceil(res.getTimeTileIsReserved())) {
-                return false;
-            }
-        }
-        return true;
-    }*/
 
     public void addNeighborTileToOpenList(AStarTile neighborTile) {
         // Makes new dummy tile
@@ -222,11 +191,11 @@ public class Astar implements PathFinder {
         }
         temp.add(new GridCoordinate(closedList.get(0).getCurrentXPosition(), closedList.get(0).getCurrentYPosition()));
         Collections.reverse(temp);
+        temp.add(neighborTile);
         return temp;
     }
 
     public void calculatePath() {
-
         // While is true if the currentTile does not have the same x coordinate and the same y coordinate as the end Tile.
         while (!(currentTile.getCurrentXPosition() == xEndposition && currentTile.getCurrentYPosition() == yEndposition)) {
 
@@ -270,16 +239,14 @@ public class Astar implements PathFinder {
     public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
 
         clear();
+
         xEndposition = destination.getX();
         yEndposition = destination.getY();
 
+
         xStart = start.getX();
         yStart = start.getY();
-        System.out.println("Start cordinates");
-        System.out.println(xStart + " " + yStart);
-        System.out.println("end cordinates");
-        System.out.println(xEndposition + " " + yEndposition);
-        System.out.println("------------------------------");
+
         // Adds the starting tile to closed list.
         addStartTileToClosedList(start.getX(), start.getY());
 
@@ -290,12 +257,6 @@ public class Astar implements PathFinder {
         //Reverses final path so it is in correct order
         Collections.reverse(finalPath);
 
-        // TODO: 14/10/2019 Use reservation manager instead
-        //pathManager.addReservationToList(finalPath, simulatedTime, robotID, robotMaxSpeedPerBin);
-        ArrayList<Reservation> listOfResevations;
-
-        listOfResevations = MovementPredictor.calculateReservations(robot, new Path(Step.fromGridCoordinates(finalPath)), server.getTimeInTicks(), 0);
-        //  pathManager.printReservations();
         return new Path(Step.fromGridCoordinates(finalPath));
     }
 }
