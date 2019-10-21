@@ -3,21 +3,20 @@ import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRT;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTStar;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 public class RRTTest {
-    private Node<GridCoordinate> tree,oneleft,oneright,twoleft,tworight,twooneright;
+    private Node<GridCoordinate> tree,oneleft,oneright, oneoneright,twoleft,tworight,twooneright;
     Robot robot = Mockito.mock(Robot.class);
     private RRT rrt;
     private ArrayList<GridCoordinate> blockedNodeList = new ArrayList<>();
@@ -27,20 +26,25 @@ public class RRTTest {
         tree = new Node<GridCoordinate>(new GridCoordinate(0,0),null, false);
         oneleft = new Node<GridCoordinate>(new GridCoordinate(0,1),null, false);
         oneright = new Node<GridCoordinate>(new GridCoordinate(1,0),null, false);
+        oneoneright = new Node<GridCoordinate>(new GridCoordinate(1,1), null, false);
         twoleft = new Node<GridCoordinate>(new GridCoordinate(0,2),null, false);
         tworight = new Node<GridCoordinate>(new GridCoordinate(2,0),null, false);
         twooneright = new Node<GridCoordinate>(new GridCoordinate(2,1),null, false);
+
         tree.setParent(oneleft);
         tree.setParent(oneright);
         oneleft.setParent(twoleft);
         oneright.setParent(tworight);
-        oneright.setParent(twooneright);
+        oneright.setParent(oneoneright);
+        oneright.setParent(oneoneright);
+        oneoneright.setParent(twooneright);
         rrt.allNodesMap.put(tree.getData(),tree);
         rrt.allNodesMap.put(oneleft.getData(),oneleft);
         rrt.allNodesMap.put(oneright.getData(),oneright);
         rrt.allNodesMap.put(twoleft.getData(),twoleft);
         rrt.allNodesMap.put(tworight.getData(),tworight);
         rrt.allNodesMap.put(twooneright.getData(),twooneright);
+        rrt.allNodesMap.put(oneoneright.getData(), oneoneright);
 
     }
     @Test
@@ -141,6 +145,16 @@ public class RRTTest {
         rrt.allNodesMap.put(n3.getData(),n3);
         rrt.allNodesMap.put(n4.getData(),n4);
         rrt.allNodesMap.put(n5.getData(),n5);
+        rrt.allNodesMap.put(n6.getData(),n6);
+        rrt.allNodesMap.put(n7.getData(),n7);
+        rrt.allNodesMap.put(n8.getData(),n8
+        rrt.allNodesMap.put(n9.getData(),n9);
+        rrt.allNodesMap.put(n10.getData(),n10);
+        ArrayList<Step> expected = new ArrayList<>();
+        expected.add(new Step(n0.getData()));
+        expected.add(new Step(n9.getData()));
+        expected.add(new Step(n10.getData()));
+        expected.add(new Step(n8.getData()));
 
         rrt.improvePath(n5.getData());
         assertEquals(n2,n5.getParent());
@@ -152,4 +166,24 @@ public class RRTTest {
         Node<GridCoordinate> n1 = new Node<>(new GridCoordinate(0,1),n0,false);
         assertEquals(2,rrt.makePath(n1).size());
     }
+    @Test
+    public void makePathBetweenTwoNodesTest(){
+        rrt = new RRT(robot);
+        Node<GridCoordinate> n0 = new Node<>(new GridCoordinate(0,0),null,false);
+        Node<GridCoordinate> n1 = new Node<>(new GridCoordinate(0,1),n0,false);
+        Node<GridCoordinate> n2 = new Node<>(new GridCoordinate(0,2),n1,false);
+        assertEquals(2,rrt.makePathBetweenTwoNodes(n1,n2).size());
+    }
+
+    @Test
+    public void findNodesInRadiusTest(){
+        generateTree();
+        Node<GridCoordinate> currentNode = rrt.allNodesMap.get(new GridCoordinate(1,1));
+        ArrayList<Node<GridCoordinate>> listOfNeighbours = rrt.findNodesInRadius(currentNode.getData(), 1);
+        ArrayList<Node<GridCoordinate>> actualNeighbours = new List<>();
+        assert
+
+
+    }
+
 }
