@@ -75,9 +75,10 @@ public class Astar implements PathFinder {
 
     }
 
+    //TODO: possible to make this one function? cant see how because they are not totally the same.
     public void checkNeighborValidity() {
+
         //Checks every potential neighbor to currentTile the same way.
-        ArrayList<GridCoordinate> temporaryPath = new ArrayList<>();
         aboveNeighbor = new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition() + 1);
         downstairsNeighbor = new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition() - 1);
         leftNeighbor = new GridCoordinate(currentTile.getCurrentXPosition() - 1, currentTile.getCurrentYPosition());
@@ -85,39 +86,45 @@ public class Astar implements PathFinder {
 
         // Checks if neighbor is valid with a valid coordinate
         if (downstairsNeighbor.getY() >= 0) {
-            temporaryPath  = createTemporaryPath(currentTile, downstairsNeighbor);
+
+            // If the current tile coordinates are valid, and the neighbor tile is not blocked then proceed.
             if (currentTile.getCurrentYPosition() - 1 >= 0 && !(grid[downstairsNeighbor.getX()][downstairsNeighbor.getY()].isBlocked())) {
-                // Adds Neighbor to openList if valid
-                if(!(reservationManager.isReserved(downstairsNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
-                    addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() - 1]);
-                }
+
+                // Add neighbor tile to openList.
+                addNeighborTileToOpenList(downstairsNeighbor);
             }
         }
+
+        // Checks if neighbor is valid with a valid coordinate
         if (aboveNeighbor.getY() <= server.getGridHeight()) {
-            temporaryPath = createTemporaryPath(currentTile, aboveNeighbor);
+
+            // If the current tile coordinates are valid, and the neighbor tile is not blocked then proceed.
             if (currentTile.getCurrentYPosition() + 1 < grid.length && !(grid[aboveNeighbor.getX()][aboveNeighbor.getY()].isBlocked())) {
 
-                if(!(reservationManager.isReserved(aboveNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
-                    addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() + 1]);
-                }
+                // Add neighbor tile to openList.
+                addNeighborTileToOpenList(aboveNeighbor);
             }
         }
+
+        // Checks if neighbor is valid with a valid coordinate
         if (leftNeighbor.getX() >= 0) {
-            temporaryPath = createTemporaryPath(currentTile, leftNeighbor);
+
+            // If the current tile coordinates are valid, and the neighbor tile is not blocked then proceed.
             if (currentTile.getCurrentXPosition() - 1 >= 0 && !(grid[leftNeighbor.getX()][leftNeighbor.getY()].isBlocked())) {
 
-                if(!(reservationManager.isReserved(leftNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
-                    addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() - 1][currentTile.getCurrentYPosition()]);
-                }
+                // Add neighbor tile to openList.
+                addNeighborTileToOpenList(leftNeighbor);
             }
         }
+
+        // Checks if neighbor is valid with a valid coordinate
         if (rightNeighbor.getX() <= server.getGridWidth()) {
-            createTemporaryPath(currentTile, rightNeighbor);
+
+            // If the current tile coordinates are valid, and the neighbor tile is not blocked then proceed.
             if (currentTile.getCurrentXPosition() + 1 < grid.length && !(grid[rightNeighbor.getX()][rightNeighbor.getY()].isBlocked())) {
 
-                if(!(reservationManager.isReserved(rightNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
-                    addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() + 1][currentTile.getCurrentYPosition()]);
-                }
+                // Add neighbor tile to openList.
+                addNeighborTileToOpenList(rightNeighbor);
             }
         }
     }
@@ -131,39 +138,52 @@ public class Astar implements PathFinder {
 
     }
 
-    public void addNeighborTileToOpenList(AStarTile neighborTile) {
-        // Makes new dummy tile
-        AStarTile tileToDelete = null;
+    public void addNeighborTileToOpenList(GridCoordinate gcNeighbor) {
 
-        // Sets the previous coordinates in neighbor tile
-        neighborTile.setPreviousXposition(currentTile.getCurrentXPosition());
-        neighborTile.setPreviousYposition(currentTile.getCurrentYPosition());
+        ArrayList<GridCoordinate> temporaryPath;
 
-        // Calculates neighborTiles H, G and F
-        neighborTile.calculateH(xEndposition, yEndposition);
-        neighborTile.calculateG(currentTile.getG());
-        neighborTile.calculateF();
+        // Make AstarTile from neighbor.
+        AStarTile aStarNeighbor = grid[gcNeighbor.getX()][gcNeighbor.getY()];
 
-        // Checks if neighborTile is already in openList.
-        for (AStarTile tile : openList) {
-            if (neighborTile.getCurrentXPosition() == tile.getCurrentXPosition() && neighborTile.getCurrentYPosition() == tile.getCurrentYPosition()) {
+        // Creates a temp path to the neighbor tile.
+        temporaryPath  = createTemporaryPath(currentTile, gcNeighbor);
 
-                // If a tile with the same coordinates is already in openList, then check which has the lowest F value.
-                // If the existing tile in openList has the highest F, then it is copied into tileToDelete
-                if (neighborTile.getF() <= tile.getF()) {
-                    tileToDelete = tile;
+        // If the neighbor tile is not reserved in the right timeFrame, then proceed.
+        if(!(reservationManager.isReserved(gcNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
 
-                    // If the neighborTile has the highest F, then return and dont add to openList.
-                } else return;
+            // Makes new dummy tile
+            AStarTile tileToDelete = null;
+
+            // Sets the previous coordinates in neighbor tile
+            aStarNeighbor.setPreviousXposition(currentTile.getCurrentXPosition());
+            aStarNeighbor.setPreviousYposition(currentTile.getCurrentYPosition());
+
+            // Calculates neighborTiles H, G and F
+            aStarNeighbor.calculateH(xEndposition, yEndposition);
+            aStarNeighbor.calculateG(currentTile.getG());
+            aStarNeighbor.calculateF();
+
+            // Checks if neighborTile is already in openList.
+            for (AStarTile tile : openList) {
+                if (aStarNeighbor.getCurrentXPosition() == tile.getCurrentXPosition() && aStarNeighbor.getCurrentYPosition() == tile.getCurrentYPosition()) {
+
+                    // If a tile with the same coordinates is already in openList, then check which has the lowest F value.
+                    // If the existing tile in openList has the highest F, then it is copied into tileToDelete
+                    if (aStarNeighbor.getF() <= tile.getF()) {
+                        tileToDelete = tile;
+
+                        // If the neighborTile has the highest F, then return and dont add to openList.
+                    } else return;
+                }
             }
+
+            // If there is a tile to delete, then delete
+            if (tileToDelete != null)
+                openList.remove(tileToDelete);
+
+            // Add neighbor tile to openList
+            openList.add(aStarNeighbor);
         }
-
-        // If there is a tile to delete, then delete
-        if (tileToDelete != null)
-            openList.remove(tileToDelete);
-
-        // Add neighbor tile to openList
-        openList.add(neighborTile);
 
     }
 
