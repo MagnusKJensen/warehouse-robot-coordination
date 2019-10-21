@@ -41,7 +41,7 @@ public class RRTStarTest {
         }*/
 
     }
-    @Test
+    @Ignore
     public void generatePathFromEmptyTest(){
         GridCoordinate start = new GridCoordinate(0, 0);
         GridCoordinate dest1 = new GridCoordinate(15, 10);

@@ -6,6 +6,7 @@ import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
+import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
 import java.util.ArrayList;
 
@@ -16,8 +17,10 @@ public class StorageGrid {
 
     private ShapeRenderer shapeRenderer;
     private SpriteBatch spriteBatch;
+
     private ArrayList<GridCoordinate> pickerPoints = new ArrayList<>();
     private Simulation simulation;
+    private ArrayList<Product> allProducts = new ArrayList<>();
 
     public StorageGrid(int width, int height, Simulation simulation){
         this.height = height;
@@ -99,4 +102,15 @@ public class StorageGrid {
         return false;
     }
 
+    protected void setAllProducts(ArrayList<Product> prods){
+        allProducts = prods;
+    }
+
+    public ArrayList<Product> getAllProducts() {
+        return allProducts;
+    }
+
+    public ArrayList<GridCoordinate> getPickerPoints() {
+        return pickerPoints;
+    }
 }

@@ -14,7 +14,6 @@ import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import java.util.LinkedList;
 
 public class RobotController {
-
     private Server server;
     private PathFinder pathFinder;
     private TaskManager taskManager;
@@ -27,8 +26,7 @@ public class RobotController {
         this.server = server;
         this.robot = robot;
         this.pathFinder = generatePathFinder(pathFinderString);
-        this.pathFinder = new Astar(server, robot);
-        //server.getReservationManager().reserve(robot, robot.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks()));
+        server.getReservationManager().reserve(robot, robot.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks()));
     }
 
     public RobotController(Server server, PathFinder pathFinder, TaskManager taskManager, Robot robot) {
@@ -59,7 +57,7 @@ public class RobotController {
     public void addToPlan(final Order order) {
         final OrderPlanner orderPlanner = new OrderPlanner(this);
         planningSteps.add(() -> robotActions.addAll(orderPlanner.planPickUp(order)));
-        planningSteps.add(() -> robotActions.addAll(orderPlanner.planDelivery()));
+        planningSteps.add(() -> robotActions.addAll(orderPlanner.planDelivery(order)));
         planningSteps.add(() -> robotActions.addAll(orderPlanner.planBinReturn()));
     }
 

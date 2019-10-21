@@ -49,6 +49,7 @@ public class Robot {
     }
 
     public void deliverBin() {
+        // TODO: 18/10/2019 remove products from bin according to order. - Philip
     }
 
     public void putDownBin(){
