@@ -98,7 +98,7 @@ public abstract class RRTBase {
         ArrayList<Reservation> list = MovementPredictor.calculateReservations(this.robot,p,0,0);
         return list.get(list.size()-1).getTimeFrame().getStart();
     }
-    private List<Node<GridCoordinate>> trimImprovementsList(List<Node<GridCoordinate>> list, GridCoordinate dest){
+    protected ArrayList<Node<GridCoordinate>> trimImprovementsList(ArrayList<Node<GridCoordinate>> list, GridCoordinate dest){
         if(list.isEmpty()){
             return list;
         }
@@ -169,9 +169,9 @@ public abstract class RRTBase {
         return listOfNodes;
     }
 
-    public List<Node<GridCoordinate>> findNodesInRadius(GridCoordinate randPos, int k){
-        List<Node<GridCoordinate>> listOfNodes =  new ArrayList<>();
-        List<Node<GridCoordinate>> foundNodes;
+    public ArrayList<Node<GridCoordinate>> findNodesInRadius(GridCoordinate randPos, int k){
+        ArrayList<Node<GridCoordinate>> listOfNodes =  new ArrayList<>();
+        ArrayList<Node<GridCoordinate>> foundNodes;
         GridCoordinate topLeft = new GridCoordinate(randPos.getX(),randPos.getY());
         GridCoordinate bottomRight = new GridCoordinate(randPos.getX(),randPos.getY());
         int radiusChecked = 0;
@@ -185,8 +185,8 @@ public abstract class RRTBase {
         return listOfNodes;
     }
 
-    private List<Node<GridCoordinate>> findNodes(GridCoordinate topLeft, GridCoordinate bottomRight){
-        List<Node<GridCoordinate>> listOfNodes = new ArrayList<>();
+    private ArrayList<Node<GridCoordinate>> findNodes(GridCoordinate topLeft, GridCoordinate bottomRight){
+        ArrayList<Node<GridCoordinate>> listOfNodes = new ArrayList<>();
         for(int i = topLeft.getX(); i <= bottomRight.getX();i++){
             if(i!= topLeft.getX() && i!= bottomRight.getX()){
                 if (allNodesMap.containsKey(new GridCoordinate(i,topLeft.getY()))){
