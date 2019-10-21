@@ -91,7 +91,7 @@ public class Server {
         }
     }
 
-    protected ArrayList<Product> getProductsAvailable() {
+    public ArrayList<Product> getProductsAvailable() {
         return productsAvailable;
     }
 

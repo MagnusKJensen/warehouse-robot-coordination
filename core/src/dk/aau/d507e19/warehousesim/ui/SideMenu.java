@@ -38,6 +38,8 @@ public class SideMenu {
 
     private Text ordersProcessed;
     private Text ordersPerMinute;
+    private Text productsLeftInGrid;
+    private Color performanceMetricColor = Color.WHITE;
 
     private long msSinceStart;
     private double ordersPerMinuteCount;
@@ -58,8 +60,10 @@ public class SideMenu {
     }
 
     private void addPerformanceMetrics() {
-        this.ordersProcessed = new Text("Orders Processed: ", performanceMetricsOffset.x, performanceMetricsOffset.y, Color.CORAL);
-        this.ordersPerMinute = new Text("Orders / minute: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 30, Color.CORAL);
+        this.productsLeftInGrid = new Text ("Products left: ", performanceMetricsOffset.x, performanceMetricsOffset.y, performanceMetricColor);
+        this.ordersProcessed = new Text("Orders Processed: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 25, performanceMetricColor);
+        this.ordersPerMinute = new Text("Orders / minute: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 50, performanceMetricColor);
+        menuStage.addActor(productsLeftInGrid);
         menuStage.addActor(ordersProcessed);
         menuStage.addActor(ordersPerMinute);
     }
@@ -70,6 +74,7 @@ public class SideMenu {
     }
 
     private void updatePerformanceMetrics(){
+        productsLeftInGrid.setText("Products left: " + simulationApp.getSimulation().getServer().getProductsAvailable().size());
         updateOrdersPerMinute();
         updateOrdersProcessed();
     }
