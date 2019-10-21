@@ -3,9 +3,11 @@ package dk.aau.d507e19.warehousesim.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 
 public class TaskAllocationDropDown {
@@ -33,7 +35,17 @@ public class TaskAllocationDropDown {
 
     private void createDropDown() {
         final SelectBox<String> selectBox = new SelectBox<>(skin);
-        selectBox.setItems("Smart Task Allocator", "Dumb Task Allocator");
+        // If a task allocator is added, also add it to the server.OrderManager.generateTaskAllocator()
+        selectBox.setItems("DummyTaskAllocator", "Smart Task Allocator");
+
+        selectBox.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                String selected = selectBox.getSelected();
+                simulationApp.setTaskAllocatorSelected(selected);
+                simulationApp.resetSimulation();
+            }
+        });
 
         selectBox.sizeBy(260, 0);
         selectBox.setPosition(screenOffSet.x, screenOffSet.y - 55);

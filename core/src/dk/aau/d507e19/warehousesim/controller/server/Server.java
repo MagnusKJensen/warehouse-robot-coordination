@@ -103,4 +103,8 @@ public class Server {
     public ArrayList<GridCoordinate> getPickerPoints() {
         return pickerPoints;
     }
+
+    public Simulation getSimulation() {
+        return simulation;
+    }
 }
