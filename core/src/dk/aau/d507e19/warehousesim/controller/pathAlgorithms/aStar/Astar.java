@@ -256,6 +256,7 @@ public class Astar implements PathFinder {
 
         xStart = start.getX();
         yStart = start.getY();
+
         // Adds the starting tile to closed list.
         addStartTileToClosedList(start.getX(), start.getY());
 
