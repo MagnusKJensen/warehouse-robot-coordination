@@ -1,6 +1,5 @@
 package dk.aau.d507e19.warehousesim;
 
-
 public class WarehouseSpecs {
     public static final int wareHouseWidth = 30;
     public static final int wareHouseHeight = 30;

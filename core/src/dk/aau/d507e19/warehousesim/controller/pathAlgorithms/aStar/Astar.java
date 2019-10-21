@@ -128,7 +128,7 @@ public class Astar implements PathFinder {
         }
     }
 
-    public TimeFrame getTimeFrameFromLastReservation( ArrayList<GridCoordinate> tempPath) {
+    public TimeFrame getTimeFrameFromLastReservation(ArrayList<GridCoordinate> tempPath) {
         Path path = new Path(Step.fromGridCoordinates(tempPath));
         ArrayList<Reservation> listOfReservations;
         listOfReservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
@@ -136,17 +136,6 @@ public class Astar implements PathFinder {
         return listOfReservations.get(listOfReservations.size()-1).getTimeFrame();
 
     }
-
-   /* public boolean isTileReserved(AStarTile currentTile) {
-        // TODO: 14/10/2019 Use reservation manager instead
-        ArrayList<Reservation>[][] gridOfResevations = pathManager.getGridOfResevations();
-        for (Reservation res : gridOfResevations[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition()]) {
-            if (Math.ceil(simulatedTime + robotMaxSpeedPerBin * currentTile.getG()) == Math.ceil(res.getTimeTileIsReserved())) {
-                return false;
-            }
-        }
-        return true;
-    }*/
 
     public void addNeighborTileToOpenList(AStarTile neighborTile) {
         // Makes new dummy tile
@@ -213,12 +202,10 @@ public class Astar implements PathFinder {
         temp.add(new GridCoordinate(closedList.get(0).getCurrentXPosition(), closedList.get(0).getCurrentYPosition()));
         Collections.reverse(temp);
         temp.add(neighborTile);
-        System.out.println("neighbor: " + neighborTile.toString() );
         return temp;
     }
 
     public void calculatePath() {
-
         // While is true if the currentTile does not have the same x coordinate and the same y coordinate as the end Tile.
         while (!(currentTile.getCurrentXPosition() == xEndposition && currentTile.getCurrentYPosition() == yEndposition)) {
 
@@ -262,8 +249,10 @@ public class Astar implements PathFinder {
     public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
 
         clear();
+
         xEndposition = destination.getX();
         yEndposition = destination.getY();
+
 
         xStart = start.getX();
         yStart = start.getY();
@@ -277,12 +266,6 @@ public class Astar implements PathFinder {
         //Reverses final path so it is in correct order
         Collections.reverse(finalPath);
 
-        // TODO: 14/10/2019 Use reservation manager instead
-        //pathManager.addReservationToList(finalPath, simulatedTime, robotID, robotMaxSpeedPerBin);
-        ArrayList<Reservation> listOfResevations;
-
-        listOfResevations = MovementPredictor.calculateReservations(robot, new Path(Step.fromGridCoordinates(finalPath)), server.getTimeInTicks(), 0);
-        //  pathManager.printReservations();
         return new Path(Step.fromGridCoordinates(finalPath));
     }
 }
