@@ -32,6 +32,7 @@ public class RRTStarTest {
         //generate both paths
         rrtList = rrt.generateRRTPath(start,dest1);
         rrtStarList = rrtStar.generatePath(start,dest1);
+        System.out.println(rrtList.size() + " : " + rrtStarList.size());
         //can fail if somehow random == optimized (low chance)
         assertNotEquals(rrtList,rrtStarList);
         RRTTest test = new RRTTest();
@@ -41,12 +42,13 @@ public class RRTStarTest {
         rrtStarList = rrtStar.generatePath(dest2,start);
         assertTrue(test.isValidPath(dest2,start,rrtStarList));
 
-        /*for (GridCoordinate gc: rrtList){
-            System.out.println(gc);
+        /*for (Step gc: rrtList){
+            System.out.println(gc.getGridCoordinate());
         }
-        for (GridCoordinate gc: rrtStarList){
-            System.out.println(gc);
+        for (Step gc: rrtStarList){
+            System.out.println(gc.getGridCoordinate());
         }*/
+
 
     }
     @Test

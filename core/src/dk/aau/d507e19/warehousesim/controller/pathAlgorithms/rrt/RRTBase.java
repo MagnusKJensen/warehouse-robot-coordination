@@ -60,7 +60,7 @@ public abstract class RRTBase {
             //check number of steps to root and save the best node
             for (Node<GridCoordinate> n : potentialImprovements){
                 //check if closer to root and if its in range
-                if((isBetterParent(currentParent,n,allNodesMap.get(destination)))){
+                if((isBetterParent(currentParent,n))){
                         bestParent = n;
                 }
             }
@@ -72,49 +72,38 @@ public abstract class RRTBase {
             }
         }
     }
-
-    private boolean isBetterParent(Node<GridCoordinate> current, Node<GridCoordinate> possible, Node<GridCoordinate> child){
+    private boolean isBetterParent(Node<GridCoordinate> current, Node<GridCoordinate> possible){
+        //remake function to only consider cost()
+        //try cost as stepsToRoot first, then use
         if(current.equals(possible)){
             return false;
         }
-        if(current.stepsToRoot() > possible.stepsToRoot()){
-            return true;
-        } else if(current.stepsToRoot() == possible.stepsToRoot()){
-            /*
-            //Make a copy of our tree(ugh) todo find better way to do this
-            Node<GridCoordinate> posTree = root.copy();
-            //find possible node in tree
-            Node<GridCoordinate> posTreeGoal = posTree.findNode(destinationNode.getData());
-            //rewire child node to have possible as parent
-            posTree.findNode(child.getData()).setParent(possible);
-            //return the fastest path from either to the goal
-            return calculateTravelTime(current,destinationNode) > calculateTravelTime(posTree,posTreeGoal);*/
+        if(current.equals(root)){
+            return false;
         }
-
-        return false;
+        if(possible.equals(root)){
+            return true;
+        }
+        return cost(current) > cost(possible);
     }
-    private long calculateTravelTime(Node<GridCoordinate> root, Node<GridCoordinate> dest){
+
+    public double cost(Node<GridCoordinate> node){
+        return calculateTravelTime(node);
+    }
+    private long calculateTravelTime(Node<GridCoordinate> dest){
         //generate path from root to dest
         //find out how long it takes according to movement predictor
         //return time that it takes
-        Path p = new Path(makePathBetweenTwoNodes(root,dest));
+        Path p = new Path(makePath(dest));
         ArrayList<Reservation> list = MovementPredictor.calculateReservations(this.robot,p,0,0);
         return list.get(list.size()-1).getTimeFrame().getStart();
     }
-    private List<Node<GridCoordinate>> trimImprovementsList(List<Node<GridCoordinate>> list, GridCoordinate dest){
+    protected ArrayList<Node<GridCoordinate>> trimImprovementsList(ArrayList<Node<GridCoordinate>> list, GridCoordinate dest){
         if(list.isEmpty()){
             return list;
         }
         list.removeIf(n-> distance(n.getData(),dest) !=1);
         return list;
-    }
-
-    public void improveEntirePath(Node<GridCoordinate> destination){
-        //Optimize for dest, then optimize for this.getparent
-        if(destination.getParent()!=null){
-            improvePath(destination.getData());
-            improveEntirePath(destination.getParent());
-        }
     }
 
     private double distance(GridCoordinate pos1, GridCoordinate pos2){
@@ -178,9 +167,9 @@ public abstract class RRTBase {
         return listOfNodes;
     }
 
-    public List<Node<GridCoordinate>> findNodesInRadius(GridCoordinate randPos, int k){
-        List<Node<GridCoordinate>> listOfNodes =  new ArrayList<>();
-        List<Node<GridCoordinate>> foundNodes;
+    public ArrayList<Node<GridCoordinate>> findNodesInRadius(GridCoordinate randPos, int k){
+        ArrayList<Node<GridCoordinate>> listOfNodes =  new ArrayList<>();
+        ArrayList<Node<GridCoordinate>> foundNodes;
         GridCoordinate topLeft = new GridCoordinate(randPos.getX(),randPos.getY());
         GridCoordinate bottomRight = new GridCoordinate(randPos.getX(),randPos.getY());
         int radiusChecked = 0;
@@ -194,8 +183,8 @@ public abstract class RRTBase {
         return listOfNodes;
     }
 
-    private List<Node<GridCoordinate>> findNodes(GridCoordinate topLeft, GridCoordinate bottomRight){
-        List<Node<GridCoordinate>> listOfNodes = new ArrayList<>();
+    private ArrayList<Node<GridCoordinate>> findNodes(GridCoordinate topLeft, GridCoordinate bottomRight){
+        ArrayList<Node<GridCoordinate>> listOfNodes = new ArrayList<>();
         for(int i = topLeft.getX(); i <= bottomRight.getX();i++){
             if(i!= topLeft.getX() && i!= bottomRight.getX()){
                 if (allNodesMap.containsKey(new GridCoordinate(i,topLeft.getY()))){
@@ -260,17 +249,6 @@ public abstract class RRTBase {
         path.add(new Step(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY())));
         return path;
     }
-    public ArrayList<Step> makePathBetweenTwoNodes(Node<GridCoordinate> startNode, Node<GridCoordinate> destNode){
-        ArrayList<Step> path = new ArrayList<>();
-        if(destNode.getParent()== null || destNode.equals(startNode)){
-            path.add(new Step(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY())));
-            return path;
-        }
-        path = makePathBetweenTwoNodes(startNode,destNode.getParent());
-        path.add(new Step(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY())));
-        return path;
-    }
-
     public void assignBlockedNodeStatus(ArrayList<GridCoordinate> nodesToBeUpdated){
         //find the nodes to be blocked and set its statuses to true
         for(GridCoordinate n: nodesToBeUpdated) {
