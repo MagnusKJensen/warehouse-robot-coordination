@@ -3,6 +3,7 @@ import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRT;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTStar;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import org.junit.Ignore;
@@ -13,6 +14,7 @@ import org.mockito.junit.MockitoJUnit;
 import java.util.ArrayList;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
 
 public class RRTTest {
     private Node<GridCoordinate> tree,oneleft,oneright,twoleft,tworight,twooneright;
@@ -121,45 +123,27 @@ public class RRTTest {
     }
     @Test
     public void improvePathTest(){
+        when(robot.getAccelerationBinSecond()).thenReturn(WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters);
+        when(robot.getDecelerationBinSecond()).thenReturn(WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters);
         rrt = new RRT(robot);
         Node<GridCoordinate> n0 = new Node<>(new GridCoordinate(0,0),null,false);
-        Node<GridCoordinate> n1 = new Node<>(new GridCoordinate(1,0),n0,false);
-        Node<GridCoordinate> n2 = new Node<>(new GridCoordinate(2,0),n1,false);
-        Node<GridCoordinate> n3 = new Node<>(new GridCoordinate(3,0),n2,false);
-        Node<GridCoordinate> n4 = new Node<>(new GridCoordinate(3,1),n3,false);
-        Node<GridCoordinate> n5 = new Node<>(new GridCoordinate(2,1),n4,false);
-        Node<GridCoordinate> n6 = new Node<>(new GridCoordinate(3,2),n4,false);
-        Node<GridCoordinate> n7 = new Node<>(new GridCoordinate(2,2),n6,false);
-        Node<GridCoordinate> n8 = new Node<>(new GridCoordinate(1,2),n7,false);
-        Node<GridCoordinate> n9 = new Node<>(new GridCoordinate(0,1),n0,false);
-        Node<GridCoordinate> n10 = new Node<>(new GridCoordinate(0,2),n9,false);
+        Node<GridCoordinate> n1 = new Node<>(new GridCoordinate(0,1),n0,false);
+        Node<GridCoordinate> n2 = new Node<>(new GridCoordinate(0,2),n1,false);
+        Node<GridCoordinate> n3 = new Node<>(new GridCoordinate(1,2),n2,false);
+        Node<GridCoordinate> n4 = new Node<>(new GridCoordinate(1,3),n3,false);
+        Node<GridCoordinate> n5 = new Node<>(new GridCoordinate(0,3),n4,false);
 
+        //path currently bad. If we improvepath on n5, n2 should be the new parent of n5
+        rrt.root = n0;
         rrt.allNodesMap.put(n0.getData(),n0);
         rrt.allNodesMap.put(n1.getData(),n1);
         rrt.allNodesMap.put(n2.getData(),n2);
         rrt.allNodesMap.put(n3.getData(),n3);
         rrt.allNodesMap.put(n4.getData(),n4);
         rrt.allNodesMap.put(n5.getData(),n5);
-        rrt.allNodesMap.put(n6.getData(),n6);
-        rrt.allNodesMap.put(n7.getData(),n7);
-        rrt.allNodesMap.put(n8.getData(),n8);
-        rrt.allNodesMap.put(n9.getData(),n9);
-        rrt.allNodesMap.put(n10.getData(),n10);
-        ArrayList<Step> expected = new ArrayList<>();
-        expected.add(new Step(n0.getData()));
-        expected.add(new Step(n9.getData()));
-        expected.add(new Step(n10.getData()));
-        expected.add(new Step(n8.getData()));
 
-        ArrayList<Step> list = rrt.generateRRTPath(n0.getData(),n8.getData());
-        //assert that the correct route has been found
-        assertEquals(list.size()-1,n8.stepsToRoot());
-        System.out.println("before: " + list.size());
-        rrt.improveEntirePath(n8);
-        assertNotEquals(list,rrt.generateRRTPath(n0.getData(),n7.getData()));
-        list = rrt.generateRRTPath(n0.getData(),n8.getData());
-        assertEquals(expected,list);
-        System.out.println("after: " + list.size());
+        rrt.improvePath(n5.getData());
+        assertEquals(n2,n5.getParent());
     }
     @Test
     public void makePathTest(){
@@ -168,13 +152,4 @@ public class RRTTest {
         Node<GridCoordinate> n1 = new Node<>(new GridCoordinate(0,1),n0,false);
         assertEquals(2,rrt.makePath(n1).size());
     }
-    @Test
-    public void makePathBetweenTwoNodesTest(){
-        rrt = new RRT(robot);
-        Node<GridCoordinate> n0 = new Node<>(new GridCoordinate(0,0),null,false);
-        Node<GridCoordinate> n1 = new Node<>(new GridCoordinate(0,1),n0,false);
-        Node<GridCoordinate> n2 = new Node<>(new GridCoordinate(0,2),n1,false);
-        assertEquals(2,rrt.makePathBetweenTwoNodes(n1,n2).size());
-    }
-
 }
