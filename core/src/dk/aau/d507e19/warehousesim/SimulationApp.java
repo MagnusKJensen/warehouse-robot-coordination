@@ -45,7 +45,7 @@ public class SimulationApp extends ApplicationAdapter {
     private InputMultiplexer inputMultiplexer;
 
     // Currently using the following pathFinder and TaskAllocators.
-	private String pathFinderSelected = "Astar";
+	private String pathFinderSelected = "DummyPathFinder";
 	private String taskAllocatorSelected = "DummyTaskAllocator";
 
 	@Override

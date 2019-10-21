@@ -57,7 +57,7 @@ public class Server {
     }
 
     public long getTimeInSeconds() {
-        return simulation.getSimulatedTime();
+        return simulation.getSimulatedTimeInMS();
     }
 
     public long getTimeInTicks(){

@@ -74,18 +74,5 @@ public class OrderManager {
                 break;
             }
         }
-
-        /* TODO OLD
-        // If some orders are still in queue to be processed
-        if(orderQueue.size() > 0){
-            Order order = orderQueue.get(0);
-            Optional<Robot> optimalRobot = taskAllocator.findOptimalRobot(server.getAllRobots(), order);
-            if(optimalRobot.isPresent()){
-                optimalRobot.get().assignOrder(order);
-                ordersFinished.add(orderQueue.get(0));
-                System.out.println("Commenced order: " + orderQueue.get(0));
-                orderQueue.remove(0);
-            }
-        }*/
     }
 }

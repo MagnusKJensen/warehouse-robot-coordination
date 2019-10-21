@@ -44,6 +44,8 @@ public class Simulation {
 
     private SimulationInputProcessor inputProcessor;
 
+    private long ordersProcessed = 0;
+
     public Simulation(SimulationApp simulationApp){
         this.simulationApp = simulationApp;
         this.gridCamera = simulationApp.getWorldCamera();
@@ -188,7 +190,7 @@ public class Simulation {
         return fontCamera;
     }
 
-    public long getSimulatedTime() {
+    public long getSimulatedTimeInMS() {
         return tickCount * SimulationApp.MILLIS_PER_TICK;
     }
 
@@ -223,5 +225,13 @@ public class Simulation {
 
     public SimulationApp getSimulationApp() {
         return simulationApp;
+    }
+
+    public void incrementOrderProcessedCount(){
+        ++ordersProcessed;
+    }
+
+    public long getOrdersProcessed() {
+        return ordersProcessed;
     }
 }
