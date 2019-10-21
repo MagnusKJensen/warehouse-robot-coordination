@@ -237,12 +237,9 @@ public class Astar implements PathFinder {
 
     @Override
     public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
-
         clear();
-
         xEndposition = destination.getX();
         yEndposition = destination.getY();
-
 
         xStart = start.getX();
         yStart = start.getY();

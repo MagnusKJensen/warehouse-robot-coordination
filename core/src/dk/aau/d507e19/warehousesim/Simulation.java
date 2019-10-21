@@ -85,6 +85,7 @@ public class Simulation {
         tickCount += 1;
         for(Robot robot : robots){
             robot.update();
+
         }
         updateSideMenuScrollPanes();
     }
