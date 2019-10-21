@@ -36,7 +36,7 @@ public class TaskAllocationDropDown {
     private void createDropDown() {
         final SelectBox<String> selectBox = new SelectBox<>(skin);
         // If a task allocator is added, also add it to the server.OrderManager.generateTaskAllocator()
-        selectBox.setItems("DummyTaskAllocator", "Smart Task Allocator");
+        selectBox.setItems("DummyTaskAllocator", "Smart Task Allocator", "ShortestDistanceTaskAllocator");
 
         selectBox.addListener(new ChangeListener() {
             @Override
