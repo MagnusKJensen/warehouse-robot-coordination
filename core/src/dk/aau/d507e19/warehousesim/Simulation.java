@@ -10,6 +10,8 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
+import dk.aau.d507e19.warehousesim.goal.Goal;
+import dk.aau.d507e19.warehousesim.goal.OrderGoal;
 import dk.aau.d507e19.warehousesim.input.SimulationInputProcessor;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.ProductDistributor;
@@ -17,6 +19,7 @@ import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
+import dk.aau.d507e19.warehousesim.ui.SideMenu;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -46,6 +49,8 @@ public class Simulation {
 
     private long ordersProcessed = 0;
 
+    private Goal goal;
+
     public Simulation(SimulationApp simulationApp){
         this.simulationApp = simulationApp;
         this.gridCamera = simulationApp.getWorldCamera();
@@ -64,6 +69,8 @@ public class Simulation {
 
         server = new Server(this, storageGrid);
 
+        goal = new OrderGoal(WarehouseSpecs.orderGoal, this);
+
         initRobots();
     }
 
@@ -78,10 +85,10 @@ public class Simulation {
         tickCount += 1;
         for(Robot robot : robots){
             robot.update();
-
         }
-        updateSideMenuScrollPanes();
         server.update();
+        goal.update();
+        updateSideMenuScrollPanes();
     }
 
     private void updateSideMenuScrollPanes() {
@@ -233,5 +240,9 @@ public class Simulation {
 
     public long getOrdersProcessed() {
         return ordersProcessed;
+    }
+
+    public Goal getGoal() {
+        return goal;
     }
 }

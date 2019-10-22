@@ -4,6 +4,7 @@ import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.robot.Order;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.DummyTaskAllocator;
+import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.NaiveShortestDistanceTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.ShortestDistanceTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocator;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
@@ -26,8 +27,8 @@ public class OrderManager {
         switch (server.getSimulation().getSimulationApp().getTaskAllocatorSelected()){
             // If a task allocator is added, also add it to the side menu at ui.TaskAllocationDropDown.createDropDown()
             case "DummyTaskAllocator" : return new DummyTaskAllocator();
-            case "Smart Task Allocator" : return new DummyTaskAllocator(); // Temp
-            case "ShortestDistanceTaskAllocator" : return new ShortestDistanceTaskAllocator(server.getSimulation().getStorageGrid()); // Temp
+            case "ShortestDistanceTaskAllocator" : return new ShortestDistanceTaskAllocator(server.getSimulation().getStorageGrid());
+            case "NaiveShortestDistanceTaskAllocator" : return new NaiveShortestDistanceTaskAllocator(server.getSimulation().getStorageGrid());
             default : throw new IllegalArgumentException("Could not identify task allocator " + server.getSimulation().getSimulationApp().getTaskAllocatorSelected());
         }
     }
@@ -75,5 +76,9 @@ public class OrderManager {
                 break;
             }
         }
+    }
+
+    public int ordersInQueue(){
+        return orderQueue.size();
     }
 }

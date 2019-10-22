@@ -107,4 +107,8 @@ public class Server {
     public Simulation getSimulation() {
         return simulation;
     }
+
+    public OrderManager getOrderManager() {
+        return orderManager;
+    }
 }
