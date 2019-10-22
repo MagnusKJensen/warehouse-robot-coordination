@@ -13,7 +13,7 @@ public class TimeFrame {
             if(otherFrame.getTimeMode() == TimeMode.UNBOUNDED)
                 return true;
 
-            return this.isBeforeTimeFrame(otherFrame.endTime);
+            return !this.isBeforeTimeFrame(otherFrame.endTime);
         }
 
         // If the other frame is unbounded:
@@ -21,7 +21,10 @@ public class TimeFrame {
         if(otherFrame.getTimeMode() == TimeMode.UNBOUNDED)
             return !this.isOutdated(otherFrame.getStart());
 
-        return isWithinTimeFrame(otherFrame.startTime) || isWithinTimeFrame(otherFrame.endTime);
+
+        return (otherFrame.startTime < this.startTime && otherFrame.endTime > this.startTime)
+                || isWithinTimeFrame(otherFrame.startTime)
+                || isWithinTimeFrame(otherFrame.endTime);
     }
 
     private enum TimeMode{

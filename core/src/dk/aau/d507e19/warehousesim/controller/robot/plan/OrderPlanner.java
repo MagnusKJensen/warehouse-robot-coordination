@@ -42,7 +42,6 @@ public class OrderPlanner {
         if(!robot.getGridCoordinate().equals(pickUpPoint)) {
             ArrayList<Reservation> reservations =
                     MovementPredictor.calculateReservations(robot, pathToPickUpPoint, server.getTimeInTicks(), 0);
-
             server.getReservationManager().reserve(reservations);
         }
 
