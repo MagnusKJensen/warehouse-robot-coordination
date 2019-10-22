@@ -3,6 +3,7 @@ package dk.aau.d507e19.warehousesim.controller.server;
 import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.controller.robot.Status;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
@@ -110,5 +111,13 @@ public class Server {
 
     public OrderManager getOrderManager() {
         return orderManager;
+    }
+
+    public boolean hasRobotsAvailable(){
+        for (Robot robot : simulation.getAllRobots()){
+            if(robot.getCurrentStatus() == Status.AVAILABLE) return true;
+        }
+
+        return false;
     }
 }
