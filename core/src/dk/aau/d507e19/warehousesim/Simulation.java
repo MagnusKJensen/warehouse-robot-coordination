@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
+import dk.aau.d507e19.warehousesim.exception.CollisionException;
 import dk.aau.d507e19.warehousesim.goal.Goal;
 import dk.aau.d507e19.warehousesim.goal.OrderGoal;
 import dk.aau.d507e19.warehousesim.input.SimulationInputProcessor;
@@ -18,8 +19,6 @@ import dk.aau.d507e19.warehousesim.storagegrid.ProductDistributor;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
-import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
-import dk.aau.d507e19.warehousesim.ui.SideMenu;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -88,8 +87,22 @@ public class Simulation {
         }
         server.update();
         goal.update();
+        if(WarehouseSpecs.collisionDetectedEnabled){
+            checkForCollisions();
+        }
         updateSideMenuScrollPanes();
     }
+
+    private void checkForCollisions() {
+        for (Robot robot1 : robots){
+            for(Robot robot2 : robots){
+                if(robot1.getRobotID() != robot2.getRobotID()){
+                    if(robot1.collidesWith(robot2.getCurrentPosition())) throw new CollisionException(robot1, robot2);
+                }
+            }
+        }
+    }
+
 
     private void updateSideMenuScrollPanes() {
         // Update the robot bin content live
