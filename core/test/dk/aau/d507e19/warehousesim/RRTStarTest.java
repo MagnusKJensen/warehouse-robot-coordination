@@ -15,16 +15,14 @@ import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.when;
 
 public class RRTStarTest {
-    Robot robot = Mockito.mock(Robot.class);
-    RRT rrt;
-    RRTStar rrtStar;
 
     @Test
     public void generatePathTest(){
+        Robot robot = Mockito.mock(Robot.class);
         when(robot.getAccelerationBinSecond()).thenReturn(WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters);
         when(robot.getDecelerationBinSecond()).thenReturn(WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters);
-        rrtStar = new RRTStar(robot);
-        rrt = new RRT(robot);
+        RRTStar rrtStar = new RRTStar(robot);
+        RRT rrt = new RRT(robot);
         GridCoordinate start = new GridCoordinate(0, 0);
         GridCoordinate dest1 = new GridCoordinate(10, 10);
         GridCoordinate dest2 = new GridCoordinate(2, 3);
@@ -32,7 +30,6 @@ public class RRTStarTest {
         //generate both paths
         rrtList = rrt.generateRRTPath(start,dest1);
         rrtStarList = rrtStar.generatePath(start,dest1);
-        System.out.println(rrtList.size() + " : " + rrtStarList.size());
         //can fail if somehow random == optimized (low chance)
         assertNotEquals(rrtList,rrtStarList);
         RRTTest test = new RRTTest();
@@ -53,10 +50,10 @@ public class RRTStarTest {
     }
     @Test
     public void generatePathFromEmptyTest(){
+        Robot robot = Mockito.mock(Robot.class);
         when(robot.getAccelerationBinSecond()).thenReturn(WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters);
         when(robot.getDecelerationBinSecond()).thenReturn(WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters);
-        rrtStar = new RRTStar(robot);
-        rrt = new RRT(robot);
+        RRTStar rrtStar = new RRTStar(robot);
         GridCoordinate start = new GridCoordinate(0, 0);
         GridCoordinate dest1 = new GridCoordinate(15, 10);
         ArrayList<Step> list;
