@@ -65,15 +65,17 @@ public class OrderManager {
     }
 
     public void update(){
-        for(int i = 0; i < orderQueue.size(); ++i){
-            Order order = orderQueue.get(i);
-            Optional<Robot> optimalRobot = taskAllocator.findOptimalRobot(server.getAllRobots(), order);
-            if(optimalRobot.isPresent()){
-                optimalRobot.get().assignOrder(order);
-                ordersFinished.add(orderQueue.get(i));
-                System.out.println("Commenced order: " + orderQueue.get(i));
-                orderQueue.remove(i);
-                break;
+        if(server.hasRobotsAvailable()){
+            for(int i = 0; i < orderQueue.size(); ++i){
+                Order order = orderQueue.get(i);
+                Optional<Robot> optimalRobot = taskAllocator.findOptimalRobot(server.getAllRobots(), order);
+                if(optimalRobot.isPresent()){
+                    optimalRobot.get().assignOrder(order);
+                    ordersFinished.add(orderQueue.get(i));
+                    System.out.println("Commenced order: " + orderQueue.get(i));
+                    orderQueue.remove(i);
+                    break;
+                }
             }
         }
     }
