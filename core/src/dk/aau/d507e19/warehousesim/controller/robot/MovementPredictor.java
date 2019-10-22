@@ -37,7 +37,9 @@ public class MovementPredictor {
 
         int leaveDistance = coordinates.get(1).distanceFrom(coordinates.get(0));
         long leaveTime = lineSpeedCalculator.amountOfTicksToReach(leaveDistance);
-        reservations.add(new Reservation(robot, line.getStart(), new TimeFrame(startTimeTicks - paddingTicks, startTimeTicks + leaveTime + paddingTicks)));
+
+        reservations.add(new Reservation(robot, line.getStart().getGridCoordinate(),
+                new TimeFrame(startTimeTicks - paddingTicks, startTimeTicks + leaveTime + paddingTicks)));
 
         GridCoordinate startCoordinate = coordinates.get(0);
         for(int i = 1; i < coordinates.size(); i++){
@@ -47,6 +49,8 @@ public class MovementPredictor {
 
             long timeToEnter = lineSpeedCalculator.amountOfTicksToReach(robotEnterDistance);
             long timeToLeave = lineSpeedCalculator.amountOfTicksToReach(robotLeaveDistance);
+            if(i == coordinates.size() - 1)
+                timeToLeave = lineSpeedCalculator.getTotalTimeInTicks();
 
             TimeFrame timeFrame = new TimeFrame(startTimeTicks + timeToEnter - paddingTicks,
                     startTimeTicks + timeToLeave + paddingTicks);

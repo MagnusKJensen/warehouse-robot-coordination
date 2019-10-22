@@ -36,7 +36,8 @@ public class ReservationManager {
     }
 
     public boolean canReserveIndefinitely(GridCoordinate gridCoordinate, TimeFrame timeFrame){
-        return false;
+        int x = gridCoordinate.getX(), y = gridCoordinate.getY();
+        return reservationTiles[x][y].isReserved(timeFrame);
     }
 
     public boolean isReserved(GridCoordinate gridCoordinate, TimeFrame timeFrame){

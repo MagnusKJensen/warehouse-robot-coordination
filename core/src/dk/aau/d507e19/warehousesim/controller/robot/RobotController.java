@@ -81,7 +81,6 @@ public class RobotController {
         planning.run();
     }
 
-
     public PathFinder getPathFinder() {
         return this.pathFinder;
     }

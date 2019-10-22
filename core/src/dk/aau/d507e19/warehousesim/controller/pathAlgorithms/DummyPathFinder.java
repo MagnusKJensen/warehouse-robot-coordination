@@ -12,37 +12,41 @@ public class DummyPathFinder implements PathFinder {
     public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
         ArrayList<Step> pathList = new ArrayList<>();
 
-        pathList.addAll(Step.fromGridCoordinates(generateHorizontalLine(start.getX(), destination.getX(), start.getY())));
+        pathList.addAll(generateHorizontalLine(start.getX(), destination.getX(), start.getY()));
         pathList.remove(pathList.size() - 1);
-        pathList.addAll(Step.fromGridCoordinates(generateVerticalLine(start.getY(), destination.getY(), destination.getX())));
+        pathList.addAll(generateVerticalLine(start.getY(), destination.getY(), destination.getX()));
 
         return new Path(pathList);
     }
 
-    private ArrayList<GridCoordinate> generateHorizontalLine(int startX, int endX, int y){
-        ArrayList<GridCoordinate> coordinates = new ArrayList<>();
+    private ArrayList<Step> generateHorizontalLine(int startX, int endX, int y){
+        ArrayList<Step> coordinates = new ArrayList<>();
         if(startX > endX){
             for(int i = startX; i >= endX; i--){
-                coordinates.add(new GridCoordinate(i, y));
+                coordinates.add(new Step(i, y));
+                if(i == startX + 3)
+                    coordinates.add(new Step(i, y, 50));
             }
         } else {
             for(int i = startX; i <= endX; i++){
-                coordinates.add(new GridCoordinate(i, y));
+                coordinates.add(new Step(i, y));
+                if(i == startX + 3)
+                    coordinates.add(new Step(i, y, 50));
             }
         }
 
         return coordinates;
     }
 
-    private ArrayList<GridCoordinate> generateVerticalLine(int startY, int endY, int x){
-        ArrayList<GridCoordinate> coordinates = new ArrayList<>();
+    private ArrayList<Step> generateVerticalLine(int startY, int endY, int x){
+        ArrayList<Step> coordinates = new ArrayList<>();
         if(startY > endY){
             for(int i = startY; i >= endY; i--){
-                coordinates.add(new GridCoordinate(x, i));
+                coordinates.add(new Step(x, i));
             }
         } else {
             for(int i = startY; i <= endY; i++){
-                coordinates.add(new GridCoordinate(x, i));
+                coordinates.add(new Step(x, i));
             }
         }
 

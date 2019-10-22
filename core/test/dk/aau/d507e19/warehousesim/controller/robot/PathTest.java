@@ -138,8 +138,8 @@ public class PathTest {
         Path path = new Path(allCoordinates);
 
         ArrayList<Line> expectedLines = new ArrayList<>();
-        expectedLines.add(new Line(new GridCoordinate(2, 2), new GridCoordinate(3, 2)));
-        expectedLines.add(new Line(new GridCoordinate(3, 2), new GridCoordinate(4, 2)));
+        expectedLines.add(new Line(new Step(2, 2), new Step(3, 2, 50)));
+        expectedLines.add(new Line(new Step(3, 2, 50), new Step(4, 2)));
 
         assertEquals(expectedLines, path.getLines());
     }
