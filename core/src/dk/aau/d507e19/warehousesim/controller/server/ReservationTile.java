@@ -4,6 +4,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 
 public class ReservationTile {
 
@@ -31,6 +32,15 @@ public class ReservationTile {
         }
 
         return overlappingReservations;
+    }
+
+    public Optional<Reservation> getCurrentReservation(Long timeInTicks){
+        for(Reservation n: reservations){
+            if (n.getTimeFrame().isWithinTimeFrame(timeInTicks)) {
+                return Optional.of(n);
+            }
+        }
+        return Optional.empty();
     }
 
     public void addReservation(Reservation reservation) {

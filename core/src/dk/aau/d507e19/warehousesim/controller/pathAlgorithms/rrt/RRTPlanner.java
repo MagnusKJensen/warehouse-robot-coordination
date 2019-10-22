@@ -3,18 +3,20 @@ import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
+import dk.aau.d507e19.warehousesim.controller.server.Server;
 
 public class RRTPlanner implements PathFinder {
-    Robot robot;
+    RobotController robotController;
     RRTType algorithm;
     private RRT rrt;
     private RRTStar rrtStar;
 
-    public RRTPlanner(RRTType algorithm, Robot rrtRobot) {
+    public RRTPlanner(RRTType algorithm, RobotController rrtRobotController) {
         this.algorithm = algorithm;
-        this.robot = rrtRobot;
-        this.rrt = new RRT(this.robot);
-        this.rrtStar = new RRTStar(this.robot);
+        this.robotController = rrtRobotController;
+        this.rrt = new RRT(this.robotController);
+        this.rrtStar = new RRTStar(this.robotController);
     }
 
     @Override

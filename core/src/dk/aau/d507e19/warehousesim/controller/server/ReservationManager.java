@@ -6,6 +6,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Optional;
 
 public class ReservationManager {
 
@@ -59,6 +60,18 @@ public class ReservationManager {
 
         return robots;
     }
+    public ArrayList<Reservation> getAllCurrentReservations(Long currentTimeInTicks){
+        ArrayList<Reservation> reservations = new ArrayList<>();
+        for (int x = 0; x<reservationTiles.length; x++){
+            for (int y = 0; y<reservationTiles[x].length; y++){
+                if(reservationTiles[x][y].getCurrentReservation(currentTimeInTicks).isPresent()){
+                    Optional<Reservation> reservation = reservationTiles[x][y].getCurrentReservation(currentTimeInTicks);
+                    reservation.ifPresent(reservations::add);
+                }
+            }
+        }
+        return reservations;
+    }
 
     public ArrayList<Reservation> getReservationsBy(Robot robot){
         if(!robotReservationsMap.containsKey(robot))
@@ -106,4 +119,5 @@ public class ReservationManager {
             robotReservationsMap.put(reservation.getRobot(), new ArrayList<>());
         robotReservationsMap.get(reservation.getRobot()).add(reservation);
     }
+
 }

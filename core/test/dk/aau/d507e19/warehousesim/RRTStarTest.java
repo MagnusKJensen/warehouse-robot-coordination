@@ -4,8 +4,12 @@ import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRT;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTStar;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
+import dk.aau.d507e19.warehousesim.controller.server.Server;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
@@ -16,15 +20,23 @@ import static org.mockito.Mockito.when;
 
 public class RRTStarTest {
     Robot robot = Mockito.mock(Robot.class);
+    Server server = Mockito.mock(Server.class);
+    RobotController robotController = Mockito.mock(RobotController.class);
     RRT rrt;
     RRTStar rrtStar;
 
+    @Before
+    public void initiateRobotController(){
+        when(robotController.getRobot()).thenReturn(robot);
+        when(robotController.getServer()).thenReturn(server);
+    }
+
     @Test
     public void generatePathTest(){
-        when(robot.getAccelerationBinSecond()).thenReturn(WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters);
-        when(robot.getDecelerationBinSecond()).thenReturn(WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters);
-        rrtStar = new RRTStar(robot);
-        rrt = new RRT(robot);
+        when(robotController.getRobot().getAccelerationBinSecond()).thenReturn(WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters);
+        when(robotController.getRobot().getDecelerationBinSecond()).thenReturn(WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters);
+        rrtStar = new RRTStar(robotController);
+        rrt = new RRT(robotController);
         GridCoordinate start = new GridCoordinate(0, 0);
         GridCoordinate dest1 = new GridCoordinate(10, 10);
         GridCoordinate dest2 = new GridCoordinate(2, 3);
@@ -53,10 +65,10 @@ public class RRTStarTest {
     }
     @Test
     public void generatePathFromEmptyTest(){
-        when(robot.getAccelerationBinSecond()).thenReturn(WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters);
-        when(robot.getDecelerationBinSecond()).thenReturn(WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters);
-        rrtStar = new RRTStar(robot);
-        rrt = new RRT(robot);
+        when(robotController.getRobot().getAccelerationBinSecond()).thenReturn(WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters);
+        when(robotController.getRobot().getDecelerationBinSecond()).thenReturn(WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters);
+        rrtStar = new RRTStar(robotController);
+        rrt = new RRT(robotController);
         GridCoordinate start = new GridCoordinate(0, 0);
         GridCoordinate dest1 = new GridCoordinate(15, 10);
         ArrayList<Step> list;

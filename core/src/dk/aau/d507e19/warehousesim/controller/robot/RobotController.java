@@ -41,9 +41,9 @@ public class RobotController {
             case "Astar":
                 return new Astar(server, robot);
             case "RRT*":
-                return new RRTPlanner(RRTType.RRT_STAR, robot);
+                return new RRTPlanner(RRTType.RRT_STAR, this);
             case "RRT":
-                return new RRTPlanner(RRTType.RRT, robot);
+                return new RRTPlanner(RRTType.RRT, this);
             case "DummyPathFinder":
                 return new DummyPathFinder();
             default:

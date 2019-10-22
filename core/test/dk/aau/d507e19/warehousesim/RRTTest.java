@@ -5,6 +5,11 @@ import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRT;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
+import dk.aau.d507e19.warehousesim.controller.server.Reservation;
+import dk.aau.d507e19.warehousesim.controller.server.Server;
+import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -17,12 +22,22 @@ import static org.mockito.Mockito.when;
 
 public class RRTTest {
     private Node<GridCoordinate> tree,oneleft,oneright, oneoneright,twoleft,tworight,twooneright;
+    RobotController robotController = Mockito.mock(RobotController.class);
+    Server server = Mockito.mock(Server.class);
     Robot robot = Mockito.mock(Robot.class);
     private RRT rrt;
     private ArrayList<GridCoordinate> blockedNodeList = new ArrayList<>();
-    private ArrayList<GridCoordinate> nodesToBeBlocked = new ArrayList<>();
+    private ArrayList<Reservation> nodesToBeBlocked = new ArrayList<>();
+    @Before
+    public void initiateServer(){
+        when(robotController.getServer()).thenReturn(server);
+        when(robotController.getRobot()).thenReturn(robot);
+    }
+
+
     public void generateTree(){
-        rrt = new RRT(robot);
+
+        rrt = new RRT(robotController);
         tree = new Node<GridCoordinate>(new GridCoordinate(0,0),null, false);
         oneleft = new Node<GridCoordinate>(new GridCoordinate(0,1),null, false);
         oneright = new Node<GridCoordinate>(new GridCoordinate(1,0),null, false);
@@ -56,7 +71,7 @@ public class RRTTest {
     }
     @Test
     public void generatePathFromEmptyTest() {
-        rrt = new RRT(robot);
+        rrt = new RRT(robotController);
         GridCoordinate start = new GridCoordinate(0,0);
         GridCoordinate dest = new GridCoordinate(8,8);
         ArrayList<Step> list = rrt.generateRRTPathFromEmpty(start,dest);
@@ -66,7 +81,7 @@ public class RRTTest {
     }
     @Test
     public void generatePathTest() {
-        rrt = new RRT(robot);
+        rrt = new RRT(robotController);
         //todo find a way to check that tree is actually re-used
         GridCoordinate start = new GridCoordinate(0, 0);
         GridCoordinate dest1 = new GridCoordinate(6, 8);
@@ -89,17 +104,18 @@ public class RRTTest {
     public void assignBlockedNodesTest(){
         generateTree();
         //blockedNodesList
-        nodesToBeBlocked.add(oneleft.getData());
-        nodesToBeBlocked.add(oneright.getData());
-        nodesToBeBlocked.add(twoleft.getData());
+        RobotController robotController = Mockito.mock(RobotController.class);
+        TimeFrame timeFrame = Mockito.mock(TimeFrame.class);
+        Reservation oneLeftReservation = new Reservation(robotController.getRobot(), oneleft.getData(), timeFrame);
+        nodesToBeBlocked.add(oneLeftReservation);
+
 
         rrt.assignBlockedNodeStatus(nodesToBeBlocked);
 
         assertTrue(oneleft.getBlockedStatus());
-        assertTrue(oneright.getBlockedStatus());
-        assertTrue(twoleft.getBlockedStatus());
 
-        nodesToBeBlocked.remove(oneleft.getData());
+
+        nodesToBeBlocked.remove(oneLeftReservation);
         rrt.assignBlockedNodeStatus(nodesToBeBlocked);
         assertFalse(oneleft.getBlockedStatus());
 
@@ -127,9 +143,9 @@ public class RRTTest {
     }
     @Test
     public void improvePathTest(){
-        when(robot.getAccelerationBinSecond()).thenReturn(WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters);
-        when(robot.getDecelerationBinSecond()).thenReturn(WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters);
-        rrt = new RRT(robot);
+        when(robotController.getRobot().getAccelerationBinSecond()).thenReturn(WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters);
+        when(robotController.getRobot().getDecelerationBinSecond()).thenReturn(WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters);
+        rrt = new RRT(robotController);
         Node<GridCoordinate> n0 = new Node<>(new GridCoordinate(0,0),null,false);
         Node<GridCoordinate> n1 = new Node<>(new GridCoordinate(0,1),n0,false);
         Node<GridCoordinate> n2 = new Node<>(new GridCoordinate(0,2),n1,false);
@@ -145,30 +161,20 @@ public class RRTTest {
         rrt.allNodesMap.put(n3.getData(),n3);
         rrt.allNodesMap.put(n4.getData(),n4);
         rrt.allNodesMap.put(n5.getData(),n5);
-        rrt.allNodesMap.put(n6.getData(),n6);
-        rrt.allNodesMap.put(n7.getData(),n7);
-        rrt.allNodesMap.put(n8.getData(),n8
-        rrt.allNodesMap.put(n9.getData(),n9);
-        rrt.allNodesMap.put(n10.getData(),n10);
-        ArrayList<Step> expected = new ArrayList<>();
-        expected.add(new Step(n0.getData()));
-        expected.add(new Step(n9.getData()));
-        expected.add(new Step(n10.getData()));
-        expected.add(new Step(n8.getData()));
 
         rrt.improvePath(n5.getData());
         assertEquals(n2,n5.getParent());
     }
     @Test
     public void makePathTest(){
-        rrt = new RRT(robot);
+        rrt = new RRT(robotController);
         Node<GridCoordinate> n0 = new Node<>(new GridCoordinate(0,0),null,false);
         Node<GridCoordinate> n1 = new Node<>(new GridCoordinate(0,1),n0,false);
         assertEquals(2,rrt.makePath(n1).size());
     }
     @Test
     public void makePathBetweenTwoNodesTest(){
-        rrt = new RRT(robot);
+        rrt = new RRT(robotController);
         Node<GridCoordinate> n0 = new Node<>(new GridCoordinate(0,0),null,false);
         Node<GridCoordinate> n1 = new Node<>(new GridCoordinate(0,1),n0,false);
         Node<GridCoordinate> n2 = new Node<>(new GridCoordinate(0,2),n1,false);
@@ -180,10 +186,15 @@ public class RRTTest {
         generateTree();
         Node<GridCoordinate> currentNode = rrt.allNodesMap.get(new GridCoordinate(1,1));
         ArrayList<Node<GridCoordinate>> listOfNeighbours = rrt.findNodesInRadius(currentNode.getData(), 1);
-        ArrayList<Node<GridCoordinate>> actualNeighbours = new List<>();
-        assert
-
-
+        ArrayList<Node<GridCoordinate>> actualNeighbours = new ArrayList<>();
+        actualNeighbours.add(tree);
+        actualNeighbours.add(oneleft);
+        actualNeighbours.add(twoleft);
+        actualNeighbours.add(oneright);
+        actualNeighbours.add(tworight);
+        actualNeighbours.add(twooneright);
+        assertEquals(listOfNeighbours, actualNeighbours);
     }
+
 
 }
