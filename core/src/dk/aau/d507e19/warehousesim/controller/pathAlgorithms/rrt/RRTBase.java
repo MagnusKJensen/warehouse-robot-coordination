@@ -291,7 +291,7 @@ public abstract class RRTBase {
             fullyExplored = isFullyExplored();
         }
     }
-    private boolean isFullyExplored(){
+    protected boolean isFullyExplored(){
         if(allNodesMap.size() == WarehouseSpecs.wareHouseWidth*WarehouseSpecs.wareHouseHeight){
             return true;
         }
@@ -342,11 +342,5 @@ public abstract class RRTBase {
         }
         destinationNode = allNodesMap.get(destination);
         return makePath(destinationNode);
-    }
-    private void growKtimes(GridCoordinate destination, int k){
-        for(int i = 0; i < k; i++){
-            growRRT(root,k);
-
-        }
     }
 }
