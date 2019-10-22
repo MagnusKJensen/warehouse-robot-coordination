@@ -24,14 +24,10 @@ public class DummyPathFinder implements PathFinder {
         if(startX > endX){
             for(int i = startX; i >= endX; i--){
                 coordinates.add(new Step(i, y));
-                if(i == startX + 3)
-                    coordinates.add(new Step(i, y, 50));
             }
         } else {
             for(int i = startX; i <= endX; i++){
                 coordinates.add(new Step(i, y));
-                if(i == startX + 3)
-                    coordinates.add(new Step(i, y, 50));
             }
         }
 
