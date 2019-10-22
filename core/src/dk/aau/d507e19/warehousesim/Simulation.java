@@ -44,6 +44,8 @@ public class Simulation {
 
     private SimulationInputProcessor inputProcessor;
 
+    private long ordersProcessed = 0;
+
     public Simulation(SimulationApp simulationApp){
         this.simulationApp = simulationApp;
         this.gridCamera = simulationApp.getWorldCamera();
@@ -68,7 +70,7 @@ public class Simulation {
     private void initRobots() {
         // Auto generate robots
         for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++){
-            robots.add(new Robot(new Position(i, 0), i, this));
+            robots.add(new Robot(new Position(i*2, 0), i, this));
         }
     }
 
@@ -76,6 +78,7 @@ public class Simulation {
         tickCount += 1;
         for(Robot robot : robots){
             robot.update();
+
         }
         updateSideMenuScrollPanes();
         server.update();
@@ -187,7 +190,7 @@ public class Simulation {
         return fontCamera;
     }
 
-    public long getSimulatedTime() {
+    public long getSimulatedTimeInMS() {
         return tickCount * SimulationApp.MILLIS_PER_TICK;
     }
 
@@ -222,5 +225,13 @@ public class Simulation {
 
     public SimulationApp getSimulationApp() {
         return simulationApp;
+    }
+
+    public void incrementOrderProcessedCount(){
+        ++ordersProcessed;
+    }
+
+    public long getOrdersProcessed() {
+        return ordersProcessed;
     }
 }

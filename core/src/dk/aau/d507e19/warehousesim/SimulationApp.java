@@ -44,7 +44,9 @@ public class SimulationApp extends ApplicationAdapter {
 	private CameraMover cameraMover;
     private InputMultiplexer inputMultiplexer;
 
-	private String pathFinderSelected = "Astar";
+    // Currently using the following pathFinder and TaskAllocators.
+	private String pathFinderSelected = "DummyPathFinder";
+	private String taskAllocatorSelected = "DummyTaskAllocator";
 
 	@Override
 	public void create () {
@@ -262,5 +264,11 @@ public class SimulationApp extends ApplicationAdapter {
 		this.pathFinderSelected = pathFinderSelected;
 	}
 
+	public void setTaskAllocatorSelected(String taskAllocatorSelected) {
+		this.taskAllocatorSelected = taskAllocatorSelected;
+	}
 
+	public String getTaskAllocatorSelected() {
+		return taskAllocatorSelected;
+	}
 }

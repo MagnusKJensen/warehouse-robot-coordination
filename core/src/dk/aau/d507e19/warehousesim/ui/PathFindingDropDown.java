@@ -39,7 +39,7 @@ public class PathFindingDropDown {
     private void createDropDown() {
         final SelectBox<String> selectBox = new SelectBox<>(skin);
 
-        selectBox.setItems("Astar","DummyPathFinder", "RRT", "RRT*");
+        selectBox.setItems("DummyPathFinder", "Astar", "RRT", "RRT*");
 
         selectBox.addListener(new ChangeListener() {
             @Override
