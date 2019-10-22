@@ -66,7 +66,6 @@ public class Astar implements PathFinder {
 
     }
 
-    //TODO: possible to make this one function? cant see how because they are not totally the same.
     private void checkNeighborValidity() {
 
         //Checks every potential neighbor to currentTile the same way.
@@ -276,6 +275,9 @@ public class Astar implements PathFinder {
 
         // Creates finalPath list
         createPathListFromClosedList(currentTile, finalPath);
+
+        // TODO: add final step where it waits indefinitely.
+        // TODO: remove indefinitely wait from first coordinate? (Where it last ended)
 
         return new Path(Step.fromGridCoordinates(finalPath));
     }
