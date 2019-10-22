@@ -150,8 +150,8 @@ public class Astar implements PathFinder {
             AStarTile tileToDelete = null;
 
             // Sets the previous coordinates in neighbor tile
-            aStarNeighbor.setPreviousXposition(currentTile.getCurrentXPosition());
-            aStarNeighbor.setPreviousYposition(currentTile.getCurrentYPosition());
+            aStarNeighbor.setPreviousXPosition(currentTile.getCurrentXPosition());
+            aStarNeighbor.setPreviousYPosition(currentTile.getCurrentYPosition());
 
             // Calculates neighborTiles H, G and F
             aStarNeighbor.calculateH(xEndPosition, yEndPosition);
@@ -216,7 +216,7 @@ public class Astar implements PathFinder {
 
             // Find the object which matches the previous tiles coordinates
             for (int i = closedList.size() - 2; i > 0; i--) {
-                if (currentTile.getPreviousXposition() == prevTempTile.getCurrentXPosition() && currentTile.getGetPreviousYposition() == prevTempTile.getCurrentYPosition()) {
+                if (currentTile.getPreviousXPosition() == prevTempTile.getCurrentXPosition() && currentTile.getGetPreviousYPosition() == prevTempTile.getCurrentYPosition()) {
                     temp.add(new GridCoordinate(prevTempTile.getCurrentXPosition(), prevTempTile.getCurrentYPosition()));
                     currentTile = closedList.get(i);
                 }
