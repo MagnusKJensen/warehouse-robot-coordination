@@ -39,6 +39,8 @@ public class SideMenu {
     private Text ordersProcessed;
     private Text ordersPerMinute;
     private Text productsLeftInGrid;
+    private Text goalReachedText;
+    private Text ordersInQueue;
     private Color performanceMetricColor = Color.WHITE;
 
     private long msSinceStart;
@@ -61,11 +63,15 @@ public class SideMenu {
 
     private void addPerformanceMetrics() {
         this.productsLeftInGrid = new Text ("Products left: ", performanceMetricsOffset.x, performanceMetricsOffset.y, performanceMetricColor);
-        this.ordersProcessed = new Text("Orders Processed: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 25, performanceMetricColor);
-        this.ordersPerMinute = new Text("Orders / minute: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 50, performanceMetricColor);
+        this.ordersInQueue = new Text("Orders in queue: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 25, performanceMetricColor);
+        this.ordersProcessed = new Text("Orders Processed: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 50, performanceMetricColor);
+        this.ordersPerMinute = new Text("Orders / minute: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 75, performanceMetricColor);
+        this.goalReachedText = new Text("Goal not yet finished", performanceMetricsOffset.x, performanceMetricsOffset.y - 100, performanceMetricColor);
         menuStage.addActor(productsLeftInGrid);
+        menuStage.addActor(ordersInQueue);
         menuStage.addActor(ordersProcessed);
         menuStage.addActor(ordersPerMinute);
+        menuStage.addActor(goalReachedText);
     }
 
     public void update() {
@@ -75,6 +81,8 @@ public class SideMenu {
 
     private void updatePerformanceMetrics(){
         productsLeftInGrid.setText("Products left: " + simulationApp.getSimulation().getServer().getProductsAvailable().size());
+        goalReachedText.setText(simulationApp.getSimulation().getGoal().toString());
+        ordersInQueue.setText("Orders in queue: " + simulationApp.getSimulation().getServer().getOrderManager().ordersInQueue());
         updateOrdersPerMinute();
         updateOrdersProcessed();
     }
@@ -113,6 +121,7 @@ public class SideMenu {
     public void resetSideMenu(){
         binContentScrollPanes.resetScrollPaneContent();
         timeControlMenu.resetTimeControlButtons();
+
     }
 
     public TileInfoMenu getBinContentScrollPanes() {

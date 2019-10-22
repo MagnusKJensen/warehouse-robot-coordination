@@ -16,7 +16,6 @@ import java.util.LinkedList;
 public class RobotController {
     private Server server;
     private PathFinder pathFinder;
-    private TaskManager taskManager;
     private Robot robot;
 
     private LinkedList<Action> robotActions = new LinkedList<>();
