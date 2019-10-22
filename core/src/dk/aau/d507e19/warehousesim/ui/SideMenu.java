@@ -10,6 +10,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import dk.aau.d507e19.warehousesim.GraphicsManager;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 public class SideMenu {
     private ShapeRenderer shapeRenderer;
     private Stage menuStage;
@@ -31,6 +34,15 @@ public class SideMenu {
     private final Vector2 tileMenuOffset = new Vector2(10, 890);
     private final Vector2 pathFindingDropDownOffset = new Vector2(10, 430);
     private final Vector2 taskAllocationDropDownOffset = new Vector2(10, 360);
+    private final Vector2 performanceMetricsOffset = new Vector2(10, 290);
+
+    private Text ordersProcessed;
+    private Text ordersPerMinute;
+    private Text productsLeftInGrid;
+    private Color performanceMetricColor = Color.WHITE;
+
+    private long msSinceStart;
+    private double ordersPerMinuteCount;
 
     public SideMenu(Viewport menuViewport, final SimulationApp simApp) {
         textButtonStyle = new TextButtonStyle();
@@ -44,10 +56,45 @@ public class SideMenu {
         binContentScrollPanes = new TileInfoMenu(menuStage, simulationApp, tileMenuOffset, this);
         pathFindingDropDown = new PathFindingDropDown(menuStage, simulationApp, pathFindingDropDownOffset, this);
         taskAllocationDropDown = new TaskAllocationDropDown(menuStage, simulationApp, taskAllocationDropDownOffset, this);
+        addPerformanceMetrics();
+    }
+
+    private void addPerformanceMetrics() {
+        this.productsLeftInGrid = new Text ("Products left: ", performanceMetricsOffset.x, performanceMetricsOffset.y, performanceMetricColor);
+        this.ordersProcessed = new Text("Orders Processed: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 25, performanceMetricColor);
+        this.ordersPerMinute = new Text("Orders / minute: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 50, performanceMetricColor);
+        menuStage.addActor(productsLeftInGrid);
+        menuStage.addActor(ordersProcessed);
+        menuStage.addActor(ordersPerMinute);
     }
 
     public void update() {
+        updatePerformanceMetrics();
         menuStage.act();
+    }
+
+    private void updatePerformanceMetrics(){
+        productsLeftInGrid.setText("Products left: " + simulationApp.getSimulation().getServer().getProductsAvailable().size());
+        updateOrdersPerMinute();
+        updateOrdersProcessed();
+    }
+
+    private void updateOrdersProcessed() {
+        String str = "Orders Processed: " + simulationApp.getSimulation().getOrdersProcessed();
+        ordersProcessed.setText(str);
+    }
+
+    private void updateOrdersPerMinute() {
+        this.msSinceStart = simulationApp.getSimulation().getSimulatedTimeInMS();
+
+        if(simulationApp.getSimulation().getOrdersProcessed() == 0) ordersPerMinute.setText("Orders / minute: 0");
+        else {
+            this.ordersPerMinuteCount =  simulationApp.getSimulation().getOrdersProcessed() / ((double) msSinceStart / 1000 / 60);
+            DecimalFormat df = new DecimalFormat("0.000");
+            df.setRoundingMode(RoundingMode.HALF_UP);
+            String orderPerSecondString = "Orders / minute: " + df.format(ordersPerMinuteCount);
+            ordersPerMinute.setText(orderPerSecondString);
+        }
     }
 
     public void render(OrthographicCamera camera) {

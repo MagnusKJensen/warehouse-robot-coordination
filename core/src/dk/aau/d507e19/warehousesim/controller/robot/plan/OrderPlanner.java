@@ -6,7 +6,9 @@ import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
+import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
+import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 
 import java.util.ArrayList;
@@ -119,6 +121,7 @@ public class OrderPlanner {
             hasIdleRobotOnTop = false;
             if(tile.getBin() != null){
                 if(tile.getBin().hasProducts(order.getProduct(), order.getAmount()))
+
                     // TODO: 21/10/2019 VERY TEMP! An idle robot on top of the product, should not stop the robot from getting it! - Philip
                     for (Robot robot : server.getAllRobots()) {
                         if(robot.getApproximateGridCoordinate().equals(new GridCoordinate(tile.getPosX(), tile.getPosY())) &&
@@ -127,7 +130,7 @@ public class OrderPlanner {
                         ) hasIdleRobotOnTop = true;
                     }
 
-                if(!hasIdleRobotOnTop) tilesWithEnoughProds.add(tile);
+                    if(!hasIdleRobotOnTop) tilesWithEnoughProds.add(tile);
             }
         }
 

@@ -29,12 +29,6 @@ public class RobotController {
         server.getReservationManager().reserve(robot, robot.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks()));
     }
 
-    public RobotController(Server server, PathFinder pathFinder, TaskManager taskManager, Robot robot) {
-        this.server = server;
-        this.pathFinder = pathFinder;
-        this.taskManager = taskManager;
-    }
-
     private PathFinder generatePathFinder(String pathFinderString) {
         switch (pathFinderString) {
             case "Astar":

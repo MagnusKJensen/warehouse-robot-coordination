@@ -57,7 +57,7 @@ public class Server {
     }
 
     public long getTimeInSeconds() {
-        return simulation.getSimulatedTime();
+        return simulation.getSimulatedTimeInMS();
     }
 
     public long getTimeInTicks(){
@@ -91,7 +91,7 @@ public class Server {
         }
     }
 
-    protected ArrayList<Product> getProductsAvailable() {
+    public ArrayList<Product> getProductsAvailable() {
         return productsAvailable;
     }
 
@@ -102,5 +102,9 @@ public class Server {
 
     public ArrayList<GridCoordinate> getPickerPoints() {
         return pickerPoints;
+    }
+
+    public Simulation getSimulation() {
+        return simulation;
     }
 }
