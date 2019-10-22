@@ -18,7 +18,7 @@ public class MovementPredictor {
         for (int i = 0; i < lines.size(); i++) {
             Line line = lines.get(i);
             if(i > 0)
-                startTimeTicks = reservations.get(reservations.size() - 1).getTimeFrame().getEnd();
+                startTimeTicks = reservations.get(reservations.size() - 1).getTimeFrame().getEnd() - paddingTimeTicks;
             reservations.addAll(calculateReservations(robot, line, startTimeTicks, paddingTimeTicks));
         }
 
