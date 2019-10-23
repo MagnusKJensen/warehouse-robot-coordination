@@ -2,6 +2,7 @@ package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.chp;
 
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 
@@ -12,6 +13,7 @@ public class CHNodeFactory {
     private Heuristic heuristic;
     private GCostCalculator gCostCalculator;
     private RobotController robotController;
+    private static final DummyPathFinder dummyPathFinder = new DummyPathFinder();
 
     public CHNodeFactory(Heuristic heuristic, GCostCalculator gCostCalculator, RobotController robotController) {
         this.heuristic = heuristic;
@@ -34,9 +36,10 @@ public class CHNodeFactory {
         return new CHNode(newPath.getLastStep().getGridCoordinate(), parent, newPath, gCost, hCost);
     }
 
-    public CHNode createInitialNode(GridCoordinate gridCoordinate){
+    public CHNode createInitialNode(GridCoordinate gridCoordinate, GridCoordinate target){
         Path initialPath = createInitialPath(gridCoordinate);
-        return new CHNode(gridCoordinate, initialPath, 0, 0);
+        double hCost = heuristic.getHeuristic(initialPath, target, robotController);
+        return new CHNode(gridCoordinate, initialPath, 0, hCost);
     }
 
     private static Path createInitialPath(GridCoordinate gridCoordinate){
@@ -63,7 +66,7 @@ public class CHNodeFactory {
                 waitingTime += parent.getWaitTimeInTicks();
 
             ArrayList<Step> waitingStepList = new ArrayList<>();
-            waitingStepList.add(new Step(parent.getGridCoordinate(), waitTimeTicks));
+            waitingStepList.add(new Step(parent.getGridCoordinate(), waitingTime + waitTimeTicks));
             return new Path(waitingStepList);
         }
 
@@ -78,6 +81,11 @@ public class CHNodeFactory {
         }
 
         return new Path(extendedSteps);
+    }
+
+    // todo temporary
+    private static Path simplePath(GridCoordinate start, GridCoordinate end){
+        return dummyPathFinder.calculatePath(start, end).get();
     }
 
 

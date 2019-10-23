@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.chp;
 
+import dk.aau.d507e19.warehousesim.TimeUtils;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
@@ -15,7 +16,7 @@ import java.util.PriorityQueue;
 
 public class CHPathfinder implements PathFinder {
 
-    private static final long MAXIMUM_WAIT_TIME = 90;
+    private static final long MAXIMUM_WAIT_TIME = TimeUtils.secondsToTicks(15);
     private final RobotController robotController;
     private final Server server;
 
@@ -44,15 +45,18 @@ public class CHPathfinder implements PathFinder {
         if(start.equals(destination))
             return Optional.of(Path.oneStepPath(new Step(start)));
 
-        if(server.getReservationManager().isReserved(destination, TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks() + 400)))
+        if(server.getReservationManager().isReservedIndefinitely(destination))
             return Optional.empty();
 
         PriorityQueue<CHNode> openList = new PriorityQueue<>();
         PriorityQueue<CHNode> closedList = new PriorityQueue<>(); // todo integrate for performance
 
-        openList.add(nodeFactory.createInitialNode(start));
+        openList.add(nodeFactory.createInitialNode(start, destination));
+
+        int iterationCount = 0;
 
         while (!openList.isEmpty()){
+            iterationCount++;
             CHNode bestCandidate = openList.poll();
             closedList.add(bestCandidate);
 
@@ -60,12 +64,17 @@ public class CHPathfinder implements PathFinder {
 
             //Check if destination is reached
             for(CHNode successor : successors)
-                if(successor.getGridCoordinate().equals(destination))
+                if(successor.getGridCoordinate().equals(destination)){
+
+                    /* // efficiency stats
+                    System.out.print("Iterations to calculate path : " + iterationCount);
+                    int manhattanDistance = Math.abs(start.getX() - destination.getX()) + Math.abs(start.getY() - destination.getY());
+                    System.out.println(" || Manhattan distance : " + manhattanDistance + " || Path length : " + successor.getPath().getFullPath().size());*/
                     return Optional.of(successor.getPath());
+                }
 
             openList.addAll(successors);
         }
-
 
         return Optional.empty();
     }
@@ -79,12 +88,12 @@ public class CHPathfinder implements PathFinder {
 
         successors.add(nodeFactory.createWaitingNode(parent, STANDARD_WAIT_TIME_IN_TICKS));
 
-        successors.removeIf(this::isInvalidNode);
+        successors.removeIf((node) -> isInvalidNode(node, target));
 
         return successors;
     }
 
-    private boolean isInvalidNode(CHNode node){
+    private boolean isInvalidNode(CHNode node, GridCoordinate target){
         Step lastStep = node.getPath().getLastStep();
         if(lastStep.isWaitingStep() && lastStep.getWaitTimeInTicks() > MAXIMUM_WAIT_TIME)
             return true;
@@ -95,8 +104,14 @@ public class CHPathfinder implements PathFinder {
 
         Reservation nodeReservation = reservations.get(reservations.size() - 1);
 
-        // todo (Bug: will not ignore it's own reservation)
-        return server.getReservationManager().isReserved(node.getGridCoordinate(), nodeReservation.getTimeFrame());
+
+        if(nodeReservation.getGridCoordinate().equals(target)){
+            return server.getReservationManager().hasConflictingReservations(reservations) ||
+                    server.getReservationManager().isReserved(target, TimeFrame.indefiniteTimeFrameFrom(nodeReservation.getTimeFrame().getStart()));
+        }else{
+            // todo (Bug: will not ignore it's own reservation)
+            return server.getReservationManager().hasConflictingReservations(reservations);
+        }
     }
 
     // Returns all neighbours within bounds

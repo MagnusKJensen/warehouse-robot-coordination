@@ -48,9 +48,16 @@ public class MovementPredictor {
         ArrayList<GridCoordinate> coordinates = line.toCoordinates();
         SpeedCalculator lineSpeedCalculator = new SpeedCalculator(robot, line);
 
+        // First step might be a waiting step
+        long waitingTime = 0L;
+        if(line.getStart().isWaitingStep())
+            waitingTime = line.getStart().getWaitTimeInTicks();
+        startTimeTicks += waitingTime;
+
         int leaveDistance = coordinates.get(1).distanceFrom(coordinates.get(0));
         long leaveTime = lineSpeedCalculator.amountOfTicksToReach(leaveDistance);
-        reservations.add(new Reservation(robot, line.getStart().getGridCoordinate(), new TimeFrame(startTimeTicks - paddingTicks, startTimeTicks + leaveTime + paddingTicks)));
+        reservations.add(new Reservation(robot, line.getStart().getGridCoordinate(),
+                new TimeFrame(startTimeTicks - waitingTime - paddingTicks, startTimeTicks + leaveTime + paddingTicks)));
 
         GridCoordinate startCoordinate = coordinates.get(0);
         for(int i = 1; i < coordinates.size(); i++){
