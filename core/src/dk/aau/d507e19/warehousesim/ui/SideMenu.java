@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.ui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -30,11 +31,11 @@ public class SideMenu {
     public final TextButtonStyle textButtonStyle;
 
     private Color menuBGColor = new Color(75f / 255f, 75f / 255f, 75f / 255f, 1);
-    private final Vector2 timeControlOffset = new Vector2(10, 0);
-    private final Vector2 tileMenuOffset = new Vector2(10, 890);
-    private final Vector2 pathFindingDropDownOffset = new Vector2(10, 430);
-    private final Vector2 taskAllocationDropDownOffset = new Vector2(10, 360);
-    private final Vector2 performanceMetricsOffset = new Vector2(10, 290);
+    private Vector2 timeControlOffset;
+    private Vector2 tileInfoScrollPaneOffset;
+    private Vector2 pathFindingDropDownOffset;
+    private Vector2 taskAllocationDropDownOffset;
+    private Vector2 performanceMetricsOffset;
 
     private Text ordersProcessed;
     private Text ordersPerMinute;
@@ -47,6 +48,7 @@ public class SideMenu {
     private double ordersPerMinuteCount;
 
     public SideMenu(Viewport menuViewport, final SimulationApp simApp) {
+        updateOffSetsToWindowSize();
         textButtonStyle = new TextButtonStyle();
         textButtonStyle.font = GraphicsManager.getFont();
 
@@ -55,10 +57,11 @@ public class SideMenu {
         menuStage = new Stage(menuViewport);
         simApp.getInputMultiplexer().addProcessor(menuStage);
         timeControlMenu = new TimeControlMenu(menuStage, simulationApp, timeControlOffset, this);
-        binContentScrollPanes = new TileInfoMenu(menuStage, simulationApp, tileMenuOffset, this);
+        binContentScrollPanes = new TileInfoMenu(menuStage, simulationApp, tileInfoScrollPaneOffset, this);
         pathFindingDropDown = new PathFindingDropDown(menuStage, simulationApp, pathFindingDropDownOffset, this);
         taskAllocationDropDown = new TaskAllocationDropDown(menuStage, simulationApp, taskAllocationDropDownOffset, this);
         addPerformanceMetrics();
+
     }
 
     private void addPerformanceMetrics() {
@@ -108,6 +111,28 @@ public class SideMenu {
     public void render(OrthographicCamera camera) {
         renderBackground(camera);
         menuStage.draw();
+    }
+
+    public void resize(){
+        updateOffSetsToWindowSize();
+        productsLeftInGrid.changeOffSet(performanceMetricsOffset);
+        ordersInQueue.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 25);
+        ordersProcessed.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 50);
+        ordersPerMinute.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 75);
+        goalReachedText.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 100);
+
+        pathFindingDropDown.changeOffSet(pathFindingDropDownOffset);
+        timeControlMenu.changeOffset(timeControlOffset);
+        binContentScrollPanes.changeOffset(tileInfoScrollPaneOffset);
+        taskAllocationDropDown.changeOffSet(taskAllocationDropDownOffset);
+    }
+
+    private void updateOffSetsToWindowSize() {
+        timeControlOffset = new Vector2(0, 0);
+        tileInfoScrollPaneOffset = new Vector2(0, Gdx.graphics.getHeight());
+        pathFindingDropDownOffset = new Vector2(0, Gdx.graphics.getHeight() - 370);
+        taskAllocationDropDownOffset = new Vector2(0, Gdx.graphics.getHeight() - 440);
+        performanceMetricsOffset = new Vector2(10, Gdx.graphics.getHeight() - 510);
     }
 
     private void renderBackground(OrthographicCamera camera){

@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.server;
 
+import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.exception.DoubleReservationException;
 
@@ -36,8 +37,11 @@ public class ReservationTile {
 
     public void addReservation(Reservation reservation) {
         for(Reservation res : reservations){
-            if(res.getTimeFrame().overlaps(reservation.getTimeFrame())){}
-                //throw new DoubleReservationException(res, reservation);
+            if(res.getTimeFrame().overlaps(reservation.getTimeFrame()))
+                // TODO: 23/10/2019 Temporary to allow DummyPathFinder to work
+                if(!SimulationApp.pathFinderSelected.equals("DummyPathFinder")){
+                    throw new DoubleReservationException(res, reservation);
+                }
         }
 
         reservations.add(reservation);

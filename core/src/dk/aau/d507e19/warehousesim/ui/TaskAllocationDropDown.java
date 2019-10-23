@@ -18,6 +18,8 @@ public class TaskAllocationDropDown {
     private Vector2 screenOffSet;
     private Text textAboveDropDown;
     private final String TEXT_ABOVE_DROP_DOWN = "Select task allocating algorithm";
+    private SelectBox<String> selectBox;
+    private int PADDING_LEFT_SIDE = 10;
 
     public TaskAllocationDropDown(Stage menuStage, SimulationApp simulationApp, Vector2 screenOffSet, SideMenu sideMenu) {
         this.sideMenu = sideMenu;
@@ -27,14 +29,14 @@ public class TaskAllocationDropDown {
         this.skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 
         // Create text above the dropdown menu
-        this.textAboveDropDown = new Text(TEXT_ABOVE_DROP_DOWN, screenOffSet.x, screenOffSet.y, Color.CORAL);
+        this.textAboveDropDown = new Text(TEXT_ABOVE_DROP_DOWN, screenOffSet.x + PADDING_LEFT_SIDE, screenOffSet.y, Color.CORAL);
         menuStage.addActor(textAboveDropDown);
 
         createDropDown();
     }
 
     private void createDropDown() {
-        final SelectBox<String> selectBox = new SelectBox<>(skin);
+        selectBox = new SelectBox<>(skin);
         // If a task allocator is added, also add it to the server.OrderManager.generateTaskAllocator()
         selectBox.setItems("DummyTaskAllocator", "NaiveShortestDistanceTaskAllocator", "ShortestDistanceTaskAllocator");
 
@@ -48,10 +50,14 @@ public class TaskAllocationDropDown {
         });
 
         selectBox.sizeBy(260, 0);
-        selectBox.setPosition(screenOffSet.x, screenOffSet.y - 55);
+        selectBox.setPosition(screenOffSet.x + PADDING_LEFT_SIDE, screenOffSet.y - 55);
 
         menuStage.addActor(selectBox);
     }
 
-
+    public void changeOffSet(Vector2 offSet){
+        this.screenOffSet = offSet;
+        textAboveDropDown.changeOffSet(screenOffSet.x + PADDING_LEFT_SIDE, screenOffSet.y);
+        selectBox.setPosition(screenOffSet.x + PADDING_LEFT_SIDE, screenOffSet.y - 55);
+    }
 }
