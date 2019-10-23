@@ -7,7 +7,8 @@ public class WarehouseSpecs {
     public static final float binSizeInMeters = 1;
     public static final int productsPerBin = 15;
     public static final int SKUsPerBin = 9;
-    public static final int SKUs = 400;
+    // Cannot be below 10 due to a test.
+    public static final int SKUs = 100;
     public static final int productsInStock = 5001;
     public static final int numberOfRobots = 3;
     public static final float robotTopSpeed = 3f; // Meters/second
