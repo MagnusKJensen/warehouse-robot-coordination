@@ -120,7 +120,6 @@ public class Astar implements PathFinder {
         if (rightNeighbor.getX() <= server.getGridWidth()) {
             createTemporaryPath(currentTile, rightNeighbor);
             if (currentTile.getCurrentXPosition() + 1 < grid.length && !(grid[rightNeighbor.getX()][rightNeighbor.getY()].isBlocked())) {
-
                 if(!(reservationManager.isReserved(rightNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
                     addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() + 1][currentTile.getCurrentYPosition()]);
                 }
@@ -251,12 +250,14 @@ public class Astar implements PathFinder {
     @Override
     public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
         clear();
-        xEndposition = destination.getX();
-        yEndposition = destination.getY();
-
         xStart = start.getX();
         yStart = start.getY();
 
+        xEndposition = destination.getX();
+        yEndposition = destination.getY();
+
+        System.out.println("start" + xStart+ " " + yStart);
+        System.out.println("end" + xEndposition+ " " + yEndposition);
         // Adds the starting tile to closed list.
         addStartTileToClosedList(start.getX(), start.getY());
 
