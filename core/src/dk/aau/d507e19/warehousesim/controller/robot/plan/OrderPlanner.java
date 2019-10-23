@@ -22,7 +22,7 @@ public class OrderPlanner {
     private PathFinder pathFinder;
     private Server server;
     private RobotController robotController;
-    private int padding = 10;
+    private int padding = 0;
 
     public OrderPlanner(RobotController robotController) {
         this.pathFinder = robotController.getPathFinder();
