@@ -25,6 +25,11 @@ public class MovementPredictor {
         return combineChainedReservations(reservations);
     }
 
+    public static long timeToTraverse(Robot robot, Path path){
+        ArrayList<Reservation> reservations = calculateReservations(robot, path, 0, 0);
+        return reservations.get(reservations.size() - 1).getTimeFrame().getEnd();
+    }
+
     public static ArrayList<Reservation> calculateReservations(Robot robot, Line line, long startTimeTicks, long paddingTicks) {
         ArrayList<Reservation> reservations = new ArrayList<>();
         ArrayList<GridCoordinate> coordinates = line.toCoordinates();

@@ -18,36 +18,21 @@ import java.util.Collections;
 public class Astar implements PathFinder {
 
     private AStarTile[][] grid;
-    private int xEndposition;
-    private int yEndposition;
-    int xStart;
-    int yStart;
+    private int xEndPosition;
+    private int yEndPosition;
 
-    ArrayList<GridCoordinate> finalPath = new ArrayList<>();
+    private ArrayList<GridCoordinate> finalPath = new ArrayList<>();
 
-    ArrayList<AStarTile> openList = new ArrayList<>();
-    ArrayList<AStarTile> closedList = new ArrayList<>();
+    private ArrayList<AStarTile> openList = new ArrayList<>();
+    private ArrayList<AStarTile> closedList = new ArrayList<>();
 
     private AStarTile currentTile;
-    private long simulatedTimeInSeconds;
-    private int robotID;
-    private float robotMaxSpeedPerBin;
     private final ReservationManager reservationManager;
     private Server server;
-    Robot robot;
-
-    //private PathManager pathManager;
-    GridCoordinate leftNeighbor;
-    GridCoordinate rightNeighbor;
-    GridCoordinate aboveNeighbor;
-    GridCoordinate downstairsNeighbor;
-
+    private Robot robot;
 
     public Astar(Server server, Robot robot) {
-        this.robotID = robot.getRobotID();
         this.grid = fillGrid(server.getGridWidth(), server.getGridHeight());
-        this.robotMaxSpeedPerBin = robot.getMaxSpeedBinsPerSecond();
-        this.simulatedTimeInSeconds = server.getTimeInSeconds();
         this.reservationManager = server.getReservationManager();
         this.robot = robot;
         this.server = server;
@@ -57,7 +42,7 @@ public class Astar implements PathFinder {
         return grid;
     }
 
-    public AStarTile[][] fillGrid(int gridLength, int gridHeight) {
+    private AStarTile[][] fillGrid(int gridLength, int gridHeight) {
         AStarTile[][] grid = new AStarTile[gridLength][gridHeight];
         // Fills grid with tiles matching the coordinates
         for (int i = 0; i < gridLength; i++) {
@@ -68,7 +53,7 @@ public class Astar implements PathFinder {
         return grid;
     }
 
-    public void addStartTileToClosedList(int xStartposition, int yStartposition) {
+    private void addStartTileToClosedList(int xStartposition, int yStartposition) {
 
         // Adds startTile to closedList
         closedList.add(grid[xStartposition][yStartposition]);
@@ -81,132 +66,174 @@ public class Astar implements PathFinder {
 
     }
 
-    public void checkNeighborValidity() {
+    private void checkNeighborValidity() {
+
         //Checks every potential neighbor to currentTile the same way.
-        ArrayList<GridCoordinate> temporaryPath = new ArrayList<>();
-        aboveNeighbor = new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition() + 1);
-        downstairsNeighbor = new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition() - 1);
-        leftNeighbor = new GridCoordinate(currentTile.getCurrentXPosition() - 1, currentTile.getCurrentYPosition());
-        rightNeighbor = new GridCoordinate(currentTile.getCurrentXPosition() + 1, currentTile.getCurrentYPosition());
+        GridCoordinate aboveNeighbor = new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition() + 1);
+        GridCoordinate downstairsNeighbor = new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition() - 1);
+        GridCoordinate leftNeighbor = new GridCoordinate(currentTile.getCurrentXPosition() - 1, currentTile.getCurrentYPosition());
+        GridCoordinate rightNeighbor = new GridCoordinate(currentTile.getCurrentXPosition() + 1, currentTile.getCurrentYPosition());
 
         // Checks if neighbor is valid with a valid coordinate
         if (downstairsNeighbor.getY() >= 0) {
-            temporaryPath  = createTemporaryPath(currentTile, downstairsNeighbor);
+
+            // If the current tile coordinates are valid, and the neighbor tile is not blocked then proceed.
             if (currentTile.getCurrentYPosition() - 1 >= 0 && !(grid[downstairsNeighbor.getX()][downstairsNeighbor.getY()].isBlocked())) {
-                // Adds Neighbor to openList if valid
-                if(!(reservationManager.isReserved(downstairsNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
-                    addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() - 1]);
-                }
+
+                // Add neighbor tile to openList.
+                addNeighborTileToOpenList(downstairsNeighbor);
             }
         }
+
+        // Checks if neighbor is valid with a valid coordinate
         if (aboveNeighbor.getY() <= server.getGridHeight()) {
-            temporaryPath = createTemporaryPath(currentTile, aboveNeighbor);
+
+            // If the current tile coordinates are valid, and the neighbor tile is not blocked then proceed.
             if (currentTile.getCurrentYPosition() + 1 < grid.length && !(grid[aboveNeighbor.getX()][aboveNeighbor.getY()].isBlocked())) {
 
-                if(!(reservationManager.isReserved(aboveNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
-                    addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition()][currentTile.getCurrentYPosition() + 1]);
-                }
+                // Add neighbor tile to openList.
+                addNeighborTileToOpenList(aboveNeighbor);
             }
         }
+
+        // Checks if neighbor is valid with a valid coordinate
         if (leftNeighbor.getX() >= 0) {
-            temporaryPath = createTemporaryPath(currentTile, leftNeighbor);
+
+            // If the current tile coordinates are valid, and the neighbor tile is not blocked then proceed.
             if (currentTile.getCurrentXPosition() - 1 >= 0 && !(grid[leftNeighbor.getX()][leftNeighbor.getY()].isBlocked())) {
 
-                if(!(reservationManager.isReserved(leftNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
-                    addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() - 1][currentTile.getCurrentYPosition()]);
-                }
+                // Add neighbor tile to openList.
+                addNeighborTileToOpenList(leftNeighbor);
             }
         }
+
+        // Checks if neighbor is valid with a valid coordinate
         if (rightNeighbor.getX() <= server.getGridWidth()) {
-            createTemporaryPath(currentTile, rightNeighbor);
+
+            // If the current tile coordinates are valid, and the neighbor tile is not blocked then proceed.
             if (currentTile.getCurrentXPosition() + 1 < grid.length && !(grid[rightNeighbor.getX()][rightNeighbor.getY()].isBlocked())) {
-                if(!(reservationManager.isReserved(rightNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
-                    addNeighborTileToOpenList(grid[currentTile.getCurrentXPosition() + 1][currentTile.getCurrentYPosition()]);
-                }
+
+                // Add neighbor tile to openList.
+                addNeighborTileToOpenList(rightNeighbor);
             }
         }
     }
 
-    public TimeFrame getTimeFrameFromLastReservation(ArrayList<GridCoordinate> tempPath) {
-        Path path = new Path(Step.fromGridCoordinates(tempPath));
+    private TimeFrame getTimeFrameFromLastReservation(ArrayList<GridCoordinate> tempPath) {
+
         ArrayList<Reservation> listOfReservations;
+
+        // Makes the tempPath to steps
+        Path path = new Path(Step.fromGridCoordinates(tempPath));
+
+        // Calculates the path into a list of reservations.
         listOfReservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
 
+        // Returns the timeFrame of the last reservations.
         return listOfReservations.get(listOfReservations.size()-1).getTimeFrame();
-
     }
 
-    public void addNeighborTileToOpenList(AStarTile neighborTile) {
-        // Makes new dummy tile
-        AStarTile tileToDelete = null;
+    private void addNeighborTileToOpenList(GridCoordinate gcNeighbor) {
 
-        // Sets the previous coordinates in neighbor tile
-        neighborTile.setPreviousXposition(currentTile.getCurrentXPosition());
-        neighborTile.setPreviousYposition(currentTile.getCurrentYPosition());
+        ArrayList<GridCoordinate> temporaryPath;
 
-        // Calculates neighborTiles H, G and F
-        neighborTile.calculateH(xEndposition, yEndposition);
-        neighborTile.calculateG(currentTile.getG());
-        neighborTile.calculateF();
+        // Make AstarTile from neighbor.
+        AStarTile aStarNeighbor = grid[gcNeighbor.getX()][gcNeighbor.getY()];
 
-        // Checks if neighborTile is already in openList.
-        for (AStarTile tile : openList) {
-            if (neighborTile.getCurrentXPosition() == tile.getCurrentXPosition() && neighborTile.getCurrentYPosition() == tile.getCurrentYPosition()) {
+        // Creates a temp path to the neighbor tile.
+        temporaryPath  = createTemporaryPath(currentTile, gcNeighbor);
+
+        // If the neighbor tile is not reserved in the right timeFrame, then proceed.
+        if(!(reservationManager.isReserved(gcNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
+
+            // Makes new dummy tile
+            AStarTile tileToDelete = null;
+
+            // Sets the previous coordinates in neighbor tile
+            aStarNeighbor.setPreviousXPosition(currentTile.getCurrentXPosition());
+            aStarNeighbor.setPreviousYPosition(currentTile.getCurrentYPosition());
+
+            // Calculates neighborTiles H, G and F
+            aStarNeighbor.calculateH(xEndPosition, yEndPosition);
+            aStarNeighbor.calculateG(currentTile.getG());
+            aStarNeighbor.calculateF();
+
+            // Checks if neighborTile is already in openList.
+            for (AStarTile tile : openList) {
 
                 // If a tile with the same coordinates is already in openList, then check which has the lowest F value.
-                // If the existing tile in openList has the highest F, then it is copied into tileToDelete
-                if (neighborTile.getF() <= tile.getF()) {
-                    tileToDelete = tile;
+                if (aStarNeighbor.getCurrentXPosition() == tile.getCurrentXPosition() && aStarNeighbor.getCurrentYPosition() == tile.getCurrentYPosition()) {
 
-                    // If the neighborTile has the highest F, then return and dont add to openList.
-                } else return;
+                    // If the existing tile in openList has the highest F, then it is copied into tileToDelete
+                    if (aStarNeighbor.getF() <= tile.getF()) {
+                        tileToDelete = tile;
+
+                        // If the neighborTile has the highest F, then return and dont add to openList.
+                    } else return;
+                }
             }
+
+            // If there is a tile to delete, then delete
+            if (tileToDelete != null)
+                openList.remove(tileToDelete);
+
+            // Add neighbor tile to openList
+            openList.add(aStarNeighbor);
         }
-
-        // If there is a tile to delete, then delete
-        if (tileToDelete != null)
-            openList.remove(tileToDelete);
-
-        // Add neighbor tile to openList
-        openList.add(neighborTile);
 
     }
 
-    public void addTilesToClosedList() {
+    private void addTilesToClosedList() {
         // Blocks the current tile in the grid before it is moved to closedList.
         grid[openList.get(0).getCurrentXPosition()][openList.get(0).getCurrentYPosition()].setBlocked(true);
+
+        // Adds tile to closedList
         closedList.add(openList.get(0));
 
         // Removes the tile from the openList.
         openList.remove(0);
     }
 
-    public ArrayList<GridCoordinate> createTemporaryPath(AStarTile currentTile, GridCoordinate neighborTile) {
-        ArrayList<GridCoordinate> temp = new ArrayList<>();
-        if (closedList.size() < 2) {
-            temp.add(new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition()));
-            temp.add(neighborTile);
-            return temp;
-        }
-        AStarTile prevTempTile = closedList.get(closedList.size() - 2);
-        temp.add(new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition()));
+    private ArrayList<GridCoordinate> createTemporaryPath(AStarTile currentTile, GridCoordinate neighborTile) {
 
-        for (int i = closedList.size() - 2; i > 0; i--) {
-            if (currentTile.getPreviousXposition() == prevTempTile.getCurrentXPosition() && currentTile.getGetPreviousYposition() == prevTempTile.getCurrentYPosition()) {
-                temp.add(new GridCoordinate(prevTempTile.getCurrentXPosition(), prevTempTile.getCurrentYPosition()));
-                currentTile = closedList.get(i);
-            }
-            prevTempTile = closedList.get(i - 1);
-        }
-        temp.add(new GridCoordinate(closedList.get(0).getCurrentXPosition(), closedList.get(0).getCurrentYPosition()));
-        Collections.reverse(temp);
+        ArrayList<GridCoordinate> temp = new ArrayList<>();
+
+        // Creates temp path of gridCoordinates
+        createPathListFromClosedList(currentTile, temp);
+
+        // Adds the last gridCoordinate to list.
         temp.add(neighborTile);
+
         return temp;
     }
 
-    public void calculatePath() {
+    private void createPathListFromClosedList(AStarTile currentTile, ArrayList<GridCoordinate> temp) {
+
+        // If the list is bigger than one object, then go through the whole list
+        if (closedList.size() > 1) {
+            AStarTile prevTempTile = closedList.get(closedList.size() - 2);
+            temp.add(new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition()));
+
+            // Find the object which matches the previous tiles coordinates
+            for (int i = closedList.size() - 2; i > 0; i--) {
+                if (currentTile.getPreviousXPosition() == prevTempTile.getCurrentXPosition() && currentTile.getGetPreviousYPosition() == prevTempTile.getCurrentYPosition()) {
+                    temp.add(new GridCoordinate(prevTempTile.getCurrentXPosition(), prevTempTile.getCurrentYPosition()));
+                    currentTile = closedList.get(i);
+                }
+                prevTempTile = closedList.get(i - 1);
+            }
+        }
+
+        // Add the first object to list
+        temp.add(new GridCoordinate(closedList.get(0).getCurrentXPosition(), closedList.get(0).getCurrentYPosition()));
+
+        // Reverses list
+        Collections.reverse(temp);
+    }
+
+    private void calculatePath() {
         // While is true if the currentTile does not have the same x coordinate and the same y coordinate as the end Tile.
-        while (!(currentTile.getCurrentXPosition() == xEndposition && currentTile.getCurrentYPosition() == yEndposition)) {
+        while (!(currentTile.getCurrentXPosition() == xEndPosition && currentTile.getCurrentYPosition() == yEndPosition)) {
 
             // Add the valid tiles to openList
             checkNeighborValidity();
@@ -216,28 +243,13 @@ public class Astar implements PathFinder {
 
             // Add the lowest cost tile to closedList
             addTilesToClosedList();
+
             // CurrentTile is now the top tile in closedList
             currentTile = closedList.get(closedList.size() - 1);
         }
     }
 
-    public void addFinalPathToList(AStarTile currentTile) {
-        if (closedList.size() > 1) {
-            AStarTile prevTile = closedList.get(closedList.size() - 2);
-            finalPath.add(new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition()));
-            for (int i = closedList.size() - 2; i > 0; i--) {
-                if (currentTile.getPreviousXposition() == prevTile.getCurrentXPosition() && currentTile.getGetPreviousYposition() == prevTile.getCurrentYPosition()) {
-                    finalPath.add(new GridCoordinate(prevTile.getCurrentXPosition(), prevTile.getCurrentYPosition()));
-                    currentTile = closedList.get(i);
-                }
-                prevTile = closedList.get(i - 1);
-            }
-        }
-
-        finalPath.add(new GridCoordinate(closedList.get(0).getCurrentXPosition(), closedList.get(0).getCurrentYPosition()));
-    }
-
-    public void clear() {
+    private void clear() {
         for (AStarTile tile : closedList) {
             tile.setBlocked(false);
         }
@@ -249,24 +261,23 @@ public class Astar implements PathFinder {
 
     @Override
     public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
+        // Clears all lists and objects so that it is clean next time it calculates a path.
         clear();
-        xStart = start.getX();
-        yStart = start.getY();
 
-        xEndposition = destination.getX();
-        yEndposition = destination.getY();
+        xEndPosition = destination.getX();
+        yEndPosition = destination.getY();
 
-        System.out.println("start" + xStart+ " " + yStart);
-        System.out.println("end" + xEndposition+ " " + yEndposition);
         // Adds the starting tile to closed list.
         addStartTileToClosedList(start.getX(), start.getY());
 
         // Calculates the optimal A* path
         calculatePath();
-        //adds final path to list
-        addFinalPathToList(currentTile);
-        //Reverses final path so it is in correct order
-        Collections.reverse(finalPath);
+
+        // Creates finalPath list
+        createPathListFromClosedList(currentTile, finalPath);
+
+        // TODO: add final step where it waits indefinitely.
+        // TODO: remove indefinitely wait from first coordinate? (Where it last ended)
 
         return new Path(Step.fromGridCoordinates(finalPath));
     }

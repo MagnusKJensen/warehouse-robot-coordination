@@ -1,34 +1,44 @@
 package dk.aau.d507e19.warehousesim.controller.server;
 
+import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.robot.Order;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
-import dk.aau.d507e19.warehousesim.controller.robot.Status;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.DummyTaskAllocator;
+import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.ShortestDistanceTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocator;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.Random;
 
 public class OrderManager {
     private ArrayList<Order> ordersFinished = new ArrayList<>();
-    private ArrayList<Order> orders = new ArrayList<>();
+    private ArrayList<Order> orderQueue = new ArrayList<>();
     private Server server;
-    private TaskAllocator taskAllocator = new DummyTaskAllocator();
+    private TaskAllocator taskAllocator;
 
     public OrderManager(Server server) {
         this.server = server;
+        this.taskAllocator = generateTaskAllocator();
+    }
+
+    private TaskAllocator generateTaskAllocator() {
+        switch (server.getSimulation().getSimulationApp().getTaskAllocatorSelected()){
+            // If a task allocator is added, also add it to the side menu at ui.TaskAllocationDropDown.createDropDown()
+            case "DummyTaskAllocator" : return new DummyTaskAllocator();
+            case "Smart Task Allocator" : return new DummyTaskAllocator(); // Temp
+            case "ShortestDistanceTaskAllocator" : return new ShortestDistanceTaskAllocator(server.getSimulation().getStorageGrid()); // Temp
+            default : throw new IllegalArgumentException("Could not identify task allocator " + server.getSimulation().getSimulationApp().getTaskAllocatorSelected());
+        }
     }
 
     public boolean takeOrder(Order order){
         if(!orderIsServiceable(order)) return false;
         else {
-            this.orders.add(order);
+            this.orderQueue.add(order);
             for(int i = 0; i < order.getAmount(); i++){
                 server.getProductsAvailable().remove(order.getProduct());
             }
-            System.out.println("Products left in grid: " + server.getProductsAvailable().size());
             return true;
         }
     }
@@ -54,15 +64,15 @@ public class OrderManager {
     }
 
     public void update(){
-        // If some order is still not being processed.
-        if(orders.size() > 0){
-            Order order = orders.get(0);
+        for(int i = 0; i < orderQueue.size(); ++i){
+            Order order = orderQueue.get(i);
             Optional<Robot> optimalRobot = taskAllocator.findOptimalRobot(server.getAllRobots(), order);
             if(optimalRobot.isPresent()){
                 optimalRobot.get().assignOrder(order);
-                ordersFinished.add(orders.get(0));
-                System.out.println("Commenced order: " + orders.get(0));
-                orders.remove(0);
+                ordersFinished.add(orderQueue.get(i));
+                System.out.println("Commenced order: " + orderQueue.get(i));
+                orderQueue.remove(i);
+                break;
             }
         }
     }
