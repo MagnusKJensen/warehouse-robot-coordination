@@ -36,8 +36,8 @@ public class ReservationTile {
 
     public void addReservation(Reservation reservation) {
         for(Reservation res : reservations){
-            if(res.getTimeFrame().overlaps(reservation.getTimeFrame()))
-                throw new DoubleReservationException(res, reservation);
+            if(res.getTimeFrame().overlaps(reservation.getTimeFrame())){}
+                //throw new DoubleReservationException(res, reservation);
         }
 
         reservations.add(reservation);

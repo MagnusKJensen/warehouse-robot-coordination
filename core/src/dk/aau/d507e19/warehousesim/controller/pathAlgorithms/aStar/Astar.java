@@ -14,6 +14,7 @@ import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 
 public class Astar implements PathFinder {
 
@@ -260,7 +261,7 @@ public class Astar implements PathFinder {
     }
 
     @Override
-    public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
+    public Optional<Path> calculatePath(GridCoordinate start, GridCoordinate destination) {
         // Clears all lists and objects so that it is clean next time it calculates a path.
         clear();
 
@@ -279,6 +280,6 @@ public class Astar implements PathFinder {
         // TODO: add final step where it waits indefinitely.
         // TODO: remove indefinitely wait from first coordinate? (Where it last ended)
 
-        return new Path(Step.fromGridCoordinates(finalPath));
+        return Optional.of(new Path(Step.fromGridCoordinates(finalPath)));
     }
 }
