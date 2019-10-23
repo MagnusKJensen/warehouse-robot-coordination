@@ -21,6 +21,7 @@ public class OrderPlanner {
     private PathFinder pathFinder;
     private Server server;
     private RobotController robotController;
+    private int padding = 10;
 
     public OrderPlanner(RobotController robotController) {
         this.pathFinder = robotController.getPathFinder();
@@ -43,7 +44,8 @@ public class OrderPlanner {
         if(!robot.getGridCoordinate().equals(pickUpPoint)) {
             server.getReservationManager().removeReservationsBy(robot);
             ArrayList<Reservation> reservations =
-                    MovementPredictor.calculateReservations(robot, pathToPickUpPoint, server.getTimeInTicks(), 0);
+                    MovementPredictor.calculateReservations(robot, pathToPickUpPoint, server.getTimeInTicks(), padding);
+
             server.getReservationManager().reserve(reservations);
 
             // todo Temporary solution
@@ -74,7 +76,7 @@ public class OrderPlanner {
             server.getReservationManager().removeReservationsBy(robot);
 
             ArrayList<Reservation> reservations =
-                    MovementPredictor.calculateReservations(robot, pathToDeliveryPoint, server.getTimeInTicks(), 0);
+                    MovementPredictor.calculateReservations(robot, pathToDeliveryPoint, server.getTimeInTicks(), padding);
             server.getReservationManager().reserve(reservations);
             // todo Temporary solution
             reserveLastTileIndefinitely(reservations);
@@ -93,7 +95,7 @@ public class OrderPlanner {
 
         server.getReservationManager().removeReservationsBy(robot);
         ArrayList<Reservation> reservations =
-                MovementPredictor.calculateReservations(robot, pathToEmptyTile, server.getTimeInTicks(), 0);
+                MovementPredictor.calculateReservations(robot, pathToEmptyTile, server.getTimeInTicks(), padding);
         server.getReservationManager().reserve(reservations);
         // todo Temporary solution
         reserveLastTileIndefinitely(reservations);
