@@ -114,13 +114,15 @@ public class OrderPlanner {
     }
 
     public GridCoordinate getNearestAvailablePicker(){
-        // TODO: 15/10/2019 Currently finds nearest, but not nearest AVAILABLE.
+        // todo Handle case where no pickers are avaible
         ArrayList<GridCoordinate> pickerPoints = server.getPickerPoints();
 
         int shortestDistance = -1;
         int newDistance;
         GridCoordinate shortestDistanceGC = null;
         for(GridCoordinate pickerGC : pickerPoints){
+            if(server.getReservationManager().isReserved(pickerGC, TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks())))
+                continue;
             newDistance = calculateDistance(robot.getGridCoordinate(), pickerGC);
             // If no other distance found
             if(shortestDistance == -1) {
@@ -152,7 +154,7 @@ public class OrderPlanner {
         for (BinTile tile : tilesWithProd) {
             hasIdleRobotOnTop = false;
             if(tile.getBin() != null){
-                if(tile.getBin().hasProducts(order.getProduct(), order.getAmount()))
+                if(tile.getBin().hasProducts(order.getProduct(), order.getAmount()) && !server.getReservationManager().isBinReserved(tile.getGridCoordinate()))
 
                     // TODO: 21/10/2019 VERY TEMP! An idle robot on top of the product, should not stop the robot from getting it! - Philip
                     for (Robot robot : server.getAllRobots()) {

@@ -32,6 +32,6 @@ public class TimeHeuristic implements Heuristic {
 
     private static Path simplePath(GridCoordinate start, GridCoordinate end){
         // todo temporary
-        return dummyPathFinder.calculatePath(start, end);
+        return dummyPathFinder.calculatePath(start, end).get();
     }
 }

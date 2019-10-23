@@ -6,6 +6,7 @@ import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
+import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
 
 import java.util.ArrayList;
@@ -54,13 +55,13 @@ public class CHPathfinder implements PathFinder {
             //Check if destination is reached
             for(CHNode successor : successors)
                 if(successor.getGridCoordinate().equals(destination))
-                    return successor.getPath();
+                    return Optional.of(successor.getPath());
 
             openList.addAll(successors);
         }
 
 
-        return null;
+        return Optional.empty();
     }
 
     private ArrayList<CHNode> getValidSuccessors(CHNode parent, GridCoordinate target) {

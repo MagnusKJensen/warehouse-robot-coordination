@@ -88,9 +88,10 @@ public class ReservationManager {
         robotReservationsMap.get(reservation.getRobot()).remove(reservation);
     }
 
+
+
     public boolean isBinReserved(GridCoordinate gridCoordinate) {
-        // Should maybe be independent of time?
-        return false;
+        return isReserved(gridCoordinate, TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks()));
     }
 
     public void reserve(ArrayList<Reservation> reservations) {
