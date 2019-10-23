@@ -11,6 +11,7 @@ import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -20,6 +21,7 @@ public class OrderPlanner {
     private PathFinder pathFinder;
     private Server server;
     private RobotController robotController;
+    private int padding = 10;
 
     public OrderPlanner(RobotController robotController) {
         this.pathFinder = robotController.getPathFinder();
@@ -40,12 +42,26 @@ public class OrderPlanner {
 
         // TODO: 18/10/2019 Only reserve, if the robot is not already on the correct tile. Should however still reserve it's own position then.
         if(!robot.getGridCoordinate().equals(pickUpPoint)) {
+            server.getReservationManager().removeReservationsBy(robot);
             ArrayList<Reservation> reservations =
-                    MovementPredictor.calculateReservations(robot, pathToPickUpPoint, server.getTimeInTicks(), 0);
+                    MovementPredictor.calculateReservations(robot, pathToPickUpPoint, server.getTimeInTicks(), padding);
+
             server.getReservationManager().reserve(reservations);
+
+            // todo Temporary solution
+            reserveLastTileIndefinitely(reservations);
         }
 
         return plan;
+    }
+
+    private void reserveLastTileIndefinitely(ArrayList<Reservation> reservations){
+        Reservation lastReservation = reservations.get(reservations.size() - 1);
+        TimeFrame unboundedTimeFrame = TimeFrame
+                .indefiniteTimeFrameFrom(lastReservation.getTimeFrame().getEnd() + 1);
+        Reservation unboundedReservation = new Reservation(robot, lastReservation.getGridCoordinate(),
+                unboundedTimeFrame);
+        server.getReservationManager().reserve(unboundedReservation);
     }
 
     public ArrayList<Action> planDelivery(Order order){
@@ -57,9 +73,13 @@ public class OrderPlanner {
         plan.add(new Delivery(robot, order));
 
         if(!robot.getGridCoordinate().equals(deliveryPoint)){
+            server.getReservationManager().removeReservationsBy(robot);
+
             ArrayList<Reservation> reservations =
-                    MovementPredictor.calculateReservations(robot, pathToDeliveryPoint, server.getTimeInTicks(), 0);
+                    MovementPredictor.calculateReservations(robot, pathToDeliveryPoint, server.getTimeInTicks(), padding);
             server.getReservationManager().reserve(reservations);
+            // todo Temporary solution
+            reserveLastTileIndefinitely(reservations);
         }
 
         return plan;
@@ -73,9 +93,12 @@ public class OrderPlanner {
         plan.add(new PathTraversal(robot, pathToEmptyTile));
         plan.add(new PlaceBin(robot));
 
+        server.getReservationManager().removeReservationsBy(robot);
         ArrayList<Reservation> reservations =
-                MovementPredictor.calculateReservations(robot, pathToEmptyTile, server.getTimeInTicks(), 0);
+                MovementPredictor.calculateReservations(robot, pathToEmptyTile, server.getTimeInTicks(), padding);
         server.getReservationManager().reserve(reservations);
+        // todo Temporary solution
+        reserveLastTileIndefinitely(reservations);
 
         return plan;
     }
