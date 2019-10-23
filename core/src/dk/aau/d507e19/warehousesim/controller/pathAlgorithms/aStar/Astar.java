@@ -238,6 +238,14 @@ public class Astar implements PathFinder {
             // Add the valid tiles to openList
             checkNeighborValidity();
 
+            // Small exceptions too see if it is stuck or if end destination is blocked.
+            if(openList.size()<1){
+                if (closedList.size() > 1){
+                    throw new RuntimeException("No valid path found, end destination blocked.");
+                }
+                throw new RuntimeException("No valid neighbors, stuck.");
+            }
+
             // Sorts openList in ascending order
             openList.sort(new OpenListSorter());
 
