@@ -39,7 +39,7 @@ public class ReservationTile {
         for(Reservation res : reservations){
             if(res.getTimeFrame().overlaps(reservation.getTimeFrame()))
                 // TODO: 23/10/2019 Temporary to allow DummyPathFinder to work
-                if(!SimulationApp.pathFinderSelected.equals("DummyPathFinder")){
+                if(!(SimulationApp.pathFinderSelected.equals("DummyPathFinder") || SimulationApp.pathFinderSelected.equals("CustomH - Turns"))){
                     throw new DoubleReservationException(res, reservation);
                 }
         }
