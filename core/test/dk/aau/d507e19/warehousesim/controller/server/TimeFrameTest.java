@@ -2,6 +2,8 @@ package dk.aau.d507e19.warehousesim.controller.server;
 
 import org.junit.Test;
 
+import java.sql.Time;
+
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 
@@ -159,9 +161,18 @@ public class TimeFrameTest {
 
 
     @Test
-    public void nonOverlappingOneUnbounded() {
+    public void nonOverlappingOneUnbounded01() {
         TimeFrame frame1 = new TimeFrame(15, 30);
         TimeFrame frame2 = TimeFrame.indefiniteTimeFrameFrom(35);
+
+        assertFalse(frame1.overlaps(frame2));
+        assertFalse(frame2.overlaps(frame1));
+    }
+
+    @Test
+    public void nonOverlappingOneUnbounded02(){
+        TimeFrame frame1 = new TimeFrame(265, 315);
+        TimeFrame frame2 = TimeFrame.indefiniteTimeFrameFrom(316);
 
         assertFalse(frame1.overlaps(frame2));
         assertFalse(frame2.overlaps(frame1));

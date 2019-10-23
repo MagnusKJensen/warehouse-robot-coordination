@@ -1,6 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.server;
 
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import dk.aau.d507e19.warehousesim.exception.DoubleReservationException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +36,8 @@ public class ReservationTile {
 
     public void addReservation(Reservation reservation) {
         for(Reservation res : reservations){
-            // todo Check conflicts
+            if(res.getTimeFrame().overlaps(reservation.getTimeFrame())){}
+                //throw new DoubleReservationException(res, reservation);
         }
 
         reservations.add(reservation);

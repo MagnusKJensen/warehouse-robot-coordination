@@ -9,6 +9,7 @@ import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.PriorityQueue;
 
 public class CHPathfinder implements PathFinder {
@@ -38,7 +39,7 @@ public class CHPathfinder implements PathFinder {
     }
 
     @Override
-    public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
+    public Optional<Path> calculatePath(GridCoordinate start, GridCoordinate destination) {
         PriorityQueue<CHNode> openList = new PriorityQueue<>();
         PriorityQueue<CHNode> closedList = new PriorityQueue<>();
 

@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
+import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar.Astar;
@@ -14,6 +15,7 @@ import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
 
 import java.util.LinkedList;
+import java.util.Optional;
 
 public class RobotController {
     private Server server;
@@ -47,7 +49,7 @@ public class RobotController {
         }
     }
 
-    public Path getPath(GridCoordinate gridCoordinate, GridCoordinate destination) {
+    public Optional<Path> getPath(GridCoordinate gridCoordinate, GridCoordinate destination) {
         return pathFinder.calculatePath(gridCoordinate, destination);
     }
 
