@@ -1,5 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.path;
 
+import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+
 import java.util.ArrayList;
 
 public class Path {
@@ -102,4 +104,7 @@ public class Path {
     }
 
 
+    public Step getLastStep() {
+        return allSteps.get(allSteps.size() - 1);
+    }
 }

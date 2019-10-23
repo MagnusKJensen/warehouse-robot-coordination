@@ -6,9 +6,9 @@ import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 
 import java.util.ArrayList;
 
-class CHNode {
+class CHNode implements Comparable<CHNode>{
 
-    private GridCoordinate gridCoordinate;
+    private final GridCoordinate coords;
     private GridCoordinate target;
 
     private double hCost, fCost, gCost;
@@ -17,7 +17,7 @@ class CHNode {
 
 
     CHNode(GridCoordinate coords, CHNode parentNode, Path path, double gCost, double hCost) {
-        this.gridCoordinate = coords;
+        this.coords = coords;
         this.parentNode = parentNode;
         this.path = path;
 
@@ -30,7 +30,6 @@ class CHNode {
         this(coords, null, path, gCost, hCost);
     }
 
-
     boolean hasParent (){
         return parentNode != null;
     }
@@ -39,15 +38,25 @@ class CHNode {
         return path;
     }
 
-    double gethCost() {
+    double getHCost() {
         return hCost;
     }
 
-    double getfCost() {
+    double getFCost() {
         return fCost;
     }
 
-    double getgCost() {
+    double getGCost() {
         return gCost;
+    }
+
+    @Override
+    public int compareTo(CHNode o) {
+
+        return 0;
+    }
+
+    public GridCoordinate getGridCoordinate() {
+        return this.coords;
     }
 }

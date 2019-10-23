@@ -26,6 +26,13 @@ public class CHNodeFactory {
         return new CHNode(nodeCoords, parent, newPath, gCost, hCost);
     }
 
+    public CHNode createWaitingNode(CHNode parent, long waitTimeTicks){
+        Path newPath = extendPath(parent.getPath(), waitTimeTicks);
+        double gCost = gCostCalculator.getGCost(newPath, robotController);
+        double hCost = parent.getHCost();
+        return new CHNode(newPath.getLastStep().getGridCoordinate(), parent, newPath, gCost, hCost);
+    }
+
     public CHNode createInitialNode(GridCoordinate gridCoordinate){
         Path initialPath = createInitialPath(gridCoordinate);
         return new CHNode(gridCoordinate, initialPath, 0, 0);
@@ -40,6 +47,21 @@ public class CHNodeFactory {
     private static Path extendPath(Path path, Step step){
         ArrayList<Step> extendedSteps = new ArrayList<>(path.getFullPath());
         extendedSteps.add(step);
+        return new Path(extendedSteps);
+    }
+
+    private static Path extendPath(Path path, long waitTimeTicks){
+        ArrayList<Step> extendedSteps = new ArrayList<>(path.getFullPath());
+        Step originalLastStep = extendedSteps.get(extendedSteps.size() - 1);
+
+        if(originalLastStep.isWaitingStep()){ // Extend waiting period if last step is already a waiting step
+            extendedSteps.remove(extendedSteps.size() - 1);
+            extendedSteps.add(new Step(originalLastStep.getGridCoordinate(),
+                    originalLastStep.getWaitTimeInTicks() + waitTimeTicks));
+        }else{
+            extendedSteps.add(new Step(originalLastStep.getGridCoordinate(), waitTimeTicks));
+        }
+
         return new Path(extendedSteps);
     }
 
