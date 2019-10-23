@@ -21,6 +21,8 @@ public class PathFindingDropDown {
     private Vector2 screenOffSet;
     private Text textAboveDropDown;
     private final String TEXT_ABOVE_DROP_DOWN = "Select pathfinder for robots";
+    private SelectBox<String> selectBox;
+    private float LEFT_SIDE_PADDING = 10;
 
     public PathFindingDropDown(Stage menuStage, SimulationApp simulationApp, Vector2 screenOffSet, SideMenu sideMenu) {
         this.sideMenu = sideMenu;
@@ -30,14 +32,14 @@ public class PathFindingDropDown {
         this.skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 
         // Create text above the dropdown menu
-        this.textAboveDropDown = new Text(TEXT_ABOVE_DROP_DOWN, screenOffSet.x, screenOffSet.y, Color.CORAL);
+        this.textAboveDropDown = new Text(TEXT_ABOVE_DROP_DOWN, screenOffSet.x + LEFT_SIDE_PADDING, screenOffSet.y, Color.CORAL);
         menuStage.addActor(textAboveDropDown);
 
         createDropDown();
     }
 
     private void createDropDown() {
-        final SelectBox<String> selectBox = new SelectBox<>(skin);
+        selectBox = new SelectBox<>(skin);
 
         selectBox.setItems("DummyPathFinder", "Astar", "RRT", "RRT*", "CustomH - Turns");
 
@@ -51,8 +53,14 @@ public class PathFindingDropDown {
         });
 
         selectBox.sizeBy(260, 0);
-        selectBox.setPosition(screenOffSet.x, screenOffSet.y - 55);
+        selectBox.setPosition(screenOffSet.x + LEFT_SIDE_PADDING, screenOffSet.y - 55);
 
         menuStage.addActor(selectBox);
+    }
+
+    public void changeOffSet(Vector2 offSet){
+        this.screenOffSet = offSet;
+        textAboveDropDown.changeOffSet(screenOffSet.x + LEFT_SIDE_PADDING, screenOffSet.y);
+        selectBox.setPosition(screenOffSet.x + LEFT_SIDE_PADDING, screenOffSet.y - 55);
     }
 }

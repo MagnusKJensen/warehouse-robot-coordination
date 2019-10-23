@@ -157,4 +157,18 @@ public class TimeControlMenu {
         selectButton(pauseBtn);
     }
 
+    public void changeOffset(Vector2 offSet){
+        this.screenOffset = offSet;
+
+        int screenXOffset = (int)offSet.x;
+        int screenYOffset = (int)offSet.y;
+
+        pauseBtn.setPosition(screenXOffset + 30, screenYOffset + 10);
+        globalStepForwardBtn.setPosition(screenXOffset + 60, screenYOffset + 10);
+        playBtn.setPosition(screenXOffset + 90, screenYOffset + 10);
+        fastForwardBtn.setPosition(screenXOffset + 120, screenYOffset + 10);
+        fastestForwardBtn.setPosition(screenXOffset + 150, screenYOffset + 10);
+        resetSimulationBtn.setPosition(screenXOffset + 190, screenYOffset + 10);
+    }
+
 }

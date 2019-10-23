@@ -3,7 +3,6 @@ package dk.aau.d507e19.warehousesim;
 public class WarehouseSpecs {
     public static final int wareHouseWidth = 30;
     public static final int wareHouseHeight = 30;
-    public static final int wareHousePickUpPoints = 0;
     public static final float binSizeInMeters = 1;
     public static final int productsPerBin = 15;
     public static final int SKUsPerBin = 9;

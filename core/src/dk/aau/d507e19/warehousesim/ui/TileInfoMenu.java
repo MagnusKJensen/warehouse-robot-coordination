@@ -22,35 +22,37 @@ public class TileInfoMenu {
     private final String BIN_CONTENT_PRECURSOR = "Bin content ";
     private Text robotBinContentText;
     private final String ROBOT_BIN_CONTENT_PRECURSOR = "robot bin content ";
+    private Vector2 screenOffSet;
+    private Table binContentRoot = new Table();
+    private Table robotBinContentRoot = new Table();
 
-    private final int MENU_HEIGHT = 900;
-    private final int SCROLL_PANE_HEIGHT = 200;
+    private final int SCROLL_PANE_HEIGHT = 150;
     private final int TEXT_OFFSET = 30;
 
     public TileInfoMenu(Stage menuStage, SimulationApp simulationApp, Vector2 screenOffSet, SideMenu sideMenu) {
         this.sideMenu = sideMenu;
         this.menuStage = menuStage;
         this.simulationApp = simulationApp;
+        this.screenOffSet = screenOffSet;
 
         // Text above bin content scroll pane
-        this.binContentText = new Text(BIN_CONTENT_PRECURSOR, screenOffSet.x, screenOffSet.y, Color.CORAL);
+        this.binContentText = new Text(BIN_CONTENT_PRECURSOR, screenOffSet.x + 10, screenOffSet.y - 10, Color.CORAL);
         menuStage.addActor(binContentText);
 
         // Text above robot bin content scroll pane
-        this.robotBinContentText = new Text(ROBOT_BIN_CONTENT_PRECURSOR, screenOffSet.x, screenOffSet.y - SCROLL_PANE_HEIGHT - TEXT_OFFSET, Color.CORAL);
+        this.robotBinContentText = new Text(ROBOT_BIN_CONTENT_PRECURSOR, screenOffSet.x + 10, screenOffSet.y - SCROLL_PANE_HEIGHT - TEXT_OFFSET - 10, Color.CORAL);
         menuStage.addActor(robotBinContentText);
 
         // Add bin content scroll menu to sidebar
-        binContent = addScrollMenu(SimulationApp.MENU_WIDTH_IN_PIXELS,SCROLL_PANE_HEIGHT,0,MENU_HEIGHT - SCROLL_PANE_HEIGHT - TEXT_OFFSET);
+        binContent = addScrollMenu(SimulationApp.MENU_WIDTH_IN_PIXELS,SCROLL_PANE_HEIGHT,0,(int)screenOffSet.y - SCROLL_PANE_HEIGHT - TEXT_OFFSET, binContentRoot);
         // Add robot bin content scroll menu to sidebar
-        robotBinContent = addScrollMenu(SimulationApp.MENU_WIDTH_IN_PIXELS,SCROLL_PANE_HEIGHT,0,MENU_HEIGHT - 2 * SCROLL_PANE_HEIGHT - 2 * TEXT_OFFSET);
+        robotBinContent = addScrollMenu(SimulationApp.MENU_WIDTH_IN_PIXELS,SCROLL_PANE_HEIGHT,0,(int)screenOffSet.y - 2 * SCROLL_PANE_HEIGHT - 2 * TEXT_OFFSET, robotBinContentRoot);
     }
 
-    private Table addScrollMenu(int width, int height, int posX, int posY) {
+    private Table addScrollMenu(int width, int height, int posX, int posY, Table root) {
         this.skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 
         // Create root table
-        final Table root = new Table();
         root.setSize(width,height);
         root.setPosition(posX,posY);
         menuStage.addActor(root);
@@ -129,5 +131,13 @@ public class TileInfoMenu {
                 return false;
             }
         };
+    }
+
+    public void changeOffset(Vector2 offSet){
+        this.screenOffSet = offSet;
+        binContentRoot.setPosition(screenOffSet.x, screenOffSet.y - SCROLL_PANE_HEIGHT - TEXT_OFFSET);
+        robotBinContentRoot.setPosition(screenOffSet.x, screenOffSet.y - 2 * SCROLL_PANE_HEIGHT - 2 * TEXT_OFFSET);
+        binContentText.changeOffSet(screenOffSet.x + 10, screenOffSet.y - 10);
+        robotBinContentText.changeOffSet(screenOffSet.x + 10, screenOffSet.y - SCROLL_PANE_HEIGHT - TEXT_OFFSET - 10);
     }
 }
