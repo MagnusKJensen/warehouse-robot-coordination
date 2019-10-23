@@ -8,8 +8,23 @@ public class TimeFrame {
     private TimeMode timeMode;
 
     public boolean overlaps(TimeFrame otherFrame) {
-        return isWithinTimeFrame(otherFrame.startTime) || isWithinTimeFrame(otherFrame.endTime);
-        // TODO: 16/10/2019 Functionality
+        if(this.timeMode == TimeMode.UNBOUNDED){
+            // If both frames are unlimited they always overlap
+            if(otherFrame.getTimeMode() == TimeMode.UNBOUNDED)
+                return true;
+
+            return !this.isBeforeTimeFrame(otherFrame.endTime);
+        }
+
+        // If the other frame is unbounded:
+        // they overlap only if this frame has not ended when the other one starts
+        if(otherFrame.getTimeMode() == TimeMode.UNBOUNDED)
+            return !this.isOutdated(otherFrame.getStart());
+
+
+        return (otherFrame.startTime < this.startTime && otherFrame.endTime > this.startTime)
+                || isWithinTimeFrame(otherFrame.startTime)
+                || isWithinTimeFrame(otherFrame.endTime);
     }
 
     private enum TimeMode{

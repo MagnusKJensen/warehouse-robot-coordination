@@ -46,8 +46,8 @@ public class Path {
             return false;
 
         // Otherwise check if the currentStep is a corner
-        Line fromPrevToCurrent = new Line(previousStep.getGridCoordinate(), currentStep.getGridCoordinate());
-        Line fromCurrentToNext = new Line(currentStep.getGridCoordinate(), nextStep.getGridCoordinate());
+        Line fromPrevToCurrent = new Line(previousStep, currentStep);
+        Line fromCurrentToNext = new Line(currentStep, nextStep);
 
         return fromPrevToCurrent.getDirection() != fromCurrentToNext.getDirection();
     }
@@ -94,7 +94,7 @@ public class Path {
 
         for(int i = 1; i < strippedSteps.size(); i++){
             currentStep = strippedSteps.get(i);
-            lines.add(new Line(previousStep.getGridCoordinate(), currentStep.getGridCoordinate()));
+            lines.add(new Line(previousStep, currentStep));
             previousStep = currentStep;
         }
 

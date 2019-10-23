@@ -15,6 +15,7 @@ public class SpeedCalculator {
     private float achievableSpeed;
 
     /* Time spent accelerating, driving at max speed and decelerating */
+    private float pauseDuration;
     private float accelerationDuration;
     private float maxSpeedDuration;
     private float breakingDuration;
@@ -27,7 +28,7 @@ public class SpeedCalculator {
     private float totalDistance;
 
     private enum Phase{
-        ACCELERATION_PHASE, MAX_SPEED_PHASE, DECELERATION_PHASE, FINISHED;
+        PAUSING_PHASE, ACCELERATION_PHASE, MAX_SPEED_PHASE, DECELERATION_PHASE, FINISHED;
     }
 
     public SpeedCalculator(Robot robot, Line line) {
@@ -47,7 +48,9 @@ public class SpeedCalculator {
         accelerationDuration = achievableSpeed / robot.getAccelerationBinSecond();
         maxSpeedDuration = maxSpeedDistance / robot.getMaxSpeedBinsPerSecond();
         breakingDuration = achievableSpeed / robot.getDecelerationBinSecond();
-        totalDuration = accelerationDuration + maxSpeedDuration + breakingDuration;
+        pauseDuration = (line.getEnd().isWaitingStep())? line.getEnd().getWaitTimeInTicks() : 0L;
+        pauseDuration = TimeUtils.tickToSeconds(pauseDuration);
+        totalDuration = pauseDuration + accelerationDuration + maxSpeedDuration + breakingDuration;
     }
 
     private float calculateAchievableSpeed(){
@@ -90,7 +93,7 @@ public class SpeedCalculator {
         }else if(phase == Phase.DECELERATION_PHASE){
             float timeSpentDecelerating = timeInSeconds - accelerationDuration - maxSpeedDuration;
             return achievableSpeed - (robot.getDecelerationBinSecond() * timeSpentDecelerating);
-        }else{ // Phase == Finished
+        }else{ // Phase == Finished or Phase == Pausing
             return 0;
         }
     }
@@ -115,7 +118,10 @@ public class SpeedCalculator {
                         + distanceWithDeceleration(timeInSeconds - accelerationDuration - maxSpeedDuration);
                 break;
             case FINISHED:
+            case PAUSING_PHASE:
                 distance = line.getLength();
+                break;
+
         }
 
 
@@ -149,9 +155,12 @@ public class SpeedCalculator {
         }else if(timeInSeconds <= accelerationDuration + maxSpeedDuration){
             // Full speed reached, but not breaking yet
             return Phase.MAX_SPEED_PHASE;
-        }else if(timeInSeconds <= accelerationDuration + maxSpeedDuration + breakingDuration){
+        }else if(timeInSeconds <= accelerationDuration + maxSpeedDuration + breakingDuration) {
             // Started breaking, but not stopped yet
             return Phase.DECELERATION_PHASE;
+        }else if(timeInSeconds <= accelerationDuration + maxSpeedDuration + breakingDuration + pauseDuration){
+            // Finished traversing but still pausing
+            return Phase.PAUSING_PHASE;
         }else{
             // The entire line has been traversed
             return Phase.FINISHED;
@@ -162,10 +171,8 @@ public class SpeedCalculator {
     }
 
     public long amountOfTicksToReach(float distance){
-        /*if(distance > line.getLength())
-            throw new IllegalArgumentException("Given distance exceeds total distance");*/
-
         float timeToReach;
+
         if(distance <= accelerationDistance)
             timeToReach =  (float) Math.sqrt((2f * distance) / robot.getAccelerationBinSecond());
         else if(distance <= accelerationDistance + maxSpeedDistance){
@@ -174,7 +181,9 @@ public class SpeedCalculator {
         }else if(distance < totalDistance){
             float distanceSpentBreaking = distance - accelerationDistance - maxSpeedDistance;
             float timeSpentBreaking = (float)
-                    -(-achievableSpeed + (Math.sqrt(Math.pow(achievableSpeed, 2)-(2*distanceSpentBreaking*robot.getDecelerationBinSecond())))) / (robot.getDecelerationBinSecond());
+                            -(-achievableSpeed + (Math.sqrt(Math.pow(achievableSpeed, 2)
+                            -(2*distanceSpentBreaking*robot.getDecelerationBinSecond()))))
+                            / (robot.getDecelerationBinSecond());
 
             timeToReach = timeSpentBreaking + accelerationDuration + maxSpeedDuration;
         }else{

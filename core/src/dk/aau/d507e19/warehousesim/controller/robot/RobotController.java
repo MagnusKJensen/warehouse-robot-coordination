@@ -16,7 +16,6 @@ import java.util.LinkedList;
 public class RobotController {
     private Server server;
     private PathFinder pathFinder;
-    private TaskManager taskManager;
     private Robot robot;
 
     private LinkedList<Action> robotActions = new LinkedList<>();
@@ -80,7 +79,6 @@ public class RobotController {
         Runnable planning = planningSteps.pollFirst();
         planning.run();
     }
-
 
     public PathFinder getPathFinder() {
         return this.pathFinder;

@@ -10,13 +10,15 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
+import dk.aau.d507e19.warehousesim.exception.CollisionException;
+import dk.aau.d507e19.warehousesim.goal.Goal;
+import dk.aau.d507e19.warehousesim.goal.OrderGoal;
 import dk.aau.d507e19.warehousesim.input.SimulationInputProcessor;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.ProductDistributor;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
-import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -46,6 +48,8 @@ public class Simulation {
 
     private long ordersProcessed = 0;
 
+    private Goal goal;
+
     public Simulation(SimulationApp simulationApp){
         this.simulationApp = simulationApp;
         this.gridCamera = simulationApp.getWorldCamera();
@@ -64,6 +68,8 @@ public class Simulation {
 
         server = new Server(this, storageGrid);
 
+        goal = new OrderGoal(WarehouseSpecs.orderGoal, this);
+
         initRobots();
     }
 
@@ -78,11 +84,25 @@ public class Simulation {
         tickCount += 1;
         for(Robot robot : robots){
             robot.update();
-
+        }
+        server.update();
+        goal.update();
+        if(WarehouseSpecs.collisionDetectedEnabled){
+            checkForCollisions();
         }
         updateSideMenuScrollPanes();
-        server.update();
     }
+
+    private void checkForCollisions() {
+        for (Robot robot1 : robots){
+            for(Robot robot2 : robots){
+                if(robot1.getRobotID() != robot2.getRobotID()){
+                    if(robot1.collidesWith(robot2.getCurrentPosition())) throw new CollisionException(robot1, robot2);
+                }
+            }
+        }
+    }
+
 
     private void updateSideMenuScrollPanes() {
         // Update the robot bin content live
@@ -233,5 +253,9 @@ public class Simulation {
 
     public long getOrdersProcessed() {
         return ordersProcessed;
+    }
+
+    public Goal getGoal() {
+        return goal;
     }
 }

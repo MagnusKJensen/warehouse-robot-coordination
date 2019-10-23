@@ -33,7 +33,7 @@ public class ShortestDistanceTaskAllocator implements TaskAllocator {
         for(Robot robot : availableRobots){
             for(GridCoordinate gc : tilesWithProducts){
                 newPath = robot.getRobotController().getPath(robot.getGridCoordinate(), gc);
-                newDistance = calculateTotalDistance(newPath);
+                newDistance = calculatePathDistance(newPath);
 
                 if(shortestDistance == -1 || newDistance < shortestDistance) {
                     shortestDistance = newDistance;
@@ -52,7 +52,7 @@ public class ShortestDistanceTaskAllocator implements TaskAllocator {
         return Math.abs(source.getX() - dest.getX()) + Math.abs(source.getY() - dest.getY());
     }
 
-    private int calculateTotalDistance(Path path){
+    private int calculatePathDistance(Path path){
         ArrayList<Step> steps = path.getStrippedPath();
 
         int totalDistance = 0;

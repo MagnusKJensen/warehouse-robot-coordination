@@ -4,6 +4,7 @@ import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.robot.Order;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.DummyTaskAllocator;
+import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.NaiveShortestDistanceTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.ShortestDistanceTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocator;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
@@ -26,8 +27,8 @@ public class OrderManager {
         switch (server.getSimulation().getSimulationApp().getTaskAllocatorSelected()){
             // If a task allocator is added, also add it to the side menu at ui.TaskAllocationDropDown.createDropDown()
             case "DummyTaskAllocator" : return new DummyTaskAllocator();
-            case "Smart Task Allocator" : return new DummyTaskAllocator(); // Temp
-            case "ShortestDistanceTaskAllocator" : return new ShortestDistanceTaskAllocator(server.getSimulation().getStorageGrid()); // Temp
+            case "ShortestDistanceTaskAllocator" : return new ShortestDistanceTaskAllocator(server.getSimulation().getStorageGrid());
+            case "NaiveShortestDistanceTaskAllocator" : return new NaiveShortestDistanceTaskAllocator(server.getSimulation().getStorageGrid());
             default : throw new IllegalArgumentException("Could not identify task allocator " + server.getSimulation().getSimulationApp().getTaskAllocatorSelected());
         }
     }
@@ -64,16 +65,22 @@ public class OrderManager {
     }
 
     public void update(){
-        for(int i = 0; i < orderQueue.size(); ++i){
-            Order order = orderQueue.get(i);
-            Optional<Robot> optimalRobot = taskAllocator.findOptimalRobot(server.getAllRobots(), order);
-            if(optimalRobot.isPresent()){
-                optimalRobot.get().assignOrder(order);
-                ordersFinished.add(orderQueue.get(i));
-                System.out.println("Commenced order: " + orderQueue.get(i));
-                orderQueue.remove(i);
-                break;
+        if(server.hasRobotsAvailable()){
+            for(int i = 0; i < orderQueue.size(); ++i){
+                Order order = orderQueue.get(i);
+                Optional<Robot> optimalRobot = taskAllocator.findOptimalRobot(server.getAllRobots(), order);
+                if(optimalRobot.isPresent()){
+                    optimalRobot.get().assignOrder(order);
+                    ordersFinished.add(orderQueue.get(i));
+                    System.out.println("Commenced order: " + orderQueue.get(i));
+                    orderQueue.remove(i);
+                    break;
+                }
             }
         }
+    }
+
+    public int ordersInQueue(){
+        return orderQueue.size();
     }
 }

@@ -107,7 +107,6 @@ public class SimulationApp extends ApplicationAdapter {
 		}
 
 		updateMenu();
-
 		clearScreen();
 		renderMenu();
 		renderSimulation();
@@ -233,6 +232,7 @@ public class SimulationApp extends ApplicationAdapter {
 		pause();
 		simulation = new Simulation(this);
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());
+
 		sideMenu.resetSideMenu();
 	}
 
