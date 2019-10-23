@@ -97,7 +97,7 @@ public class Simulation {
         for (Robot robot1 : robots){
             for(Robot robot2 : robots){
                 if(robot1.getRobotID() != robot2.getRobotID()){
-                    if(robot1.collidesWith(robot2.getCurrentPosition())) throw new CollisionException(robot1, robot2);
+                    if(robot1.collidesWith(robot2.getCurrentPosition())) throw new CollisionException(robot1, robot2, server.getTimeInTicks());
                 }
             }
         }

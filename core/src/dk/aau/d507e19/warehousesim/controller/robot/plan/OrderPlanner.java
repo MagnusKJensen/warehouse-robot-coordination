@@ -121,7 +121,7 @@ public class OrderPlanner {
         int newDistance;
         GridCoordinate shortestDistanceGC = null;
         for(GridCoordinate pickerGC : pickerPoints){
-            if(server.getReservationManager().isReserved(pickerGC, TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks())))
+            if(server.getReservationManager().isReservedIndefinitely(pickerGC))
                 continue;
             newDistance = calculateDistance(robot.getGridCoordinate(), pickerGC);
             // If no other distance found

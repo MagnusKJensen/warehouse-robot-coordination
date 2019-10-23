@@ -23,6 +23,6 @@ public class WarehouseSpecs {
     public static final int[][] pickerPoints = {{0,0}, {2,0}, {4,0}, {6,0}, {8,0}, {10,0}};
     public static final int secondsBetweenOrders = 4;
     public static final int orderGoal = 10;
-    public static final boolean collisionDetectedEnabled = false; // TEMP - Should not be enabled until reservationManager done.
+    public static final boolean collisionDetectedEnabled = true; // TEMP - Should not be enabled until reservationManager done.
     // todo layers? - Philip
 }
