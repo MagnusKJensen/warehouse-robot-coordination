@@ -41,8 +41,14 @@ public class CHPathfinder implements PathFinder {
 
     @Override
     public Optional<Path> calculatePath(GridCoordinate start, GridCoordinate destination) {
+        if(start.equals(destination))
+            return Optional.of(Path.oneStepPath(new Step(start)));
+
+        if(server.getReservationManager().isReserved(destination, TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks() + 400)))
+            return Optional.empty();
+
         PriorityQueue<CHNode> openList = new PriorityQueue<>();
-        PriorityQueue<CHNode> closedList = new PriorityQueue<>();
+        PriorityQueue<CHNode> closedList = new PriorityQueue<>(); // todo integrate for performance
 
         openList.add(nodeFactory.createInitialNode(start));
 

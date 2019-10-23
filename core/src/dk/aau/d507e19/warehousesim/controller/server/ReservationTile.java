@@ -47,4 +47,12 @@ public class ReservationTile {
         // TODO: 16/10/2019 add achecks
         reservations.remove(reservation);
     }
+
+    public boolean isReservedIndefinitely() {
+        for(Reservation reservation : reservations){
+            if(reservation.getTimeFrame().getTimeMode() == TimeFrame.TimeMode.UNBOUNDED)
+                return true;
+        }
+        return false;
+    }
 }

@@ -154,15 +154,17 @@ public class OrderPlanner {
         for (BinTile tile : tilesWithProd) {
             hasIdleRobotOnTop = false;
             if(tile.getBin() != null){
-                if(tile.getBin().hasProducts(order.getProduct(), order.getAmount()) && !server.getReservationManager().isBinReserved(tile.getGridCoordinate()))
+                if(tile.getBin().hasProducts(order.getProduct(), order.getAmount()))
 
                     // TODO: 21/10/2019 VERY TEMP! An idle robot on top of the product, should not stop the robot from getting it! - Philip
-                    for (Robot robot : server.getAllRobots()) {
+                    if(server.getReservationManager().isReservedIndefinitely(tile.getGridCoordinate()))
+                        hasIdleRobotOnTop = true;
+                    /*for (Robot robot : server.getAllRobots()) {
                         if(robot.getApproximateGridCoordinate().equals(new GridCoordinate(tile.getPosX(), tile.getPosY())) &&
                                 robot.getCurrentStatus() == Status.AVAILABLE &&
                                 this.robot.getRobotID() != robot.getRobotID()
                         ) hasIdleRobotOnTop = true;
-                    }
+                    }*/
 
                     if(!hasIdleRobotOnTop) tilesWithEnoughProds.add(tile);
             }

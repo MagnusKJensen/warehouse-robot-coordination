@@ -55,6 +55,12 @@ public class Path {
         return fromPrevToCurrent.getDirection() != fromCurrentToNext.getDirection();
     }
 
+    public static Path oneStepPath(Step step) {
+        ArrayList<Step> steps = new ArrayList<>();
+        steps.add(step);
+        return new Path(steps);
+    }
+
     public boolean isValidPath(){
         Step currentStep;
         Step previousStep = allSteps.get(0);

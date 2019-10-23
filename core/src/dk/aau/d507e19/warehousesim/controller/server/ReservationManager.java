@@ -120,4 +120,8 @@ public class ReservationManager {
             robotReservationsMap.put(reservation.getRobot(), new ArrayList<>());
         robotReservationsMap.get(reservation.getRobot()).add(reservation);
     }
+
+    public boolean isReservedIndefinitely(GridCoordinate gridCoordinate) {
+        return reservationTiles[gridCoordinate.getX()][gridCoordinate.getY()].isReservedIndefinitely();
+    }
 }
