@@ -27,17 +27,18 @@ public class ShortestDistanceTaskAllocator implements TaskAllocator {
         ArrayList<GridCoordinate> tilesWithProducts = grid.tilesWithProducts(order.getProduct(), order.getAmount());
 
         // Find the robot with the shortest distance to a tile with the products.
-        Path newPath;
+        Optional<Path> newPath;
         int shortestDistance = -1;
         int newDistance;
         for(Robot robot : availableRobots){
             for(GridCoordinate gc : tilesWithProducts){
                 newPath = robot.getRobotController().getPath(robot.getGridCoordinate(), gc);
-                newDistance = calculatePathDistance(newPath);
-
-                if(shortestDistance == -1 || newDistance < shortestDistance) {
-                    shortestDistance = newDistance;
-                    optimalRobot = robot;
+                if(newPath.isPresent()){
+                    newDistance = calculatePathDistance(newPath.get());
+                    if(shortestDistance == -1 || newDistance < shortestDistance) {
+                        shortestDistance = newDistance;
+                        optimalRobot = robot;
+                    }
                 }
             }
         }

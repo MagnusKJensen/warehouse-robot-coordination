@@ -5,18 +5,19 @@ import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class DummyPathFinder implements PathFinder {
 
     @Override
-    public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
+    public Optional<Path> calculatePath(GridCoordinate start, GridCoordinate destination) {
         ArrayList<Step> pathList = new ArrayList<>();
 
         pathList.addAll(generateHorizontalLine(start.getX(), destination.getX(), start.getY()));
         pathList.remove(pathList.size() - 1);
         pathList.addAll(generateVerticalLine(start.getY(), destination.getY(), destination.getX()));
 
-        return new Path(pathList);
+        return Optional.of(new Path(pathList));
     }
 
     private ArrayList<Step> generateHorizontalLine(int startX, int endX, int y){

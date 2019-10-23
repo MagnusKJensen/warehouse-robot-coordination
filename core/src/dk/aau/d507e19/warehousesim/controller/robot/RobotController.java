@@ -1,17 +1,21 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
+import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.chp.CHPathfinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTType;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.Action;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.OrderPlanner;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
+import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
 
 import java.util.LinkedList;
+import java.util.Optional;
 
 public class RobotController {
     private Server server;
@@ -38,12 +42,14 @@ public class RobotController {
                 return new RRTPlanner(RRTType.RRT, robot);
             case "DummyPathFinder":
                 return new DummyPathFinder();
+            case "CHPathFinder":
+                return new DummyPathFinder();
             default:
                 throw new RuntimeException("Could not identify pathfinder " + pathFinderString);
         }
     }
 
-    public Path getPath(GridCoordinate gridCoordinate, GridCoordinate destination) {
+    public Optional<Path> getPath(GridCoordinate gridCoordinate, GridCoordinate destination) {
         return pathFinder.calculatePath(gridCoordinate, destination);
     }
 

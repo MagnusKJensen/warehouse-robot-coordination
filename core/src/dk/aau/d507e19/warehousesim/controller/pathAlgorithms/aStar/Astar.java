@@ -14,6 +14,7 @@ import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 
 public class Astar implements PathFinder {
 
@@ -205,7 +206,7 @@ public class Astar implements PathFinder {
         return temp;
     }
 
-    public void calculatePath() {
+    private void calculatePath() {
         // While is true if the currentTile does not have the same x coordinate and the same y coordinate as the end Tile.
         while (!(currentTile.getCurrentXPosition() == xEndposition && currentTile.getCurrentYPosition() == yEndposition)) {
 
@@ -249,7 +250,7 @@ public class Astar implements PathFinder {
     }
 
     @Override
-    public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
+    public Optional<Path> calculatePath(GridCoordinate start, GridCoordinate destination) {
         clear();
         xEndposition = destination.getX();
         yEndposition = destination.getY();
@@ -267,6 +268,6 @@ public class Astar implements PathFinder {
         //Reverses final path so it is in correct order
         Collections.reverse(finalPath);
 
-        return new Path(Step.fromGridCoordinates(finalPath));
+        return Optional.of(new Path(Step.fromGridCoordinates(finalPath)));
     }
 }
