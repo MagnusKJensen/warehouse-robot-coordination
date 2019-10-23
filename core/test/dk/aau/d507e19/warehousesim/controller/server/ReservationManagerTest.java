@@ -41,6 +41,22 @@ public class ReservationManagerTest {
     }
 
     @Test
+    public void isReservedOverlapping() {
+        Server server = Mockito.mock(Server.class);
+        when(server.getTimeInSeconds()).thenReturn(30L);
+
+        Robot robot = Mockito.mock(Robot.class);
+        when(robot.getGridCoordinate()).thenReturn(new GridCoordinate(0, 0));
+
+        ReservationManager reservationManager = new ReservationManager(30, 30, server);
+        reservationManager.reserve(robot, robot.getGridCoordinate(), new TimeFrame(20, 60));
+
+        assertTrue(reservationManager.isReserved(robot.getGridCoordinate(), new TimeFrame(15, 45)));
+        assertTrue(reservationManager.isReserved(robot.getGridCoordinate(), new TimeFrame(25, 45)));
+        assertTrue(reservationManager.isReserved(robot.getGridCoordinate(), new TimeFrame(30, 65)));
+    }
+
+    @Test
     public void whoReserved() {
 
     }

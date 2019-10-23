@@ -22,12 +22,13 @@ public class CHNodeFactory {
     public CHNode createNode(GridCoordinate nodeCoords, GridCoordinate target, CHNode parent){
         Path newPath = extendPath(parent.getPath(), new Step(nodeCoords));
         double gCost = gCostCalculator.getGCost(newPath, robotController);
-        double hCost = heuristic.getHeuristic(parent.getPath(), target, robotController);
+        double hCost = heuristic.getHeuristic(newPath, target, robotController);
         return new CHNode(nodeCoords, parent, newPath, gCost, hCost);
     }
 
     public CHNode createWaitingNode(CHNode parent, long waitTimeTicks){
         Path newPath = extendPath(parent.getPath(), waitTimeTicks);
+
         double gCost = gCostCalculator.getGCost(newPath, robotController);
         double hCost = parent.getHCost();
         return new CHNode(newPath.getLastStep().getGridCoordinate(), parent, newPath, gCost, hCost);
@@ -52,6 +53,20 @@ public class CHNodeFactory {
 
     private static Path extendPath(Path path, long waitTimeTicks){
         ArrayList<Step> extendedSteps = new ArrayList<>(path.getFullPath());
+
+        if(extendedSteps.size() == 1){
+            // if path is only one step long; then just replace the step with the new waiting step
+            Step parent = path.getFullPath().get(0);
+
+            long waitingTime = 0;
+            if(parent.isWaitingStep())
+                waitingTime += parent.getWaitTimeInTicks();
+
+            ArrayList<Step> waitingStepList = new ArrayList<>();
+            waitingStepList.add(new Step(parent.getGridCoordinate(), waitTimeTicks));
+            return new Path(waitingStepList);
+        }
+
         Step originalLastStep = extendedSteps.get(extendedSteps.size() - 1);
 
         if(originalLastStep.isWaitingStep()){ // Extend waiting period if last step is already a waiting step

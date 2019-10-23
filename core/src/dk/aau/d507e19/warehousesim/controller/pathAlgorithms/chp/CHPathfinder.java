@@ -1,10 +1,11 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.chp;
 
 import dk.aau.d507e19.warehousesim.controller.path.Path;
+import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
-import dk.aau.d507e19.warehousesim.controller.robot.Direction;
-import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
+import dk.aau.d507e19.warehousesim.controller.robot.*;
+import dk.aau.d507e19.warehousesim.controller.server.Reservation;
+import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
 
 import java.util.ArrayList;
@@ -12,7 +13,9 @@ import java.util.PriorityQueue;
 
 public class CHPathfinder implements PathFinder {
 
+    private static final long MAXIMUM_WAIT_TIME = 90;
     private final RobotController robotController;
+    private final Server server;
 
     private Heuristic heuristic;
     private GCostCalculator gCostCalculator;
@@ -21,11 +24,16 @@ public class CHPathfinder implements PathFinder {
 
     private static final long STANDARD_WAIT_TIME_IN_TICKS = 30L;
 
+    public static CHPathfinder defaultCHPathfinder(GridBounds gridBounds, RobotController robotController){
+        return new CHPathfinder(gridBounds, new DistanceTurnHeuristic(), new DistanceTurnGCost(), robotController);
+    }
+
     public CHPathfinder(GridBounds gridBounds, Heuristic heuristic, GCostCalculator gCostCalculator, RobotController robotController) {
         this.gridBounds = gridBounds;
         this.heuristic = heuristic;
         this.gCostCalculator = gCostCalculator;
         this.robotController = robotController;
+        this.server = robotController.getServer();
         this.nodeFactory = new CHNodeFactory(heuristic, gCostCalculator, robotController);
     }
 
@@ -38,28 +46,49 @@ public class CHPathfinder implements PathFinder {
 
         while (!openList.isEmpty()){
             CHNode bestCandidate = openList.poll();
-            openList.addAll(getSuccessors(bestCandidate, destination));
+            closedList.add(bestCandidate);
+
+            ArrayList<CHNode> successors = getValidSuccessors(bestCandidate, destination);
+
+            //Check if destination is reached
+            for(CHNode successor : successors)
+                if(successor.getGridCoordinate().equals(destination))
+                    return successor.getPath();
+
+            openList.addAll(successors);
         }
 
 
         return null;
     }
 
-    private ArrayList<CHNode> getSuccessors(CHNode parent, GridCoordinate target) {
+    private ArrayList<CHNode> getValidSuccessors(CHNode parent, GridCoordinate target) {
         ArrayList<GridCoordinate> neighbourCoords = getValidNeighbours(parent.getGridCoordinate());
         ArrayList<CHNode> successors = new ArrayList<>();
 
-        for(GridCoordinate coord : neighbourCoords){
+        for(GridCoordinate coord : neighbourCoords)
             successors.add(nodeFactory.createNode(coord, target, parent));
-        }
 
         successors.add(nodeFactory.createWaitingNode(parent, STANDARD_WAIT_TIME_IN_TICKS));
+
+        successors.removeIf(this::isInvalidNode);
 
         return successors;
     }
 
-    private CHNode getBestCandidate(ArrayList<CHNode> openList) {
-        return null;
+    private boolean isInvalidNode(CHNode node){
+        Step lastStep = node.getPath().getLastStep();
+        if(lastStep.isWaitingStep() && lastStep.getWaitTimeInTicks() > MAXIMUM_WAIT_TIME)
+            return true;
+
+        Robot robot = robotController.getRobot();
+        ArrayList<Reservation> reservations =
+                MovementPredictor.calculateReservations(robot, node.getPath(), server.getTimeInTicks(), 0);
+
+        Reservation nodeReservation = reservations.get(reservations.size() - 1);
+
+        // todo (Bug: will not ignore it's own reservation)
+        return server.getReservationManager().isReserved(node.getGridCoordinate(), nodeReservation.getTimeFrame());
     }
 
     // Returns all neighbours within bounds
@@ -70,7 +99,8 @@ public class CHPathfinder implements PathFinder {
             int neighbourX = originalCoords.getX() + dir.xDir;
             int neighbourY = originalCoords.getY() + dir.yDir;
             GridCoordinate neighbour = new GridCoordinate(neighbourX, neighbourY);
-            if(gridBounds.isWithinBounds(neighbour)) neighbours.add(neighbour);
+            if(gridBounds.isWithinBounds(neighbour))
+                neighbours.add(neighbour);
         }
 
         return neighbours;

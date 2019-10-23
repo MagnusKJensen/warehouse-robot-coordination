@@ -19,6 +19,7 @@ public class Path {
         strippedSteps = generateStrippedPath(allSteps);
     }
 
+
     private static ArrayList<Step> generateStrippedPath(ArrayList<Step> allSteps) {
         ArrayList<Step> strippedSteps = new ArrayList<>();
 
@@ -101,6 +102,17 @@ public class Path {
         }
 
         return lines;
+    }
+
+    public static Path join(Path path1, Path path2){
+        /*if(!path1.getLastStep().getGridCoordinate().equals(path2.getFirstStep().getGridCoordinate()))
+            throw new IllegalArgumentException("End of first path must be start of seconds path");*/
+
+        ArrayList<Step> newSteps = new ArrayList<>();
+        newSteps.addAll(path1.getFullPath());
+        newSteps.addAll(path2.getFullPath());
+
+        return new Path(newSteps);
     }
 
 

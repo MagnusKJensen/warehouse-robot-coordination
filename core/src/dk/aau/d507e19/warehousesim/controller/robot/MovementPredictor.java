@@ -2,6 +2,7 @@ package dk.aau.d507e19.warehousesim.controller.robot;
 
 import dk.aau.d507e19.warehousesim.controller.path.Line;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
+import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.SpeedCalculator;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
@@ -13,7 +14,16 @@ public class MovementPredictor {
     public static ArrayList<Reservation> calculateReservations
             (Robot robot, Path path, long startTimeTicks, long paddingTimeTicks) {
         ArrayList<Reservation> reservations = new ArrayList<>();
+
         ArrayList<Line> lines = path.getLines();
+
+        if(lines.size() == 0){
+            // Edge case where the first and only coordiate is a waiting step
+            Step waitingStep = path.getFullPath().get(0);
+            TimeFrame timeFrame = new TimeFrame(startTimeTicks - paddingTimeTicks, startTimeTicks
+                    + waitingStep.getWaitTimeInTicks() + paddingTimeTicks);
+            reservations.add(new Reservation(robot, waitingStep.getGridCoordinate(), timeFrame));
+        }
 
         for (int i = 0; i < lines.size(); i++) {
             Line line = lines.get(i);
@@ -26,6 +36,9 @@ public class MovementPredictor {
     }
 
     public static long timeToTraverse(Robot robot, Path path){
+        if(path.getFullPath().size() <= 1)
+            throw new RuntimeException("Cannot traverse a path of length 1 or lower");
+
         ArrayList<Reservation> reservations = calculateReservations(robot, path, 0, 0);
         return reservations.get(reservations.size() - 1).getTimeFrame().getEnd();
     }
