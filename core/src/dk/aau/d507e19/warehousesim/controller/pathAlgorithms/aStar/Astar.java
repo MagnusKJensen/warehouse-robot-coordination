@@ -134,7 +134,7 @@ public class Astar implements PathFinder {
         ArrayList<Reservation> listOfReservations;
         listOfReservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
 
-        return listOfReservations.get(listOfReservations.size()-1).getTimeFrame();
+        return listOfReservations.get(listOfReservations.size() - 1).getTimeFrame();
 
     }
 

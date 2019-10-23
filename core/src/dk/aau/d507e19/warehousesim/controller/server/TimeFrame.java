@@ -3,6 +3,7 @@ package dk.aau.d507e19.warehousesim.controller.server;
 public class TimeFrame {
 
     public static final TimeFrame ALL_TIME = TimeFrame.indefiniteTimeFrameFrom(Long.MIN_VALUE);
+    public static TimeFrame.TimeMode TimeMode;
     private long startTime;
     private long endTime;
     private TimeMode timeMode;
@@ -27,7 +28,7 @@ public class TimeFrame {
                 || isWithinTimeFrame(otherFrame.endTime);
     }
 
-    private enum TimeMode{
+    public enum TimeMode{
         UNBOUNDED, BOUNDED;
     }
 

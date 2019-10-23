@@ -44,18 +44,15 @@ public class OrderPlanner {
             plan.add(new PickUp(robot));
 
             // TODO: 18/10/2019 Only reserve, if the robot is not already on the correct tile. Should however still reserve it's own position then.
-            if(!robot.getGridCoordinate().equals(pickUpPoint)) {
-                server.getReservationManager().removeReservationsBy(robot);
-                ArrayList<Reservation> reservations =
-                        MovementPredictor.calculateReservations(robot, pathToPickUpPoint.get(), server.getTimeInTicks(), padding);
+            server.getReservationManager().removeReservationsBy(robot);
+            ArrayList<Reservation> reservations =
+                    MovementPredictor.calculateReservations(robot, pathToPickUpPoint.get(), server.getTimeInTicks(), padding);
 
-                server.getReservationManager().reserve(reservations);
+            server.getReservationManager().reserve(reservations);
 
-                // todo Temporary solution
-                reserveLastTileIndefinitely(reservations);
-            }
-
-        }
+            // todo Temporary solution
+            reserveLastTileIndefinitely(reservations);
+        } else throw new RuntimeException("Could not plan pickUp");
 
         return plan;
     }
@@ -78,16 +75,14 @@ public class OrderPlanner {
             plan.add(new PathTraversal(robot, pathToDeliveryPoint.get()));
             plan.add(new Delivery(robot, order));
 
-            if(!robot.getGridCoordinate().equals(deliveryPoint)){
-                server.getReservationManager().removeReservationsBy(robot);
+            server.getReservationManager().removeReservationsBy(robot);
 
-                ArrayList<Reservation> reservations =
-                        MovementPredictor.calculateReservations(robot, pathToDeliveryPoint.get(), server.getTimeInTicks(), padding);
-                server.getReservationManager().reserve(reservations);
-                // todo Temporary solution
-                reserveLastTileIndefinitely(reservations);
-            }
-        }
+            ArrayList<Reservation> reservations =
+                    MovementPredictor.calculateReservations(robot, pathToDeliveryPoint.get(), server.getTimeInTicks(), padding);
+            server.getReservationManager().reserve(reservations);
+            // todo Temporary solution
+            reserveLastTileIndefinitely(reservations);
+        } else throw new RuntimeException("Could not plan planDelivery");
 
 
         return plan;
@@ -108,7 +103,7 @@ public class OrderPlanner {
             server.getReservationManager().reserve(reservations);
             // todo Temporary solution
             reserveLastTileIndefinitely(reservations);
-        }
+        } else throw new RuntimeException("Could not plan BinReturn");
 
         return plan;
     }

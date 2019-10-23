@@ -98,7 +98,6 @@ public class ReservationManager {
             int x = reservation.getGridCoordinate().getX(), y = reservation.getGridCoordinate().getY();
             reservationTiles[x][y].addReservation(reservation);
             mapReservation(reservation);
-
         }
     }
 
