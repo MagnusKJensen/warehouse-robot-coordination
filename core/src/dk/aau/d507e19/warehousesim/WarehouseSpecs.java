@@ -7,10 +7,9 @@ public class WarehouseSpecs {
     public static final float binSizeInMeters = 1;
     public static final int productsPerBin = 15;
     public static final int SKUsPerBin = 9;
-    // Cannot be below 10 due to a test.
-    public static final int SKUs = 100;
-    public static final int productsInStock = 5001;
-    public static final int numberOfRobots = 3;
+    public static final int SKUs = 400;
+    public static final int productsInStock = 5000;
+    public static final int numberOfRobots = 6;
     public static final float robotTopSpeed = 3f; // Meters/second
     public static final float robotAcceleration = 0.8f; // m/s^2
     public static final float robotDeceleration = 2f; // m/s^2
@@ -24,6 +23,6 @@ public class WarehouseSpecs {
     public static final int[][] pickerPoints = {{0,0}, {2,0}, {4,0}, {6,0}, {8,0}, {10,0}};
     public static final int secondsBetweenOrders = 4;
     public static final int orderGoal = 10;
-    public static final boolean collisionDetectedEnabled = false; // TEMP - Should not be enabled until reservationManager done.
+    public static final boolean collisionDetectedEnabled = true; // TEMP - Should not be enabled until reservationManager done.
     // todo layers? - Philip
 }

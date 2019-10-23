@@ -65,7 +65,7 @@ public class OrderManager {
     }
 
     public void update(){
-        if(server.hasRobotsAvailable()){
+        if(server.hasRobotsAvailable() && orderQueue.size() > 0){
             for(int i = 0; i < orderQueue.size(); ++i){
                 Order order = orderQueue.get(i);
                 Optional<Robot> optimalRobot = taskAllocator.findOptimalRobot(server.getAllRobots(), order);

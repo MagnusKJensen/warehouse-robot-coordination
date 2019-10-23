@@ -1,5 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.path;
 
+import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+
 import java.util.ArrayList;
 
 public class Path {
@@ -16,6 +18,7 @@ public class Path {
             throw new IllegalArgumentException("Paths must be continuous");
         strippedSteps = generateStrippedPath(allSteps);
     }
+
 
     private static ArrayList<Step> generateStrippedPath(ArrayList<Step> allSteps) {
         ArrayList<Step> strippedSteps = new ArrayList<>();
@@ -50,6 +53,12 @@ public class Path {
         Line fromCurrentToNext = new Line(currentStep, nextStep);
 
         return fromPrevToCurrent.getDirection() != fromCurrentToNext.getDirection();
+    }
+
+    public static Path oneStepPath(Step step) {
+        ArrayList<Step> steps = new ArrayList<>();
+        steps.add(step);
+        return new Path(steps);
     }
 
     public boolean isValidPath(){
@@ -101,5 +110,19 @@ public class Path {
         return lines;
     }
 
+    public static Path join(Path path1, Path path2){
+        /*if(!path1.getLastStep().getGridCoordinate().equals(path2.getFirstStep().getGridCoordinate()))
+            throw new IllegalArgumentException("End of first path must be start of seconds path");*/
 
+        ArrayList<Step> newSteps = new ArrayList<>();
+        newSteps.addAll(path1.getFullPath());
+        newSteps.addAll(path2.getFullPath());
+
+        return new Path(newSteps);
+    }
+
+
+    public Step getLastStep() {
+        return allSteps.get(allSteps.size() - 1);
+    }
 }

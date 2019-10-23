@@ -76,7 +76,7 @@ public class Simulation {
     private void initRobots() {
         // Auto generate robots
         for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++){
-            robots.add(new Robot(new Position(i*2, 0), i, this));
+            robots.add(new Robot(new Position(i, 0), i, this));
         }
     }
 
@@ -97,7 +97,7 @@ public class Simulation {
         for (Robot robot1 : robots){
             for(Robot robot2 : robots){
                 if(robot1.getRobotID() != robot2.getRobotID()){
-                    if(robot1.collidesWith(robot2.getCurrentPosition())) throw new CollisionException(robot1, robot2);
+                    if(robot1.collidesWith(robot2.getCurrentPosition())) throw new CollisionException(robot1, robot2, server.getTimeInTicks());
                 }
             }
         }

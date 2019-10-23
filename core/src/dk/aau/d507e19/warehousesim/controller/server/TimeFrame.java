@@ -3,6 +3,7 @@ package dk.aau.d507e19.warehousesim.controller.server;
 public class TimeFrame {
 
     public static final TimeFrame ALL_TIME = TimeFrame.indefiniteTimeFrameFrom(Long.MIN_VALUE);
+    public static TimeFrame.TimeMode TimeMode;
     private long startTime;
     private long endTime;
     private TimeMode timeMode;
@@ -13,7 +14,7 @@ public class TimeFrame {
             if(otherFrame.getTimeMode() == TimeMode.UNBOUNDED)
                 return true;
 
-            return this.isBeforeTimeFrame(otherFrame.endTime);
+            return !this.isBeforeTimeFrame(otherFrame.endTime);
         }
 
         // If the other frame is unbounded:
@@ -21,10 +22,13 @@ public class TimeFrame {
         if(otherFrame.getTimeMode() == TimeMode.UNBOUNDED)
             return !this.isOutdated(otherFrame.getStart());
 
-        return isWithinTimeFrame(otherFrame.startTime) || isWithinTimeFrame(otherFrame.endTime);
+
+        return (otherFrame.startTime < this.startTime && otherFrame.endTime > this.startTime)
+                || isWithinTimeFrame(otherFrame.startTime)
+                || isWithinTimeFrame(otherFrame.endTime);
     }
 
-    private enum TimeMode{
+    public enum TimeMode{
         UNBOUNDED, BOUNDED;
     }
 

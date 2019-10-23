@@ -80,7 +80,7 @@ public class SideMenu {
     }
 
     private void updatePerformanceMetrics(){
-        productsLeftInGrid.setText("Products left: " + simulationApp.getSimulation().getServer().getProductsAvailable().size());
+        productsLeftInGrid.setText("Available products left: " + simulationApp.getSimulation().getServer().getProductsAvailable().size());
         goalReachedText.setText(simulationApp.getSimulation().getGoal().toString());
         ordersInQueue.setText("Orders in queue: " + simulationApp.getSimulation().getServer().getOrderManager().ordersInQueue());
         updateOrdersPerMinute();

@@ -8,12 +8,14 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import dk.aau.d507e19.warehousesim.Drawable;
 import dk.aau.d507e19.warehousesim.GraphicsManager;
 import dk.aau.d507e19.warehousesim.Position;
+import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 
 public class Tile implements Drawable {
 
     private static final float GRID_LINE_WIDTH = 0.1f;
 
     private int posX, posY;
+    private GridCoordinate gridCoordinate;
     private Color color;
     public static final int TILE_SIZE = 1;
 
@@ -25,6 +27,7 @@ public class Tile implements Drawable {
     public Tile(int posX, int posY) {
         this.posX = posX;
         this.posY = posY;
+        this.gridCoordinate = new GridCoordinate(posX, posY);
     }
 
     public void render(ShapeRenderer shapeRenderer, SpriteBatch batch) {
@@ -75,6 +78,10 @@ public class Tile implements Drawable {
         boolean withInYBounds = collider.getY() >= getPosY()
                 && collider.getY() <= getPosY() + TILE_SIZE;
         return withInXBounds && withInYBounds;
+    }
+
+    public GridCoordinate getGridCoordinate(){
+        return gridCoordinate;
     }
 
     @Override
