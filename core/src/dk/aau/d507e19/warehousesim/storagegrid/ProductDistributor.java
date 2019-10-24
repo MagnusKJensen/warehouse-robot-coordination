@@ -125,7 +125,7 @@ public class ProductDistributor {
 
         for(int i = 0; i < SKUs.length; ++i){
             for(int j = 0; j < SKUs[i][1]; ++j){
-                allProducts.add(new Product( new SKU(SKUs[i][0] + ""), j));
+                allProducts.add(new Product( new SKU(SKUs[i][0] + "")));
             }
         }
 

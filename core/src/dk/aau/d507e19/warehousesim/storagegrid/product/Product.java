@@ -4,12 +4,6 @@ import java.util.Objects;
 
 public class Product {
     SKU SKU;
-    int uniqueID;
-
-    public Product(SKU SKU, int uniqueID) {
-        this.SKU = SKU;
-        this.uniqueID = uniqueID;
-    }
 
     public Product(SKU SKU) {
         this.SKU = SKU;
@@ -17,16 +11,11 @@ public class Product {
 
     @Override
     public String toString() {
-        return "SKU=" + SKU +
-                ", uniqueID=" + uniqueID;
+        return "SKU=" + SKU;
     }
 
     public SKU getSKU() {
         return SKU;
-    }
-
-    public int getUniqueID() {
-        return uniqueID;
     }
 
     @Override

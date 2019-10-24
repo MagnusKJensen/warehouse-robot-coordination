@@ -31,6 +31,7 @@ public class StorageGrid {
         this.simulation = simulation;
         generatePickerPoints();
         fillGrid();
+
     }
 
     public ArrayList<GridCoordinate> tilesWithProducts(Product prod, int amount){
