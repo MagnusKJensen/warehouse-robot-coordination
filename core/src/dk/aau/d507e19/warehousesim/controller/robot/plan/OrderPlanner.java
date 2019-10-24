@@ -89,7 +89,6 @@ public class OrderPlanner {
 
         } else throw new RuntimeException("Robot " + robot.getRobotID() + " could not plan delivery of order " + order);
 
-
         return plan;
     }
 
