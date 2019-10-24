@@ -1,6 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt;
 
 import dk.aau.d507e19.warehousesim.SimulationApp;
+import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,9 @@ public class Node<T> {
     }
 
     public void makeRoot() {
+        if(this.getData().equals(new GridCoordinate(3,0)) || this.getData().equals(new GridCoordinate(2,0))){
+            System.out.println("SOTP");
+        }
         this.updateTree(this);
     }
 
@@ -50,7 +54,7 @@ public class Node<T> {
     }
 
     public Node<T> copy() {
-        //RETURNS A TREE WHERE THIS NODE IS ROOT
+        //WARNING - SHOULD ONLY BE CALLED ON ROOT NODE //todo make impossible to call on other than root
         Node<T> copiedNode = new Node<>(this.data, null, false);
         if (this.children != null) {
             for (Node<T> n : this.getChildren()) {
@@ -95,6 +99,10 @@ public class Node<T> {
     public void setParent(Node<T> parent) {
         if (this.getParent() != null) {
             this.getParent().removeChild(this);
+        }
+        //remove future parent from list of children if its there
+        if(this.getChildren().contains(parent)){
+            this.removeChild(parent);
         }
         this.parent = parent;
         this.parent.children.add(this);
