@@ -321,11 +321,12 @@ public class Astar implements PathFinder {
         // Calculates the optimal A* path
         calculatePath();
 
-        // Creates finalPath list
-        //createPathListFromClosedList(currentTile, finalPath);
-
         if (finalPath.size() < 1){
+            System.out.println("yeet");
             return Optional.empty();
+            /*ArrayList<Step> steps = new ArrayList<>();
+            steps.add(new Step(robot.getGridCoordinate(), 1000));
+            return Optional.of(new Path(steps));*/
         }
 
         return Optional.of(new Path(Step.fromGridCoordinates(finalPath)));
