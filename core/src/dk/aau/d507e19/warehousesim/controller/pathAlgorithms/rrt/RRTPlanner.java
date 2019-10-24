@@ -12,6 +12,15 @@ public class RRTPlanner implements PathFinder {
     private RRT rrt;
     private RRTStar rrtStar;
 
+
+
+    public RRTBase getPlanner(){
+        switch(algorithm){
+            case RRT_STAR: return rrtStar;
+            case RRT: return rrt;
+            default: throw new RuntimeException("Algorithm is of unknown type, no type called " + algorithm);
+        }
+    }
     public RRTPlanner(RRTType algorithm, Robot rrtRobot) {
         this.algorithm = algorithm;
         this.robot = rrtRobot;
