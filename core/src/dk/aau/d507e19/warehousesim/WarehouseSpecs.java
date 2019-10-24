@@ -20,7 +20,7 @@ public class WarehouseSpecs {
     // Do not enter lower distribution, than 100 / SKUs.
     public static final double[][] skuDistribution = {{20.5, 50}, {9.5,30}, {70,20}};
     public static final boolean isRandomProductDistribution = true;
-    public static final int[][] pickerPoints = {{0,0}, {2,0}, {4,0}, {6,0}, {8,0}, {10,0}};
+    public static final int[][] pickerPoints = {{0,10}, {20,20}, {4,0}, {0,20}, {8,0}, {10,0}};
     public static final int secondsBetweenOrders = 4;
     public static final int orderGoal = 10;
     public static final boolean collisionDetectedEnabled = false; // TEMP - Should not be enabled until reservationManager done.

@@ -67,7 +67,6 @@ public class Astar implements PathFinder {
     }
 
     private void checkNeighborValidity() {
-
         //Checks every potential neighbor to currentTile the same way.
         GridCoordinate aboveNeighbor = new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition() + 1);
         GridCoordinate downstairsNeighbor = new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition() - 1);
@@ -79,7 +78,6 @@ public class Astar implements PathFinder {
 
             // If the current tile coordinates are valid, and the neighbor tile is not blocked then proceed.
             if (currentTile.getCurrentYPosition() - 1 >= 0 && !(grid[downstairsNeighbor.getX()][downstairsNeighbor.getY()].isBlocked())) {
-
                 // Add neighbor tile to openList.
                 addNeighborTileToOpenList(downstairsNeighbor);
             }
@@ -129,22 +127,23 @@ public class Astar implements PathFinder {
         // Calculates the path into a list of reservations.
         listOfReservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
 
+        TimeFrame timeFrame = new TimeFrame(listOfReservations.get(listOfReservations.size() - 1).getTimeFrame().getStart(), listOfReservations.get(listOfReservations.size() - 1).getTimeFrame().getEnd()+20);
         // Returns the timeFrame of the last reservations.
-        return listOfReservations.get(listOfReservations.size()-1).getTimeFrame();
+        return timeFrame;
     }
 
     private void addNeighborTileToOpenList(GridCoordinate gcNeighbor) {
-
         ArrayList<GridCoordinate> temporaryPath;
 
         // Make AstarTile from neighbor.
         AStarTile aStarNeighbor = grid[gcNeighbor.getX()][gcNeighbor.getY()];
 
         // Creates a temp path to the neighbor tile.
-        temporaryPath  = createTemporaryPath(currentTile, gcNeighbor);
+        temporaryPath = createTemporaryPath(currentTile, gcNeighbor);
+
 
         // If the neighbor tile is not reserved in the right timeFrame, then proceed.
-        if(!(reservationManager.isReserved(gcNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
+        if (!(reservationManager.isReserved(gcNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
 
             // Makes new dummy tile
             AStarTile tileToDelete = null;
@@ -180,7 +179,6 @@ public class Astar implements PathFinder {
             // Add neighbor tile to openList
             openList.add(aStarNeighbor);
         }
-
     }
 
     private void addTilesToClosedList() {
@@ -223,7 +221,6 @@ public class Astar implements PathFinder {
                 prevTempTile = closedList.get(i - 1);
             }
         }
-
         // Add the first object to list
         temp.add(new GridCoordinate(closedList.get(0).getCurrentXPosition(), closedList.get(0).getCurrentYPosition()));
 
@@ -266,7 +263,6 @@ public class Astar implements PathFinder {
 
         xEndPosition = destination.getX();
         yEndPosition = destination.getY();
-
         // Adds the starting tile to closed list.
         addStartTileToClosedList(start.getX(), start.getY());
 
@@ -275,7 +271,6 @@ public class Astar implements PathFinder {
 
         // Creates finalPath list
         createPathListFromClosedList(currentTile, finalPath);
-
         // TODO: add final step where it waits indefinitely.
         // TODO: remove indefinitely wait from first coordinate? (Where it last ended)
 
