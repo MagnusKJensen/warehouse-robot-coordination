@@ -2,6 +2,7 @@ package dk.aau.d507e19.warehousesim.controller.robot;
 
 import dk.aau.d507e19.warehousesim.controller.path.Line;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
+import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.SpeedCalculator;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
@@ -13,7 +14,16 @@ public class MovementPredictor {
     public static ArrayList<Reservation> calculateReservations
             (Robot robot, Path path, long startTimeTicks, long paddingTimeTicks) {
         ArrayList<Reservation> reservations = new ArrayList<>();
+
         ArrayList<Line> lines = path.getLines();
+
+        if(lines.size() == 0){
+            // Edge case where the first and only coordiate is a waiting step
+            Step waitingStep = path.getFullPath().get(0);
+            TimeFrame timeFrame = new TimeFrame(startTimeTicks - paddingTimeTicks, startTimeTicks
+                    + waitingStep.getWaitTimeInTicks() + paddingTimeTicks);
+            reservations.add(new Reservation(robot, waitingStep.getGridCoordinate(), timeFrame));
+        }
 
         for (int i = 0; i < lines.size(); i++) {
             Line line = lines.get(i);
@@ -25,14 +35,29 @@ public class MovementPredictor {
         return combineChainedReservations(reservations);
     }
 
+    public static long timeToTraverse(Robot robot, Path path){
+        if(path.getFullPath().size() <= 1)
+            throw new RuntimeException("Cannot traverse a path of length 1 or lower");
+
+        ArrayList<Reservation> reservations = calculateReservations(robot, path, 0, 0);
+        return reservations.get(reservations.size() - 1).getTimeFrame().getEnd();
+    }
+
     public static ArrayList<Reservation> calculateReservations(Robot robot, Line line, long startTimeTicks, long paddingTicks) {
         ArrayList<Reservation> reservations = new ArrayList<>();
         ArrayList<GridCoordinate> coordinates = line.toCoordinates();
         SpeedCalculator lineSpeedCalculator = new SpeedCalculator(robot, line);
 
+        // First step might be a waiting step
+        /*long waitingTime = 0L;
+        if(line.getStart().isWaitingStep())
+            waitingTime = line.getStart().getWaitTimeInTicks();
+        startTimeTicks += waitingTime;*/
+
         int leaveDistance = coordinates.get(1).distanceFrom(coordinates.get(0));
         long leaveTime = lineSpeedCalculator.amountOfTicksToReach(leaveDistance);
-        reservations.add(new Reservation(robot, line.getStart(), new TimeFrame(startTimeTicks - paddingTicks, startTimeTicks + leaveTime + paddingTicks)));
+        reservations.add(new Reservation(robot, line.getStart().getGridCoordinate(),
+                new TimeFrame(startTimeTicks - paddingTicks, startTimeTicks + leaveTime + paddingTicks)));
 
         GridCoordinate startCoordinate = coordinates.get(0);
         for(int i = 1; i < coordinates.size(); i++){

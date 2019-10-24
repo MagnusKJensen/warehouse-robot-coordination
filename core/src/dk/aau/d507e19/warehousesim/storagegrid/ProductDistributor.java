@@ -15,6 +15,7 @@ public class ProductDistributor {
     private static final int productsPerBin = WarehouseSpecs.productsPerBin;
     private static final int SKUsPerBin = WarehouseSpecs.SKUsPerBin;
     private static double[][] SKUDistribution = WarehouseSpecs.skuDistribution;
+    private static final long RANDOM_SEED = 123456789;
     private static Random random;
 
     public static void distributeProducts(StorageGrid grid){
@@ -22,21 +23,26 @@ public class ProductDistributor {
 
         ArrayList<Product> allProducts = generateProducts(SKUs);
 
-        distributeToGrid(allProducts, grid);
+        grid.setAllProducts(allProducts);
+
+        distributeToGrid(new ArrayList<>(allProducts), grid);
     }
 
     public static void distributeProductsRandomly(StorageGrid grid){
+        random = new Random(RANDOM_SEED);
+
         int[][] SKUs = calculateProductsPerSKU();
 
         ArrayList<Product> allProducts = generateProducts(SKUs);
 
-        distributeRandomly(allProducts ,grid);
+        grid.setAllProducts(allProducts);
+
+        distributeRandomly(new ArrayList<>(allProducts), grid);
 
     }
 
     private static void distributeRandomly(ArrayList<Product> allProducts, StorageGrid grid) {
         ArrayList<BinTile> nonFullTiles = getAllBinTiles(grid);
-        random = new Random();
 
         for(BinTile tile : nonFullTiles){
             tile.addBin(new Bin());

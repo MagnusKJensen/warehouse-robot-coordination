@@ -2,6 +2,8 @@ package dk.aau.d507e19.warehousesim.controller.server;
 
 import org.junit.Test;
 
+import java.sql.Time;
+
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 
@@ -87,5 +89,93 @@ public class TimeFrameTest {
         assertFalse(timeFrame.isOutdated(Long.MAX_VALUE));
     }
 
+
+    @Test
+    public void overlapsBothUnbounded() {
+        TimeFrame frame1 = TimeFrame.indefiniteTimeFrameFrom(15);
+        TimeFrame frame2 = TimeFrame.indefiniteTimeFrameFrom(110);
+
+        assertTrue(frame1.overlaps(frame2));
+        assertTrue(frame2.overlaps(frame1));
+    }
+
+
+
+    @Test
+    public void overlapsSelf() {
+        TimeFrame frame1 = TimeFrame.indefiniteTimeFrameFrom(15);
+        assertTrue(frame1.overlaps(frame1));
+    }
+
+    @Test
+    public void notOverlapping() {
+        TimeFrame frame1 = new TimeFrame(15, 30);
+        TimeFrame frame2 = new TimeFrame(31, 35);
+        assertFalse(frame1.overlaps(frame2));
+        assertFalse(frame2.overlaps(frame1));
+    }
+
+    @Test
+    public void overlappingEndEqualsStart() {
+        TimeFrame frame1 = new TimeFrame(15, 30);
+        TimeFrame frame2 = new TimeFrame(30, 60);
+        assertTrue(frame1.overlaps(frame2));
+        assertTrue(frame2.overlaps(frame1));
+    }
+
+
+    @Test
+    public void overlappingInbetween() {
+        TimeFrame frame1 = new TimeFrame(15, 30);
+        TimeFrame frame2 = new TimeFrame(20, 25);
+        assertTrue(frame1.overlaps(frame2));
+        assertTrue(frame2.overlaps(frame1));
+    }
+
+    @Test
+    public void overlapping() {
+        TimeFrame frame1 = new TimeFrame(15, 30);
+        TimeFrame frame2 = new TimeFrame(20, 40);
+        assertTrue(frame1.overlaps(frame2));
+        assertTrue(frame2.overlaps(frame1));
+    }
+
+    @Test
+    public void overlappingOneUnbounded() {
+        TimeFrame frame1 = new TimeFrame(15, 30);
+        TimeFrame frame2 = TimeFrame.indefiniteTimeFrameFrom(29);
+
+        assertTrue(frame1.overlaps(frame2));
+        assertTrue(frame2.overlaps(frame1));
+    }
+
+
+    @Test
+    public void overlappingOneUnboundedBefore() {
+        TimeFrame frame1 = new TimeFrame(15, 30);
+        TimeFrame frame2 = TimeFrame.indefiniteTimeFrameFrom(10);
+
+        assertTrue(frame1.overlaps(frame2));
+        assertTrue(frame2.overlaps(frame1));
+    }
+
+
+    @Test
+    public void nonOverlappingOneUnbounded01() {
+        TimeFrame frame1 = new TimeFrame(15, 30);
+        TimeFrame frame2 = TimeFrame.indefiniteTimeFrameFrom(35);
+
+        assertFalse(frame1.overlaps(frame2));
+        assertFalse(frame2.overlaps(frame1));
+    }
+
+    @Test
+    public void nonOverlappingOneUnbounded02(){
+        TimeFrame frame1 = new TimeFrame(265, 315);
+        TimeFrame frame2 = TimeFrame.indefiniteTimeFrameFrom(316);
+
+        assertFalse(frame1.overlaps(frame2));
+        assertFalse(frame2.overlaps(frame1));
+    }
 
 }

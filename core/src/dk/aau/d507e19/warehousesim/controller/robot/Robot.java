@@ -17,6 +17,7 @@ public class Robot {
     private float currentSpeed;
     private Bin bin = null;
     private int robotID;
+    private RobotController robotController;
 
     // TODO: 15/10/2019 is a temporary solution until it becomes part of the task itself.
     private GridCoordinate lastPickUp;
@@ -31,8 +32,6 @@ public class Robot {
     private final float minSpeedBinsPerSecond = WarehouseSpecs.robotMinimumSpeed / WarehouseSpecs.binSizeInMeters;
 
     private final float ROBOT_SIZE = Tile.TILE_SIZE;
-
-    private RobotController robotController;
 
     public Robot(Position startingPosition, int robotID, Simulation simulation) {
         this.currentPosition = startingPosition;
@@ -49,6 +48,7 @@ public class Robot {
     }
 
     public void deliverBin() {
+        simulation.incrementOrderProcessedCount();
     }
 
     public void putDownBin(){
@@ -161,9 +161,9 @@ public class Robot {
 
     public boolean collidesWith(Position collider) {
         boolean withInXBounds = collider.getX() >= currentPosition.getX()
-                && collider.getX() <= currentPosition.getX() + ROBOT_SIZE;
+                && collider.getX() <= currentPosition.getX() + ROBOT_SIZE - 0.15;
         boolean withInYBounds = collider.getY() >= currentPosition.getY()
-                && collider.getY() <= currentPosition.getY() + ROBOT_SIZE;
+                && collider.getY() <= currentPosition.getY() + ROBOT_SIZE -0.15;
         return withInXBounds && withInYBounds;
     }
 
@@ -207,5 +207,9 @@ public class Robot {
 
     public Bin getBin() {
         return bin;
+    }
+
+    public RobotController getRobotController() {
+        return robotController;
     }
 }

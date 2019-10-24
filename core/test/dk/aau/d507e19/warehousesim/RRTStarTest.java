@@ -48,7 +48,7 @@ public class RRTStarTest {
 
 
     }
-    @Test
+    @Ignore
     public void generatePathFromEmptyTest(){
         Robot robot = Mockito.mock(Robot.class);
         when(robot.getAccelerationBinSecond()).thenReturn(WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters);
