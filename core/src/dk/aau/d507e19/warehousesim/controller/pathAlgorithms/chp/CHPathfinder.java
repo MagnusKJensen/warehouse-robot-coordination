@@ -16,7 +16,9 @@ import java.util.PriorityQueue;
 
 public class CHPathfinder implements PathFinder {
 
-    private static final long MAXIMUM_WAIT_TIME = TimeUtils.secondsToTicks(15);
+
+    private static final long MAXIMUM_WAIT_TIME = TimeUtils.secondsToTicks(10);
+    private static final long MAXIMUM_ITERATIONS = 1000;
     private final RobotController robotController;
     private final Server server;
 
@@ -27,7 +29,7 @@ public class CHPathfinder implements PathFinder {
 
     private static final long STANDARD_WAIT_TIME_IN_TICKS = 30L;
 
-    public static CHPathfinder defaultCHPathfinder(GridBounds gridBounds, RobotController robotController){
+    public static CHPathfinder defaultCHPathfinder(GridBounds gridBounds, RobotController robotController) {
         return new CHPathfinder(gridBounds, new DistanceTurnHeuristic(), new DistanceTurnGCost(), robotController);
     }
 
@@ -42,10 +44,10 @@ public class CHPathfinder implements PathFinder {
 
     @Override
     public Optional<Path> calculatePath(GridCoordinate start, GridCoordinate destination) {
-        if(start.equals(destination))
+        if (start.equals(destination))
             return Optional.of(Path.oneStepPath(new Step(start)));
 
-        if(server.getReservationManager().isReservedIndefinitely(destination))
+        if (server.getReservationManager().isReservedIndefinitely(destination))
             return Optional.empty();
 
         PriorityQueue<CHNode> openList = new PriorityQueue<>();
@@ -55,16 +57,15 @@ public class CHPathfinder implements PathFinder {
 
         int iterationCount = 0;
 
-        while (!openList.isEmpty()){
-            iterationCount++;
+        while (!openList.isEmpty()) {
             CHNode bestCandidate = openList.poll();
             closedList.add(bestCandidate);
 
             ArrayList<CHNode> successors = getValidSuccessors(bestCandidate, destination);
 
             //Check if destination is reached
-            for(CHNode successor : successors)
-                if(successor.getGridCoordinate().equals(destination)){
+            for (CHNode successor : successors)
+                if (successor.getGridCoordinate().equals(destination)) {
 
                     /* // efficiency stats
                     System.out.print("Iterations to calculate path : " + iterationCount);
@@ -74,6 +75,10 @@ public class CHPathfinder implements PathFinder {
                 }
 
             openList.addAll(successors);
+
+            iterationCount++;
+            if(iterationCount > MAXIMUM_ITERATIONS)
+                return Optional.empty();
         }
 
         return Optional.empty();
@@ -83,7 +88,7 @@ public class CHPathfinder implements PathFinder {
         ArrayList<GridCoordinate> neighbourCoords = getValidNeighbours(parent.getGridCoordinate());
         ArrayList<CHNode> successors = new ArrayList<>();
 
-        for(GridCoordinate coord : neighbourCoords)
+        for (GridCoordinate coord : neighbourCoords)
             successors.add(nodeFactory.createNode(coord, target, parent));
 
         successors.add(nodeFactory.createWaitingNode(parent, STANDARD_WAIT_TIME_IN_TICKS));
@@ -93,9 +98,9 @@ public class CHPathfinder implements PathFinder {
         return successors;
     }
 
-    private boolean isInvalidNode(CHNode node, GridCoordinate target){
+    private boolean isInvalidNode(CHNode node, GridCoordinate target) {
         Step lastStep = node.getPath().getLastStep();
-        if(lastStep.isWaitingStep() && lastStep.getWaitTimeInTicks() > MAXIMUM_WAIT_TIME)
+        if (lastStep.isWaitingStep() && lastStep.getWaitTimeInTicks() > MAXIMUM_WAIT_TIME)
             return true;
 
         Robot robot = robotController.getRobot();
@@ -105,24 +110,24 @@ public class CHPathfinder implements PathFinder {
         Reservation nodeReservation = reservations.get(reservations.size() - 1);
 
 
-        if(nodeReservation.getGridCoordinate().equals(target)){
+        if (nodeReservation.getGridCoordinate().equals(target)) {
             return server.getReservationManager().hasConflictingReservations(reservations) ||
                     server.getReservationManager().isReserved(target, TimeFrame.indefiniteTimeFrameFrom(nodeReservation.getTimeFrame().getStart()));
-        }else{
+        } else {
             // todo (Bug: will not ignore it's own reservation)
             return server.getReservationManager().hasConflictingReservations(reservations);
         }
     }
 
     // Returns all neighbours within bounds
-    private ArrayList<GridCoordinate> getValidNeighbours(GridCoordinate originalCoords){
+    private ArrayList<GridCoordinate> getValidNeighbours(GridCoordinate originalCoords) {
         ArrayList<GridCoordinate> neighbours = new ArrayList<>();
 
-        for(Direction dir : Direction.values()){
+        for (Direction dir : Direction.values()) {
             int neighbourX = originalCoords.getX() + dir.xDir;
             int neighbourY = originalCoords.getY() + dir.yDir;
             GridCoordinate neighbour = new GridCoordinate(neighbourX, neighbourY);
-            if(gridBounds.isWithinBounds(neighbour))
+            if (gridBounds.isWithinBounds(neighbour))
                 neighbours.add(neighbour);
         }
 
