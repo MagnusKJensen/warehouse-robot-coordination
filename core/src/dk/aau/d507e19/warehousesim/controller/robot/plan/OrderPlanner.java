@@ -89,7 +89,6 @@ public class OrderPlanner {
 
         } else throw new RuntimeException("Could not plan planDelivery");
 
-
         return plan;
     }
 

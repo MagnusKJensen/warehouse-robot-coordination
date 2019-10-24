@@ -18,6 +18,10 @@ public class MovementPredictor {
         ArrayList<Line> lines = path.getLines();
 
         if(lines.size() == 0){
+            if(!path.getFullPath().get(0).isWaitingStep())
+                throw new IllegalArgumentException
+                        ("Cannot calcuate reservations for paths consisting of only one movement step");
+
             // Edge case where the first and only coordiate is a waiting step
             Step waitingStep = path.getFullPath().get(0);
             TimeFrame timeFrame = new TimeFrame(startTimeTicks - paddingTimeTicks, startTimeTicks
