@@ -14,6 +14,7 @@ import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 
 public class Astar implements PathFinder {
 
@@ -27,6 +28,7 @@ public class Astar implements PathFinder {
 
     private ArrayList<AStarTile> openList = new ArrayList<>();
     private ArrayList<AStarTile> closedList = new ArrayList<>();
+    private ArrayList<GridCoordinate> isReservedList = new ArrayList<>();
 
     private AStarTile currentTile;
     private final ReservationManager reservationManager;
@@ -148,7 +150,7 @@ public class Astar implements PathFinder {
         temporaryPath  = createTemporaryPath(currentTile, gcNeighbor);
 
         // If the neighbor tile is not reserved in the right timeFrame, then proceed.
-        //if(!(reservationManager.isReserved(gcNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
+        if(!(isReservedList.contains(gcNeighbor))) {
 
             // Makes new dummy tile
             AStarTile tileToDelete = null;
@@ -183,7 +185,7 @@ public class Astar implements PathFinder {
 
             // Add neighbor tile to openList
             openList.add(aStarNeighbor);
-        //}
+        }
 
     }
 
@@ -248,9 +250,13 @@ public class Astar implements PathFinder {
             // Small exceptions too see if it is stuck or if end destination is blocked.
             if(openList.size() < 1){
                 if (closedList.size() > 1){
-                    throw new RuntimeException("No valid path found, end destination blocked.");
+                    finalPath = null;
+                    return;
+                    //throw new RuntimeException("No valid path found, end destination blocked." + closedList.size());
                 }
-                throw new RuntimeException("No valid neighbors, stuck.");
+                finalPath = null;
+                return;
+                //throw new RuntimeException("No valid neighbors, stuck.");
             }
 
             // Sorts openList in ascending order
@@ -267,8 +273,8 @@ public class Astar implements PathFinder {
 
         if (isReserved()){
             clear();
-            calculatePath();
             System.out.println("is reserved");
+            calculatePath();
         }
     }
 
@@ -286,12 +292,6 @@ public class Astar implements PathFinder {
 
         boolean i = false;
 
-        for (GridCoordinate gc:finalPath
-             ) {
-            System.out.println(gc.toString());
-            System.out.println(finalPath.size());
-        }
-
         // Makes the tempPath to steps
         Path path = new Path(Step.fromGridCoordinates(finalPath));
 
@@ -300,7 +300,7 @@ public class Astar implements PathFinder {
 
         for (int j = 1; j < listOfReservations.size(); j++) {
             if(reservationManager.isReserved(listOfReservations.get(j).getGridCoordinate(), listOfReservations.get(j).getTimeFrame())){
-                grid[listOfReservations.get(j).getGridCoordinate().getX()][listOfReservations.get(j).getGridCoordinate().getY()].setBlocked(true);
+                isReservedList.add(listOfReservations.get(j).getGridCoordinate());
                 i = true;
             }
 
@@ -310,7 +310,7 @@ public class Astar implements PathFinder {
     }
 
     @Override
-    public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
+    public Optional<Path> calculatePath(GridCoordinate start, GridCoordinate destination) {
         // Clears all lists and objects so that it is clean next time it calculates a path.
         clear();
 
@@ -320,11 +320,22 @@ public class Astar implements PathFinder {
         xStart = start.getX();
         yStart = start.getY();
 
+        for (Robot robot: server.getAllRobots()
+             ) {
+            if (robot.getApproximateGridCoordinate().equals(destination)){
+                System.out.println("hej");
+                return new Path(Step.fromGridCoordinates(new ArrayList<>()));
+            }
+        }
+
         // Calculates the optimal A* path
         calculatePath();
 
         // Creates finalPath list
         //createPathListFromClosedList(currentTile, finalPath);
+        if (finalPath == null){
+            return Optional.empty();
+        }
 
         // TODO: add final step where it waits indefinitely.
         // TODO: remove indefinitely wait from first coordinate? (Where it last ended)
