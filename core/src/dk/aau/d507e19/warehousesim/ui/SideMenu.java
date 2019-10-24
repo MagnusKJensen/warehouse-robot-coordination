@@ -49,6 +49,7 @@ public class SideMenu {
     private Vector2 tickStopperOffset;
 
     // Performance Metrics
+    private Text performanceMetricsTitle;
     private Text ordersProcessed;
     private Text ordersPerMinute;
     private Text productsLeftInGrid;
@@ -84,7 +85,7 @@ public class SideMenu {
 
     private void addTickStopper() {
         tickStopperTextField = new TextField("", skin);
-        tickStopperTextField.setMessageText("Stop tick at....");
+        tickStopperTextField.setMessageText("Stop simulation at tick....");
         tickStopperTextField.setSize(180,40);
 
         tickStopperButton = new TextButton("Activate", skin);
@@ -110,11 +111,13 @@ public class SideMenu {
     }
 
     private void addPerformanceMetrics() {
-        this.productsLeftInGrid = new Text ("Products left: ", performanceMetricsOffset.x, performanceMetricsOffset.y, performanceMetricColor);
-        this.ordersInQueue = new Text("Orders in queue: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 25, performanceMetricColor);
-        this.ordersProcessed = new Text("Orders Processed: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 50, performanceMetricColor);
-        this.ordersPerMinute = new Text("Orders / minute: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 75, performanceMetricColor);
-        this.goalReachedText = new Text("Goal not yet finished", performanceMetricsOffset.x, performanceMetricsOffset.y - 100, performanceMetricColor);
+        this.performanceMetricsTitle = new Text("Performance Metrics", performanceMetricsOffset.x, performanceMetricsOffset.y, Color.CORAL);
+        this.productsLeftInGrid = new Text ("Products left: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 25, performanceMetricColor);
+        this.ordersInQueue = new Text("Orders in queue: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 50, performanceMetricColor);
+        this.ordersProcessed = new Text("Orders Processed: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 75, performanceMetricColor);
+        this.ordersPerMinute = new Text("Orders / minute: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 100, performanceMetricColor);
+        this.goalReachedText = new Text("Goal not yet finished", performanceMetricsOffset.x, performanceMetricsOffset.y - 125, performanceMetricColor);
+        menuStage.addActor(performanceMetricsTitle);
         menuStage.addActor(productsLeftInGrid);
         menuStage.addActor(ordersInQueue);
         menuStage.addActor(ordersProcessed);
@@ -161,11 +164,12 @@ public class SideMenu {
     public void resize(){
         updateOffSetsToWindowSize();
         // Performance metrics
-        productsLeftInGrid.changeOffSet(performanceMetricsOffset);
-        ordersInQueue.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 25);
-        ordersProcessed.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 50);
-        ordersPerMinute.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 75);
-        goalReachedText.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 100);
+        performanceMetricsTitle.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y);
+        productsLeftInGrid.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 25);
+        ordersInQueue.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 50);
+        ordersProcessed.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 75);
+        ordersPerMinute.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 100);
+        goalReachedText.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 125);
 
         // Menus
         pathFindingDropDown.changeOffSet(pathFindingDropDownOffset);
@@ -185,7 +189,7 @@ public class SideMenu {
         pathFindingDropDownOffset = new Vector2(0, Gdx.graphics.getHeight() - 370);
         taskAllocationDropDownOffset = new Vector2(0, Gdx.graphics.getHeight() - 440);
         performanceMetricsOffset = new Vector2(10, Gdx.graphics.getHeight() - 510);
-        tickStopperOffset = new Vector2(10, Gdx.graphics.getHeight() - 660);
+        tickStopperOffset = new Vector2(10, Gdx.graphics.getHeight() - 680);
     }
 
     private void renderBackground(OrthographicCamera camera){
