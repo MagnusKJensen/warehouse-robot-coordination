@@ -133,8 +133,6 @@ public class Astar implements PathFinder {
         // Calculates the path into a list of reservations.
         listOfReservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
 
-        System.out.println(listOfReservations.get(listOfReservations.size()-1).toString());
-
         // Returns the timeFrame of the last reservations.
         return listOfReservations.get(listOfReservations.size()-1).getTimeFrame();
     }
@@ -273,7 +271,6 @@ public class Astar implements PathFinder {
 
         if (isReserved()){
             clear();
-            System.out.println("is reserved");
             calculatePath();
         }
     }
@@ -312,6 +309,7 @@ public class Astar implements PathFinder {
     @Override
     public Optional<Path> calculatePath(GridCoordinate start, GridCoordinate destination) {
         // Clears all lists and objects so that it is clean next time it calculates a path.
+        isReservedList.clear();
         clear();
 
         xEndPosition = destination.getX();
