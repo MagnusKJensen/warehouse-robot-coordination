@@ -250,11 +250,11 @@ public class Astar implements PathFinder {
             // Small exceptions too see if it is stuck or if end destination is blocked.
             if(openList.size() < 1){
                 if (closedList.size() > 1){
-                    finalPath = null;
+                    //finalPath.add(null);
                     return;
                     //throw new RuntimeException("No valid path found, end destination blocked." + closedList.size());
                 }
-                finalPath = null;
+                //finalPath.add(null);
                 return;
                 //throw new RuntimeException("No valid neighbors, stuck.");
             }
@@ -320,26 +320,16 @@ public class Astar implements PathFinder {
         xStart = start.getX();
         yStart = start.getY();
 
-        for (Robot robot: server.getAllRobots()
-             ) {
-            if (robot.getApproximateGridCoordinate().equals(destination)){
-                System.out.println("hej");
-                return new Path(Step.fromGridCoordinates(new ArrayList<>()));
-            }
-        }
-
         // Calculates the optimal A* path
         calculatePath();
 
         // Creates finalPath list
         //createPathListFromClosedList(currentTile, finalPath);
-        if (finalPath == null){
+
+        if (finalPath.size() < 1){
             return Optional.empty();
         }
 
-        // TODO: add final step where it waits indefinitely.
-        // TODO: remove indefinitely wait from first coordinate? (Where it last ended)
-
-        return new Path(Step.fromGridCoordinates(finalPath));
+        return Optional.of(new Path(Step.fromGridCoordinates(finalPath)));
     }
 }
