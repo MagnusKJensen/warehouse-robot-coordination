@@ -54,7 +54,7 @@ public class OrderPlanner {
                 // todo Temporary solution
                 reserveLastTileIndefinitely(reservations);
             }
-        } else throw new RuntimeException("Could not plan pickUp");
+        } else throw new RuntimeException("Robot " + robot.getRobotID() + " could not plan pickup of order " + order);
 
         return plan;
     }
@@ -87,7 +87,7 @@ public class OrderPlanner {
                 reserveLastTileIndefinitely(reservations);
             }
 
-        } else throw new RuntimeException("Could not plan planDelivery");
+        } else throw new RuntimeException("Robot " + robot.getRobotID() + " could not plan delivery of order " + order);
 
 
         return plan;
@@ -108,9 +108,7 @@ public class OrderPlanner {
             server.getReservationManager().reserve(reservations);
             // todo Temporary solution
             reserveLastTileIndefinitely(reservations);
-        } else {
-            throw new RuntimeException("Could not plan BinReturn");
-        }
+        } else throw new RuntimeException("Robot " + robot.getRobotID() + " could not plan binReturn of bin " + robot.getBin());
 
         return plan;
     }
