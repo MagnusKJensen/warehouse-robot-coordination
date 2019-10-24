@@ -10,7 +10,6 @@ import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -26,6 +25,7 @@ public abstract class RRTBase {
     public ArrayList<GridCoordinate> freeNodeList = populateFreeList();
     //blockedNodeList
     public ArrayList<GridCoordinate> blockedNodeList = new ArrayList<>();
+    private ArrayList<Step> path = new ArrayList<>();
 
     GridCoordinate dest;
     public HashMap<GridCoordinate,Node<GridCoordinate>> allNodesMap = new HashMap<>();
@@ -323,7 +323,9 @@ public abstract class RRTBase {
         //when function completes we know that we have a path
         growUntilPathFound(destination);
         destinationNode = allNodesMap.get(destination);
-        return makePath(destinationNode);
+        path =  makePath(destinationNode);
+        return path;
+
     }
     public ArrayList<Step> generatePath(GridCoordinate start, GridCoordinate destination){
         if(allNodesMap.isEmpty()){
@@ -341,6 +343,12 @@ public abstract class RRTBase {
             growUntilPathFound(destination);
         }
         destinationNode = allNodesMap.get(destination);
-        return makePath(destinationNode);
+        path =  makePath(destinationNode);
+        return path;
+
+    }
+
+    public ArrayList<Step> getPath() {
+        return path;
     }
 }
