@@ -7,6 +7,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTBase;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
@@ -33,6 +36,7 @@ public class Simulation {
     private StorageGrid storageGrid;
     private ArrayList<Robot> robots = new ArrayList<>();
     private ArrayList<Robot> selectedRobots = new ArrayList<>();
+    private ArrayList<Robot> ctrlSelectedRobots = new ArrayList<>();
     private Tile selectedTile;
 
     private long tickCount = 0L;
@@ -136,6 +140,17 @@ public class Simulation {
         }
     }
 
+    public void ctrlSelectRobot(Robot robot){
+        if(ctrlSelectedRobots.contains(robot)){
+            ctrlSelectedRobots.remove(robot);
+        }else if(!ctrlSelectedRobots.isEmpty()){
+            //always make sure that only one robot is pressed(trees take a lot of screen space)
+            ctrlSelectedRobots.remove(0);
+            ctrlSelectedRobots.add(robot);
+        }else{
+            ctrlSelectedRobots.add(robot);
+        }
+    }
     public void selectRobot(Robot robot) {
         if(selectedRobots.contains(robot)){
             selectedRobots.remove(robot);
@@ -155,8 +170,23 @@ public class Simulation {
 
         storageGrid.render(shapeRenderer, batch);
         renderSelectedRobotsPaths();
+        renderCtrlSelectedRobotTrees();
         renderRobots();
         renderTickCountAndRealTime(gridCamera, fontCamera);
+    }
+
+    public void renderCtrlSelectedRobotTrees() {
+        for(Robot robot : ctrlSelectedRobots){
+            //only do if robot path algo is RRT variant
+            if(robot.getRobotController().getPathFinder() instanceof RRTPlanner){
+                RRTPlanner planner = (RRTPlanner) robot.getRobotController().getPathFinder();
+                ArrayList<Node<GridCoordinate>> listOfNodes = new ArrayList<>(planner.getPlanner().allNodesMap.values());
+                //if called before a robot has started growing its tree, root might be null
+                if(!listOfNodes.isEmpty()){
+                    storageGrid.renderTreeOverlay(listOfNodes, shapeRenderer,planner.getPlanner().getPath());
+                }
+            }
+        }
     }
 
     private void renderSelectedRobotsPaths() {
