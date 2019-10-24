@@ -9,7 +9,6 @@ import java.util.ArrayList;
 class CHNode implements Comparable<CHNode>{
 
     private final GridCoordinate coords;
-    private GridCoordinate target;
 
     private double hCost, fCost, gCost;
     private CHNode parentNode;
@@ -52,8 +51,7 @@ class CHNode implements Comparable<CHNode>{
 
     @Override
     public int compareTo(CHNode o) {
-
-        return 0;
+        return Double.compare(this.fCost, o.fCost);
     }
 
     public GridCoordinate getGridCoordinate() {

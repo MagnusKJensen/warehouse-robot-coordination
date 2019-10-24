@@ -42,8 +42,8 @@ public class RobotController {
                 return new RRTPlanner(RRTType.RRT, robot);
             case "DummyPathFinder":
                 return new DummyPathFinder();
-            case "CHPathFinder":
-                return new DummyPathFinder();
+            case "CustomH - Turns":
+                return CHPathfinder.defaultCHPathfinder(server.getGridBounds(), this);
             default:
                 throw new RuntimeException("Could not identify pathfinder " + pathFinderString);
         }

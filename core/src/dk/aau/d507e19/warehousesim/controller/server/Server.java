@@ -5,6 +5,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.Status;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
+import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
@@ -119,5 +120,9 @@ public class Server {
         }
 
         return false;
+    }
+
+    public GridBounds getGridBounds() {
+        return new GridBounds(getGridWidth() - 1, getGridHeight() - 1);
     }
 }

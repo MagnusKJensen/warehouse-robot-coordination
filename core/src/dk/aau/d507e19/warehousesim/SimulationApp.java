@@ -45,7 +45,7 @@ public class SimulationApp extends ApplicationAdapter {
     private InputMultiplexer inputMultiplexer;
 
     // Currently using the following pathFinder and TaskAllocators.
-	private String pathFinderSelected = "DummyPathFinder";
+	public static String pathFinderSelected = "DummyPathFinder";
 	private String taskAllocatorSelected = "DummyTaskAllocator";
 
 	@Override
@@ -94,6 +94,8 @@ public class SimulationApp extends ApplicationAdapter {
 		centerCamera(simulationCamera); // TODO: 26/09/2019 Add more intelligent system for repositioning camera when resizing
 		centerCamera(simFontCamera);
 		simFontCamera.update();
+
+		sideMenu.resize();
 	}
 
 	@Override
@@ -197,10 +199,12 @@ public class SimulationApp extends ApplicationAdapter {
 
 	public void pause(){
 		switchUpdateMode(UpdateMode.MANUAL);
+		sideMenu.updatePlayPauseButtons();
 	}
 
 	public void play(){
 		switchUpdateMode(UpdateMode.REAL_TIME);
+		sideMenu.updatePlayPauseButtons();
 	}
 
 	public void fastForward() {
@@ -252,7 +256,7 @@ public class SimulationApp extends ApplicationAdapter {
 		return sideMenu;
 	}
 
-	protected UpdateMode getUpdateMode() {
+	public UpdateMode getUpdateMode() {
 		return updateMode;
 	}
 

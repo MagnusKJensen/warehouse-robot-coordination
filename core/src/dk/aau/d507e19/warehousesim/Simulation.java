@@ -50,6 +50,8 @@ public class Simulation {
 
     private Goal goal;
 
+    private long tickStopperGoal;
+
     public Simulation(SimulationApp simulationApp){
         this.simulationApp = simulationApp;
         this.gridCamera = simulationApp.getWorldCamera();
@@ -76,7 +78,7 @@ public class Simulation {
     private void initRobots() {
         // Auto generate robots
         for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++){
-            robots.add(new Robot(new Position(i*2, 0), i, this));
+            robots.add(new Robot(new Position(i, 0), i, this));
         }
     }
 
@@ -91,13 +93,15 @@ public class Simulation {
             checkForCollisions();
         }
         updateSideMenuScrollPanes();
+
+        if(tickStopperGoal == tickCount) simulationApp.pause();
     }
 
     private void checkForCollisions() {
         for (Robot robot1 : robots){
             for(Robot robot2 : robots){
                 if(robot1.getRobotID() != robot2.getRobotID()){
-                    if(robot1.collidesWith(robot2.getCurrentPosition())) throw new CollisionException(robot1, robot2);
+                    if(robot1.collidesWith(robot2.getCurrentPosition())) throw new CollisionException(robot1, robot2, server.getTimeInTicks());
                 }
             }
         }
@@ -257,5 +261,9 @@ public class Simulation {
 
     public Goal getGoal() {
         return goal;
+    }
+
+    public void setTickStopperGoal(long tickStopperGoal) {
+        this.tickStopperGoal = tickStopperGoal;
     }
 }

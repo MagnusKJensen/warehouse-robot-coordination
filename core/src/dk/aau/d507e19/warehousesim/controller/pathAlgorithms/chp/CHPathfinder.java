@@ -1,10 +1,13 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.chp;
 
+import dk.aau.d507e19.warehousesim.TimeUtils;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
+import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
-import dk.aau.d507e19.warehousesim.controller.robot.Direction;
-import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
+import dk.aau.d507e19.warehousesim.controller.robot.*;
+import dk.aau.d507e19.warehousesim.controller.server.Reservation;
+import dk.aau.d507e19.warehousesim.controller.server.Server;
+import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
 
 import java.util.ArrayList;
@@ -13,7 +16,9 @@ import java.util.PriorityQueue;
 
 public class CHPathfinder implements PathFinder {
 
+    private static final long MAXIMUM_WAIT_TIME = TimeUtils.secondsToTicks(15);
     private final RobotController robotController;
+    private final Server server;
 
     private Heuristic heuristic;
     private GCostCalculator gCostCalculator;
@@ -22,45 +27,91 @@ public class CHPathfinder implements PathFinder {
 
     private static final long STANDARD_WAIT_TIME_IN_TICKS = 30L;
 
+    public static CHPathfinder defaultCHPathfinder(GridBounds gridBounds, RobotController robotController){
+        return new CHPathfinder(gridBounds, new DistanceTurnHeuristic(), new DistanceTurnGCost(), robotController);
+    }
+
     public CHPathfinder(GridBounds gridBounds, Heuristic heuristic, GCostCalculator gCostCalculator, RobotController robotController) {
         this.gridBounds = gridBounds;
         this.heuristic = heuristic;
         this.gCostCalculator = gCostCalculator;
         this.robotController = robotController;
+        this.server = robotController.getServer();
         this.nodeFactory = new CHNodeFactory(heuristic, gCostCalculator, robotController);
     }
 
     @Override
     public Optional<Path> calculatePath(GridCoordinate start, GridCoordinate destination) {
-        PriorityQueue<CHNode> openList = new PriorityQueue<>();
-        PriorityQueue<CHNode> closedList = new PriorityQueue<>();
+        if(start.equals(destination))
+            return Optional.of(Path.oneStepPath(new Step(start)));
 
-        openList.add(nodeFactory.createInitialNode(start));
+        if(server.getReservationManager().isReservedIndefinitely(destination))
+            return Optional.empty();
+
+        PriorityQueue<CHNode> openList = new PriorityQueue<>();
+        PriorityQueue<CHNode> closedList = new PriorityQueue<>(); // todo integrate for performance
+
+        openList.add(nodeFactory.createInitialNode(start, destination));
+
+        int iterationCount = 0;
 
         while (!openList.isEmpty()){
+            iterationCount++;
             CHNode bestCandidate = openList.poll();
-            openList.addAll(getSuccessors(bestCandidate, destination));
+            closedList.add(bestCandidate);
+
+            ArrayList<CHNode> successors = getValidSuccessors(bestCandidate, destination);
+
+            //Check if destination is reached
+            for(CHNode successor : successors)
+                if(successor.getGridCoordinate().equals(destination)){
+
+                    /* // efficiency stats
+                    System.out.print("Iterations to calculate path : " + iterationCount);
+                    int manhattanDistance = Math.abs(start.getX() - destination.getX()) + Math.abs(start.getY() - destination.getY());
+                    System.out.println(" || Manhattan distance : " + manhattanDistance + " || Path length : " + successor.getPath().getFullPath().size());*/
+                    return Optional.of(successor.getPath());
+                }
+
+            openList.addAll(successors);
         }
 
-
-        return null;
+        return Optional.empty();
     }
 
-    private ArrayList<CHNode> getSuccessors(CHNode parent, GridCoordinate target) {
+    private ArrayList<CHNode> getValidSuccessors(CHNode parent, GridCoordinate target) {
         ArrayList<GridCoordinate> neighbourCoords = getValidNeighbours(parent.getGridCoordinate());
         ArrayList<CHNode> successors = new ArrayList<>();
 
-        for(GridCoordinate coord : neighbourCoords){
+        for(GridCoordinate coord : neighbourCoords)
             successors.add(nodeFactory.createNode(coord, target, parent));
-        }
 
         successors.add(nodeFactory.createWaitingNode(parent, STANDARD_WAIT_TIME_IN_TICKS));
+
+        successors.removeIf((node) -> isInvalidNode(node, target));
 
         return successors;
     }
 
-    private CHNode getBestCandidate(ArrayList<CHNode> openList) {
-        return null;
+    private boolean isInvalidNode(CHNode node, GridCoordinate target){
+        Step lastStep = node.getPath().getLastStep();
+        if(lastStep.isWaitingStep() && lastStep.getWaitTimeInTicks() > MAXIMUM_WAIT_TIME)
+            return true;
+
+        Robot robot = robotController.getRobot();
+        ArrayList<Reservation> reservations =
+                MovementPredictor.calculateReservations(robot, node.getPath(), server.getTimeInTicks(), 0);
+
+        Reservation nodeReservation = reservations.get(reservations.size() - 1);
+
+
+        if(nodeReservation.getGridCoordinate().equals(target)){
+            return server.getReservationManager().hasConflictingReservations(reservations) ||
+                    server.getReservationManager().isReserved(target, TimeFrame.indefiniteTimeFrameFrom(nodeReservation.getTimeFrame().getStart()));
+        }else{
+            // todo (Bug: will not ignore it's own reservation)
+            return server.getReservationManager().hasConflictingReservations(reservations);
+        }
     }
 
     // Returns all neighbours within bounds
@@ -71,7 +122,8 @@ public class CHPathfinder implements PathFinder {
             int neighbourX = originalCoords.getX() + dir.xDir;
             int neighbourY = originalCoords.getY() + dir.yDir;
             GridCoordinate neighbour = new GridCoordinate(neighbourX, neighbourY);
-            if(gridBounds.isWithinBounds(neighbour)) neighbours.add(neighbour);
+            if(gridBounds.isWithinBounds(neighbour))
+                neighbours.add(neighbour);
         }
 
         return neighbours;
