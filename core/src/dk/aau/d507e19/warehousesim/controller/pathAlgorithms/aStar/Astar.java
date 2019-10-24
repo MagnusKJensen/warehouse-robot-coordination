@@ -326,14 +326,6 @@ public class Astar implements PathFinder {
         calculatePath();
 
         if (finalPath.size() < 1){
-            System.out.println("yeet");
-
-            //TODO: how to make it wait and then make the right path?
-            if (robot.isCarrying()){
-                ArrayList<Step> steps = new ArrayList<>();
-                steps.add(new Step(robot.getGridCoordinate(), 1000));
-                return Optional.of(new Path(steps));
-            }
             return Optional.empty();
         }
 
