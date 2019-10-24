@@ -50,6 +50,8 @@ public class Simulation {
 
     private Goal goal;
 
+    private long tickStopperGoal;
+
     public Simulation(SimulationApp simulationApp){
         this.simulationApp = simulationApp;
         this.gridCamera = simulationApp.getWorldCamera();
@@ -91,6 +93,8 @@ public class Simulation {
             checkForCollisions();
         }
         updateSideMenuScrollPanes();
+
+        if(tickStopperGoal == tickCount) simulationApp.pause();
     }
 
     private void checkForCollisions() {
@@ -257,5 +261,9 @@ public class Simulation {
 
     public Goal getGoal() {
         return goal;
+    }
+
+    public void setTickStopperGoal(long tickStopperGoal) {
+        this.tickStopperGoal = tickStopperGoal;
     }
 }
