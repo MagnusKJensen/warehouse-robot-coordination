@@ -128,7 +128,7 @@ public class Astar implements PathFinder {
         // Calculates the path into a list of reservations.
         listOfReservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
 
-        TimeFrame timeFrame = new TimeFrame(listOfReservations.get(listOfReservations.size() - 1).getTimeFrame().getStart(), listOfReservations.get(listOfReservations.size() - 1).getTimeFrame().getEnd()+20);
+        TimeFrame timeFrame = new TimeFrame(listOfReservations.get(listOfReservations.size() - 1).getTimeFrame().getStart(), listOfReservations.get(listOfReservations.size() - 1).getTimeFrame().getEnd() + 35);
         // Returns the timeFrame of the last reservations.
         return timeFrame;
     }
@@ -141,7 +141,6 @@ public class Astar implements PathFinder {
 
         // Creates a temp path to the neighbor tile.
         temporaryPath = createTemporaryPath(currentTile, gcNeighbor);
-
 
         // If the neighbor tile is not reserved in the right timeFrame, then proceed.
         if (!(reservationManager.isReserved(gcNeighbor, getTimeFrameFromLastReservation(temporaryPath)))) {
@@ -268,8 +267,11 @@ public class Astar implements PathFinder {
         addStartTileToClosedList(start.getX(), start.getY());
 
         // Calculates the optimal A* path
-        calculatePath();
-
+        try {
+            calculatePath();
+        } catch (IndexOutOfBoundsException e) {
+            return Optional.empty();
+        }
         // Creates finalPath list
         createPathListFromClosedList(currentTile, finalPath);
         // TODO: add final step where it waits indefinitely.
