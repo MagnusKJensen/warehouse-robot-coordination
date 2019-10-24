@@ -51,9 +51,6 @@ public class RRTStar extends RRTBase {
         for(Node<GridCoordinate> n : neighbours){
             if(canBeRewired(node,n)){
                 //make copyTree
-                if(node.getData().equals(new GridCoordinate(4,13)) && n.getData().equals(new GridCoordinate(4,12))){
-                    System.out.println("copying for node: " + node.getData() + " and n: "+ n.getData());
-                }
                 Node<GridCoordinate> copyRoot = root.copy();
                 //set copy of node to be parent of copy of n
                 Node<GridCoordinate> copyN = copyRoot.findNode(n.getData());

@@ -39,9 +39,6 @@ public class Node<T> {
     }
 
     public void makeRoot() {
-        if(this.getData().equals(new GridCoordinate(3,0)) || this.getData().equals(new GridCoordinate(2,0))){
-            System.out.println("SOTP");
-        }
         this.updateTree(this);
     }
 
