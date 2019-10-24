@@ -22,7 +22,18 @@ public class RRTStar extends RRTBase {
 
     @Override
     protected void growUntilPathFound(GridCoordinate destination){
+        //growUntilFullyExplored();
         //Run until a route is found
+        while (!allNodesMap.containsKey(destination)) {
+            //grow tree by one each time(maybe inefficient?)
+            growRRT(root, 1);
+            //every time a new node is added, check to see if we can improve it
+            improvePath(latestNode.getData());
+            //check if any of the nodes in the vicinity can be rewired to reduce their cost
+            rewire(latestNode);
+        }
+    }
+    private void growUntilFullyExplored(){
         while (!isFullyExplored()) {
             //grow tree by one each time(maybe inefficient?)
             growRRT(root, 1);
@@ -40,6 +51,9 @@ public class RRTStar extends RRTBase {
         for(Node<GridCoordinate> n : neighbours){
             if(canBeRewired(node,n)){
                 //make copyTree
+                if(node.getData().equals(new GridCoordinate(4,13)) && n.getData().equals(new GridCoordinate(4,12))){
+                    System.out.println("copying for node: " + node.getData() + " and n: "+ n.getData());
+                }
                 Node<GridCoordinate> copyRoot = root.copy();
                 //set copy of node to be parent of copy of n
                 Node<GridCoordinate> copyN = copyRoot.findNode(n.getData());
@@ -62,6 +76,9 @@ public class RRTStar extends RRTBase {
         } else if(node.getParent().equals(n)){
             return false;
         }else if (isInPathToRoot(node,n)){
+            //if we get here then n is not the direct parent, but might be parents parent,
+            //therefore its always beneficial for us to set nodes parent to n.
+            node.setParent(n);
             return false;
         }else return true;
     }
