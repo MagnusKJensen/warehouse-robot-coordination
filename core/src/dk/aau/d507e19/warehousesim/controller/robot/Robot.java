@@ -51,7 +51,7 @@ public class Robot {
         simulation.incrementOrderProcessedCount();
     }
 
-    public void putDownBin() {
+    public void putDownBin(){
         GridCoordinate coordinate = getGridCoordinate();
         Tile tile = simulation.getStorageGrid().getTile(coordinate.getX(), coordinate.getY());
         if (tile instanceof BinTile && !((BinTile) tile).hasBin()) {
@@ -163,7 +163,7 @@ public class Robot {
         boolean withInXBounds = collider.getX() >= currentPosition.getX()
                 && collider.getX() <= currentPosition.getX() + ROBOT_SIZE - 0.15;
         boolean withInYBounds = collider.getY() >= currentPosition.getY()
-                && collider.getY() <= currentPosition.getY() + ROBOT_SIZE - 0.15;
+                && collider.getY() <= currentPosition.getY() + ROBOT_SIZE -0.15;
         return withInXBounds && withInYBounds;
     }
 
@@ -192,7 +192,7 @@ public class Robot {
         return lastPickUp;
     }
 
-    public boolean isCarrying() {
+    public boolean isCarrying(){
         return bin != null;
     }
 

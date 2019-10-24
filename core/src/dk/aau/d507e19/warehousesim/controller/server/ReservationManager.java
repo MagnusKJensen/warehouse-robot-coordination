@@ -35,9 +35,9 @@ public class ReservationManager {
         mapReservation(reservation);
     }
 
-    public boolean canReserveIndefinitely(GridCoordinate gridCoordinate, TimeFrame timeFrame) {
+    public boolean canReserve(GridCoordinate gridCoordinate, TimeFrame timeFrame) {
         int x = gridCoordinate.getX(), y = gridCoordinate.getY();
-        return reservationTiles[x][y].isReserved(timeFrame);
+        return !reservationTiles[x][y].isReserved(timeFrame);
     }
 
     public boolean isReserved(GridCoordinate gridCoordinate, TimeFrame timeFrame) {
@@ -88,9 +88,10 @@ public class ReservationManager {
         robotReservationsMap.get(reservation.getRobot()).remove(reservation);
     }
 
+
+
     public boolean isBinReserved(GridCoordinate gridCoordinate) {
-        // Should maybe be independent of time?
-        return false;
+        return isReserved(gridCoordinate, TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks()));
     }
 
     public void reserve(ArrayList<Reservation> reservations) {
@@ -98,7 +99,6 @@ public class ReservationManager {
             int x = reservation.getGridCoordinate().getX(), y = reservation.getGridCoordinate().getY();
             reservationTiles[x][y].addReservation(reservation);
             mapReservation(reservation);
-
         }
     }
 
@@ -120,4 +120,20 @@ public class ReservationManager {
             robotReservationsMap.put(reservation.getRobot(), new ArrayList<>());
         robotReservationsMap.get(reservation.getRobot()).add(reservation);
     }
+
+    public boolean isReservedIndefinitely(GridCoordinate gridCoordinate) {
+        return reservationTiles[gridCoordinate.getX()][gridCoordinate.getY()].isReservedIndefinitely();
+    }
+
+    public boolean hasConflictingReservations(ArrayList<Reservation> reservations) {
+        for(Reservation reservation : reservations){
+            int x = reservation.getGridCoordinate().getX();
+            int y = reservation.getGridCoordinate().getY();
+            if(reservationTiles[x][y].isReserved(reservation.getTimeFrame()))
+                return true;
+        }
+
+        return false;
+    }
+
 }

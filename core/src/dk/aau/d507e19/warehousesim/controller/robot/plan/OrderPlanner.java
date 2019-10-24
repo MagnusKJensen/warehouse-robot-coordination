@@ -13,6 +13,7 @@ import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Random;
 
 public class OrderPlanner {
@@ -21,7 +22,7 @@ public class OrderPlanner {
     private PathFinder pathFinder;
     private Server server;
     private RobotController robotController;
-    private int padding = 0;
+    private int padding = 10;
 
     public OrderPlanner(RobotController robotController) {
         this.pathFinder = robotController.getPathFinder();
@@ -32,30 +33,33 @@ public class OrderPlanner {
         this.robotController = robotController;
     }
 
-    public ArrayList<Action> planPickUp(Order order){
+    public ArrayList<Action> planPickUp(Order order) {
         ArrayList<Action> plan = new ArrayList<>();
+        server.getReservationManager().removeReservationsBy(robot);
         GridCoordinate pickUpPoint = getNearestAvailableProduct(order);
-        Path pathToPickUpPoint = pathFinder.calculatePath(robot.getGridCoordinate(), pickUpPoint);
 
-        plan.add(new PathTraversal(robot, pathToPickUpPoint));
-        plan.add(new PickUp(robot));
+        Optional<Path> pathToPickUpPoint = pathFinder.calculatePath(robot.getGridCoordinate(), pickUpPoint);
 
-        // TODO: 18/10/2019 Only reserve, if the robot is not already on the correct tile. Should however still reserve it's own position then.
-        if(!robot.getGridCoordinate().equals(pickUpPoint)) {
-            server.getReservationManager().removeReservationsBy(robot);
-            ArrayList<Reservation> reservations =
-                    MovementPredictor.calculateReservations(robot, pathToPickUpPoint, server.getTimeInTicks(), padding);
+        if (pathToPickUpPoint.isPresent()) {
+            plan.add(new PathTraversal(robot, pathToPickUpPoint.get()));
+            plan.add(new PickUp(robot));
 
-            server.getReservationManager().reserve(reservations);
+            if (!robot.getGridCoordinate().equals(pickUpPoint)) {
+                // TODO: 18/10/2019 Only reserve, if the robot is not already on the correct tile. Should however still reserve it's own position then.
+                ArrayList<Reservation> reservations =
+                        MovementPredictor.calculateReservations(robot, pathToPickUpPoint.get(), server.getTimeInTicks(), padding);
 
-            // todo Temporary solution
-            reserveLastTileIndefinitely(reservations);
-        }
+                server.getReservationManager().reserve(reservations);
+
+                // todo Temporary solution
+                reserveLastTileIndefinitely(reservations);
+            }
+        } else throw new RuntimeException("Could not plan pickUp");
 
         return plan;
     }
 
-    private void reserveLastTileIndefinitely(ArrayList<Reservation> reservations){
+    private void reserveLastTileIndefinitely(ArrayList<Reservation> reservations) {
         Reservation lastReservation = reservations.get(reservations.size() - 1);
         TimeFrame unboundedTimeFrame = TimeFrame
                 .indefiniteTimeFrameFrom(lastReservation.getTimeFrame().getEnd() + 1);
@@ -64,61 +68,71 @@ public class OrderPlanner {
         server.getReservationManager().reserve(unboundedReservation);
     }
 
-    public ArrayList<Action> planDelivery(Order order){
+    public ArrayList<Action> planDelivery(Order order) {
+        server.getReservationManager().removeReservationsBy(robot);
         ArrayList<Action> plan = new ArrayList<>();
         GridCoordinate deliveryPoint = getNearestAvailablePicker();
-        Path pathToDeliveryPoint = pathFinder.calculatePath(robot.getGridCoordinate(), deliveryPoint);
+        Optional<Path> pathToDeliveryPoint = pathFinder.calculatePath(robot.getGridCoordinate(), deliveryPoint);
 
-        plan.add(new PathTraversal(robot, pathToDeliveryPoint));
-        plan.add(new Delivery(robot, order));
+        if (pathToDeliveryPoint.isPresent()) {
+            plan.add(new PathTraversal(robot, pathToDeliveryPoint.get()));
+            plan.add(new Delivery(robot, order));
 
-        if(!robot.getGridCoordinate().equals(deliveryPoint)){
-            server.getReservationManager().removeReservationsBy(robot);
+            if (!robot.getGridCoordinate().equals(deliveryPoint)) {
+
+                ArrayList<Reservation> reservations =
+                        MovementPredictor.calculateReservations(robot, pathToDeliveryPoint.get(), server.getTimeInTicks(), padding);
+                server.getReservationManager().reserve(reservations);
+                // todo Temporary solution
+                reserveLastTileIndefinitely(reservations);
+            }
+
+        } else throw new RuntimeException("Could not plan planDelivery");
+
+
+        return plan;
+    }
+
+    public ArrayList<Action> planBinReturn() {
+        server.getReservationManager().removeReservationsBy(robot);
+        ArrayList<Action> plan = new ArrayList<>();
+        // TODO: 15/10/2019 Find empty tile
+        Optional<Path> pathToEmptyTile = pathFinder.calculatePath(robot.getGridCoordinate(), robot.getLastPickUp());
+
+        if (pathToEmptyTile.isPresent()) {
+            plan.add(new PathTraversal(robot, pathToEmptyTile.get()));
+            plan.add(new PlaceBin(robot));
 
             ArrayList<Reservation> reservations =
-                    MovementPredictor.calculateReservations(robot, pathToDeliveryPoint, server.getTimeInTicks(), padding);
+                    MovementPredictor.calculateReservations(robot, pathToEmptyTile.get(), server.getTimeInTicks(), padding);
             server.getReservationManager().reserve(reservations);
             // todo Temporary solution
             reserveLastTileIndefinitely(reservations);
+        } else {
+            throw new RuntimeException("Could not plan BinReturn");
         }
 
         return plan;
     }
 
-    public ArrayList<Action> planBinReturn(){
-        ArrayList<Action> plan = new ArrayList<>();
-        // TODO: 15/10/2019 Find empty tile
-        Path pathToEmptyTile = pathFinder.calculatePath(robot.getGridCoordinate(), robot.getLastPickUp());
-
-        plan.add(new PathTraversal(robot, pathToEmptyTile));
-        plan.add(new PlaceBin(robot));
-
-        server.getReservationManager().removeReservationsBy(robot);
-        ArrayList<Reservation> reservations =
-                MovementPredictor.calculateReservations(robot, pathToEmptyTile, server.getTimeInTicks(), padding);
-        server.getReservationManager().reserve(reservations);
-        // todo Temporary solution
-        reserveLastTileIndefinitely(reservations);
-
-        return plan;
-    }
-
-    public GridCoordinate getNearestAvailablePicker(){
-        // TODO: 15/10/2019 Currently finds nearest, but not nearest AVAILABLE.
+    public GridCoordinate getNearestAvailablePicker() {
+        // todo Handle case where no pickers are avaible
         ArrayList<GridCoordinate> pickerPoints = server.getPickerPoints();
 
         int shortestDistance = -1;
         int newDistance;
         GridCoordinate shortestDistanceGC = null;
-        for(GridCoordinate pickerGC : pickerPoints){
+        for (GridCoordinate pickerGC : pickerPoints) {
+            if (server.getReservationManager().isReservedIndefinitely(pickerGC))
+                continue;
             newDistance = calculateDistance(robot.getGridCoordinate(), pickerGC);
             // If no other distance found
-            if(shortestDistance == -1) {
+            if (shortestDistance == -1) {
                 shortestDistance = newDistance;
                 shortestDistanceGC = pickerGC;
             }
             // Compare to currently shortest distance
-            else if(newDistance < shortestDistance) {
+            else if (newDistance < shortestDistance) {
                 shortestDistance = newDistance;
                 shortestDistanceGC = pickerGC;
             }
@@ -132,7 +146,7 @@ public class OrderPlanner {
         return Math.abs(source.getX() - dest.getX()) + Math.abs(source.getY() - dest.getY());
     }
 
-    private GridCoordinate getNearestAvailableProduct(Order order){
+    private GridCoordinate getNearestAvailableProduct(Order order) {
         // TODO: 15/10/2019 Finds the nearest, but does not check if it is reserved - Philip
         ArrayList<BinTile> tilesWithProd = server.getTilesContaining(order.getProduct().getSKU());
         ArrayList<BinTile> tilesWithEnoughProds = new ArrayList<>();
@@ -141,18 +155,21 @@ public class OrderPlanner {
         boolean hasIdleRobotOnTop;
         for (BinTile tile : tilesWithProd) {
             hasIdleRobotOnTop = false;
-            if(tile.getBin() != null){
-                if(tile.getBin().hasProducts(order.getProduct(), order.getAmount()))
+            if (tile.getBin() != null) {
+                if (tile.getBin().hasProducts(order.getProduct(), order.getAmount())) {
 
                     // TODO: 21/10/2019 VERY TEMP! An idle robot on top of the product, should not stop the robot from getting it! - Philip
-                    for (Robot robot : server.getAllRobots()) {
+                    if (server.getReservationManager().isReservedIndefinitely(tile.getGridCoordinate()))
+                        hasIdleRobotOnTop = true;
+                    /*for (Robot robot : server.getAllRobots()) {
                         if(robot.getApproximateGridCoordinate().equals(new GridCoordinate(tile.getPosX(), tile.getPosY())) &&
                                 robot.getCurrentStatus() == Status.AVAILABLE &&
                                 this.robot.getRobotID() != robot.getRobotID()
                         ) hasIdleRobotOnTop = true;
-                    }
+                    }*/
 
-                    if(!hasIdleRobotOnTop) tilesWithEnoughProds.add(tile);
+                    if (!hasIdleRobotOnTop) tilesWithEnoughProds.add(tile);
+                }
             }
         }
 
@@ -162,20 +179,19 @@ public class OrderPlanner {
         GridCoordinate shortestGC = null;
         GridCoordinate newGC = null;
         for (BinTile tile : tilesWithEnoughProds) {
-            if(shortestDistance == -1) {
+            if (shortestDistance == -1) {
                 shortestGC = new GridCoordinate(tile.getPosX(), tile.getPosY());
-                shortestDistance = calculateDistance(robot.getGridCoordinate(),shortestGC);
-            }
-            else {
+                shortestDistance = calculateDistance(robot.getGridCoordinate(), shortestGC);
+            } else {
                 newGC = new GridCoordinate(tile.getPosX(), tile.getPosY());
                 newDistance = calculateDistance(robot.getGridCoordinate(), newGC);
-                if(newDistance < shortestDistance) {
+                if (newDistance < shortestDistance) {
                     shortestDistance = newDistance;
                     shortestGC = newGC;
                 }
             }
         }
-        if(shortestGC == null) throw new RuntimeException("No nearest product available found");
+        if (shortestGC == null) throw new RuntimeException("No nearest product available found - Time : " + server.getTimeInTicks());
 
         return shortestGC;
     }

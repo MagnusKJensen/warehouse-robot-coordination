@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import dk.aau.d507e19.warehousesim.GraphicsManager;
 
@@ -25,7 +26,6 @@ public class Text extends Actor {
         this.color = color;
     }
 
-
     @Override
     public void draw(Batch batch, float parentAlpha) {
         font.setColor(color);
@@ -39,5 +39,15 @@ public class Text extends Actor {
 
     public void setText(String myString) {
         this.myString = myString;
+    }
+
+    public void changeOffSet(float xOffSet, float yOffSet){
+        this.xOffSet = xOffSet;
+        this.yOffSet = yOffSet;
+    }
+
+    public void changeOffSet(Vector2 offSet){
+        this.xOffSet = offSet.x;
+        this.yOffSet = offSet.y;
     }
 }
