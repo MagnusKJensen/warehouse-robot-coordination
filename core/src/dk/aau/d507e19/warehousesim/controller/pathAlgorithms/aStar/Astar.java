@@ -292,6 +292,10 @@ public class Astar implements PathFinder {
         // Makes the tempPath to steps
         Path path = new Path(Step.fromGridCoordinates(finalPath));
 
+        if (finalPath.size() < 2){
+            return i;
+        }
+
         // Calculates the path into a list of reservations.
         ArrayList<Reservation> listOfReservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
 
@@ -323,10 +327,14 @@ public class Astar implements PathFinder {
 
         if (finalPath.size() < 1){
             System.out.println("yeet");
+
+            //TODO: how to make it wait and then make the right path?
+            if (robot.isCarrying()){
+                ArrayList<Step> steps = new ArrayList<>();
+                steps.add(new Step(robot.getGridCoordinate(), 1000));
+                return Optional.of(new Path(steps));
+            }
             return Optional.empty();
-            /*ArrayList<Step> steps = new ArrayList<>();
-            steps.add(new Step(robot.getGridCoordinate(), 1000));
-            return Optional.of(new Path(steps));*/
         }
 
         return Optional.of(new Path(Step.fromGridCoordinates(finalPath)));
