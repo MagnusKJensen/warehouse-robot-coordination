@@ -10,8 +10,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import dk.aau.d507e19.warehousesim.GraphicsManager;
 import dk.aau.d507e19.warehousesim.SimulationApp;
+import dk.aau.d507e19.warehousesim.UpdateMode;
 import org.graalvm.compiler.graph.Graph;
 
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 public class TimeControlMenu {
@@ -55,6 +57,17 @@ public class TimeControlMenu {
         addButtonListeners();
         setSelectableButtons();
         addButtonsToStage();
+    }
+
+    public void updatePauseButton(){
+        if(simulationApp.getUpdateMode() == UpdateMode.MANUAL) {
+            setManualButtonsDisabled(false);
+            selectButton(pauseBtn);
+        }
+        if(simulationApp.getUpdateMode() == UpdateMode.REAL_TIME){
+            setManualButtonsDisabled(true);
+            selectButton(playBtn);
+        }
     }
 
     private void addButtonListeners(){
