@@ -1,17 +1,21 @@
 package dk.aau.d507e19.warehousesim.controller.server;
 
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.BinDelivery;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.controller.server.order.Order;
+import dk.aau.d507e19.warehousesim.controller.server.order.OrderLine;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.DummyTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.NaiveShortestDistanceTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.ShortestDistanceTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocator;
+import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
+import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
+import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.*;
 
 public class OrderManager {
     private ArrayList<Order> orderQueueNew = new ArrayList<>();
@@ -84,7 +88,31 @@ public class OrderManager {
     }
 
     private ArrayList<Task> createTasksFromOrder(Order order) {
-        return new ArrayList<>();
+        ArrayList<Task> orderTasks = new ArrayList<>();
+
+        for(OrderLine line : order.getLinesInOrder()){
+            orderTasks.addAll(splitIntoTasks(line, order));
+        }
+
+        return orderTasks;
+    }
+
+    private Collection<Task> splitIntoTasks(OrderLine line, Order order) {
+        Product product = line.getProduct();
+
+        StorageGrid storageGrid = server.getSimulation().getStorageGrid();
+        ArrayList<BinTile> binTiles = storageGrid.tilesWithProduct(line.getProduct());
+        binTiles.sort(Comparator.comparingInt(tile -> tile.getBin().productCount(product)));
+
+        ArrayList<Task> productTasks = new ArrayList<>();
+        int remainingProducts = line.getAmount();
+        for(BinTile tile : binTiles){
+            remainingProducts -= tile.getBin().productCount(product);
+            productTasks.add(new BinDelivery(order, tile.getGridCoordinate()));
+            if(remainingProducts <= 0) break;
+        }
+
+        return productTasks;
     }
 
     public int ordersInQueue(){

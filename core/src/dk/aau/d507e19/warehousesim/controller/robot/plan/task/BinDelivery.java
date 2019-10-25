@@ -18,12 +18,16 @@ public class BinDelivery implements Task {
     private ArrayList<Task> subTasks = new ArrayList<>();
     private boolean completed = false;
 
-    public BinDelivery(RobotController robotController, Order order, GridCoordinate binCoords) {
-        this.robotController = robotController;
-        this.robot = robotController.getRobot();
+    public BinDelivery(Order order, GridCoordinate binCoords) {
         this.order = order;
         this.binCoords = binCoords;
         planTasks();
+    }
+
+    public void setRobotController(RobotController robotController){
+        this.robotController = robotController;
+        this.robot = robotController.getRobot();
+
     }
 
     private void planTasks() {

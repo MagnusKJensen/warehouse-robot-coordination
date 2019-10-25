@@ -34,14 +34,14 @@ public class StorageGrid {
 
     }
 
-    public ArrayList<GridCoordinate> tilesWithProducts(Product prod, int amount){
-        ArrayList<GridCoordinate> tilesWithProducts = new ArrayList<>();
+    public ArrayList<BinTile> tilesWithProduct(Product prod){
+        ArrayList<BinTile> tilesWithProducts = new ArrayList<>();
         for(int x = 0; x < width; ++x){
             for(int y = 0; y < height; ++y){
                 if(tiles[x][y] instanceof BinTile){
                     BinTile tile = (BinTile) tiles[x][y];
-                    if(tile.hasBin() && tile.getBin().hasProducts(prod, amount)){
-                        tilesWithProducts.add(new GridCoordinate(tile.getPosX(), tile.getPosY()));
+                    if(tile.hasBin() && tile.getBin().hasProduct(prod)){
+                        tilesWithProducts.add(tile);
                     }
                 }
             }
