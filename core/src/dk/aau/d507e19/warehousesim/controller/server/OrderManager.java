@@ -1,6 +1,5 @@
 package dk.aau.d507e19.warehousesim.controller.server;
 
-import dk.aau.d507e19.warehousesim.controller.robot.Order;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.controller.server.order.OrderNew;
@@ -10,13 +9,12 @@ import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.ShortestDista
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocator;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
+import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
 import java.util.ArrayList;
 import java.util.Optional;
 
 public class OrderManager {
-    private ArrayList<Order> ordersFinished = new ArrayList<>();
-    private ArrayList<Order> orderQueue = new ArrayList<>();
     private ArrayList<OrderNew> orderQueueNew = new ArrayList<>();
     private Server server;
     private TaskAllocator taskAllocator;
@@ -38,66 +36,26 @@ public class OrderManager {
         }
     }
 
-    public boolean takeOrder(Order order){
-        if(!orderIsServiceable(order)) return false;
-        else {
-            this.orderQueue.add(order);
-            for(int i = 0; i < order.getAmount(); i++){
-                server.getProductsAvailable().remove(order.getProduct());
-            }
+    public boolean takeOrder(OrderNew order){
+        if(isOrderServiceable(order)) {
+            // Divide into RetrievalTasks ??
+            removeProducts(order.getAllProductsInOrder());
+            this.orderQueueNew.add(order);
             return true;
+        } else {
+            System.out.println("Rejected order " + order);
+            return false;
         }
     }
 
-    public boolean takeOrder(OrderNew order){
-        if(isOrderServiceable(order)) return false;
-        else {
-            // Divide into RetrievalTasks ??
-            server.getProductsAvailable().removeAll(order.getAllProductsInOrder());
-            this.orderQueueNew.add(order);
-            return true;
+    private void removeProducts(ArrayList<Product> productsToRemove){
+        for(Product prod : productsToRemove){
+            server.getProductsAvailable().remove(prod);
         }
     }
 
     private boolean isOrderServiceable(OrderNew order){
         return server.getProductsAvailable().containsAll(order.getAllProductsInOrder());
-    }
-
-    private boolean orderIsServiceable(Order order) {
-        // TODO: 18/10/2019 Also maybe assign two or more robots if two more bins needs to be picked up?
-        //  Divide order into more, maybe? - Philip
-        ArrayList<BinTile> tilesWithProd = server.getTilesContaining(order.getProduct().getSKU());
-
-        // If the product is not in grid, reject
-        if(tilesWithProd.isEmpty()) return false;
-
-        // If the tile is in grid, get tile with the correct amount
-        for (BinTile tile : tilesWithProd) {
-            if(tile.getBin() != null){
-                if(tile.getBin().hasProducts(order.getProduct(), order.getAmount()))
-                    return true;
-            }
-        }
-
-        System.out.println("Rejected order: " + order);
-        return false;
-    }
-
-    // Should be replaced by updateNew
-    public void update(){
-        if(server.hasAvailableRobot() && orderQueue.size() > 0){
-            for(int i = 0; i < orderQueue.size(); ++i){
-                Order order = orderQueue.get(i);
-                Optional<Robot> optimalRobot = taskAllocator.findOptimalRobot(server.getAllRobots(), order);
-                if(optimalRobot.isPresent()){
-                    optimalRobot.get().assignOrder(order);
-                    ordersFinished.add(orderQueue.get(i));
-                    System.out.println("Commenced order: " + orderQueue.get(i));
-                    orderQueue.remove(i);
-                    break;
-                }
-            }
-        }
     }
 
     public void updateNew(){
@@ -131,7 +89,7 @@ public class OrderManager {
     }
 
     public int ordersInQueue(){
-        return orderQueue.size();
+        return orderQueueNew.size();
     }
 
 }

@@ -52,13 +52,13 @@ public class RobotController {
     public Optional<Path> getPath(GridCoordinate gridCoordinate, GridCoordinate destination) {
         return pathFinder.calculatePath(gridCoordinate, destination);
     }
-
+    /*
     public void addToPlan(final Order order) {
         final OrderPlanner orderPlanner = new OrderPlanner(this);
         planningSteps.add(() -> robotActions.addAll(orderPlanner.planPickUp(order)));
         planningSteps.add(() -> robotActions.addAll(orderPlanner.planDelivery(order)));
         planningSteps.add(() -> robotActions.addAll(orderPlanner.planBinReturn()));
-    }
+    }*/
 
     public void update() {
         if (robotActions.isEmpty())

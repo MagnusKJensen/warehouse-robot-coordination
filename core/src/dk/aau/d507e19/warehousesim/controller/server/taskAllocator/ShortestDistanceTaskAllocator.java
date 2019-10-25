@@ -20,7 +20,7 @@ public class ShortestDistanceTaskAllocator implements TaskAllocator {
     public Optional<Robot> findOptimalRobot(ArrayList<Robot> robots, Task task) {
         return Optional.empty();
     }
-
+    /*
     @Override
     public Optional<Robot> findOptimalRobot(ArrayList<Robot> robots, Order order) {
         Robot optimalRobot = null;
@@ -74,7 +74,7 @@ public class ShortestDistanceTaskAllocator implements TaskAllocator {
         }
 
         return totalDistance;
-    }
+    }*/
 
     private ArrayList<Robot> findAvailableRobots(ArrayList<Robot> robots){
         ArrayList<Robot> availableRobots = new ArrayList<>();

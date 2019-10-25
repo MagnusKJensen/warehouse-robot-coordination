@@ -3,7 +3,6 @@ package dk.aau.d507e19.warehousesim.controller.server.order;
 import com.sun.org.apache.xpath.internal.operations.Or;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
-import dk.aau.d507e19.warehousesim.controller.robot.Order;
 import dk.aau.d507e19.warehousesim.controller.server.OrderManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;

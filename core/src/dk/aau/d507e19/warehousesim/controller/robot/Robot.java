@@ -93,10 +93,10 @@ public class Robot {
                 throw new RuntimeException("Robot status unavailable");
         }
     }
-
+    /*
     public void assignOrder(Order order) {
         robotController.addToPlan(order);
-    }
+    }*/
 
     public void assignTask(Task task){
         // TODO: 25/10/2019 Fill out - Philip
