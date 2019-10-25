@@ -8,12 +8,12 @@ public class WarehouseSpecs {
     public static final int SKUsPerBin = 9;
     public static final int SKUs = 80;
     public static final int productsInStock = 5000;
-    public static final int numberOfRobots = 3;
+    public static final int numberOfRobots = 5;
     public static final float robotTopSpeed = 3f; // Meters/second
     public static final float robotAcceleration = 0.8f; // m/s^2
     public static final float robotDeceleration = 2f; // m/s^2
     public static final float robotMinimumSpeed = 0.1f;
-    public static final int robotPickUpSpeedInSeconds = 1;
+    public static final int robotPickUpSpeedInSeconds = 3;
     // For example 20% of the SKUs = 80% of turnover and 80% of SKUs = 20% turnover would be {{20,80},{80,20}.
     // Both turnover and SKUs should also sum up to 100. Do not enter more than 1 decimal.
     // Do not enter lower distribution, than 100 / SKUs.

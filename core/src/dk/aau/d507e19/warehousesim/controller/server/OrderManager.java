@@ -3,6 +3,7 @@ package dk.aau.d507e19.warehousesim.controller.server;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.robot.Order;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.controller.server.order.OrderNew;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.DummyTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.NaiveShortestDistanceTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.ShortestDistanceTaskAllocator;
@@ -42,6 +43,11 @@ public class OrderManager {
             }
             return true;
         }
+    }
+
+    public boolean takeOrder(OrderNew order){
+        // TODO: 24/10/2019 Fill out...
+        return true;
     }
 
     private boolean orderIsServiceable(Order order) {

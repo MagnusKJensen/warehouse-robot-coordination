@@ -292,6 +292,10 @@ public class Astar implements PathFinder {
         // Makes the tempPath to steps
         Path path = new Path(Step.fromGridCoordinates(finalPath));
 
+        if (finalPath.size() < 2){
+            return i;
+        }
+
         // Calculates the path into a list of reservations.
         ArrayList<Reservation> listOfReservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
 
@@ -320,9 +324,6 @@ public class Astar implements PathFinder {
 
         // Calculates the optimal A* path
         calculatePath();
-
-        // Creates finalPath list
-        //createPathListFromClosedList(currentTile, finalPath);
 
         if (finalPath.size() < 1){
             return Optional.empty();

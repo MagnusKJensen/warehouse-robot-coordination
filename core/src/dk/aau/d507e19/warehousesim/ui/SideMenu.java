@@ -85,7 +85,7 @@ public class SideMenu {
 
     private void addTickStopper() {
         tickStopperTextField = new TextField("", skin);
-        tickStopperTextField.setMessageText("Stop tick at....");
+        tickStopperTextField.setMessageText("Stop simulation at tick....");
         tickStopperTextField.setSize(180,40);
 
         tickStopperButton = new TextButton("Activate", skin);
