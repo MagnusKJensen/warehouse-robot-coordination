@@ -31,7 +31,7 @@ public abstract class RRTBase {
     public ArrayList<GridCoordinate> freeNodeList = populateFreeList();
     //blockedNodeList
     public ArrayList<GridCoordinate> blockedNodeList = new ArrayList<>();
-    private ArrayList<Step> path = new ArrayList<>();
+    protected ArrayList<Step> path = new ArrayList<>();
 
     GridCoordinate dest;
     public HashMap<GridCoordinate,Node<GridCoordinate>> allNodesMap = new HashMap<>();
@@ -112,7 +112,7 @@ public abstract class RRTBase {
         return list;
     }
 
-    private double distance(GridCoordinate pos1, GridCoordinate pos2){
+    protected double distance(GridCoordinate pos1, GridCoordinate pos2){
         return Math.sqrt(Math.pow(pos2.getX() - pos1.getX(), 2) + Math.pow(pos2.getY() - pos1.getY(), 2));
     }
 

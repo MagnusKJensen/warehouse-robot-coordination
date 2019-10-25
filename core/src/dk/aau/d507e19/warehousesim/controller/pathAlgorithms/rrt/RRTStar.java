@@ -20,7 +20,9 @@ public class RRTStar extends RRTBase {
 
     public ArrayList<Step> generatePath(GridCoordinate start, GridCoordinate destination){
         //make sure we have a path
-        return super.generatePath(start,destination);
+        super.generatePath(start,destination);
+        //attempt to optimise the path
+        return path;
     }
 
     @Override
@@ -46,7 +48,6 @@ public class RRTStar extends RRTBase {
             rewire(latestNode);
         }
     }
-
     private void rewire(Node<GridCoordinate> node){
         //find potential nodes that could have their paths improved.
         //for each one, check if their path would be better if node was their parent
@@ -90,5 +91,39 @@ public class RRTStar extends RRTBase {
             return true;
         }
         return isInPathToRoot(node.getParent(),n);
+    }
+    private void attemptOptimise(){
+        ArrayList<Step> currentPath = path;
+        Node<GridCoordinate> destination = destinationNode;
+        //for every node starting from root, we check if there is a node that we can connect to, which is closer to goal
+
+        //if there is, we make the change in a copy of the tree
+        //only cares about distance
+        //consider comparing cost when finished to check if its actually an improvement
+    }
+    private boolean optimise(Node<GridCoordinate> node, Node<GridCoordinate> destination){
+        //check if we have reached dest, if we have the return true
+        if(node.equals(destination)){
+            return true;
+        }
+        //check if node can connect to a node thats closer(distance) to dest, return false if there are no nodes better nodes nearby
+        ArrayList<Node<GridCoordinate>> neighbours = trimImprovementsList(findNodesInRadius(node.getData(),1),node.getData());
+        for (Node<GridCoordinate> neighbour : neighbours){
+
+        }
+        return false;
+
+        //connect to node and run this method on next node in line
+    }
+    private Node<GridCoordinate> getNextNode(Node<GridCoordinate> current, ArrayList<Step> path){
+        for(int i = 0; i < path.size(); i++){
+            if(path.get(i).getGridCoordinate().equals(current.getData())){
+                if(i+1 > path.size()){
+                    throw new RuntimeException("Current node is the destination");
+                }
+                return allNodesMap.get(path.get(i+1).getGridCoordinate());
+            }
+        }
+        return null;
     }
 }
