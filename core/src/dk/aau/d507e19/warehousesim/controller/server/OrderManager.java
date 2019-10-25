@@ -22,6 +22,7 @@ public class OrderManager {
     private TaskAllocator taskAllocator;
     private ArrayList<Order> ordersProcessing = new ArrayList<>();
     private ArrayList<Task> tasksAvailable = new ArrayList<>();
+    private ArrayList<Task> assignedTasks = new ArrayList<>();
 
     public OrderManager(Server server) {
         this.server = server;
@@ -62,7 +63,7 @@ public class OrderManager {
 
     public void update(){
         ArrayList<PickerTile> availablePickers = server.getAvailablePickers();
-        while(availablePickers.size() != 0 && orderQueue.size() > 0){
+        while(!availablePickers.isEmpty() && !orderQueue.isEmpty()){
             // Assign order to picker
             availablePickers.get(0).assignOrder(orderQueue.get(0));
             // Give order a reference to picker
@@ -70,10 +71,13 @@ public class OrderManager {
             // Add to orders being processed
             ordersProcessing.add(orderQueue.get(0));
             // Divide order into tasks to robots and add to list of available tasks
-            tasksAvailable.addAll(createTasksFromOrder(orderQueue.get(0)));
-            System.out.println("Commenced order: " + orderQueue.get(0));
-            // Remove order from queue
-            orderQueue.remove(0);
+            ArrayList<Task> tasksFromOrder = createTasksFromOrder(orderQueue.get(0));
+            if(tasksFromOrder != null){
+                tasksAvailable.addAll(tasksFromOrder);
+                System.out.println("Commenced order: " + orderQueue.get(0));
+                // Remove order from queue
+                orderQueue.remove(0);
+            }
         }
 
         if(server.hasAvailableRobot()) {
@@ -83,25 +87,38 @@ public class OrderManager {
                 Optional<Robot> optimalRobot = taskAllocator.findOptimalRobot(server.getAllRobots(), task);
                 if(optimalRobot.isPresent()){
                     if(optimalRobot.get().getRobotController().assignTask(task)){
+                        assignedTasks.add(task);
                         task.setRobot(optimalRobot.get());
                         taskIterator.remove();
                     }
                 }
             }
         }
+
+        /*
+        Iterator<Task> assignedTaskIterator = assignedTasks.iterator();
+        while(assignedTaskIterator.hasNext()){
+            Task task = assignedTaskIterator.next();
+            if(task.isCompleted()) assignedTaskIterator.remove();
+        }*/
     }
 
     private ArrayList<Task> createTasksFromOrder(Order order) {
         ArrayList<Task> orderTasks = new ArrayList<>();
 
         for(OrderLine line : order.getLinesInOrder()){
-            orderTasks.addAll(splitIntoTasks(line, order));
+            ArrayList<Task> orderLineTasks = splitIntoTasks(line, order);
+            if(orderLineTasks == null) return null;
+            for(Task task : orderLineTasks){
+                server.getReservationManager().reserveBinTile(((BinDelivery)task).getBinCoords());
+            }
+            orderTasks.addAll(orderLineTasks);
         }
 
         return orderTasks;
     }
 
-    private Collection<Task> splitIntoTasks(OrderLine line, Order order) {
+    private ArrayList<Task> splitIntoTasks(OrderLine line, Order order) {
         Product product = line.getProduct();
 
         StorageGrid storageGrid = server.getSimulation().getStorageGrid();
@@ -111,10 +128,13 @@ public class OrderManager {
         ArrayList<Task> productTasks = new ArrayList<>();
         int remainingProducts = line.getAmount();
         for(BinTile tile : binTiles){
+            if(server.getReservationManager().isBinReserved(tile.getGridCoordinate())) continue;
             remainingProducts -= tile.getBin().productCount(product);
             productTasks.add(new BinDelivery(order, tile.getGridCoordinate()));
             if(remainingProducts <= 0) break;
         }
+
+        if(remainingProducts > 0) return null;
 
         return productTasks;
     }

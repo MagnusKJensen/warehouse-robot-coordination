@@ -2,6 +2,7 @@ package dk.aau.d507e19.warehousesim.controller.server;
 
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ public class ReservationManager {
     private final ReservationTile[][] reservationTiles;
     private final HashMap<Robot, ArrayList<Reservation>> robotReservationsMap;
     private Server server;
+    private ArrayList<BinTile> reservedBinTiles = new ArrayList<>();
 
     public ReservationManager(int width, int height, Server server) {
         reservationTiles = new ReservationTile[width][height];
@@ -146,6 +148,28 @@ public class ReservationManager {
         }
 
         return false;
+    }
+
+    public void reserveBinTiles(ArrayList<BinTile> toReserve){
+        reservedBinTiles.addAll(toReserve);
+    }
+
+    public void reserveBinTile(BinTile binTile){
+        reservedBinTiles.add(binTile);
+    }
+
+    public void reserveBinTile(GridCoordinate coords){
+        BinTile tile = (BinTile) server.getSimulation().getStorageGrid().getTile(coords.getX(), coords.getY());
+        reservedBinTiles.add(tile);
+    }
+
+    public void removeBinReservation(BinTile binTile){
+        reservedBinTiles.remove(binTile);
+    }
+
+    public void removeBinReservation(GridCoordinate coords){
+        BinTile tile = (BinTile) server.getSimulation().getStorageGrid().getTile(coords.getX(), coords.getY());
+        reservedBinTiles.remove(tile);
     }
 
 }

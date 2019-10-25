@@ -5,11 +5,11 @@ import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 import dk.aau.d507e19.warehousesim.controller.server.order.Order;
+import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 
 import java.util.ArrayList;
 
 public class BinDelivery implements Task {
-
     private Order order;
     private RobotController robotController;
     private Robot robot;
@@ -60,8 +60,13 @@ public class BinDelivery implements Task {
             subTasks.remove(0);
 
             if(subTasks.isEmpty())
-                completed = true;
+                complete();
         }
+    }
+
+    private void complete() {
+        completed = true;
+        robotController.getServer().getReservationManager().removeBinReservation(binCoords);
     }
 
     @Override
@@ -74,4 +79,7 @@ public class BinDelivery implements Task {
         return false;
     }
 
+    public GridCoordinate getBinCoords() {
+        return binCoords;
+    }
 }
