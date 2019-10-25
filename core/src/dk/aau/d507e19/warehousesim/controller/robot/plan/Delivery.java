@@ -6,9 +6,6 @@ import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.robot.Order;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.Status;
-import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
-
-import java.util.ArrayList;
 
 public class Delivery implements Action {
     private Robot robot;
@@ -25,7 +22,7 @@ public class Delivery implements Action {
     public void perform() {
         tickTimer.decrement();
         if (tickTimer.isDone()){
-            robot.deliverBin();
+            robot.deliverBinToPicker();
             removeProductsFromBin();
         }
 

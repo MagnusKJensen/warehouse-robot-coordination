@@ -1,0 +1,21 @@
+package dk.aau.d507e19.warehousesim.controller.robot.plan.task;
+
+public class TotalReset implements Task{
+
+
+
+    @Override
+    public void perform() {
+
+    }
+
+    @Override
+    public boolean isCompleted() {
+        return false;
+    }
+
+    @Override
+    public boolean hasFailed() {
+        return false;
+    }
+}

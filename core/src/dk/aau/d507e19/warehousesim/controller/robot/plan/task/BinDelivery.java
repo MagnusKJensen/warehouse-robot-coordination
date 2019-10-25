@@ -1,0 +1,68 @@
+package dk.aau.d507e19.warehousesim.controller.robot.plan.task;
+
+import dk.aau.d507e19.warehousesim.WarehouseSpecs;
+import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import dk.aau.d507e19.warehousesim.controller.robot.Order;
+import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
+
+import java.util.ArrayList;
+
+public class BinDelivery implements Task {
+
+    private Order order;
+    private RobotController robotController;
+    private Robot robot;
+    private GridCoordinate binCoords;
+
+    private ArrayList<Task> subTasks = new ArrayList<>();
+    private boolean completed = false;
+
+    public BinDelivery(RobotController robotController, Order order, GridCoordinate binCoords) {
+        this.robotController = robotController;
+        this.robot = robotController.getRobot();
+        this.order = order;
+        this.binCoords = binCoords;
+        planTasks();
+    }
+
+    private void planTasks() {
+        // Pickup
+        subTasks.add(new Navigation(robotController, binCoords));
+        subTasks.add(new TimedAction(() -> robot.pickUpBin(), WarehouseSpecs.robotPickUpSpeedInSeconds));
+
+        // Delivery
+        // subTasks.add(new Navigation(robotController, order.)); todo Add back in when order has picker reference
+        subTasks.add(new TimedAction(() -> robot.deliverBinToPicker(), WarehouseSpecs.robotPickUpSpeedInSeconds));
+
+        // Bin return
+        subTasks.add(new Navigation(robotController, binCoords));
+        subTasks.add(new TimedAction(() -> robot.putDownBin(), WarehouseSpecs.robotPickUpSpeedInSeconds));
+    }
+
+    @Override
+    public void perform() {
+        if(isCompleted())
+            throw new RuntimeException("Cannot perform BinDelivery that is already completed");
+
+        Task currentTask = subTasks.get(0);
+        currentTask.perform();
+
+        if(currentTask.isCompleted()){
+            subTasks.remove(0);
+
+            if(subTasks.isEmpty())
+                completed = true;
+        }
+    }
+
+    @Override
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    @Override
+    public boolean hasFailed() {
+        return false;
+    }
+}

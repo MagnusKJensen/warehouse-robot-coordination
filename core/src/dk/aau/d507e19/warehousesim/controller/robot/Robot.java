@@ -47,7 +47,7 @@ public class Robot {
         robotController.update();
     }
 
-    public void deliverBin() {
+    public void deliverBinToPicker() {
         simulation.incrementOrderProcessedCount();
     }
 
