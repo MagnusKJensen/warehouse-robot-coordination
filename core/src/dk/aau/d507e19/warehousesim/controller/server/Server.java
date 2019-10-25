@@ -4,7 +4,7 @@ import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.Status;
-import dk.aau.d507e19.warehousesim.controller.server.order.OrderGeneratorNew;
+import dk.aau.d507e19.warehousesim.controller.server.order.OrderGenerator;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
 import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
@@ -20,7 +20,7 @@ public class Server {
     private ReservationManager reservationManager;
     private HashMap<SKU, ArrayList<BinTile>> productMap = new HashMap<>();
     private OrderManager orderManager;
-    private OrderGeneratorNew orderGeneratorNew;
+    private OrderGenerator orderGenerator;
 
     private ArrayList<Product> productsAvailable = new ArrayList<>();
 
@@ -30,7 +30,7 @@ public class Server {
         this.simulation = simulation;
         this.reservationManager = new ReservationManager(simulation.getGridWidth(), simulation.getGridHeight(), this);
         this.orderManager = new OrderManager(this);
-        this.orderGeneratorNew = new OrderGeneratorNew(orderManager, this);
+        this.orderGenerator = new OrderGenerator(orderManager, this);
         this.productsAvailable = grid.getAllProducts();
 
         pickerPoints = grid.getPickerPoints();
@@ -96,7 +96,7 @@ public class Server {
     }
 
     public void updateNew(){
-        orderGeneratorNew.update();
+        orderGenerator.update();
         orderManager.updateNew();
     }
 

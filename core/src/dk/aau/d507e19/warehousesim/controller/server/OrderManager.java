@@ -2,12 +2,11 @@ package dk.aau.d507e19.warehousesim.controller.server;
 
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
-import dk.aau.d507e19.warehousesim.controller.server.order.OrderNew;
+import dk.aau.d507e19.warehousesim.controller.server.order.Order;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.DummyTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.NaiveShortestDistanceTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.ShortestDistanceTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocator;
-import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
@@ -15,10 +14,10 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public class OrderManager {
-    private ArrayList<OrderNew> orderQueueNew = new ArrayList<>();
+    private ArrayList<Order> orderQueueNew = new ArrayList<>();
     private Server server;
     private TaskAllocator taskAllocator;
-    private ArrayList<OrderNew> ordersProcessing = new ArrayList<>();
+    private ArrayList<Order> ordersProcessing = new ArrayList<>();
     private ArrayList<Task> tasksAvailable = new ArrayList<>();
 
     public OrderManager(Server server) {
@@ -36,7 +35,7 @@ public class OrderManager {
         }
     }
 
-    public boolean takeOrder(OrderNew order){
+    public boolean takeOrder(Order order){
         if(isOrderServiceable(order)) {
             // Divide into RetrievalTasks ??
             removeProducts(order.getAllProductsInOrder());
@@ -54,7 +53,7 @@ public class OrderManager {
         }
     }
 
-    private boolean isOrderServiceable(OrderNew order){
+    private boolean isOrderServiceable(Order order){
         return server.getProductsAvailable().containsAll(order.getAllProductsInOrder());
     }
 
@@ -84,7 +83,7 @@ public class OrderManager {
         }
     }
 
-    private ArrayList<Task> createTasksFromOrder(OrderNew orderNew) {
+    private ArrayList<Task> createTasksFromOrder(Order order) {
         return new ArrayList<>();
     }
 

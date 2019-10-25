@@ -1,6 +1,5 @@
 package dk.aau.d507e19.warehousesim.controller.server.order;
 
-import com.sun.org.apache.xpath.internal.operations.Or;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.server.OrderManager;
@@ -10,7 +9,7 @@ import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class OrderGeneratorNew {
+public class OrderGenerator {
     private static final long RANDOM_SEED = 123456789L;
     private Random random = new Random(RANDOM_SEED);
     private final int TICKS_BETWEEN_ORDERS = WarehouseSpecs.secondsBetweenOrders * SimulationApp.TICKS_PER_SECOND;
@@ -22,21 +21,21 @@ public class OrderGeneratorNew {
     private final int MAX_LINES = 3;
     private final int MAX_AMOUNT = 4;
 
-    public OrderGeneratorNew(OrderManager orderManager, Server server) {
+    public OrderGenerator(OrderManager orderManager, Server server) {
         this.orderManager = orderManager;
         this.server = server;
     }
 
     public void update(){
         if(tickSinceLastOrder == TICKS_BETWEEN_ORDERS){
-            OrderNew randomOrder = generateRandomOrder();
+            Order randomOrder = generateRandomOrder();
             orderManager.takeOrder(randomOrder);
             tickSinceLastOrder = 0;
         }
         tickSinceLastOrder += 1;
     }
 
-    private OrderNew generateRandomOrder() {
+    private Order generateRandomOrder() {
         int linesInOrder = random.nextInt(MAX_LINES - 1) + 1;
 
         ArrayList<OrderLine> orderLines = new ArrayList<>();
@@ -44,7 +43,7 @@ public class OrderGeneratorNew {
             orderLines.add(generateRandomLine());
         }
 
-        return new OrderNew(orderLines);
+        return new Order(orderLines);
     }
 
     private OrderLine generateRandomLine(){

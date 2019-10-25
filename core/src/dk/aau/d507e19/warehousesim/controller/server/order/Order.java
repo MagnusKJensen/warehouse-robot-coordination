@@ -5,11 +5,11 @@ import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
 import java.util.ArrayList;
 
-public class OrderNew {
+public class Order {
     private ArrayList<OrderLine> linesInOrder;
     private PickerTile picker;
 
-    public OrderNew(ArrayList<OrderLine> linesInOrder) {
+    public Order(ArrayList<OrderLine> linesInOrder) {
         this.linesInOrder = linesInOrder;
     }
 
