@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import dk.aau.d507e19.warehousesim.GraphicsManager;
 import dk.aau.d507e19.warehousesim.SimulationApp;
-import org.graalvm.compiler.graph.Graph;
 
 import java.util.ArrayList;
 
@@ -155,6 +154,20 @@ public class TimeControlMenu {
     public void resetTimeControlButtons(){
         setManualButtonsDisabled(false);
         selectButton(pauseBtn);
+    }
+
+    public void changeOffset(Vector2 offSet){
+        this.screenOffset = offSet;
+
+        int screenXOffset = (int)offSet.x;
+        int screenYOffset = (int)offSet.y;
+
+        pauseBtn.setPosition(screenXOffset + 30, screenYOffset + 10);
+        globalStepForwardBtn.setPosition(screenXOffset + 60, screenYOffset + 10);
+        playBtn.setPosition(screenXOffset + 90, screenYOffset + 10);
+        fastForwardBtn.setPosition(screenXOffset + 120, screenYOffset + 10);
+        fastestForwardBtn.setPosition(screenXOffset + 150, screenYOffset + 10);
+        resetSimulationBtn.setPosition(screenXOffset + 190, screenYOffset + 10);
     }
 
 }

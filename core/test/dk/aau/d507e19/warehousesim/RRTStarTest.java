@@ -33,10 +33,11 @@ public class RRTStarTest {
 
     @Test
     public void generatePathTest(){
-        when(robotController.getRobot().getAccelerationBinSecond()).thenReturn(WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters);
-        when(robotController.getRobot().getDecelerationBinSecond()).thenReturn(WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters);
-        rrtStar = new RRTStar(robotController);
-        rrt = new RRT(robotController);
+        Robot robot = Mockito.mock(Robot.class);
+        when(robot.getAccelerationBinSecond()).thenReturn(WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters);
+        when(robot.getDecelerationBinSecond()).thenReturn(WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters);
+        RRTStar rrtStar = new RRTStar(robotController);
+        RRT rrt = new RRT(robotController);
         GridCoordinate start = new GridCoordinate(0, 0);
         GridCoordinate dest1 = new GridCoordinate(10, 10);
         GridCoordinate dest2 = new GridCoordinate(2, 3);
@@ -65,10 +66,10 @@ public class RRTStarTest {
     }
     @Test
     public void generatePathFromEmptyTest(){
-        when(robotController.getRobot().getAccelerationBinSecond()).thenReturn(WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters);
-        when(robotController.getRobot().getDecelerationBinSecond()).thenReturn(WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters);
-        rrtStar = new RRTStar(robotController);
-        rrt = new RRT(robotController);
+        Robot robot = Mockito.mock(Robot.class);
+        when(robot.getAccelerationBinSecond()).thenReturn(WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters);
+        when(robot.getDecelerationBinSecond()).thenReturn(WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters);
+        RRTStar rrtStar = new RRTStar(robotController);
         GridCoordinate start = new GridCoordinate(0, 0);
         GridCoordinate dest1 = new GridCoordinate(15, 10);
         ArrayList<Step> list;

@@ -37,6 +37,16 @@ public class Bin {
         }
     }
 
+    public void removeProduct(Product prod){
+        this.products.remove(prod);
+    }
+
+    public void removeProducts(ArrayList<Product> products){
+        for(Product prod : products){
+            this.products.remove(prod);
+        }
+    }
+
     private ArrayList<SKU> getSKUs(){
         ArrayList<SKU> SKUs = new ArrayList<>();
         for (Product prod : products) {
@@ -86,5 +96,16 @@ public class Bin {
 
     public ArrayList<Product> getProducts() {
         return products;
+    }
+
+    public boolean hasProducts(Product product, int amount){
+        int numberInBin = 0;
+        for(Product prod : products){
+            if(prod.equals(product)) numberInBin++;
+        }
+
+        if(numberInBin >= amount) return true;
+
+        return false;
     }
 }

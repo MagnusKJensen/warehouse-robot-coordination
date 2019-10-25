@@ -11,9 +11,9 @@ public class Line {
 
     private final Direction direction;
     private final int length;
-    private GridCoordinate start, end;
+    private Step start, end;
 
-    public Line(GridCoordinate start, GridCoordinate end) {
+    public Line(Step start, Step end) {
         this.start = start;
         this.end = end;
         if(start.equals(end))
@@ -22,7 +22,7 @@ public class Line {
         this.length = calculateLength(start, end, direction);
     }
 
-    private static Direction determineDirection(GridCoordinate start, GridCoordinate end) {
+    private static Direction determineDirection(Step start, Step end) {
         if (start.getX() < end.getX())
             return Direction.EAST;
         if (start.getX() > end.getX())
@@ -39,11 +39,11 @@ public class Line {
         return direction;
     }
 
-    public GridCoordinate getStart() {
+    public Step getStart() {
         return start;
     }
 
-    public GridCoordinate getEnd() {
+    public Step getEnd() {
         return end;
     }
 
@@ -51,7 +51,7 @@ public class Line {
         return length;
     }
 
-    private static int calculateLength(GridCoordinate startCoordinate, GridCoordinate destinationCoordinate, Direction direction) {
+    private static int calculateLength(Step startCoordinate, Step destinationCoordinate, Direction direction) {
         if (direction == Direction.EAST || direction == Direction.WEST) {
             return Math.abs(destinationCoordinate.getX() - startCoordinate.getX());
         } else {
@@ -86,8 +86,8 @@ public class Line {
         Line line = (Line) o;
         return length == line.length &&
                 direction == line.direction &&
-                start.equals(line.start) &&
-                end.equals(line.end);
+                Objects.equals(start, line.start) &&
+                Objects.equals(end, line.end);
     }
 
     @Override

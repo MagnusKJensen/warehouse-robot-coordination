@@ -1,12 +1,10 @@
-package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
-
-import java.util.ArrayList;
+package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar;
 
 public class AStarTile {
     private int currentXPosition;
     private int currentYPosition;
-    private int previousXposition;
-    private int getPreviousYposition;
+    private int previousXPosition;
+    private int getPreviousYPosition;
     private int H;
     private int G = 0;
     private int F;
@@ -20,12 +18,12 @@ public class AStarTile {
 
     //Setters
 
-    public void setPreviousXposition(int previousXposition) {
-        this.previousXposition = previousXposition;
+    public void setPreviousXPosition(int previousXPosition) {
+        this.previousXPosition = previousXPosition;
     }
 
-    public void setPreviousYposition(int getPreviousYposition) {
-        this.getPreviousYposition = getPreviousYposition;
+    public void setPreviousYPosition(int getPreviousYPosition) {
+        this.getPreviousYPosition = getPreviousYPosition;
     }
 
     public void setBlocked(boolean blocked) {
@@ -42,12 +40,12 @@ public class AStarTile {
         return currentYPosition;
     }
 
-    public int getPreviousXposition() {
-        return previousXposition;
+    public int getPreviousXPosition() {
+        return previousXPosition;
     }
 
-    public int getGetPreviousYposition() {
-        return getPreviousYposition;
+    public int getGetPreviousYPosition() {
+        return getPreviousYPosition;
     }
 
     public int getG() {
@@ -69,9 +67,7 @@ public class AStarTile {
     }
 
     public void calculateH(int xFinalPosition, int yFinalPosition) {
-
         H = Math.abs((xFinalPosition - currentXPosition)) + Math.abs((yFinalPosition - currentYPosition));
-
     }
 
     public int calculateG(int previousG) {
@@ -80,20 +76,17 @@ public class AStarTile {
     }
 
     public int calculateF() {
-
         F = G + H;
         return F;
     }
-
-
 
     @Override
     public String toString() {
         return "Tile{" +
                 "currentXPosition=" + currentXPosition +
                 ", currentYPosition=" + currentYPosition +
-                ", previousXposition=" + previousXposition +
-                ", getPreviousYposition=" + getPreviousYposition +
+                ", previousXPosition=" + previousXPosition +
+                ", getPreviousYPosition=" + getPreviousYPosition +
                 ", H=" + H +
                 ", G=" + G +
                 ", F=" + F +

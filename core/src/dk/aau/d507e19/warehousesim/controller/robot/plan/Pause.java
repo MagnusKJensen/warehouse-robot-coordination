@@ -27,8 +27,7 @@ public class Pause implements Action {
 
     @Override
     public boolean isDone() {
-        timer.isDone();
-        return false;
+        return timer.isDone();
     }
 
     @Override

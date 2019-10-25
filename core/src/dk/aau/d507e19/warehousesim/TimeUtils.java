@@ -8,4 +8,7 @@ public class TimeUtils {
     }
 
 
+    public static float tickToSeconds(float pauseDuration) {
+        return (float)(SimulationApp.MILLIS_PER_TICK * pauseDuration) /  1000f;
+    }
 }

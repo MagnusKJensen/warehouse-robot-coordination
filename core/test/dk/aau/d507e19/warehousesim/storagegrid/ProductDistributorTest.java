@@ -59,7 +59,7 @@ public class ProductDistributorTest {
 
     @Test
     public void calculateProductsPerSKU04() {
-        double[][] distribution = {{1.5, 77}, {98.5, 23}};
+        double[][] distribution = {{10, 77}, {90, 23}};
         ProductDistributor.setSKUDistribution(distribution);
 
         int[][] products =  ProductDistributor.calculateProductsPerSKU();

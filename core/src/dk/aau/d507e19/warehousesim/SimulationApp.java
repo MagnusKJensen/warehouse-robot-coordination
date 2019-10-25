@@ -12,7 +12,7 @@ import java.util.Random;
 
 public class SimulationApp extends ApplicationAdapter {
 
-	private static final long RANDOM_SEED = 123456789L;
+	private static final long RANDOM_SEED = 12345442352525L;
 	public static Random random = new Random(RANDOM_SEED);
 
 	public static final int MENU_WIDTH_IN_PIXELS = 300;
@@ -44,7 +44,9 @@ public class SimulationApp extends ApplicationAdapter {
 	private CameraMover cameraMover;
     private InputMultiplexer inputMultiplexer;
 
-	private String pathFinderSelected = "Astar";
+    // Currently using the following pathFinder and TaskAllocators.
+	public static String pathFinderSelected = "DummyPathFinder";
+	private String taskAllocatorSelected = "DummyTaskAllocator";
 
 	@Override
 	public void create () {
@@ -92,6 +94,8 @@ public class SimulationApp extends ApplicationAdapter {
 		centerCamera(simulationCamera); // TODO: 26/09/2019 Add more intelligent system for repositioning camera when resizing
 		centerCamera(simFontCamera);
 		simFontCamera.update();
+
+		sideMenu.resize();
 	}
 
 	@Override
@@ -105,7 +109,6 @@ public class SimulationApp extends ApplicationAdapter {
 		}
 
 		updateMenu();
-
 		clearScreen();
 		renderMenu();
 		renderSimulation();
@@ -231,6 +234,7 @@ public class SimulationApp extends ApplicationAdapter {
 		pause();
 		simulation = new Simulation(this);
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());
+
 		sideMenu.resetSideMenu();
 	}
 
@@ -262,5 +266,11 @@ public class SimulationApp extends ApplicationAdapter {
 		this.pathFinderSelected = pathFinderSelected;
 	}
 
+	public void setTaskAllocatorSelected(String taskAllocatorSelected) {
+		this.taskAllocatorSelected = taskAllocatorSelected;
+	}
 
+	public String getTaskAllocatorSelected() {
+		return taskAllocatorSelected;
+	}
 }

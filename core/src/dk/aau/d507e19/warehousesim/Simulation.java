@@ -7,16 +7,21 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTBase;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
+import dk.aau.d507e19.warehousesim.exception.CollisionException;
+import dk.aau.d507e19.warehousesim.goal.Goal;
+import dk.aau.d507e19.warehousesim.goal.OrderGoal;
 import dk.aau.d507e19.warehousesim.input.SimulationInputProcessor;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.ProductDistributor;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
-import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -31,6 +36,7 @@ public class Simulation {
     private StorageGrid storageGrid;
     private ArrayList<Robot> robots = new ArrayList<>();
     private ArrayList<Robot> selectedRobots = new ArrayList<>();
+    private ArrayList<Robot> ctrlSelectedRobots = new ArrayList<>();
     private Tile selectedTile;
 
     private long tickCount = 0L;
@@ -44,28 +50,29 @@ public class Simulation {
 
     private SimulationInputProcessor inputProcessor;
 
+    private long ordersProcessed = 0;
+
+    private Goal goal;
+
     public Simulation(SimulationApp simulationApp){
         this.simulationApp = simulationApp;
         this.gridCamera = simulationApp.getWorldCamera();
         this.fontCamera = simulationApp.getFontCamera();
         this.gridViewport = simulationApp.getWorldViewport();
 
-        server = new Server(this);
         inputProcessor = new SimulationInputProcessor(this);
 
         font = GraphicsManager.getFont();
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
 
-        // Just for testing and adding picker points
-        ArrayList<GridCoordinate> pickerPoints = new ArrayList<>();
-        pickerPoints.add(new GridCoordinate(0,0));
-        pickerPoints.add(new GridCoordinate(2,0));
-
         storageGrid = new StorageGrid(WarehouseSpecs.wareHouseWidth, WarehouseSpecs.wareHouseHeight, this);
-
         if(WarehouseSpecs.isRandomProductDistribution) ProductDistributor.distributeProductsRandomly(storageGrid);
         else ProductDistributor.distributeProducts(storageGrid);
+
+        server = new Server(this, storageGrid);
+
+        goal = new OrderGoal(WarehouseSpecs.orderGoal, this);
 
         initRobots();
     }
@@ -74,10 +81,6 @@ public class Simulation {
         // Auto generate robots
         for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++){
             robots.add(new Robot(new Position(i, 0), i, this));
-            // Assign test task to first robot
-            for(int j = 0; j < 5; j++){
-                robots.get(i).assignOrder(new Order(new Product(new SKU("0"), 0), 1));
-            }
         }
     }
 
@@ -86,8 +89,24 @@ public class Simulation {
         for(Robot robot : robots){
             robot.update();
         }
+        server.update();
+        goal.update();
+        if(WarehouseSpecs.collisionDetectedEnabled){
+            checkForCollisions();
+        }
         updateSideMenuScrollPanes();
     }
+
+    private void checkForCollisions() {
+        for (Robot robot1 : robots){
+            for(Robot robot2 : robots){
+                if(robot1.getRobotID() != robot2.getRobotID()){
+                    if(robot1.collidesWith(robot2.getCurrentPosition())) throw new CollisionException(robot1, robot2, server.getTimeInTicks());
+                }
+            }
+        }
+    }
+
 
     private void updateSideMenuScrollPanes() {
         // Update the robot bin content live
@@ -121,6 +140,17 @@ public class Simulation {
         }
     }
 
+    public void ctrlSelectRobot(Robot robot){
+        if(ctrlSelectedRobots.contains(robot)){
+            ctrlSelectedRobots.remove(robot);
+        }else if(!ctrlSelectedRobots.isEmpty()){
+            //always make sure that only one robot is pressed(trees take a lot of screen space)
+            ctrlSelectedRobots.remove(0);
+            ctrlSelectedRobots.add(robot);
+        }else{
+            ctrlSelectedRobots.add(robot);
+        }
+    }
     public void selectRobot(Robot robot) {
         if(selectedRobots.contains(robot)){
             selectedRobots.remove(robot);
@@ -140,8 +170,23 @@ public class Simulation {
 
         storageGrid.render(shapeRenderer, batch);
         renderSelectedRobotsPaths();
+        renderCtrlSelectedRobotTrees();
         renderRobots();
         renderTickCountAndRealTime(gridCamera, fontCamera);
+    }
+
+    public void renderCtrlSelectedRobotTrees() {
+        for(Robot robot : ctrlSelectedRobots){
+            //only do if robot path algo is RRT variant
+            if(robot.getRobotController().getPathFinder() instanceof RRTPlanner){
+                RRTPlanner planner = (RRTPlanner) robot.getRobotController().getPathFinder();
+                ArrayList<Node<GridCoordinate>> listOfNodes = new ArrayList<>(planner.getPlanner().allNodesMap.values());
+                //if called before a robot has started growing its tree, root might be null
+                if(!listOfNodes.isEmpty()){
+                    storageGrid.renderTreeOverlay(listOfNodes, shapeRenderer,planner.getPlanner().getPath());
+                }
+            }
+        }
     }
 
     private void renderSelectedRobotsPaths() {
@@ -195,7 +240,7 @@ public class Simulation {
         return fontCamera;
     }
 
-    public long getSimulatedTime() {
+    public long getSimulatedTimeInMS() {
         return tickCount * SimulationApp.MILLIS_PER_TICK;
     }
 
@@ -230,5 +275,17 @@ public class Simulation {
 
     public SimulationApp getSimulationApp() {
         return simulationApp;
+    }
+
+    public void incrementOrderProcessedCount(){
+        ++ordersProcessed;
+    }
+
+    public long getOrdersProcessed() {
+        return ordersProcessed;
+    }
+
+    public Goal getGoal() {
+        return goal;
     }
 }

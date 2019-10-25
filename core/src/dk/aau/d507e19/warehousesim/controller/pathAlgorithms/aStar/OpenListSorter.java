@@ -1,4 +1,4 @@
-package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
+package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar;
 
 import java.util.Comparator;
 

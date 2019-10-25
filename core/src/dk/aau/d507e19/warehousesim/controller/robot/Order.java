@@ -14,4 +14,16 @@ public class Order {
     public int getAmount() {
         return amount;
     }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "product=" + product +
+                ", amount=" + amount +
+                '}';
+    }
 }

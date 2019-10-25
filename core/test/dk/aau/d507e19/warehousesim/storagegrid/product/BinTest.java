@@ -59,7 +59,7 @@ public class BinTest {
         ArrayList<Product> myProducts = new ArrayList<>();
 
         for (int i = 0; i < WarehouseSpecs.SKUsPerBin; ++i){
-            myProducts.add(new Product(new SKU("SKU" + 1), 123));
+            myProducts.add(new Product(new SKU("SKU" + i), 123));
         }
         bin.addProducts(myProducts);
 
