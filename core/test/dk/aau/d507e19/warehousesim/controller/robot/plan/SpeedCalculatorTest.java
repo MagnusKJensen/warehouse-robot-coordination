@@ -47,12 +47,6 @@ public class SpeedCalculatorTest {
         SpeedCalculator speedCalculator = new SpeedCalculator(robot, new Path(pausedSteps).getLines().get(0));
         SpeedCalculator speedCalculator2 = new SpeedCalculator(robot, new Path(pausedSteps).getLines().get(1));
 
-        for(int i = 0; i < speedCalculator.getTotalTimeInTicks(); i++){
-            if(i == 115)
-                System.out.println("hey");
-            System.out.println("Time : " + i + " || Position : " + speedCalculator.getPositionAfter(i));
-        }
-
         //Path pausedPath = new
     }
 

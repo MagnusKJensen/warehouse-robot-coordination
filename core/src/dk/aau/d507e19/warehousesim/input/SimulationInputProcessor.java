@@ -8,6 +8,7 @@ import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 import dk.aau.d507e19.warehousesim.ui.TileInfoMenu;
+import javafx.scene.input.KeyCode;
 
 import java.util.ArrayList;
 
@@ -72,7 +73,7 @@ public class SimulationInputProcessor implements InputProcessor {
 
     @Override
     public boolean keyUp(int keycode) {
-        return false;
+            return false;
     }
 
     @Override

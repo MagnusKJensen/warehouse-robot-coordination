@@ -45,7 +45,7 @@ public class MovementPredictorTest {
         pausedSteps.add(new Step(6,0));
 
         ArrayList<Reservation> reservations = MovementPredictor.calculateReservations(robot, new Path(pausedSteps), 0, 0);
-        System.out.println();
+
         //Path pausedPath = new
     }
 }

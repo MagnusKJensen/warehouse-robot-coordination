@@ -24,4 +24,8 @@ public class PickerTile extends Tile {
         return "PickerTile{posX=" + getPosX() +
                 ", posY=" + getPosY() + "}";
     }
+
+    public void assignOrder(OrderNew order){
+        currentOrder = order;
+    }
 }

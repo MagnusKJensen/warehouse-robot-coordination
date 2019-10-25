@@ -3,12 +3,14 @@ package dk.aau.d507e19.warehousesim.controller.server;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.robot.Order;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.controller.server.order.OrderLine;
 import dk.aau.d507e19.warehousesim.controller.server.order.OrderNew;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.DummyTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.NaiveShortestDistanceTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.ShortestDistanceTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocator;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
+import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -16,8 +18,10 @@ import java.util.Optional;
 public class OrderManager {
     private ArrayList<Order> ordersFinished = new ArrayList<>();
     private ArrayList<Order> orderQueue = new ArrayList<>();
+    private ArrayList<OrderNew> orderQueueNew = new ArrayList<>();
     private Server server;
     private TaskAllocator taskAllocator;
+    private ArrayList<OrderNew> ordersProcessing = new ArrayList<>();
 
     public OrderManager(Server server) {
         this.server = server;
@@ -46,8 +50,17 @@ public class OrderManager {
     }
 
     public boolean takeOrder(OrderNew order){
-        // TODO: 24/10/2019 Fill out...
-        return true;
+        if(isOrderServiceable(order)) return false;
+        else {
+            // Divide into RetrievalTasks ??
+            server.getProductsAvailable().removeAll(order.getAllProductsInOrder());
+            this.orderQueueNew.add(order);
+            return true;
+        }
+    }
+
+    private boolean isOrderServiceable(OrderNew order){
+        return server.getProductsAvailable().containsAll(order.getAllProductsInOrder());
     }
 
     private boolean orderIsServiceable(Order order) {
@@ -70,6 +83,7 @@ public class OrderManager {
         return false;
     }
 
+    // Should be replaced by updateNew
     public void update(){
         if(server.hasRobotsAvailable() && orderQueue.size() > 0){
             for(int i = 0; i < orderQueue.size(); ++i){
@@ -86,7 +100,18 @@ public class OrderManager {
         }
     }
 
+    public void updateNew(){
+        // If some picker station available
+            // Assign order to picker station and add the order to list of orders being processed
+                // Add retrieval tasks from order to list of tasks
+        // If some robot is available
+            // go through all tasks and go find most optimal robot for task
+                // If some robot is found, assign task to robot
+                // Remove task from list of tasks available
+    }
+
     public int ordersInQueue(){
         return orderQueue.size();
     }
+
 }
