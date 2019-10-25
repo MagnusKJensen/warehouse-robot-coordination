@@ -103,10 +103,16 @@ public class OrderManager {
     public void updateNew(){
         ArrayList<PickerTile> availablePickers = server.getAvailablePickers();
         if(availablePickers.size() != 0 && orderQueueNew.size() > 0){
+            // Assign order to picker
             availablePickers.get(0).assignOrder(orderQueueNew.get(0));
+            // Give order a reference to picker
+            orderQueueNew.get(0).setPicker(availablePickers.get(0));
+            // Add to orders being processed
             ordersProcessing.add(orderQueueNew.get(0));
+            // Divide order into tasks to robots and add to list of available tasks
             tasksAvailable.addAll(createTasksFromOrder(orderQueueNew.get(0)));
             System.out.println("Commenced order: " + orderQueueNew.get(0));
+            // Remove order from queue
             orderQueueNew.remove(0);
         }
         if(server.hasAvailableRobot()) {
@@ -114,8 +120,8 @@ public class OrderManager {
                 Optional<Robot> optimalRobot = taskAllocator.findOptimalRobot(server.getAllRobots(), task);
                 if(optimalRobot.isPresent()){
                     optimalRobot.get().assignTask(task);
+                    tasksAvailable.remove(task);
                 }
-                tasksAvailable.remove(task);
             }
         }
     }
