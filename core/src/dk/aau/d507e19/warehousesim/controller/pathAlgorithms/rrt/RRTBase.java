@@ -36,6 +36,10 @@ public abstract class RRTBase {
     GridCoordinate dest;
     public HashMap<GridCoordinate,Node<GridCoordinate>> allNodesMap = new HashMap<>();
 
+    public ArrayList<Step> getPath() {
+        return path;
+    }
+
     protected void growRRT(Node<GridCoordinate> tree, int n) {
         //n is number of iterations
         //Generate a new random location using seeded random
