@@ -6,7 +6,7 @@ import dk.aau.d507e19.warehousesim.GraphicsManager;
 import dk.aau.d507e19.warehousesim.controller.server.order.OrderNew;
 
 public class PickerTile extends Tile {
-    private OrderNew currentOrder;
+    private OrderNew currentOrder = null;
 
     public PickerTile(int posX, int posY) {
         super(posX, posY);
@@ -27,5 +27,9 @@ public class PickerTile extends Tile {
 
     public void assignOrder(OrderNew order){
         currentOrder = order;
+    }
+
+    public boolean hasOrder(){
+        return currentOrder != null;
     }
 }

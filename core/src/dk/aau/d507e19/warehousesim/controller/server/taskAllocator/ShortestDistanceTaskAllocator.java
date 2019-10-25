@@ -3,6 +3,7 @@ package dk.aau.d507e19.warehousesim.controller.server.taskAllocator;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 
 import java.util.ArrayList;
@@ -13,6 +14,11 @@ public class ShortestDistanceTaskAllocator implements TaskAllocator {
 
     public ShortestDistanceTaskAllocator(StorageGrid grid) {
         this.grid = grid;
+    }
+
+    @Override
+    public Optional<Robot> findOptimalRobot(ArrayList<Robot> robots, Task task) {
+        return Optional.empty();
     }
 
     @Override

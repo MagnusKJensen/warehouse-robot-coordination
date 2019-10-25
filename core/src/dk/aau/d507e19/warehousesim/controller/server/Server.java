@@ -6,6 +6,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.Status;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
+import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
@@ -114,7 +115,7 @@ public class Server {
         return orderManager;
     }
 
-    public boolean hasRobotsAvailable(){
+    public boolean hasAvailableRobot(){
         for (Robot robot : simulation.getAllRobots()){
             if(robot.getCurrentStatus() == Status.AVAILABLE) return true;
         }
@@ -124,5 +125,17 @@ public class Server {
 
     public GridBounds getGridBounds() {
         return new GridBounds(getGridWidth() - 1, getGridHeight() - 1);
+    }
+
+    public ArrayList<PickerTile> getAvailablePickers() {
+        ArrayList<PickerTile> availablePickers = new ArrayList<>();
+        for(GridCoordinate picker : pickerPoints){
+            PickerTile tile = (PickerTile) simulation.getStorageGrid().getTile(picker.getX(), picker.getY());
+            if(!tile.hasOrder()){
+                availablePickers.add(tile);
+            }
+        }
+
+        return availablePickers;
     }
 }

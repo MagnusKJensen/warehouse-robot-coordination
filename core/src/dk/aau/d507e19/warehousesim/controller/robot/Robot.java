@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import dk.aau.d507e19.warehousesim.*;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.Action;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
@@ -95,6 +96,10 @@ public class Robot {
 
     public void assignOrder(Order order) {
         robotController.addToPlan(order);
+    }
+
+    public void assignTask(Task task){
+        // TODO: 25/10/2019 Fill out - Philip
     }
 
     public void cancelTask() {

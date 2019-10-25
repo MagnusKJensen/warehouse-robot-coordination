@@ -1,16 +1,15 @@
 package dk.aau.d507e19.warehousesim.controller.server;
 
-import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.robot.Order;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
-import dk.aau.d507e19.warehousesim.controller.server.order.OrderLine;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.controller.server.order.OrderNew;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.DummyTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.NaiveShortestDistanceTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.ShortestDistanceTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocator;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
-import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
+import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -22,6 +21,7 @@ public class OrderManager {
     private Server server;
     private TaskAllocator taskAllocator;
     private ArrayList<OrderNew> ordersProcessing = new ArrayList<>();
+    private ArrayList<Task> tasksAvailable = new ArrayList<>();
 
     public OrderManager(Server server) {
         this.server = server;
@@ -85,7 +85,7 @@ public class OrderManager {
 
     // Should be replaced by updateNew
     public void update(){
-        if(server.hasRobotsAvailable() && orderQueue.size() > 0){
+        if(server.hasAvailableRobot() && orderQueue.size() > 0){
             for(int i = 0; i < orderQueue.size(); ++i){
                 Order order = orderQueue.get(i);
                 Optional<Robot> optimalRobot = taskAllocator.findOptimalRobot(server.getAllRobots(), order);
@@ -101,13 +101,27 @@ public class OrderManager {
     }
 
     public void updateNew(){
-        // If some picker station available
-            // Assign order to picker station and add the order to list of orders being processed
-                // Add retrieval tasks from order to list of tasks
-        // If some robot is available
-            // go through all tasks and go find most optimal robot for task
-                // If some robot is found, assign task to robot
-                // Remove task from list of tasks available
+        ArrayList<PickerTile> availablePickers = server.getAvailablePickers();
+        if(availablePickers.size() != 0 && orderQueueNew.size() > 0){
+            availablePickers.get(0).assignOrder(orderQueueNew.get(0));
+            ordersProcessing.add(orderQueueNew.get(0));
+            tasksAvailable.addAll(createTasksFromOrder(orderQueueNew.get(0)));
+            System.out.println("Commenced order: " + orderQueueNew.get(0));
+            orderQueueNew.remove(0);
+        }
+        if(server.hasAvailableRobot()) {
+            for(Task task : tasksAvailable){
+                Optional<Robot> optimalRobot = taskAllocator.findOptimalRobot(server.getAllRobots(), task);
+                if(optimalRobot.isPresent()){
+                    optimalRobot.get().assignTask(task);
+                }
+                tasksAvailable.remove(task);
+            }
+        }
+    }
+
+    private ArrayList<Task> createTasksFromOrder(OrderNew orderNew) {
+        return new ArrayList<>();
     }
 
     public int ordersInQueue(){
