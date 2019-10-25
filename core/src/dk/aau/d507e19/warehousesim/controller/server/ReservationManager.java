@@ -3,6 +3,7 @@ package dk.aau.d507e19.warehousesim.controller.server;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
+import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -93,7 +94,9 @@ public class ReservationManager {
 
 
     public boolean isBinReserved(GridCoordinate gridCoordinate) {
-        return isReserved(gridCoordinate, TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks()));
+        StorageGrid grid = server.getSimulation().getStorageGrid();
+        BinTile tile = (BinTile)grid.getTile(gridCoordinate.getX(), gridCoordinate.getY());
+        return reservedBinTiles.contains(tile);
     }
 
     public void reserve(ArrayList<Reservation> reservations) {
@@ -172,4 +175,7 @@ public class ReservationManager {
         reservedBinTiles.remove(tile);
     }
 
+    public ArrayList<BinTile> getReservedBinTiles() {
+        return reservedBinTiles;
+    }
 }

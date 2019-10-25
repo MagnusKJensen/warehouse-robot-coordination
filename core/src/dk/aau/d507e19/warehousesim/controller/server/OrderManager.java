@@ -94,13 +94,6 @@ public class OrderManager {
                 }
             }
         }
-
-        /*
-        Iterator<Task> assignedTaskIterator = assignedTasks.iterator();
-        while(assignedTaskIterator.hasNext()){
-            Task task = assignedTaskIterator.next();
-            if(task.isCompleted()) assignedTaskIterator.remove();
-        }*/
     }
 
     private ArrayList<Task> createTasksFromOrder(Order order) {
@@ -126,6 +119,7 @@ public class OrderManager {
         binTiles.sort(Comparator.comparingInt(tile -> tile.getBin().productCount(product)));
 
         ArrayList<Task> productTasks = new ArrayList<>();
+
         int remainingProducts = line.getAmount();
         for(BinTile tile : binTiles){
             if(server.getReservationManager().isBinReserved(tile.getGridCoordinate())) continue;

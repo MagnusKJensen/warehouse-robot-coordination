@@ -38,7 +38,7 @@ public class Order {
 
     @Override
     public String toString() {
-        return "OrderNew{" +
+        return "Order{" +
                 "linesInOrder=" + linesInOrder +
                 ", picker=" + picker +
                 '}';
