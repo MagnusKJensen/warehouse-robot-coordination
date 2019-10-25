@@ -59,7 +59,7 @@ public class Navigation implements Task {
 
         LineTraversal currentLineTraversal = lineTraversals.get(0);
         currentLineTraversal.perform();
-        if(currentLineTraversal.isDone()){
+        if(currentLineTraversal.isCompleted()){
             lineTraversals.remove(currentLineTraversal);
 
             // Path has finished traversing
