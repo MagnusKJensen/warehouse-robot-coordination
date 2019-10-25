@@ -109,11 +109,11 @@ public class OrderManager {
         for(OrderLine line : order.getLinesInOrder()){
             ArrayList<Task> orderLineTasks = splitIntoTasks(line, order);
             if(orderLineTasks == null) return null;
-            for(Task task : orderLineTasks){
-                server.getReservationManager().reserveBinTile(((BinDelivery)task).getBinCoords());
-            }
             orderTasks.addAll(orderLineTasks);
         }
+
+        for(Task task : orderTasks)
+            server.getReservationManager().reserveBinTile(((BinDelivery)task).getBinCoords());
 
         return orderTasks;
     }
