@@ -3,14 +3,24 @@ package dk.aau.d507e19.warehousesim;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRT;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
+import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
+import dk.aau.d507e19.warehousesim.controller.server.Server;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
+
+import org.mockito.Mockito;
 
 
 public class NodeTest {
     Node<Object> root, rootLeft, rootRight, rootLeftLeft, rootLeftLeftLeft, rootLeftLeftLeftLeft;
     int count =0;
+    Server server = Mockito.mock(Server.class);
+    private RobotController robotController = Mockito.mock(RobotController.class);
+    private ReservationManager reservationManager = Mockito.mock(ReservationManager.class);
+
 
     @Before
     public void makeTree() {
@@ -111,7 +121,9 @@ public class NodeTest {
     }
     @Test
     public void testCopy2(){
-        RRT rrt = new RRT(null);
+        when(robotController.getServer()).thenReturn(server);
+        when(robotController.getServer().getReservationManager()).thenReturn(reservationManager);
+        RRT rrt = new RRT(robotController);
         GridCoordinate gcStart = new GridCoordinate(0,0);
         GridCoordinate gcDest = new GridCoordinate(15,29);
         rrt.generateRRTPathFromEmpty(gcStart, gcDest);
