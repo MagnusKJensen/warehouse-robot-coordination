@@ -1,11 +1,12 @@
 package dk.aau.d507e19.warehousesim.storagegrid;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import dk.aau.d507e19.warehousesim.GraphicsManager;
+import dk.aau.d507e19.warehousesim.controller.server.order.Order;
 
 public class PickerTile extends Tile {
+    private Order currentOrder = null;
 
     public PickerTile(int posX, int posY) {
         super(posX, posY);
@@ -22,5 +23,13 @@ public class PickerTile extends Tile {
     public String toString() {
         return "PickerTile{posX=" + getPosX() +
                 ", posY=" + getPosY() + "}";
+    }
+
+    public void assignOrder(Order order){
+        currentOrder = order;
+    }
+
+    public boolean hasOrder(){
+        return currentOrder != null;
     }
 }

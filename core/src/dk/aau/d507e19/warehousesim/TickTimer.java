@@ -25,4 +25,12 @@ public class TickTimer {
     public long getRemainingTicks() {
         return remainingTicks;
     }
+
+    public void reset() {
+        remainingTicks = startingTicks;
+    }
+
+    public void setRemainingTicks(int i) {
+        this.remainingTicks = 0;
+    }
 }

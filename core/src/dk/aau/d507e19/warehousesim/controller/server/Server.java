@@ -4,8 +4,10 @@ import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.Status;
+import dk.aau.d507e19.warehousesim.controller.server.order.OrderGenerator;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
+import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
@@ -70,10 +72,6 @@ public class Server {
         return reservationManager;
     }
 
-    public OrderGenerator getOrderGenerator() {
-        return orderGenerator;
-    }
-
     private void generateProductMap(StorageGrid grid) {
         for(int x = 0; x < simulation.getGridWidth(); ++x){
             for(int y = 0; y < simulation.getGridHeight(); ++y){
@@ -97,7 +95,7 @@ public class Server {
         return productsAvailable;
     }
 
-    public void update(){
+    public void updateNew(){
         orderGenerator.update();
         orderManager.update();
     }
@@ -114,7 +112,7 @@ public class Server {
         return orderManager;
     }
 
-    public boolean hasRobotsAvailable(){
+    public boolean hasAvailableRobot(){
         for (Robot robot : simulation.getAllRobots()){
             if(robot.getCurrentStatus() == Status.AVAILABLE) return true;
         }
@@ -124,5 +122,17 @@ public class Server {
 
     public GridBounds getGridBounds() {
         return new GridBounds(getGridWidth() - 1, getGridHeight() - 1);
+    }
+
+    public ArrayList<PickerTile> getAvailablePickers() {
+        ArrayList<PickerTile> availablePickers = new ArrayList<>();
+        for(GridCoordinate picker : pickerPoints){
+            PickerTile tile = (PickerTile) simulation.getStorageGrid().getTile(picker.getX(), picker.getY());
+            if(!tile.hasOrder()){
+                availablePickers.add(tile);
+            }
+        }
+
+        return availablePickers;
     }
 }

@@ -3,8 +3,9 @@ package dk.aau.d507e19.warehousesim.controller.robot.plan;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.path.Line;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 
-public class LineTraversal implements Action {
+public class LineTraversal implements Task {
 
     private Robot robot;
     private Line line;
@@ -15,13 +16,13 @@ public class LineTraversal implements Action {
 
     public LineTraversal(Robot robot, Line line) {
         this.line = line;
-        this.robot = robot;
+        setRobot(robot);
         this.speedCalculator = new SpeedCalculator(robot, line);
     }
 
     @Override
     public void perform() {
-        if(isDone())
+        if(isCompleted())
             throw new IllegalStateException("Attempting to perform a line traversal that is already completed");
 
         robot.setPosition(speedCalculator.getPositionAfter(ticksSinceStart));
@@ -32,13 +33,17 @@ public class LineTraversal implements Action {
     }
 
     @Override
-    public boolean isDone() {
+    public boolean isCompleted() {
         return doneTraversing;
     }
 
     @Override
-    public Status getStatus() {
-        if(robot.isCarrying()) return Status.TASK_ASSIGNED_CARRYING;
-        else return Status.BUSY;
+    public boolean hasFailed() {
+        return false;
+    }
+
+    @Override
+    public void setRobot(Robot robot) {
+        this.robot = robot;
     }
 }

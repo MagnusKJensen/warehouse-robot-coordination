@@ -3,6 +3,7 @@ package dk.aau.d507e19.warehousesim.input;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import dk.aau.d507e19.warehousesim.Simulation;
+import dk.aau.d507e19.warehousesim.UpdateMode;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
@@ -45,7 +46,6 @@ public class SimulationInputProcessor implements InputProcessor {
         for(int x = 0; x < WarehouseSpecs.wareHouseWidth; x++){
             for(int y = 0; y < WarehouseSpecs.wareHouseHeight; ++y){
                 if(grid.getTile(x,y).collidesWith(simulation.screenToWorldPosition(screenX, screenY))){
-
                     simulation.selectTile(grid.getTile(x,y));
                 }
             }
@@ -71,6 +71,10 @@ public class SimulationInputProcessor implements InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
+        if(keycode == Input.Keys.SPACE) {
+            if(simulation.getSimulationApp().getUpdateMode() == UpdateMode.MANUAL) simulation.getSimulationApp().play();
+            else simulation.getSimulationApp().pause();
+        }
         if(Input.Keys.CONTROL_LEFT == keycode){
             ctrlDown = true;
         }

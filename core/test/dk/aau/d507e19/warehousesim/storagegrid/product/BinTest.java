@@ -16,7 +16,7 @@ public class BinTest {
         ArrayList<Product> myProducts = new ArrayList<>();
 
         for (int i = 0; i < WarehouseSpecs.SKUsPerBin + 1; ++i){
-            myProducts.add(new Product(new SKU("SKU" + i), 123));
+            myProducts.add(new Product(new SKU("SKU" + i)));
         }
 
         // Should throw IllegalArgumentException, since one more SKU is added, than the bin can fit.
@@ -30,7 +30,7 @@ public class BinTest {
         ArrayList<Product> myProducts = new ArrayList<>();
 
         for (int i = 0; i < WarehouseSpecs.productsPerBin + 1; ++i){
-            myProducts.add(new Product(new SKU("SKU"), 123));
+            myProducts.add(new Product(new SKU("SKU")));
         }
 
         // Should throw IllegalArgumentException, since one more product is added, than the bin can fit.
@@ -44,12 +44,12 @@ public class BinTest {
         ArrayList<Product> myProducts = new ArrayList<>();
 
         for (int i = 0; i < WarehouseSpecs.productsPerBin; ++i){
-            myProducts.add(new Product(new SKU("SKU"), 123));
+            myProducts.add(new Product(new SKU("SKU")));
         }
         bin.addProducts(myProducts);
 
         // Should throw IllegalArgumentException, since one more product is added, than the bin can fit.
-        bin.addProduct(new Product(new SKU("SKU"), 123));
+        bin.addProduct(new Product(new SKU("SKU")));
     }
 
     @Test (expected = IllegalArgumentException.class)
@@ -59,11 +59,11 @@ public class BinTest {
         ArrayList<Product> myProducts = new ArrayList<>();
 
         for (int i = 0; i < WarehouseSpecs.SKUsPerBin; ++i){
-            myProducts.add(new Product(new SKU("SKU" + i), 123));
+            myProducts.add(new Product(new SKU("SKU" + i)));
         }
         bin.addProducts(myProducts);
 
         // Should throw IllegalArgumentException, since one more SKU is added, than the bin can fit.
-        bin.addProduct(new Product(new SKU("EXTRA SKU"), 123));
+        bin.addProduct(new Product(new SKU("EXTRA SKU")));
     }
 }

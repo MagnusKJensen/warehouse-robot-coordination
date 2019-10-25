@@ -98,14 +98,18 @@ public class Bin {
         return products;
     }
 
-    public boolean hasProducts(Product product, int amount){
-        int numberInBin = 0;
+    public boolean hasProduct(Product product){
         for(Product prod : products){
-            if(prod.equals(product)) numberInBin++;
+            if(prod.equals(product)) return true;
         }
-
-        if(numberInBin >= amount) return true;
-
         return false;
+    }
+
+    public int productCount(Product product) {
+        int count = 0;
+        for(Product prod : products){
+            if(prod.equals(product)) count++;
+        }
+        return count;
     }
 }

@@ -1,12 +1,12 @@
-package dk.aau.d507e19.warehousesim.controller.robot;
+package dk.aau.d507e19.warehousesim.controller.server.order;
 
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
-public class Order {
+public class OrderLine {
     private Product product;
     private int amount;
 
-    public Order(Product product, int amount) {
+    public OrderLine(Product product, int amount) {
         this.product = product;
         this.amount = amount;
     }
@@ -21,7 +21,7 @@ public class Order {
 
     @Override
     public String toString() {
-        return "Order{" +
+        return "OrderLine{" +
                 "product=" + product +
                 ", amount=" + amount +
                 '}';

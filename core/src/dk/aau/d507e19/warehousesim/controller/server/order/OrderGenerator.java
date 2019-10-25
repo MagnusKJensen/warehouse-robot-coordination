@@ -1,10 +1,12 @@
-package dk.aau.d507e19.warehousesim.controller.server;
+package dk.aau.d507e19.warehousesim.controller.server.order;
 
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
-import dk.aau.d507e19.warehousesim.controller.robot.Order;
+import dk.aau.d507e19.warehousesim.controller.server.OrderManager;
+import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class OrderGenerator {
@@ -15,6 +17,9 @@ public class OrderGenerator {
     private OrderManager orderManager;
     private int tickSinceLastOrder = TICKS_BETWEEN_ORDERS;
     private Server server;
+
+    private final int MAX_LINES = 3;
+    private final int MAX_AMOUNT = 4;
 
     public OrderGenerator(OrderManager orderManager, Server server) {
         this.orderManager = orderManager;
@@ -31,10 +36,21 @@ public class OrderGenerator {
     }
 
     private Order generateRandomOrder() {
+        int linesInOrder = random.nextInt(MAX_LINES - 1) + 1;
+
+        ArrayList<OrderLine> orderLines = new ArrayList<>();
+        for(int i = 0; i < linesInOrder; i++){
+            orderLines.add(generateRandomLine());
+        }
+
+        return new Order(orderLines);
+    }
+
+    private OrderLine generateRandomLine(){
         int bound = server.getProductsAvailable().size();
         Product prod = server.getProductsAvailable().get(random.nextInt(bound));
-        int amount = random.nextInt(3 - 1) + 1;
-        Order order = new Order(prod, amount);
-        return order;
+        int amount = random.nextInt(MAX_AMOUNT - 1) + 1;
+        return new OrderLine(prod, amount);
     }
+
 }

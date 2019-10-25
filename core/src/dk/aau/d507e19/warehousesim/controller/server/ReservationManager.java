@@ -2,6 +2,8 @@ package dk.aau.d507e19.warehousesim.controller.server;
 
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
+import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +15,7 @@ public class ReservationManager {
     private final ReservationTile[][] reservationTiles;
     private final HashMap<Robot, ArrayList<Reservation>> robotReservationsMap;
     private Server server;
+    private ArrayList<BinTile> reservedBinTiles = new ArrayList<>();
 
     public ReservationManager(int width, int height, Server server) {
         reservationTiles = new ReservationTile[width][height];
@@ -104,7 +107,9 @@ public class ReservationManager {
 
 
     public boolean isBinReserved(GridCoordinate gridCoordinate) {
-        return isReserved(gridCoordinate, TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks()));
+        StorageGrid grid = server.getSimulation().getStorageGrid();
+        BinTile tile = (BinTile)grid.getTile(gridCoordinate.getX(), gridCoordinate.getY());
+        return reservedBinTiles.contains(tile);
     }
 
     public void reserve(ArrayList<Reservation> reservations) {
@@ -140,13 +145,50 @@ public class ReservationManager {
 
     public boolean hasConflictingReservations(ArrayList<Reservation> reservations) {
         for(Reservation reservation : reservations){
-            int x = reservation.getGridCoordinate().getX();
-            int y = reservation.getGridCoordinate().getY();
-            if(reservationTiles[x][y].isReserved(reservation.getTimeFrame()))
+            if(hasConflictingReservations(reservation))
+                return true;
+        }
+        return false;
+    }
+
+    public boolean hasConflictingReservations(Reservation reservation){
+        int x = reservation.getGridCoordinate().getX();
+        int y = reservation.getGridCoordinate().getY();
+        ArrayList<Reservation> sameTimeReservations =
+                reservationTiles[x][y].getReservations(reservation.getTimeFrame());
+
+        // Check if conflicting reservations are made by the same robot
+        for(Reservation sameTimeReservation : sameTimeReservations){
+            if(!sameTimeReservation.getRobot().equals(reservation.getRobot()))
                 return true;
         }
 
         return false;
     }
 
+    public void reserveBinTiles(ArrayList<BinTile> toReserve){
+        reservedBinTiles.addAll(toReserve);
+    }
+
+    public void reserveBinTile(BinTile binTile){
+        reservedBinTiles.add(binTile);
+    }
+
+    public void reserveBinTile(GridCoordinate coords){
+        BinTile tile = (BinTile) server.getSimulation().getStorageGrid().getTile(coords.getX(), coords.getY());
+        reservedBinTiles.add(tile);
+    }
+
+    public void removeBinReservation(BinTile binTile){
+        reservedBinTiles.remove(binTile);
+    }
+
+    public void removeBinReservation(GridCoordinate coords){
+        BinTile tile = (BinTile) server.getSimulation().getStorageGrid().getTile(coords.getX(), coords.getY());
+        reservedBinTiles.remove(tile);
+    }
+
+    public ArrayList<BinTile> getReservedBinTiles() {
+        return reservedBinTiles;
+    }
 }

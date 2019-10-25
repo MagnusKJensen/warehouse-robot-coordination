@@ -199,10 +199,12 @@ public class SimulationApp extends ApplicationAdapter {
 
 	public void pause(){
 		switchUpdateMode(UpdateMode.MANUAL);
+		sideMenu.updatePlayPauseButtons();
 	}
 
 	public void play(){
 		switchUpdateMode(UpdateMode.REAL_TIME);
+		sideMenu.updatePlayPauseButtons();
 	}
 
 	public void fastForward() {
@@ -254,7 +256,7 @@ public class SimulationApp extends ApplicationAdapter {
 		return sideMenu;
 	}
 
-	protected UpdateMode getUpdateMode() {
+	public UpdateMode getUpdateMode() {
 		return updateMode;
 	}
 

@@ -261,7 +261,7 @@ public class Astar implements PathFinder {
     }
 
     @Override
-    public Optional<Path> calculatePath(GridCoordinate start, GridCoordinate destination) {
+    public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
         // Clears all lists and objects so that it is clean next time it calculates a path.
         clear();
 
@@ -280,6 +280,6 @@ public class Astar implements PathFinder {
         // TODO: add final step where it waits indefinitely.
         // TODO: remove indefinitely wait from first coordinate? (Where it last ended)
 
-        return Optional.of(new Path(Step.fromGridCoordinates(finalPath)));
+        return new Path(Step.fromGridCoordinates(finalPath));
     }
 }

@@ -54,6 +54,8 @@ public class Simulation {
 
     private Goal goal;
 
+    private long tickStopperGoal;
+
     public Simulation(SimulationApp simulationApp){
         this.simulationApp = simulationApp;
         this.gridCamera = simulationApp.getWorldCamera();
@@ -89,12 +91,14 @@ public class Simulation {
         for(Robot robot : robots){
             robot.update();
         }
-        server.update();
+        server.updateNew();
         goal.update();
         if(WarehouseSpecs.collisionDetectedEnabled){
             checkForCollisions();
         }
         updateSideMenuScrollPanes();
+
+        if(tickStopperGoal == tickCount) simulationApp.pause();
     }
 
     private void checkForCollisions() {
@@ -287,5 +291,9 @@ public class Simulation {
 
     public Goal getGoal() {
         return goal;
+    }
+
+    public void setTickStopperGoal(long tickStopperGoal) {
+        this.tickStopperGoal = tickStopperGoal;
     }
 }

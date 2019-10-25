@@ -26,7 +26,6 @@ public class Text extends Actor {
         this.color = color;
     }
 
-
     @Override
     public void draw(Batch batch, float parentAlpha) {
         font.setColor(color);
