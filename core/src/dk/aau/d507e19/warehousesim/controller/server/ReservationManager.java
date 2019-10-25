@@ -127,9 +127,21 @@ public class ReservationManager {
 
     public boolean hasConflictingReservations(ArrayList<Reservation> reservations) {
         for(Reservation reservation : reservations){
-            int x = reservation.getGridCoordinate().getX();
-            int y = reservation.getGridCoordinate().getY();
-            if(reservationTiles[x][y].isReserved(reservation.getTimeFrame()))
+            if(hasConflictingReservations(reservation))
+                return true;
+        }
+        return false;
+    }
+
+    public boolean hasConflictingReservations(Reservation reservation){
+        int x = reservation.getGridCoordinate().getX();
+        int y = reservation.getGridCoordinate().getY();
+        ArrayList<Reservation> sameTimeReservations =
+                reservationTiles[x][y].getReservations(reservation.getTimeFrame());
+
+        // Check if conflicting reservations are made by the same robot
+        for(Reservation sameTimeReservation : sameTimeReservations){
+            if(!sameTimeReservation.getRobot().equals(reservation.getRobot()))
                 return true;
         }
 

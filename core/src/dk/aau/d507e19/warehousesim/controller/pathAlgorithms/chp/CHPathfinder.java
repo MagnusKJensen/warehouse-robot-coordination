@@ -111,8 +111,11 @@ public class CHPathfinder implements PathFinder {
 
 
         if (nodeReservation.getGridCoordinate().equals(target)) {
+            TimeFrame indefiniteTimeFrame = TimeFrame.indefiniteTimeFrameFrom(nodeReservation.getTimeFrame().getStart());
+            Reservation indefiniteReservation = new Reservation(robot, target, indefiniteTimeFrame);
+
             return server.getReservationManager().hasConflictingReservations(reservations) ||
-                    server.getReservationManager().isReserved(target, TimeFrame.indefiniteTimeFrameFrom(nodeReservation.getTimeFrame().getStart()));
+                    server.getReservationManager().hasConflictingReservations(indefiniteReservation);
         } else {
             // todo (Bug: will not ignore it's own reservation)
             return server.getReservationManager().hasConflictingReservations(reservations);

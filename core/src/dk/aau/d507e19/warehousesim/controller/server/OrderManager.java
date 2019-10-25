@@ -12,13 +12,12 @@ import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocator
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
-import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
 import java.util.*;
 
 public class OrderManager {
-    private ArrayList<Order> orderQueueNew = new ArrayList<>();
+    private ArrayList<Order> orderQueue = new ArrayList<>();
     private Server server;
     private TaskAllocator taskAllocator;
     private ArrayList<Order> ordersProcessing = new ArrayList<>();
@@ -43,7 +42,7 @@ public class OrderManager {
         if(isOrderServiceable(order)) {
             // Divide into RetrievalTasks ??
             removeProducts(order.getAllProductsInOrder());
-            this.orderQueueNew.add(order);
+            this.orderQueue.add(order);
             return true;
         } else {
             System.out.println("Rejected order " + order);
@@ -61,27 +60,32 @@ public class OrderManager {
         return server.getProductsAvailable().containsAll(order.getAllProductsInOrder());
     }
 
-    public void updateNew(){
+    public void update(){
         ArrayList<PickerTile> availablePickers = server.getAvailablePickers();
-        if(availablePickers.size() != 0 && orderQueueNew.size() > 0){
+        while(availablePickers.size() != 0 && orderQueue.size() > 0){
             // Assign order to picker
-            availablePickers.get(0).assignOrder(orderQueueNew.get(0));
+            availablePickers.get(0).assignOrder(orderQueue.get(0));
             // Give order a reference to picker
-            orderQueueNew.get(0).setPicker(availablePickers.get(0));
+            orderQueue.get(0).setPicker(availablePickers.get(0));
             // Add to orders being processed
-            ordersProcessing.add(orderQueueNew.get(0));
+            ordersProcessing.add(orderQueue.get(0));
             // Divide order into tasks to robots and add to list of available tasks
-            tasksAvailable.addAll(createTasksFromOrder(orderQueueNew.get(0)));
-            System.out.println("Commenced order: " + orderQueueNew.get(0));
+            tasksAvailable.addAll(createTasksFromOrder(orderQueue.get(0)));
+            System.out.println("Commenced order: " + orderQueue.get(0));
             // Remove order from queue
-            orderQueueNew.remove(0);
+            orderQueue.remove(0);
         }
+
         if(server.hasAvailableRobot()) {
-            for(Task task : tasksAvailable){
+            Iterator<Task> taskIterator = tasksAvailable.iterator();
+            while(taskIterator.hasNext()){
+                Task task = taskIterator.next();
                 Optional<Robot> optimalRobot = taskAllocator.findOptimalRobot(server.getAllRobots(), task);
                 if(optimalRobot.isPresent()){
-                    if(optimalRobot.get().getRobotController().assignTask(task))
-                        tasksAvailable.remove(task);
+                    if(optimalRobot.get().getRobotController().assignTask(task)){
+                        task.setRobot(optimalRobot.get());
+                        taskIterator.remove();
+                    }
                 }
             }
         }
@@ -116,7 +120,7 @@ public class OrderManager {
     }
 
     public int ordersInQueue(){
-        return orderQueueNew.size();
+        return orderQueue.size();
     }
 
 }

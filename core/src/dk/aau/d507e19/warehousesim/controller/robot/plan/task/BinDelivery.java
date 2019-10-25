@@ -17,17 +17,16 @@ public class BinDelivery implements Task {
 
     private ArrayList<Task> subTasks = new ArrayList<>();
     private boolean completed = false;
+    private boolean isPlanned = false;
 
     public BinDelivery(Order order, GridCoordinate binCoords) {
         this.order = order;
         this.binCoords = binCoords;
-        planTasks();
     }
 
-    public void setRobotController(RobotController robotController){
-        this.robotController = robotController;
-        this.robot = robotController.getRobot();
-
+    public void setRobot(Robot robot){
+        this.robotController = robot.getRobotController();
+        this.robot = robot;
     }
 
     private void planTasks() {
@@ -36,16 +35,21 @@ public class BinDelivery implements Task {
         subTasks.add(new TimedAction(() -> robot.pickUpBin(), WarehouseSpecs.robotPickUpSpeedInSeconds));
 
         // Delivery
-        // subTasks.add(new Navigation(robotController, order.)); todo Add back in when order has picker reference
+        subTasks.add(new Navigation(robotController, order.getPicker().getGridCoordinate()));
         subTasks.add(new TimedAction(() -> robot.deliverBinToPicker(), WarehouseSpecs.robotPickUpSpeedInSeconds));
 
         // Bin return
         subTasks.add(new Navigation(robotController, binCoords));
         subTasks.add(new TimedAction(() -> robot.putDownBin(), WarehouseSpecs.robotPickUpSpeedInSeconds));
+
+        isPlanned = true;
     }
 
     @Override
     public void perform() {
+        if(!isPlanned)
+            planTasks();
+
         if(isCompleted())
             throw new RuntimeException("Cannot perform BinDelivery that is already completed");
 
@@ -69,4 +73,5 @@ public class BinDelivery implements Task {
     public boolean hasFailed() {
         return false;
     }
+
 }

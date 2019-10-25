@@ -16,7 +16,7 @@ public class LineTraversal implements Task {
 
     public LineTraversal(Robot robot, Line line) {
         this.line = line;
-        this.robot = robot;
+        setRobot(robot);
         this.speedCalculator = new SpeedCalculator(robot, line);
     }
 
@@ -40,5 +40,10 @@ public class LineTraversal implements Task {
     @Override
     public boolean hasFailed() {
         return false;
+    }
+
+    @Override
+    public void setRobot(Robot robot) {
+        this.robot = robot;
     }
 }

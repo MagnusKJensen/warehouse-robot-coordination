@@ -97,7 +97,7 @@ public class Server {
 
     public void updateNew(){
         orderGenerator.update();
-        orderManager.updateNew();
+        orderManager.update();
     }
 
     public ArrayList<GridCoordinate> getPickerPoints() {
