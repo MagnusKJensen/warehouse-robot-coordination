@@ -1,27 +1,25 @@
 package dk.aau.d507e19.warehousesim.controller.server;
 
-import dk.aau.d507e19.warehousesim.SimulationApp;
-import dk.aau.d507e19.warehousesim.controller.robot.Order;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
-import dk.aau.d507e19.warehousesim.controller.server.order.OrderLine;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.controller.server.order.OrderNew;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.DummyTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.NaiveShortestDistanceTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.ShortestDistanceTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocator;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
+import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
 import java.util.ArrayList;
 import java.util.Optional;
 
 public class OrderManager {
-    private ArrayList<Order> ordersFinished = new ArrayList<>();
-    private ArrayList<Order> orderQueue = new ArrayList<>();
     private ArrayList<OrderNew> orderQueueNew = new ArrayList<>();
     private Server server;
     private TaskAllocator taskAllocator;
     private ArrayList<OrderNew> ordersProcessing = new ArrayList<>();
+    private ArrayList<Task> tasksAvailable = new ArrayList<>();
 
     public OrderManager(Server server) {
         this.server = server;
@@ -38,24 +36,21 @@ public class OrderManager {
         }
     }
 
-    public boolean takeOrder(Order order){
-        if(!orderIsServiceable(order)) return false;
-        else {
-            this.orderQueue.add(order);
-            for(int i = 0; i < order.getAmount(); i++){
-                server.getProductsAvailable().remove(order.getProduct());
-            }
+    public boolean takeOrder(OrderNew order){
+        if(isOrderServiceable(order)) {
+            // Divide into RetrievalTasks ??
+            removeProducts(order.getAllProductsInOrder());
+            this.orderQueueNew.add(order);
             return true;
+        } else {
+            System.out.println("Rejected order " + order);
+            return false;
         }
     }
 
-    public boolean takeOrder(OrderNew order){
-        if(isOrderServiceable(order)) return false;
-        else {
-            // Divide into RetrievalTasks ??
-            server.getProductsAvailable().removeAll(order.getAllProductsInOrder());
-            this.orderQueueNew.add(order);
-            return true;
+    private void removeProducts(ArrayList<Product> productsToRemove){
+        for(Product prod : productsToRemove){
+            server.getProductsAvailable().remove(prod);
         }
     }
 
@@ -63,55 +58,38 @@ public class OrderManager {
         return server.getProductsAvailable().containsAll(order.getAllProductsInOrder());
     }
 
-    private boolean orderIsServiceable(Order order) {
-        // TODO: 18/10/2019 Also maybe assign two or more robots if two more bins needs to be picked up?
-        //  Divide order into more, maybe? - Philip
-        ArrayList<BinTile> tilesWithProd = server.getTilesContaining(order.getProduct().getSKU());
-
-        // If the product is not in grid, reject
-        if(tilesWithProd.isEmpty()) return false;
-
-        // If the tile is in grid, get tile with the correct amount
-        for (BinTile tile : tilesWithProd) {
-            if(tile.getBin() != null){
-                if(tile.getBin().hasProducts(order.getProduct(), order.getAmount()))
-                    return true;
-            }
+    public void updateNew(){
+        ArrayList<PickerTile> availablePickers = server.getAvailablePickers();
+        if(availablePickers.size() != 0 && orderQueueNew.size() > 0){
+            // Assign order to picker
+            availablePickers.get(0).assignOrder(orderQueueNew.get(0));
+            // Give order a reference to picker
+            orderQueueNew.get(0).setPicker(availablePickers.get(0));
+            // Add to orders being processed
+            ordersProcessing.add(orderQueueNew.get(0));
+            // Divide order into tasks to robots and add to list of available tasks
+            tasksAvailable.addAll(createTasksFromOrder(orderQueueNew.get(0)));
+            System.out.println("Commenced order: " + orderQueueNew.get(0));
+            // Remove order from queue
+            orderQueueNew.remove(0);
         }
-
-        System.out.println("Rejected order: " + order);
-        return false;
-    }
-
-    // Should be replaced by updateNew
-    public void update(){
-        if(server.hasRobotsAvailable() && orderQueue.size() > 0){
-            for(int i = 0; i < orderQueue.size(); ++i){
-                Order order = orderQueue.get(i);
-                Optional<Robot> optimalRobot = taskAllocator.findOptimalRobot(server.getAllRobots(), order);
+        if(server.hasAvailableRobot()) {
+            for(Task task : tasksAvailable){
+                Optional<Robot> optimalRobot = taskAllocator.findOptimalRobot(server.getAllRobots(), task);
                 if(optimalRobot.isPresent()){
-                    optimalRobot.get().assignOrder(order);
-                    ordersFinished.add(orderQueue.get(i));
-                    System.out.println("Commenced order: " + orderQueue.get(i));
-                    orderQueue.remove(i);
-                    break;
+                    optimalRobot.get().assignTask(task);
+                    tasksAvailable.remove(task);
                 }
             }
         }
     }
 
-    public void updateNew(){
-        // If some picker station available
-            // Assign order to picker station and add the order to list of orders being processed
-                // Add retrieval tasks from order to list of tasks
-        // If some robot is available
-            // go through all tasks and go find most optimal robot for task
-                // If some robot is found, assign task to robot
-                // Remove task from list of tasks available
+    private ArrayList<Task> createTasksFromOrder(OrderNew orderNew) {
+        return new ArrayList<>();
     }
 
     public int ordersInQueue(){
-        return orderQueue.size();
+        return orderQueueNew.size();
     }
 
 }

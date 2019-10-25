@@ -1,9 +1,10 @@
 package dk.aau.d507e19.warehousesim.controller.server.taskAllocator;
 
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import dk.aau.d507e19.warehousesim.controller.robot.Order;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.Status;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.ProductDelivery;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 
 import java.util.ArrayList;
@@ -16,6 +17,11 @@ public class NaiveShortestDistanceTaskAllocator implements TaskAllocator {
         this.grid = grid;
     }
 
+    @Override
+    public Optional<Robot> findOptimalRobot(ArrayList<Robot> robots, Task task) {
+        return Optional.empty();
+    }
+    /*
     @Override
     public Optional<Robot> findOptimalRobot(ArrayList<Robot> robots, Order order) {
         Robot optimalRobot = null;
@@ -41,7 +47,7 @@ public class NaiveShortestDistanceTaskAllocator implements TaskAllocator {
         if(optimalRobot != null) return Optional.of(optimalRobot);
 
         return Optional.empty();
-    }
+    }*/
 
     private ArrayList<Robot> findAvailableRobots(ArrayList<Robot> robots){
         ArrayList<Robot> availableRobots = new ArrayList<>();

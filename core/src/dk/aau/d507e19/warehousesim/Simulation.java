@@ -87,7 +87,7 @@ public class Simulation {
         for(Robot robot : robots){
             robot.update();
         }
-        server.update();
+        server.updateNew();
         goal.update();
         if(WarehouseSpecs.collisionDetectedEnabled){
             checkForCollisions();

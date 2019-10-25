@@ -31,4 +31,16 @@ public class OrderNew {
 
         return productsInOrder;
     }
+
+    public void setPicker(PickerTile picker) {
+        this.picker = picker;
+    }
+
+    @Override
+    public String toString() {
+        return "OrderNew{" +
+                "linesInOrder=" + linesInOrder +
+                ", picker=" + picker +
+                '}';
+    }
 }

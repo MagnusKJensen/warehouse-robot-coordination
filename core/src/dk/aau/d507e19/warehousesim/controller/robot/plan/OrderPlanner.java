@@ -33,6 +33,7 @@ public class OrderPlanner {
         this.robotController = robotController;
     }
 
+    /*
     public ArrayList<Action> planPickUp(Order order) {
         ArrayList<Action> plan = new ArrayList<>();
         server.getReservationManager().removeReservationsBy(robot);
@@ -57,7 +58,7 @@ public class OrderPlanner {
         } else throw new RuntimeException("Robot " + robot.getRobotID() + " could not plan pickup of order " + order);
 
         return plan;
-    }
+    }*/
 
     private void reserveLastTileIndefinitely(ArrayList<Reservation> reservations) {
         Reservation lastReservation = reservations.get(reservations.size() - 1);
@@ -68,6 +69,7 @@ public class OrderPlanner {
         server.getReservationManager().reserve(unboundedReservation);
     }
 
+    /*
     public ArrayList<Action> planDelivery(Order order) {
         server.getReservationManager().removeReservationsBy(robot);
         ArrayList<Action> plan = new ArrayList<>();
@@ -90,7 +92,7 @@ public class OrderPlanner {
         } else throw new RuntimeException("Robot " + robot.getRobotID() + " could not plan delivery of order " + order);
 
         return plan;
-    }
+    }*/
 
     public ArrayList<Action> planBinReturn() {
         server.getReservationManager().removeReservationsBy(robot);
@@ -143,6 +145,7 @@ public class OrderPlanner {
         return Math.abs(source.getX() - dest.getX()) + Math.abs(source.getY() - dest.getY());
     }
 
+    /*
     private GridCoordinate getNearestAvailableProduct(Order order) {
         // TODO: 15/10/2019 Finds the nearest, but does not check if it is reserved - Philip
         ArrayList<BinTile> tilesWithProd = server.getTilesContaining(order.getProduct().getSKU());
@@ -163,7 +166,7 @@ public class OrderPlanner {
                                 robot.getCurrentStatus() == Status.AVAILABLE &&
                                 this.robot.getRobotID() != robot.getRobotID()
                         ) hasIdleRobotOnTop = true;
-                    }*/
+                    }*//*
 
                     if (!hasIdleRobotOnTop) tilesWithEnoughProds.add(tile);
                 }
@@ -191,7 +194,7 @@ public class OrderPlanner {
         if (shortestGC == null) throw new RuntimeException("No nearest product available found - Time : " + server.getTimeInTicks());
 
         return shortestGC;
-    }
+    }*/
 
 
 }
