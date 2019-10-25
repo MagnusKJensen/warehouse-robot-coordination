@@ -15,13 +15,16 @@ public class RRTStar extends RRTBase {
     }
 
     public ArrayList<Step> generatePathFromEmpty(GridCoordinate start, GridCoordinate destination){
-        return super.generatePathFromEmpty(start,destination);
+        super.generatePathFromEmpty(start,destination);
+        attemptOptimise();
+        return path;
     }
 
     public ArrayList<Step> generatePath(GridCoordinate start, GridCoordinate destination){
         //make sure we have a path
         super.generatePath(start,destination);
         //attempt to optimise the path
+        attemptOptimise();
         return path;
     }
 
@@ -92,38 +95,53 @@ public class RRTStar extends RRTBase {
         }
         return isInPathToRoot(node.getParent(),n);
     }
-    private void attemptOptimise(){
-        ArrayList<Step> currentPath = path;
-        Node<GridCoordinate> destination = destinationNode;
-        //for every node starting from root, we check if there is a node that we can connect to, which is closer to goal
-
-        //if there is, we make the change in a copy of the tree
-        //only cares about distance
-        //consider comparing cost when finished to check if its actually an improvement
+    public void attemptOptimise(){
+        //create a copy of the tree
+        Node<GridCoordinate> copyRoot = root.copy();
+        //then call optimise on the copy, if copy is better then root = copy
+        if(optimise(copyRoot,copyRoot.findNode(destinationNode.getData()))){
+            //check if it is actually faster
+            if(cost(copyRoot.findNode(destinationNode.getData())) < cost(destinationNode)){
+                root = copyRoot;
+                destinationNode = root.findNode(destinationNode.getData());
+                path = makePath(destinationNode);
+                updateAllNodes(root);
+            }
+        }
     }
     private boolean optimise(Node<GridCoordinate> node, Node<GridCoordinate> destination){
+        Node<GridCoordinate> bestNeighbour = null;
         //check if we have reached dest, if we have the return true
         if(node.equals(destination)){
             return true;
         }
         //check if node can connect to a node thats closer(distance) to dest, return false if there are no nodes better nodes nearby
         ArrayList<Node<GridCoordinate>> neighbours = trimImprovementsList(findNodesInRadius(node.getData(),1),node.getData());
-        for (Node<GridCoordinate> neighbour : neighbours){
-
+        if(neighbours.isEmpty()){
+            //should never happen since node is a part of a path, but makes intellij remove warning
+            return false;
         }
-        return false;
-
-        //connect to node and run this method on next node in line
-    }
-    private Node<GridCoordinate> getNextNode(Node<GridCoordinate> current, ArrayList<Step> path){
-        for(int i = 0; i < path.size(); i++){
-            if(path.get(i).getGridCoordinate().equals(current.getData())){
-                if(i+1 > path.size()){
-                    throw new RuntimeException("Current node is the destination");
-                }
-                return allNodesMap.get(path.get(i+1).getGridCoordinate());
+        //find the "best" neighbour
+        for (Node<GridCoordinate> neighbour : neighbours){
+            if(bestNeighbour == null || distance(neighbour.getData(),destination.getData()) < distance(bestNeighbour.getData(),destination.getData())){
+                //neighbour is a node from allNodesMap, meaning it is a part of the orignial root. We need to set bestNeighbour = to the copied version
+                bestNeighbour = node.getRoot().findNode(neighbour.getData());
             }
         }
-        return null;
+        //if best neighbour is worse than node, return false
+        if(distance(bestNeighbour.getData(),destination.getData()) > distance(node.getData(),destination.getData())){
+            return false;
+        }
+        //connect to node and run this method on next node in line
+        bestNeighbour.setParent(node);
+        return optimise(bestNeighbour,destination);
+
+
+    }
+    private void updateAllNodes(Node<GridCoordinate> node){
+        allNodesMap.put(node.getData(),node);
+        for(Node<GridCoordinate> child : node.getChildren()){
+            updateAllNodes(child);
+        }
     }
 }
