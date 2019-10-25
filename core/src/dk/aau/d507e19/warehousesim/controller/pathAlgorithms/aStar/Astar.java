@@ -11,6 +11,9 @@ import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
+import dk.aau.d507e19.warehousesim.exception.BlockedEndDestinationException;
+import dk.aau.d507e19.warehousesim.exception.NoValidNeighborException;
+import dk.aau.d507e19.warehousesim.exception.PathFinderException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -249,8 +252,9 @@ public class Astar implements PathFinder {
             if(openList.size() < 1){
                 if (closedList.size() > 1){
                     //finalPath.add(null);
+
+                 //   throw new NoValidPathFoundException("No valid path found, end destination blocked." + closedList.size());
                     return;
-                    //throw new RuntimeException("No valid path found, end destination blocked." + closedList.size());
                 }
                 //finalPath.add(null);
                 return;
@@ -328,7 +332,6 @@ public class Astar implements PathFinder {
         if (finalPath.size() < 1){
             return Optional.empty();
         }
-
         return Optional.of(new Path(Step.fromGridCoordinates(finalPath)));
     }
 }

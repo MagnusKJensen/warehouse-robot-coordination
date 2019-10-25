@@ -189,7 +189,7 @@ public class Simulation {
 
         DecimalFormat df = new DecimalFormat("0.000");
         df.setRoundingMode(RoundingMode.HALF_UP);
-        String tickCountAndSeconds =  "seconds " + df.format((tickCount / (double)SimulationApp.TICKS_PER_SECOND)) + " / " +  tickCount;
+        String tickCountAndSeconds = " " + "seconds " + df.format((tickCount / (double)SimulationApp.TICKS_PER_SECOND)) + " / " +  tickCount;
         font.draw(batch, tickCountAndSeconds, textPos.x, textPos.y);
         batch.end();
     }
