@@ -19,11 +19,11 @@ import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.when;
 
 public class RRTStarTest {
-    Robot robot = Mockito.mock(Robot.class);
-    Server server = Mockito.mock(Server.class);
-    RobotController robotController = Mockito.mock(RobotController.class);
-    RRT rrt;
-    RRTStar rrtStar;
+    private Robot robot = Mockito.mock(Robot.class);
+    private Server server = Mockito.mock(Server.class);
+    private RobotController robotController = Mockito.mock(RobotController.class);
+    private RRT rrt;
+    private RRTStar rrtStar;
 
     @Before
     public void initiateRobotController(){

@@ -7,6 +7,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
+import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import org.junit.Before;
@@ -14,6 +15,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,7 @@ public class RRTTest {
     RobotController robotController = Mockito.mock(RobotController.class);
     Server server = Mockito.mock(Server.class);
     Robot robot = Mockito.mock(Robot.class);
+    ReservationManager reservationManager = Mockito.mock(ReservationManager.class);
     private RRT rrt;
     private ArrayList<GridCoordinate> blockedNodeList = new ArrayList<>();
     private ArrayList<Reservation> nodesToBeBlocked = new ArrayList<>();
@@ -32,6 +35,7 @@ public class RRTTest {
     public void initiateServer(){
         when(robotController.getServer()).thenReturn(server);
         when(robotController.getRobot()).thenReturn(robot);
+        when(robotController.getServer().getReservationManager()).thenReturn(reservationManager);
     }
 
 
@@ -107,12 +111,18 @@ public class RRTTest {
         RobotController robotController = Mockito.mock(RobotController.class);
         TimeFrame timeFrame = Mockito.mock(TimeFrame.class);
         Reservation oneLeftReservation = new Reservation(robotController.getRobot(), oneleft.getData(), timeFrame);
+        Reservation oneRightReservation = new Reservation(robotController.getRobot(), oneright.getData(),timeFrame);
+        Reservation twoLeftReservation = new Reservation(robotController.getRobot(), twoleft.getData(),timeFrame);
+
         nodesToBeBlocked.add(oneLeftReservation);
+        nodesToBeBlocked.add(oneRightReservation);
+        nodesToBeBlocked.add(twoLeftReservation);
 
 
         rrt.assignBlockedNodeStatus(nodesToBeBlocked);
-
+        assertTrue(oneright.getBlockedStatus());
         assertTrue(oneleft.getBlockedStatus());
+        assertTrue(twoleft.getBlockedStatus());
 
 
         nodesToBeBlocked.remove(oneLeftReservation);
@@ -172,14 +182,6 @@ public class RRTTest {
         Node<GridCoordinate> n1 = new Node<>(new GridCoordinate(0,1),n0,false);
         assertEquals(2,rrt.makePath(n1).size());
     }
-    @Test
-    public void makePathBetweenTwoNodesTest(){
-        rrt = new RRT(robotController);
-        Node<GridCoordinate> n0 = new Node<>(new GridCoordinate(0,0),null,false);
-        Node<GridCoordinate> n1 = new Node<>(new GridCoordinate(0,1),n0,false);
-        Node<GridCoordinate> n2 = new Node<>(new GridCoordinate(0,2),n1,false);
-        assertEquals(2,rrt.makePathBetweenTwoNodes(n1,n2).size());
-    }
 
     @Test
     public void findNodesInRadiusTest(){
@@ -195,6 +197,31 @@ public class RRTTest {
         actualNeighbours.add(twooneright);
         assertEquals(listOfNeighbours, actualNeighbours);
     }
+
+    @Test
+    public void rewireTreeFromCollisionTest(){
+        rrt = new RRT(robotController);
+        generateTree();
+        Node<GridCoordinate> destNode = twoleft;
+        Reservation reservation = new Reservation(robot, oneleft.getData(), TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks()));
+        ArrayList<Reservation> reservations = new ArrayList<>();
+        reservations.add(reservation);
+        rrt.assignBlockedNodeStatus(reservations);
+        ArrayList<Step> currentPath = rrt.generatePath(tree.getData(), destNode.getData());
+        for(int i = 0; i < currentPath.size(); i++){
+            if(rrt.allNodesMap.get(currentPath.get(i).getGridCoordinate()).getBlockedStatus()){
+                rrt.rewireTreeFromCollision(rrt.allNodesMap.get(currentPath.get(i).getGridCoordinate()), rrt.allNodesMap.get(currentPath.get(i+1).getGridCoordinate()));
+            }
+        }
+        ArrayList<Step> updatedPath = rrt.generatePath(tree.getData(), destNode.getData());
+        System.out.println(rrt.allNodesMap.get(currentPath.get(0).getGridCoordinate()));
+        System.out.println(rrt.allNodesMap.get(updatedPath.get(0).getGridCoordinate()));
+        assertNotEquals(currentPath, updatedPath);
+        assertEquals(2, currentPath.size());
+        assertEquals(4, updatedPath);
+
+    }
+
 
 
 }
