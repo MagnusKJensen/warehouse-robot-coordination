@@ -43,12 +43,12 @@ public class CHPathfinder implements PathFinder {
     }
 
     @Override
-    public Optional<Path> calculatePath(GridCoordinate start, GridCoordinate destination) {
+    public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
         if (start.equals(destination))
-            return Optional.of(Path.oneStepPath(new Step(start)));
+            return Path.oneStepPath(new Step(start));
 
         if (server.getReservationManager().isReservedIndefinitely(destination))
-            return Optional.empty();
+            throw new RuntimeException("TODO");  // todo
 
         PriorityQueue<CHNode> openList = new PriorityQueue<>();
         PriorityQueue<CHNode> closedList = new PriorityQueue<>(); // todo integrate for performance
@@ -71,17 +71,17 @@ public class CHPathfinder implements PathFinder {
                     System.out.print("Iterations to calculate path : " + iterationCount);
                     int manhattanDistance = Math.abs(start.getX() - destination.getX()) + Math.abs(start.getY() - destination.getY());
                     System.out.println(" || Manhattan distance : " + manhattanDistance + " || Path length : " + successor.getPath().getFullPath().size());*/
-                    return Optional.of(successor.getPath());
+                    return successor.getPath();
                 }
 
             openList.addAll(successors);
 
             iterationCount++;
             if(iterationCount > MAXIMUM_ITERATIONS)
-                return Optional.empty();
+                throw new RuntimeException("TODO ;)"); // todo
         }
 
-        return Optional.empty();
+        throw new RuntimeException("TODO"); // todo
     }
 
     private ArrayList<CHNode> getValidSuccessors(CHNode parent, GridCoordinate target) {

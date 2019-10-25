@@ -77,7 +77,7 @@ public class Navigation implements Task {
 
     private void planPath() {
         GridCoordinate start = robot.getGridCoordinate();
-        path = robotController.getPathFinder().calculatePath(start, destination).get();
+        path = robotController.getPathFinder().calculatePath(start, destination);
     }
 
     public void interrupt(){

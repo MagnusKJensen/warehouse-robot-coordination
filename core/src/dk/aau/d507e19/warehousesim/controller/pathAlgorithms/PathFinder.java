@@ -6,5 +6,5 @@ import dk.aau.d507e19.warehousesim.controller.path.Path;
 import java.util.Optional;
 
 public interface PathFinder {
-    Optional<Path> calculatePath(GridCoordinate start, GridCoordinate destination);
+    Path calculatePath(GridCoordinate start, GridCoordinate destination);
 }

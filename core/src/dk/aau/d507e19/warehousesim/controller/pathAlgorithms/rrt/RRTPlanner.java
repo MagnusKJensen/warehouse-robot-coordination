@@ -21,10 +21,10 @@ public class RRTPlanner implements PathFinder {
     }
 
     @Override
-    public Optional<Path> calculatePath(GridCoordinate start, GridCoordinate destination) {
+    public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
         switch (algorithm){
-            case RRT: return Optional.of(new Path(rrt.generateRRTPath(start,destination)));
-            case RRT_STAR: return Optional.of(new Path(rrtStar.generatePath(start, destination)));
+            case RRT: return new Path(rrt.generateRRTPath(start,destination));
+            case RRT_STAR: return new Path(rrtStar.generatePath(start, destination));
             default: throw new RuntimeException("No type called " + algorithm);
         }
     }
