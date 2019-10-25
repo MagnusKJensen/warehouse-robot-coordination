@@ -357,8 +357,8 @@ public abstract class RRTBase {
         }
         destinationNode = allNodesMap.get(destination);
 
-        ArrayList<Step> path = makePath(destinationNode);
-        Node<GridCoordinate> tempDestinationNode;
+        path = makePath(destinationNode);
+/*        Node<GridCoordinate> tempDestinationNode;
         assignBlockedNodeStatus(robotController.getServer().getReservationManager().getAllCurrentReservations(robotController.getServer().getTimeInTicks()));
         for(int i = 0; i < path.size(); i++){
             if(allNodesMap.get(path.get(i).getGridCoordinate()).getBlockedStatus()){
@@ -366,7 +366,7 @@ public abstract class RRTBase {
                 rewireTreeFromCollision(allNodesMap.get(path.get(i-1).getGridCoordinate()), tempDestinationNode);
             }
 
-        }
+        }*/
 
         return makePath(destinationNode);
     }
