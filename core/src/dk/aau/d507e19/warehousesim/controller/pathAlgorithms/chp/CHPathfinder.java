@@ -110,7 +110,6 @@ public class CHPathfinder implements PathFinder {
 
         Reservation nodeReservation = reservations.get(reservations.size() - 1);
 
-
         if (nodeReservation.getGridCoordinate().equals(target)) {
             TimeFrame indefiniteTimeFrame = TimeFrame.indefiniteTimeFrameFrom(nodeReservation.getTimeFrame().getStart());
             Reservation indefiniteReservation = new Reservation(robot, target, indefiniteTimeFrame);

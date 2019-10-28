@@ -51,9 +51,11 @@ public class Navigation implements Task {
             if(!retryTimer.isDone()){
                 retryTimer.decrement();
             }else {
-                planPath();
-                retryTimer.reset();
-                traversePath();
+                if(planPath()){
+                    traversePath();
+                }else{
+                    retryTimer.reset();
+                }
             }
         }else{
             traversePath();
@@ -84,21 +86,28 @@ public class Navigation implements Task {
             lineTraversals.add(new LineTraversal(robot, line));
     }
 
-    private void planPath() {
+    // Returns true if a valid path is found
+    private boolean planPath() {
         Server server = robotController.getServer();
-        server.getReservationManager().removeReservationsBy(robot);
 
         GridCoordinate start = robot.getGridCoordinate();
         try {
             path = robotController.getPathFinder().calculatePath(start, destination);
         } catch (NoPathFoundException e) {
-            e.printStackTrace(); // todo
+            // Path planning failed - Retrying after delay
+            System.out.println("Path finding failed. Start : " + e.getStart() + " Destination : " + e.getDest()
+                    + "at time : " + server.getTimeInTicks());
+            return false;
         }
 
+        // Remove previously held reservations
+        server.getReservationManager().removeReservationsBy(robot);
+
+        // Add reservations from new path
         ArrayList<Reservation> reservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(),0);
         reservations.add(createLastTileIndefiniteReservation(reservations));
-
         server.getReservationManager().reserve(reservations);
+        return true;
     }
 
     private Reservation createLastTileIndefiniteReservation(ArrayList<Reservation> reservations) {
