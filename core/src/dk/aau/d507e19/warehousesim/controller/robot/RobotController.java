@@ -9,6 +9,7 @@ import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTType;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
+import dk.aau.d507e19.warehousesim.exception.DoubleReservationException;
 
 import java.util.LinkedList;
 import java.util.Optional;
@@ -24,7 +25,16 @@ public class RobotController {
         this.server = server;
         this.robot = robot;
         this.pathFinder = generatePathFinder(pathFinderString);
-        server.getReservationManager().reserve(robot, robot.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks()));
+        reserveCurrentSpot();
+    }
+
+    private void reserveCurrentSpot() {
+        try {
+            TimeFrame indefiniteTimeFrame = TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks());
+            server.getReservationManager().reserve(robot, robot.getGridCoordinate(), indefiniteTimeFrame);
+        } catch (DoubleReservationException e) {
+            throw new RuntimeException("Robot could not reserve the tile it starts on");
+        }
     }
 
     private PathFinder generatePathFinder(String pathFinderString) {

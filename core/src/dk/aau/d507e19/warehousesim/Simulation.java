@@ -82,7 +82,7 @@ public class Simulation {
     private void initRobots() {
         // Auto generate robots
         for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++){
-            robots.add(new Robot(new Position(i, 0), i, this));
+            robots.add(new Robot(new Position(i*2, 0), i, this));
         }
     }
 
@@ -219,7 +219,7 @@ public class Simulation {
 
         DecimalFormat df = new DecimalFormat("0.000");
         df.setRoundingMode(RoundingMode.HALF_UP);
-        String tickCountAndSeconds =  "seconds " + df.format((tickCount / (double)SimulationApp.TICKS_PER_SECOND)) + " / " +  tickCount;
+        String tickCountAndSeconds = " " + "seconds " + df.format((tickCount / (double)SimulationApp.TICKS_PER_SECOND)) + " / " +  tickCount;
         font.draw(batch, tickCountAndSeconds, textPos.x, textPos.y);
         batch.end();
     }
