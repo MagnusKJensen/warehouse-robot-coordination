@@ -3,6 +3,7 @@ package dk.aau.d507e19.warehousesim.controller.robot;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import dk.aau.d507e19.warehousesim.*;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
+import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
 import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 
@@ -43,8 +44,9 @@ public class Robot {
         robotController.update();
     }
 
-    public void deliverBinToPicker() {
+    public void deliverBinToPicker(GridCoordinate pickerCoords) {
         simulation.incrementOrderProcessedCount();
+        ((PickerTile)robotController.getServer().getSimulation().getStorageGrid().getTile(pickerCoords.getX(), pickerCoords.getY())).setAvailable();
     }
 
     public void putDownBin(){

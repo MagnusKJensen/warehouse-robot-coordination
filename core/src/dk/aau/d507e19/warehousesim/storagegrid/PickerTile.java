@@ -32,4 +32,8 @@ public class PickerTile extends Tile {
     public boolean hasOrder(){
         return currentOrder != null;
     }
+
+    public void setAvailable(){
+        currentOrder = null;
+    }
 }

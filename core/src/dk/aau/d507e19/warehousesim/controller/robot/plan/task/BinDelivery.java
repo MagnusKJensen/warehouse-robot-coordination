@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.robot.plan.task;
 
+import dk.aau.d507e19.warehousesim.TimeUtils;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
@@ -32,15 +33,15 @@ public class BinDelivery implements Task {
     private void planTasks() {
         // Pickup
         subTasks.add(new Navigation(robotController, binCoords));
-        subTasks.add(new TimedAction(() -> robot.pickUpBin(), WarehouseSpecs.robotPickUpSpeedInSeconds));
+        subTasks.add(new TimedAction(() -> robot.pickUpBin(), TimeUtils.secondsToTicks(WarehouseSpecs.robotPickUpSpeedInSeconds)));
 
         // Delivery
         subTasks.add(new Navigation(robotController, order.getPicker().getGridCoordinate()));
-        subTasks.add(new TimedAction(() -> robot.deliverBinToPicker(), WarehouseSpecs.robotPickUpSpeedInSeconds));
+        subTasks.add(new TimedAction(() -> robot.deliverBinToPicker(order.getPicker().getGridCoordinate()), TimeUtils.secondsToTicks(WarehouseSpecs.robotPickUpSpeedInSeconds)));
 
         // Bin return
         subTasks.add(new Navigation(robotController, binCoords));
-        subTasks.add(new TimedAction(() -> robot.putDownBin(), WarehouseSpecs.robotPickUpSpeedInSeconds));
+        subTasks.add(new TimedAction(() -> robot.putDownBin(), TimeUtils.secondsToTicks(WarehouseSpecs.robotPickUpSpeedInSeconds)));
 
         isPlanned = true;
     }
@@ -81,5 +82,9 @@ public class BinDelivery implements Task {
 
     public GridCoordinate getBinCoords() {
         return binCoords;
+    }
+
+    public Order getOrder() {
+        return order;
     }
 }

@@ -63,6 +63,7 @@ public class OrderManager {
 
     public void update(){
         ArrayList<PickerTile> availablePickers = server.getAvailablePickers();
+
         while(!availablePickers.isEmpty() && !orderQueue.isEmpty()){
             // Assign order to picker
             availablePickers.get(0).assignOrder(orderQueue.get(0));
