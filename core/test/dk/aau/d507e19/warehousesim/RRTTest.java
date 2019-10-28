@@ -198,7 +198,7 @@ public class RRTTest {
         assertEquals(listOfNeighbours, actualNeighbours);
     }
 
-    @Test
+    @Ignore
     public void rewireTreeFromCollisionTest(){
         rrt = new RRT(robotController);
         generateTree();
