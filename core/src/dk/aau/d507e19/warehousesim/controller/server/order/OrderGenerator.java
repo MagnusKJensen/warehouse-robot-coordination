@@ -48,8 +48,11 @@ public class OrderGenerator {
 
     private OrderLine generateRandomLine(){
         int bound = server.getProductsAvailable().size();
-        Product prod = server.getProductsAvailable().get(random.nextInt(bound - 1) + 1);
-        int amount = random.nextInt(MAX_AMOUNT - 1) + 1;
+        if(bound == 0)
+            throw new RuntimeException("Cannot generate order line when no more products are available");
+
+        Product prod = server.getProductsAvailable().get(random.nextInt(bound - 1));
+        int amount = random.nextInt(MAX_AMOUNT - 1);
         return new OrderLine(prod, amount);
     }
 
