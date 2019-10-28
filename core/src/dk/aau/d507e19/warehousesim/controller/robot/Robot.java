@@ -2,13 +2,9 @@ package dk.aau.d507e19.warehousesim.controller.robot;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import dk.aau.d507e19.warehousesim.*;
-import dk.aau.d507e19.warehousesim.controller.path.Path;
-import dk.aau.d507e19.warehousesim.controller.robot.plan.Action;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
-
-import java.util.ArrayList;
 
 public class Robot {
     private Simulation simulation;
@@ -47,7 +43,7 @@ public class Robot {
         robotController.update();
     }
 
-    public void deliverBin() {
+    public void deliverBinToPicker() {
         simulation.incrementOrderProcessedCount();
     }
 
@@ -82,7 +78,8 @@ public class Robot {
                 break;
             case BUSY:
             case TASK_ASSIGNED_MOVE:
-                batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotTaskAssigned.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
+                if(isCarrying())batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotTaskAssignedCarrying.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
+                else batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotTaskAssigned.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
             case TASK_ASSIGNED_CARRYING:
             case CARRYING:
@@ -91,14 +88,6 @@ public class Robot {
             default:
                 throw new RuntimeException("Robot status unavailable");
         }
-    }
-
-    public void assignOrder(Order order) {
-        robotController.addToPlan(order);
-    }
-
-    public void cancelTask() {
-        // TODO: 03/10/2019 Manage situations where the robot is in between tiles
     }
 
     public Position getCurrentPosition() {

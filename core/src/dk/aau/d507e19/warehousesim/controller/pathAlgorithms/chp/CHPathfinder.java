@@ -8,6 +8,9 @@ import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
+import dk.aau.d507e19.warehousesim.exception.DestinationReservedIndefinitelyException;
+import dk.aau.d507e19.warehousesim.exception.NoValidPathException;
+import dk.aau.d507e19.warehousesim.exception.PathFindingTimedOutException;
 import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
 
 import java.util.ArrayList;
@@ -43,15 +46,14 @@ public class CHPathfinder implements PathFinder {
     }
 
     @Override
-    public Optional<Path> calculatePath(GridCoordinate start, GridCoordinate destination) {
+    public Path calculatePath(GridCoordinate start, GridCoordinate destination) throws PathFindingTimedOutException, NoValidPathException, DestinationReservedIndefinitelyException {
         if (start.equals(destination))
-            return Optional.of(Path.oneStepPath(new Step(start)));
+            return Path.oneStepPath(new Step(start));
 
         if (server.getReservationManager().isReservedIndefinitely(destination))
-            return Optional.empty();
+            throw new DestinationReservedIndefinitelyException(start, destination);
 
         PriorityQueue<CHNode> openList = new PriorityQueue<>();
-        PriorityQueue<CHNode> closedList = new PriorityQueue<>(); // todo integrate for performance
 
         openList.add(nodeFactory.createInitialNode(start, destination));
 
@@ -59,7 +61,6 @@ public class CHPathfinder implements PathFinder {
 
         while (!openList.isEmpty()) {
             CHNode bestCandidate = openList.poll();
-            closedList.add(bestCandidate);
 
             ArrayList<CHNode> successors = getValidSuccessors(bestCandidate, destination);
 
@@ -71,17 +72,17 @@ public class CHPathfinder implements PathFinder {
                     System.out.print("Iterations to calculate path : " + iterationCount);
                     int manhattanDistance = Math.abs(start.getX() - destination.getX()) + Math.abs(start.getY() - destination.getY());
                     System.out.println(" || Manhattan distance : " + manhattanDistance + " || Path length : " + successor.getPath().getFullPath().size());*/
-                    return Optional.of(successor.getPath());
+                    return successor.getPath();
                 }
 
             openList.addAll(successors);
 
             iterationCount++;
             if(iterationCount > MAXIMUM_ITERATIONS)
-                return Optional.empty();
+                throw new PathFindingTimedOutException(start, destination, iterationCount);
         }
 
-        return Optional.empty();
+        throw new NoValidPathException(start, destination, "Pathfinder max wait time per tile : " + MAXIMUM_WAIT_TIME);
     }
 
     private ArrayList<CHNode> getValidSuccessors(CHNode parent, GridCoordinate target) {
@@ -111,8 +112,11 @@ public class CHPathfinder implements PathFinder {
 
 
         if (nodeReservation.getGridCoordinate().equals(target)) {
+            TimeFrame indefiniteTimeFrame = TimeFrame.indefiniteTimeFrameFrom(nodeReservation.getTimeFrame().getStart());
+            Reservation indefiniteReservation = new Reservation(robot, target, indefiniteTimeFrame);
+
             return server.getReservationManager().hasConflictingReservations(reservations) ||
-                    server.getReservationManager().isReserved(target, TimeFrame.indefiniteTimeFrameFrom(nodeReservation.getTimeFrame().getStart()));
+                    server.getReservationManager().hasConflictingReservations(indefiniteReservation);
         } else {
             // todo (Bug: will not ignore it's own reservation)
             return server.getReservationManager().hasConflictingReservations(reservations);

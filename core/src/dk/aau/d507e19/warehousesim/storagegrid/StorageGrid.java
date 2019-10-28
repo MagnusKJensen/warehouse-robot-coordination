@@ -1,9 +1,12 @@
 package dk.aau.d507e19.warehousesim.storagegrid;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
+import dk.aau.d507e19.warehousesim.controller.path.Step;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
@@ -34,14 +37,14 @@ public class StorageGrid {
 
     }
 
-    public ArrayList<GridCoordinate> tilesWithProducts(Product prod, int amount){
-        ArrayList<GridCoordinate> tilesWithProducts = new ArrayList<>();
+    public ArrayList<BinTile> tilesWithProduct(Product prod){
+        ArrayList<BinTile> tilesWithProducts = new ArrayList<>();
         for(int x = 0; x < width; ++x){
             for(int y = 0; y < height; ++y){
                 if(tiles[x][y] instanceof BinTile){
                     BinTile tile = (BinTile) tiles[x][y];
-                    if(tile.hasBin() && tile.getBin().hasProducts(prod, amount)){
-                        tilesWithProducts.add(new GridCoordinate(tile.getPosX(), tile.getPosY()));
+                    if(tile.hasBin() && tile.getBin().hasProduct(prod)){
+                        tilesWithProducts.add(tile);
                     }
                 }
             }
@@ -129,5 +132,24 @@ public class StorageGrid {
 
     public ArrayList<GridCoordinate> getPickerPoints() {
         return pickerPoints;
+    }
+
+    public void renderTreeOverlay(ArrayList<Node<GridCoordinate>> listOfNodes, ShapeRenderer shapeRenderer, ArrayList<Step> path) {
+        for(Node<GridCoordinate> n :listOfNodes){
+            if(doesPathContainCoordinate(path,n.getData())){
+                tiles[n.getData().getX()][n.getData().getY()].renderTreeNode(n,shapeRenderer, Color.GREEN);
+            }else{
+                tiles[n.getData().getX()][n.getData().getY()].renderTreeNode(n,shapeRenderer, Color.RED);
+            }
+        }
+    }
+
+    private boolean doesPathContainCoordinate(ArrayList<Step> path, GridCoordinate data) {
+        for(Step s : path){
+            if(s.getGridCoordinate().equals(data)){
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -85,7 +85,7 @@ public class CHNodeFactory {
 
     // todo temporary
     private static Path simplePath(GridCoordinate start, GridCoordinate end){
-        return dummyPathFinder.calculatePath(start, end).get();
+        return dummyPathFinder.calculatePath(start, end);
     }
 
 

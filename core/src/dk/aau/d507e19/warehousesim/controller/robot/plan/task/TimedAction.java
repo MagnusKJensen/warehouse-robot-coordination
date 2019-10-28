@@ -1,6 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.robot.plan.task;
 
 import dk.aau.d507e19.warehousesim.TickTimer;
+import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 
 public class TimedAction implements Task {
 
@@ -28,5 +29,10 @@ public class TimedAction implements Task {
     @Override
     public boolean hasFailed() {
         return false;
+    }
+
+    @Override
+    public void setRobot(Robot robot) {
+        // todo
     }
 }

@@ -35,7 +35,7 @@ public class DistanceTurnHeuristic implements Heuristic{
 
     private static Path simplePath(GridCoordinate start, GridCoordinate end){
         // todo temporary
-        return dummyPathFinder.calculatePath(start, end).get();
+        return dummyPathFinder.calculatePath(start, end);
     }
 
 }

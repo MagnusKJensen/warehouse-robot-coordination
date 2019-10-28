@@ -21,7 +21,7 @@ public class OrderLine {
 
     @Override
     public String toString() {
-        return "Order{" +
+        return "OrderLine{" +
                 "product=" + product +
                 ", amount=" + amount +
                 '}';

@@ -10,14 +10,14 @@ import java.util.Optional;
 public class DummyPathFinder implements PathFinder {
 
     @Override
-    public Optional<Path> calculatePath(GridCoordinate start, GridCoordinate destination) {
+    public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
         ArrayList<Step> pathList = new ArrayList<>();
 
         pathList.addAll(generateHorizontalLine(start.getX(), destination.getX(), start.getY()));
         pathList.remove(pathList.size() - 1);
         pathList.addAll(generateVerticalLine(start.getY(), destination.getY(), destination.getX()));
 
-        return Optional.of(new Path(pathList));
+        return new Path(pathList);
     }
 
     private ArrayList<Step> generateHorizontalLine(int startX, int endX, int y){

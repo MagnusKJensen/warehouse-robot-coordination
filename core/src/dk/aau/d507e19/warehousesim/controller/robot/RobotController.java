@@ -1,18 +1,14 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
-import dk.aau.d507e19.warehousesim.WarehouseSpecs;
-import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.chp.CHPathfinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTType;
-import dk.aau.d507e19.warehousesim.controller.robot.plan.Action;
-import dk.aau.d507e19.warehousesim.controller.robot.plan.OrderPlanner;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
-import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
 
 import java.util.LinkedList;
 import java.util.Optional;
@@ -22,7 +18,7 @@ public class RobotController {
     private PathFinder pathFinder;
     private Robot robot;
 
-    private LinkedList<Action> robotActions = new LinkedList<>();
+    private LinkedList<Task> tasks = new LinkedList<>();
     private LinkedList<Runnable> planningSteps = new LinkedList<>();
 
     public RobotController(Server server, Robot robot, String pathFinderString){
@@ -37,9 +33,9 @@ public class RobotController {
             case "Astar":
                 return new Astar(server, robot);
             case "RRT*":
-                return new RRTPlanner(RRTType.RRT_STAR, robot);
+                return new RRTPlanner(RRTType.RRT_STAR, this);
             case "RRT":
-                return new RRTPlanner(RRTType.RRT, robot);
+                return new RRTPlanner(RRTType.RRT, this);
             case "DummyPathFinder":
                 return new DummyPathFinder();
             case "CustomH - Turns":
@@ -49,41 +45,31 @@ public class RobotController {
         }
     }
 
-    public Optional<Path> getPath(GridCoordinate gridCoordinate, GridCoordinate destination) {
-        return pathFinder.calculatePath(gridCoordinate, destination);
+    public boolean assignTask(Task task){
+        tasks.add(task);
+        // tasks.add(new TotalReset());  todo
+        return true;
     }
 
-    public void addToPlan(final Order order) {
-        final OrderPlanner orderPlanner = new OrderPlanner(this);
-        planningSteps.add(() -> robotActions.addAll(orderPlanner.planPickUp(order)));
-        planningSteps.add(() -> robotActions.addAll(orderPlanner.planDelivery(order)));
-        planningSteps.add(() -> robotActions.addAll(orderPlanner.planBinReturn()));
+    public void cancelTask(Task task) {
+        // todo
     }
 
     public void update() {
-        if (robotActions.isEmpty())
-            planNextActions();
-
         // If robot has nothing to do, set status available and return.
-        if (robotActions.isEmpty()) {
+        if (tasks.isEmpty()) {
             robot.setCurrentStatus(Status.AVAILABLE);
             return;
+        }else{
+            robot.setCurrentStatus(Status.BUSY);
         }
 
-        Action currentAction = robotActions.peekFirst();
-        if (!currentAction.isDone()) currentAction.perform();
-        robot.setCurrentStatus(currentAction.getStatus());
+        Task currentTask = tasks.peekFirst();
+        if (!currentTask.isCompleted())
+            currentTask.perform();
 
-        if (currentAction.isDone())
-            robotActions.removeFirst();
-    }
-
-    private void planNextActions() {
-        if (planningSteps.isEmpty())
-            return;
-
-        Runnable planning = planningSteps.pollFirst();
-        planning.run();
+        if (currentTask.isCompleted())
+            tasks.removeFirst();
     }
 
     public PathFinder getPathFinder() {

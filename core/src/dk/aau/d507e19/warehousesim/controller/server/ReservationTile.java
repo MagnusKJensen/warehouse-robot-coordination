@@ -6,6 +6,7 @@ import dk.aau.d507e19.warehousesim.exception.DoubleReservationException;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 
 public class ReservationTile {
 
@@ -35,11 +36,20 @@ public class ReservationTile {
         return overlappingReservations;
     }
 
+    public Optional<Reservation> getCurrentReservation(Long timeInTicks){
+        for(Reservation n: reservations){
+            if (n.getTimeFrame().isWithinTimeFrame(timeInTicks)) {
+                return Optional.of(n);
+            }
+        }
+        return Optional.empty();
+    }
+
     public void addReservation(Reservation reservation) {
         for(Reservation res : reservations){
             if(res.getTimeFrame().overlaps(reservation.getTimeFrame()))
                 // TODO: 23/10/2019 Temporary to allow DummyPathFinder to work
-                if(!(SimulationApp.pathFinderSelected.equals("DummyPathFinder")||SimulationApp.pathFinderSelected.equals("Astar") || SimulationApp.pathFinderSelected.equals("CustomH - Turns"))){
+                if(!(SimulationApp.pathFinderSelected.equals("DummyPathFinder") || SimulationApp.pathFinderSelected.equals("CustomH - Turns") || SimulationApp.pathFinderSelected.equals("RRT*"))){
                     throw new DoubleReservationException(res, reservation);
                 }
         }

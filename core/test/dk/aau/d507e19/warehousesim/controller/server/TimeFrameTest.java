@@ -99,8 +99,6 @@ public class TimeFrameTest {
         assertTrue(frame2.overlaps(frame1));
     }
 
-
-
     @Test
     public void overlapsSelf() {
         TimeFrame frame1 = TimeFrame.indefiniteTimeFrameFrom(15);
