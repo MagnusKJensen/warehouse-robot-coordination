@@ -244,14 +244,12 @@ public class Astar implements PathFinder {
 
         // While is true if the currentTile does not have the same x coordinate and the same y coordinate as the end Tile.
         while (!(currentTile.getCurrentXPosition() == xEndPosition && currentTile.getCurrentYPosition() == yEndPosition)) {
-
             // Add the valid tiles to openList
             checkNeighborValidity();
 
             // Small exceptions too see if it is stuck or if end destination is blocked.
             if (openList.size() < 1) {
                 if (closedList.size() > 1) {
-
                     throw new BlockedEndDestinationException(robot, closedList.size());
                 }
 
@@ -304,9 +302,8 @@ public class Astar implements PathFinder {
             if (reservationManager.isReserved(listOfReservations.get(j).getGridCoordinate(), listOfReservations.get(j).getTimeFrame())) {
                 isReservedList.add(listOfReservations.get(j).getGridCoordinate());
                 i = true;
-            }
-            else if(reservationManager.hasConflictingReservations(listOfReservations.get(listOfReservations.size()-1))){
-                throw new NoPathFoundException(listOfReservations.get(0).getGridCoordinate(), listOfReservations.get(listOfReservations.size()-1).getGridCoordinate());
+            } else if (reservationManager.hasConflictingReservations(listOfReservations.get(listOfReservations.size() - 1))) {
+                throw new NoPathFoundException(listOfReservations.get(0).getGridCoordinate(), listOfReservations.get(listOfReservations.size() - 1).getGridCoordinate());
             }
         }
         return i;
