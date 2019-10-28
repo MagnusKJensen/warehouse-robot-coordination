@@ -306,13 +306,19 @@ public class Astar implements PathFinder {
             }
             if (j == listOfReservations.size()) {
 
+                Reservation indefinitelyResevation = new Reservation(robot, listOfReservations.get(j).getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(listOfReservations.get(j).getTimeFrame().getStart()));
+                if (reservationManager.hasConflictingReservations(indefinitelyResevation)) {
+                    i = true;
+                } else {
+                    i = false;
+                }
             }
         }
         return i;
     }
 
     @Override
-    public Optional<Path> calculatePath(GridCoordinate start, GridCoordinate destination) {
+    public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
         // Clears all lists and objects so that it is clean next time it calculates a path.
         isReservedList.clear();
         clear();
@@ -326,6 +332,6 @@ public class Astar implements PathFinder {
         // Calculates the optimal A* path
         calculatePath();
 
-        return Optional.of(new Path(Step.fromGridCoordinates(finalPath)));
+        return new Path(Step.fromGridCoordinates(finalPath));
     }
 }
