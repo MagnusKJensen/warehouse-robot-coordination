@@ -12,7 +12,7 @@ public class NoPathFoundException extends Exception {
         this.dest = dest;
     }
 
-    public NoPathFoundException(String message, GridCoordinate start, GridCoordinate dest) {
+    public NoPathFoundException(GridCoordinate start, GridCoordinate dest, String message) {
         super("Could not find path from " + start + " to " + dest + "\n" + message);
         this.start = start;
         this.dest = dest;

@@ -8,6 +8,9 @@ import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
+import dk.aau.d507e19.warehousesim.exception.DestinationReservedIndefinitelyException;
+import dk.aau.d507e19.warehousesim.exception.NoValidPathException;
+import dk.aau.d507e19.warehousesim.exception.PathFindingTimedOutException;
 import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
 
 import java.util.ArrayList;
@@ -43,15 +46,14 @@ public class CHPathfinder implements PathFinder {
     }
 
     @Override
-    public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
+    public Path calculatePath(GridCoordinate start, GridCoordinate destination) throws PathFindingTimedOutException, NoValidPathException, DestinationReservedIndefinitelyException {
         if (start.equals(destination))
             return Path.oneStepPath(new Step(start));
 
         if (server.getReservationManager().isReservedIndefinitely(destination))
-            throw new RuntimeException("TODO");  // todo
+            throw new DestinationReservedIndefinitelyException(start, destination);
 
         PriorityQueue<CHNode> openList = new PriorityQueue<>();
-        PriorityQueue<CHNode> closedList = new PriorityQueue<>(); // todo integrate for performance
 
         openList.add(nodeFactory.createInitialNode(start, destination));
 
@@ -59,7 +61,6 @@ public class CHPathfinder implements PathFinder {
 
         while (!openList.isEmpty()) {
             CHNode bestCandidate = openList.poll();
-            closedList.add(bestCandidate);
 
             ArrayList<CHNode> successors = getValidSuccessors(bestCandidate, destination);
 
@@ -78,10 +79,10 @@ public class CHPathfinder implements PathFinder {
 
             iterationCount++;
             if(iterationCount > MAXIMUM_ITERATIONS)
-                throw new RuntimeException("TODO ;)"); // todo
+                throw new PathFindingTimedOutException(start, destination, iterationCount);
         }
 
-        throw new RuntimeException("TODO"); // todo
+        throw new NoValidPathException(start, destination, "Pathfinder max wait time per tile : " + MAXIMUM_WAIT_TIME);
     }
 
     private ArrayList<CHNode> getValidSuccessors(CHNode parent, GridCoordinate target) {

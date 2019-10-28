@@ -11,6 +11,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.plan.LineTraversal;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
+import dk.aau.d507e19.warehousesim.exception.NoPathFoundException;
 
 import java.util.ArrayList;
 
@@ -88,7 +89,11 @@ public class Navigation implements Task {
         server.getReservationManager().removeReservationsBy(robot);
 
         GridCoordinate start = robot.getGridCoordinate();
-        path = robotController.getPathFinder().calculatePath(start, destination);
+        try {
+            path = robotController.getPathFinder().calculatePath(start, destination);
+        } catch (NoPathFoundException e) {
+            e.printStackTrace(); // todo
+        }
 
         ArrayList<Reservation> reservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(),0);
         reservations.add(createLastTileIndefiniteReservation(reservations));
