@@ -11,6 +11,7 @@ import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
+import dk.aau.d507e19.warehousesim.exception.NoPathFoundException;
 import dk.aau.d507e19.warehousesim.exception.pathExceptions.BlockedEndDestinationException;
 import dk.aau.d507e19.warehousesim.exception.pathExceptions.NoValidNeighborException;
 
@@ -237,7 +238,7 @@ public class Astar implements PathFinder {
         Collections.reverse(temp);
     }
 
-    private void calculatePath() {
+    private void calculatePath() throws NoPathFoundException {
         // Adds the starting tile to closed list.
         addStartTileToClosedList(xStart, yStart);
 
@@ -285,7 +286,7 @@ public class Astar implements PathFinder {
         currentTile = null;
     }
 
-    public boolean isReserved() {
+    public boolean isReserved() throws NoPathFoundException {
 
         boolean i = false;
 
@@ -304,21 +305,15 @@ public class Astar implements PathFinder {
                 isReservedList.add(listOfReservations.get(j).getGridCoordinate());
                 i = true;
             }
-          /*  else if (j == finalPath.size()) {
-                Reservation indefinitelyResevation = new Reservation(robot, listOfReservations.get(j).getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(listOfReservations.get(j).getTimeFrame().getStart()));
-                if (reservationManager.hasConflictingReservations(indefinitelyResevation)) {
-                    isReservedList.add(listOfReservations.get(j).getGridCoordinate());
-                    i = true;
-                } else {
-                    i = false;
-                }
-            }*/
+            else if(reservationManager.hasConflictingReservations(listOfReservations.get(listOfReservations.size()-1))){
+                throw new NoPathFoundException(listOfReservations.get(0).getGridCoordinate(), listOfReservations.get(listOfReservations.size()-1).getGridCoordinate());
+            }
         }
         return i;
     }
 
     @Override
-    public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
+    public Path calculatePath(GridCoordinate start, GridCoordinate destination) throws NoPathFoundException {
         // Clears all lists and objects so that it is clean next time it calculates a path.
         isReservedList.clear();
         clear();
