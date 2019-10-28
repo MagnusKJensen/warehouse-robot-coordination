@@ -19,7 +19,6 @@ public class RobotController {
     private Robot robot;
 
     private LinkedList<Task> tasks = new LinkedList<>();
-    private LinkedList<Runnable> planningSteps = new LinkedList<>();
 
     public RobotController(Server server, Robot robot, String pathFinderString){
         this.server = server;
@@ -82,5 +81,9 @@ public class RobotController {
 
     public Robot getRobot() {
         return robot;
+    }
+
+    public boolean hasTask(){
+        return !tasks.isEmpty();
     }
 }
