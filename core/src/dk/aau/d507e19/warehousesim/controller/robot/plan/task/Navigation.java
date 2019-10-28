@@ -1,6 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.robot.plan.task;
 
 import dk.aau.d507e19.warehousesim.TickTimer;
+import dk.aau.d507e19.warehousesim.TimeUtils;
 import dk.aau.d507e19.warehousesim.controller.path.Line;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 public class Navigation implements Task {
 
     private int maximumRetries = -1;
-    private static final int TICKS_BETWEEN_RETRIES = 30;
+    private static final int TICKS_BETWEEN_RETRIES = TimeUtils.secondsToTicks(1);
 
     private GridCoordinate destination;
     private Path path;
@@ -73,7 +74,7 @@ public class Navigation implements Task {
 
             // Path has finished traversing
             if(lineTraversals.isEmpty()){
-                isCompleted = true;
+                complete();
             }
 
         }
@@ -104,10 +105,19 @@ public class Navigation implements Task {
         server.getReservationManager().removeReservationsBy(robot);
 
         // Add reservations from new path
-        ArrayList<Reservation> reservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(),0);
-        reservations.add(createLastTileIndefiniteReservation(reservations));
-        server.getReservationManager().reserve(reservations);
-        return true;
+        if(path.getFullPath().size() > 1){
+            ArrayList<Reservation> reservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(),0);
+            reservations.add(createLastTileIndefiniteReservation(reservations));
+            server.getReservationManager().reserve(reservations);
+            return true;
+        }else{
+            complete();
+            return false;
+        }
+    }
+
+    private void complete() {
+        isCompleted = true;
     }
 
     private Reservation createLastTileIndefiniteReservation(ArrayList<Reservation> reservations) {
