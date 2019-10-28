@@ -74,8 +74,8 @@ public class OrderManager {
                 }
 
                 if(isCompleted){
+                    order.getPicker().setAvailable();
                     ordersProcessing.remove(order);
-                    System.out.println(order);
                     ordersFinished.add(order);
                     ordersToRemove.add(order);
                 }
@@ -93,9 +93,11 @@ public class OrderManager {
 
         ArrayList<PickerTile> availablePickers = server.getAvailablePickers();
 
-        int counter = 0;
+        System.out.println("Orders Processing list: " + ordersProcessing.size());
+
+        int maxOrderAssignPerTick = 50;
         Iterator<Order> orderIterator = orderQueue.iterator();
-        while(orderIterator.hasNext() && !availablePickers.isEmpty() && counter != 50){
+        while(orderIterator.hasNext() && !availablePickers.isEmpty() && maxOrderAssignPerTick != 0){
             Order order = orderIterator.next();
             // Assign order to picker
             availablePickers.get(0).assignOrder(order);
@@ -111,8 +113,17 @@ public class OrderManager {
                 System.out.println("Commenced order: " + orderQueue.get(0));
                 // Remove order from queue
                 orderIterator.remove();
+                // Picker is no longer available
+                availablePickers.remove(0);
             }
-            counter++;
+            // If order could not be divided into tasks, it is not assigned to a picker
+            // And not put into the processing ArrayList
+            else {
+                availablePickers.get(0).setAvailable();
+                order.removePicker();
+                ordersProcessing.remove(order);
+            }
+            maxOrderAssignPerTick--;
         }
 
         if(server.hasAvailableRobot()) {
@@ -134,12 +145,15 @@ public class OrderManager {
     private ArrayList<Task> createTasksFromOrder(Order order) {
         ArrayList<Task> orderTasks = new ArrayList<>();
 
+        // Go through all lines in order
         for(OrderLine line : order.getLinesInOrder()){
+            // Split each line into tasks
             ArrayList<Task> orderLineTasks = splitIntoTasks(line, order);
             if(orderLineTasks == null) return null;
             orderTasks.addAll(orderLineTasks);
         }
 
+        // Reserve the bin for all tasks
         for(Task task : orderTasks)
             server.getReservationManager().reserveBinTile(((BinDelivery)task).getBinCoords());
 

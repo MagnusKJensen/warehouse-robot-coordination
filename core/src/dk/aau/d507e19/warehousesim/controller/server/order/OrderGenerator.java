@@ -53,7 +53,9 @@ public class OrderGenerator {
             orderLines.add(generateRandomLine());
         }
 
-        return new Order(orderLines);
+        Order order = new Order(orderLines);
+
+        return order;
     }
 
     private OrderLine generateRandomLine(){
@@ -73,7 +75,7 @@ public class OrderGenerator {
             System.out.println("Last OrderLine" + line);
         } else {
             prod = server.getProductsAvailable().get(random.nextInt(bound - 1));
-            amount = random.nextInt(MAX_AMOUNT - 1);
+            amount = random.nextInt(MAX_AMOUNT - 1) + 1;
             line = new OrderLine(prod,amount);
         }
 
