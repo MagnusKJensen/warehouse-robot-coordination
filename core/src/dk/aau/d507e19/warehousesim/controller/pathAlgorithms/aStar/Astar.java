@@ -136,7 +136,7 @@ public class Astar implements PathFinder {
         listOfReservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
 
         // Returns the timeFrame of the last reservations.
-        return listOfReservations.get(listOfReservations.size()-1).getTimeFrame();
+        return listOfReservations.get(listOfReservations.size() - 1).getTimeFrame();
     }
 
     private void addNeighborTileToOpenList(GridCoordinate gcNeighbor) {
@@ -147,10 +147,10 @@ public class Astar implements PathFinder {
         AStarTile aStarNeighbor = grid[gcNeighbor.getX()][gcNeighbor.getY()];
 
         // Creates a temp path to the neighbor tile.
-        temporaryPath  = createTemporaryPath(currentTile, gcNeighbor);
+        temporaryPath = createTemporaryPath(currentTile, gcNeighbor);
 
         // If the neighbor tile is not reserved in the right timeFrame, then proceed.
-        if(!(isReservedList.contains(gcNeighbor))) {
+        if (!(isReservedList.contains(gcNeighbor))) {
 
             // Makes new dummy tile
             AStarTile tileToDelete = null;
@@ -248,8 +248,8 @@ public class Astar implements PathFinder {
             checkNeighborValidity();
 
             // Small exceptions too see if it is stuck or if end destination is blocked.
-            if(openList.size() < 1){
-                if (closedList.size() > 1){
+            if (openList.size() < 1) {
+                if (closedList.size() > 1) {
 
                     throw new BlockedEndDestinationException(robot, closedList.size());
                 }
@@ -269,7 +269,7 @@ public class Astar implements PathFinder {
 
         createPathListFromClosedList(currentTile, finalPath);
 
-        if (isReserved()){
+        if (isReserved()) {
             clear();
             calculatePath();
         }
@@ -285,14 +285,14 @@ public class Astar implements PathFinder {
         currentTile = null;
     }
 
-    public boolean isReserved(){
+    public boolean isReserved() {
 
         boolean i = false;
 
         // Makes the tempPath to steps
         Path path = new Path(Step.fromGridCoordinates(finalPath));
 
-        if (finalPath.size() < 2){
+        if (finalPath.size() < 2) {
             return i;
         }
 
@@ -300,13 +300,14 @@ public class Astar implements PathFinder {
         ArrayList<Reservation> listOfReservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
 
         for (int j = 1; j < listOfReservations.size(); j++) {
-            if(reservationManager.isReserved(listOfReservations.get(j).getGridCoordinate(), listOfReservations.get(j).getTimeFrame())){
+            if (reservationManager.isReserved(listOfReservations.get(j).getGridCoordinate(), listOfReservations.get(j).getTimeFrame())) {
                 isReservedList.add(listOfReservations.get(j).getGridCoordinate());
                 i = true;
             }
+            if (j == listOfReservations.size()) {
 
+            }
         }
-
         return i;
     }
 
