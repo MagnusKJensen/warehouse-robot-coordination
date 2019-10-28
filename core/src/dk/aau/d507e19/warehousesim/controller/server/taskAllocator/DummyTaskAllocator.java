@@ -14,7 +14,6 @@ public class DummyTaskAllocator implements TaskAllocator {
     public Optional<Robot> findOptimalRobot(ArrayList<Robot> robots, Task task) {
         for(Robot robot : robots){
             if(robot.getCurrentStatus() == Status.AVAILABLE){
-                System.out.println("Available robot found");
                 return Optional.of(robot);
             }
         }
