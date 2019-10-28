@@ -304,15 +304,6 @@ public class Astar implements PathFinder {
                 isReservedList.add(listOfReservations.get(j).getGridCoordinate());
                 i = true;
             }
-          /*  else if (j == finalPath.size()) {
-                Reservation indefinitelyResevation = new Reservation(robot, listOfReservations.get(j).getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(listOfReservations.get(j).getTimeFrame().getStart()));
-                if (reservationManager.hasConflictingReservations(indefinitelyResevation)) {
-                    isReservedList.add(listOfReservations.get(j).getGridCoordinate());
-                    i = true;
-                } else {
-                    i = false;
-                }
-            }*/
         }
         return i;
     }
