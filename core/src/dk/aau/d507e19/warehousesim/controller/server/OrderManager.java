@@ -18,9 +18,9 @@ import java.util.*;
 
 public class OrderManager {
     private ArrayList<Order> orderQueue = new ArrayList<>();
+    private ArrayList<Order> ordersProcessing = new ArrayList<>();
     private Server server;
     private TaskAllocator taskAllocator;
-    private ArrayList<Order> ordersProcessing = new ArrayList<>();
     private ArrayList<Task> tasksAvailable = new ArrayList<>();
     private ArrayList<Task> assignedTasks = new ArrayList<>();
 
@@ -64,20 +64,22 @@ public class OrderManager {
     public void update(){
         ArrayList<PickerTile> availablePickers = server.getAvailablePickers();
 
-        while(!availablePickers.isEmpty() && !orderQueue.isEmpty()){
+        Iterator<Order> orderIterator = orderQueue.iterator();
+        while(orderIterator.hasNext() && !availablePickers.isEmpty()){
+            Order order = orderIterator.next();
             // Assign order to picker
-            availablePickers.get(0).assignOrder(orderQueue.get(0));
+            availablePickers.get(0).assignOrder(order);
             // Give order a reference to picker
-            orderQueue.get(0).setPicker(availablePickers.get(0));
+            order.setPicker(availablePickers.get(0));
             // Add to orders being processed
-            ordersProcessing.add(orderQueue.get(0));
+            ordersProcessing.add(order);
             // Divide order into tasks to robots and add to list of available tasks
-            ArrayList<Task> tasksFromOrder = createTasksFromOrder(orderQueue.get(0));
+            ArrayList<Task> tasksFromOrder = createTasksFromOrder(order);
             if(tasksFromOrder != null){
                 tasksAvailable.addAll(tasksFromOrder);
-                System.out.println("Commenced order: " + orderQueue.get(0));
+                //System.out.println("Commenced order: " + orderQueue.get(0));
                 // Remove order from queue
-                orderQueue.remove(0);
+                orderIterator.remove();
             }
         }
 
