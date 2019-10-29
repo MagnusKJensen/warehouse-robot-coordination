@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.storagegrid;
 
+import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
@@ -15,7 +16,7 @@ public class ProductDistributor {
     private static final int productsPerBin = WarehouseSpecs.productsPerBin;
     private static final int SKUsPerBin = WarehouseSpecs.SKUsPerBin;
     private static double[][] SKUDistribution = WarehouseSpecs.skuDistribution;
-    private static final long RANDOM_SEED = 123456789;
+    private static final long RANDOM_SEED = SimulationApp.RANDOM_SEED;
     private static Random random;
 
     public static void distributeProducts(StorageGrid grid){

@@ -57,7 +57,7 @@ public class RobotController {
 
     public boolean assignTask(Task task){
         tasks.add(task);
-        // tasks.add(new TotalReset());  todo
+        robot.setCurrentStatus(Status.BUSY);
         return true;
     }
 
@@ -102,5 +102,9 @@ public class RobotController {
     public void updateStatus() {
        if(tasks.isEmpty()) robot.setCurrentStatus(Status.AVAILABLE);
        else robot.setCurrentStatus(Status.BUSY);
+    }
+
+    public LinkedList<Task> getTasks() {
+        return tasks;
     }
 }

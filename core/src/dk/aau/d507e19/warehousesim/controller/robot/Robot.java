@@ -2,10 +2,13 @@ package dk.aau.d507e19.warehousesim.controller.robot;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import dk.aau.d507e19.warehousesim.*;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
+import dk.aau.d507e19.warehousesim.controller.server.order.Order;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
 import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
+import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
 public class Robot {
     private Simulation simulation;
@@ -44,7 +47,10 @@ public class Robot {
         robotController.update();
     }
 
-    public void deliverBinToPicker(GridCoordinate pickerCoords) {
+    public void deliverBinToPicker(GridCoordinate pickerCoords, Order order) {
+        for(Product prod : order.getAllProductsInOrder()){
+            bin.removeProduct(prod);
+        }
         simulation.incrementOrderProcessedCount();
     }
 

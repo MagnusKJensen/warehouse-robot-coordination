@@ -37,7 +37,7 @@ public class BinDelivery implements Task {
 
         // Delivery
         subTasks.add(new Navigation(robotController, order.getPicker().getGridCoordinate()));
-        subTasks.add(new TimedAction(() -> robot.deliverBinToPicker(order.getPicker().getGridCoordinate()), TimeUtils.secondsToTicks(WarehouseSpecs.robotPickUpSpeedInSeconds)));
+        subTasks.add(new TimedAction(() -> robot.deliverBinToPicker(order.getPicker().getGridCoordinate(), order), TimeUtils.secondsToTicks(WarehouseSpecs.robotPickUpSpeedInSeconds)));
 
         // Bin return
         subTasks.add(new Navigation(robotController, binCoords));
