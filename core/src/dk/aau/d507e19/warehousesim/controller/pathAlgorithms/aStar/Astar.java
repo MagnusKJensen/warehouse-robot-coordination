@@ -291,6 +291,10 @@ public class Astar implements PathFinder {
 
     public boolean isReserved() throws NoPathFoundException {
 
+        if (robot.getRobotID()==1 && robot.getApproximateGridCoordinate().getX() == 0 && robot.getApproximateGridCoordinate().getY()==5){
+            System.out.println("hej");
+        }
+
         boolean i = false;
 
         // Makes the tempPath to steps
@@ -303,12 +307,15 @@ public class Astar implements PathFinder {
         // Calculates the path into a list of reservations.
         ArrayList<Reservation> listOfReservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
 
+        Reservation lastReservation = listOfReservations.get(listOfReservations.size()-1);
+
         for (int j = 1; j < listOfReservations.size(); j++) {
             if (reservationManager.isReserved(listOfReservations.get(j).getGridCoordinate(), listOfReservations.get(j).getTimeFrame())) {
                 isReservedList.add(listOfReservations.get(j).getGridCoordinate());
                 i = true;
-            } else if (reservationManager.hasConflictingReservations(listOfReservations.get(listOfReservations.size() - 1)) || reservationManager.isReservedIndefinitely(new GridCoordinate(listOfReservations.get(j).getGridCoordinate().getX(),listOfReservations.get(j).getGridCoordinate().getY()))) {
-                throw new NoPathFoundException(listOfReservations.get(0).getGridCoordinate(), listOfReservations.get(listOfReservations.size() - 1).getGridCoordinate());
+            } else if (reservationManager.hasConflictingReservations(lastReservation) ||
+                    !reservationManager.canReserve(lastReservation.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(lastReservation.getTimeFrame().getStart()))) {
+                throw new NoPathFoundException(listOfReservations.get(0).getGridCoordinate(), lastReservation.getGridCoordinate());
             }
 
         }
@@ -317,6 +324,7 @@ public class Astar implements PathFinder {
 
     @Override
     public Path calculatePath(GridCoordinate start, GridCoordinate destination) throws NoPathFoundException {
+
         // Clears all lists and objects so that it is clean next time it calculates a path.
         isReservedList.clear();
         clear();
