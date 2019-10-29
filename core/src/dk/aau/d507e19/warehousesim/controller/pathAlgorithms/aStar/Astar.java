@@ -291,10 +291,6 @@ public class Astar implements PathFinder {
 
     public boolean isReserved() throws NoPathFoundException {
 
-        if (robot.getRobotID()==1 && robot.getApproximateGridCoordinate().getX() == 0 && robot.getApproximateGridCoordinate().getY()==5){
-            System.out.println("hej");
-        }
-
         boolean i = false;
 
         // Makes the tempPath to steps
