@@ -11,7 +11,9 @@ import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
+import dk.aau.d507e19.warehousesim.exception.DestinationReservedIndefinitelyException;
 import dk.aau.d507e19.warehousesim.exception.NoPathFoundException;
+import dk.aau.d507e19.warehousesim.exception.NoValidPathException;
 import dk.aau.d507e19.warehousesim.exception.pathExceptions.BlockedEndDestinationException;
 import dk.aau.d507e19.warehousesim.exception.pathExceptions.NoValidNeighborException;
 
@@ -250,10 +252,13 @@ public class Astar implements PathFinder {
             // Small exceptions too see if it is stuck or if end destination is blocked.
             if (openList.size() < 1) {
                 if (closedList.size() > 1) {
-                    throw new BlockedEndDestinationException(robot, closedList.size());
+                  //  throw new BlockedEndDestinationException(robot, closedList.size());
+                    GridCoordinate startGC = new GridCoordinate(xStart,yStart);
+                    GridCoordinate endGC = new GridCoordinate(xEndPosition,yEndPosition);
+                    throw new DestinationReservedIndefinitelyException(startGC,endGC);
                 }
-
-                throw new NoValidNeighborException(robot);
+                throw new NoValidPathException(new GridCoordinate(xStart,yStart), new GridCoordinate(xEndPosition,yEndPosition),"No valid Neighbor could be found");
+               // throw new NoValidNeighborException(robot);
             }
 
             // Sorts openList in ascending order
@@ -323,7 +328,6 @@ public class Astar implements PathFinder {
 
         // Calculates the optimal A* path
         calculatePath();
-
         return new Path(Step.fromGridCoordinates(finalPath));
     }
 }

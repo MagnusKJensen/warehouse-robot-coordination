@@ -13,31 +13,31 @@ public class ReservationTile {
     private ArrayList<Reservation> reservations = new ArrayList<>();
     private GridCoordinate coordinate;
 
-    public ReservationTile(GridCoordinate coordinate){
+    public ReservationTile(GridCoordinate coordinate) {
         this.coordinate = coordinate;
     }
 
-    public boolean isReserved(TimeFrame timeFrame){
-        for(Reservation reservation : reservations){
-            if(reservation.getTimeFrame().overlaps(timeFrame))
+    public boolean isReserved(TimeFrame timeFrame) {
+        for (Reservation reservation : reservations) {
+            if (reservation.getTimeFrame().overlaps(timeFrame))
                 return true;
         }
         return false;
     }
 
-    public ArrayList<Reservation> getReservations(TimeFrame timeFrame){
+    public ArrayList<Reservation> getReservations(TimeFrame timeFrame) {
         ArrayList<Reservation> overlappingReservations = new ArrayList<>();
 
-        for(Reservation reservation : reservations){
-            if(reservation.getTimeFrame().overlaps(timeFrame))
+        for (Reservation reservation : reservations) {
+            if (reservation.getTimeFrame().overlaps(timeFrame))
                 overlappingReservations.add(reservation);
         }
 
         return overlappingReservations;
     }
 
-    public Optional<Reservation> getCurrentReservation(Long timeInTicks){
-        for(Reservation n: reservations){
+    public Optional<Reservation> getCurrentReservation(Long timeInTicks) {
+        for (Reservation n : reservations) {
             if (n.getTimeFrame().isWithinTimeFrame(timeInTicks)) {
                 return Optional.of(n);
             }
@@ -46,10 +46,10 @@ public class ReservationTile {
     }
 
     public void addReservation(Reservation reservation) {
-        for(Reservation res : reservations){
-            if(res.getTimeFrame().overlaps(reservation.getTimeFrame()))
+        for (Reservation res : reservations) {
+            if (res.getTimeFrame().overlaps(reservation.getTimeFrame()))
                 // TODO: 23/10/2019 Temporary to allow DummyPathFinder to work
-                if(!(SimulationApp.pathFinderSelected.equals("DummyPathFinder") || SimulationApp.pathFinderSelected.equals("CustomH - Turns") || SimulationApp.pathFinderSelected.equals("RRT*"))){
+                if (!(SimulationApp.pathFinderSelected.equals("DummyPathFinder") || SimulationApp.pathFinderSelected.equals("CustomH - Turns") ||  SimulationApp.pathFinderSelected.equals("RRT*"))) {
                     throw new DoubleReservationException(res, reservation);
                 }
         }
@@ -63,8 +63,8 @@ public class ReservationTile {
     }
 
     public boolean isReservedIndefinitely() {
-        for(Reservation reservation : reservations){
-            if(reservation.getTimeFrame().getTimeMode() == TimeFrame.TimeMode.UNBOUNDED)
+        for (Reservation reservation : reservations) {
+            if (reservation.getTimeFrame().getTimeMode() == TimeFrame.TimeMode.UNBOUNDED)
                 return true;
         }
         return false;
