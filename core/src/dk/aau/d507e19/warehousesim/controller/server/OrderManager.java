@@ -93,8 +93,6 @@ public class OrderManager {
 
         ArrayList<PickerTile> availablePickers = server.getAvailablePickers();
 
-        System.out.println("Orders Processing list: " + ordersProcessing.size());
-
         int maxOrderAssignPerTick = 50;
         Iterator<Order> orderIterator = orderQueue.iterator();
         while(orderIterator.hasNext() && !availablePickers.isEmpty() && maxOrderAssignPerTick != 0){

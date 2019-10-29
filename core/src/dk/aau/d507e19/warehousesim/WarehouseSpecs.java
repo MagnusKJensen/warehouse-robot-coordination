@@ -6,9 +6,9 @@ public class WarehouseSpecs {
     public static final float binSizeInMeters = 1;
     public static final int productsPerBin = 15;
     public static final int SKUsPerBin = 9;
-    public static final int SKUs = 80;
-    public static final int productsInStock = 5000;
-    public static final int numberOfRobots = 5;
+    public static final int SKUs = 100;
+    public static final int productsInStock = 100;
+    public static final int numberOfRobots = 10;
     public static final float robotTopSpeed = 3f; // Meters/second
     public static final float robotAcceleration = 0.8f; // m/s^2
     public static final float robotDeceleration = 2f; // m/s^2
@@ -18,10 +18,10 @@ public class WarehouseSpecs {
     // Both turnover and SKUs should also sum up to 100. Do not enter more than 1 decimal.
     // Do not enter lower distribution, than 100 / SKUs.
     public static final double[][] skuDistribution = {{20.5, 50}, {9.5,30}, {70,20}};
-    public static final boolean isRandomProductDistribution = true;
-    public static final int[][] pickerPoints = {{0,0}, {2,0}, {4,0}, {6,0}, {8,0}, {10,0}, {12,0}, {14,0}, {16,0}, {18,0}, {20,0}, {22,0}, {24,0}};
+    public static final boolean isRandomProductDistribution = false;
+    public static final int[][] pickerPoints = {{0,0}, {2,0}, {4,0}, {6,0}, {8,0}, {10,0}, {12,0}, {14,0}, {16,0}, {18,0}, {20,0}, {22,0}, {24,0},{26,0}};
     public static final int secondsBetweenOrders = 1;
     public static final int orderGoal = 50;
-    public static final boolean collisionDetectedEnabled = false; // TEMP - Should not be enabled until reservationManager done.
+    public static final boolean collisionDetectedEnabled = true; // TEMP - Should not be enabled until reservationManager done.
     // todo layers? - Philip
 }

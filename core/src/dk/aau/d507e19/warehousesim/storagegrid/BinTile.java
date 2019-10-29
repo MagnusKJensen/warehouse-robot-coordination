@@ -26,9 +26,16 @@ public class BinTile extends Tile {
             batch.draw(GraphicsManager.getTexture("Simulation/tiles/binTileEmpty.png"), this.getPosX(), this.getPosY(), TILE_SIZE, TILE_SIZE);
             batch.end();
         } else {
-            batch.begin();
-            batch.draw(GraphicsManager.getTexture("Simulation/tiles/Bin.png"), this.getPosX(), this.getPosY(), TILE_SIZE, TILE_SIZE);
-            batch.end();
+            if(this.bin.isEmpty()){
+                batch.begin();
+                batch.draw(GraphicsManager.getTexture("Simulation/tiles/binEmpty.png"), this.getPosX(), this.getPosY(), TILE_SIZE, TILE_SIZE);
+                batch.end();
+            }else {
+                batch.begin();
+                batch.draw(GraphicsManager.getTexture("Simulation/tiles/Bin.png"), this.getPosX(), this.getPosY(), TILE_SIZE, TILE_SIZE);
+                batch.end();
+            }
+
         }
     }
 
