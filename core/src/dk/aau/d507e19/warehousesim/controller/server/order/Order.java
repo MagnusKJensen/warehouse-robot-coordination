@@ -43,4 +43,8 @@ public class Order {
                 ", picker=" + picker +
                 '}';
     }
+
+    public void removePicker(){
+        this.picker = null;
+    }
 }

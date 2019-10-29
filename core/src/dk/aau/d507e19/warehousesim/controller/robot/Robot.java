@@ -46,7 +46,6 @@ public class Robot {
 
     public void deliverBinToPicker(GridCoordinate pickerCoords) {
         simulation.incrementOrderProcessedCount();
-        ((PickerTile)robotController.getServer().getSimulation().getStorageGrid().getTile(pickerCoords.getX(), pickerCoords.getY())).setAvailable();
     }
 
     public void putDownBin(){

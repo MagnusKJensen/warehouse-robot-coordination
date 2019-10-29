@@ -17,10 +17,7 @@ import dk.aau.d507e19.warehousesim.exception.CollisionException;
 import dk.aau.d507e19.warehousesim.goal.Goal;
 import dk.aau.d507e19.warehousesim.goal.OrderGoal;
 import dk.aau.d507e19.warehousesim.input.SimulationInputProcessor;
-import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
-import dk.aau.d507e19.warehousesim.storagegrid.ProductDistributor;
-import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
-import dk.aau.d507e19.warehousesim.storagegrid.Tile;
+import dk.aau.d507e19.warehousesim.storagegrid.*;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
 import java.math.RoundingMode;
@@ -194,6 +191,9 @@ public class Simulation {
     }
 
     private void renderSelectedRobotsPaths() {
+        for(PickerTile pickerTile : server.getAvailablePickers()){
+            pickerTile.renderOverlay(shapeRenderer, Color.BLACK);
+        }
         for(Robot robot : selectedRobots){
             server.getReservationManager().removeOutdatedReservationsBy(robot); // todo move this elsewhere
             ArrayList<Reservation> reservations = server.getReservationManager().getReservationsBy(robot);

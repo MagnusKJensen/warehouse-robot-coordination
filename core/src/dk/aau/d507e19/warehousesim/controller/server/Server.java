@@ -135,4 +135,22 @@ public class Server {
 
         return availablePickers;
     }
+
+    public int getProductSKUsRemaining() {
+        ArrayList<SKU> SKUs = new ArrayList<>();
+        for (Product prod : productsAvailable) {
+            if(!SKUs.contains(prod.getSKU())) SKUs.add(prod.getSKU());
+        }
+
+        return SKUs.size();
+    }
+
+    public int getAmountLeftOfProduct(Product prod) {
+        int amountLeft = 0;
+        for (Product product : productsAvailable){
+            if(prod.equals(product)) amountLeft++;
+        }
+
+        return amountLeft;
+    }
 }

@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -51,6 +50,7 @@ public class SideMenu {
     // Performance Metrics
     private Text performanceMetricsTitle;
     private Text ordersProcessed;
+    private Text tasksInQueue;
     private Text ordersPerMinute;
     private Text productsLeftInGrid;
     private Text goalReachedText;
@@ -139,7 +139,7 @@ public class SideMenu {
     }
 
     private void updateOrdersProcessed() {
-        String str = "Orders Processed: " + simulationApp.getSimulation().getOrdersProcessed();
+        String str = "Orders finished: " + simulationApp.getSimulation().getServer().getOrderManager().ordersFinished();
         ordersProcessed.setText(str);
     }
 

@@ -45,13 +45,12 @@ public class ReservationTile {
         return Optional.empty();
     }
 
-    public void addReservation(Reservation reservation) {
+    public void addReservation(Reservation reservation) throws DoubleReservationException {
         for (Reservation res : reservations) {
-            if (res.getTimeFrame().overlaps(reservation.getTimeFrame()))
-                // TODO: 23/10/2019 Temporary to allow DummyPathFinder to work
-                if (!(SimulationApp.pathFinderSelected.equals("DummyPathFinder") || SimulationApp.pathFinderSelected.equals("CustomH - Turns") ||  SimulationApp.pathFinderSelected.equals("RRT*"))) {
-                    throw new DoubleReservationException(res, reservation);
-                }
+            if (res.getTimeFrame().overlaps(reservation.getTimeFrame())
+                    && !res.getRobot().equals(reservation.getRobot())){
+                throw new DoubleReservationException(res, reservation);
+            }
         }
 
         reservations.add(reservation);

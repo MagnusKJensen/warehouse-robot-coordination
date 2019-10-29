@@ -2,6 +2,7 @@ package dk.aau.d507e19.warehousesim.controller.server;
 
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.exception.DoubleReservationException;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 
@@ -32,7 +33,7 @@ public class ReservationManager {
         }
     }
 
-    public void reserve(Robot robot, GridCoordinate resCoordinate, TimeFrame timeFrame) {
+    public void reserve(Robot robot, GridCoordinate resCoordinate, TimeFrame timeFrame) throws DoubleReservationException {
         Reservation reservation = new Reservation(robot, resCoordinate, timeFrame);
         reservationTiles[resCoordinate.getX()][resCoordinate.getY()].addReservation(reservation);
 
@@ -112,7 +113,7 @@ public class ReservationManager {
         return reservedBinTiles.contains(tile);
     }
 
-    public void reserve(ArrayList<Reservation> reservations) {
+    public void reserve(ArrayList<Reservation> reservations) throws DoubleReservationException {
         for (Reservation reservation : reservations) {
             int x = reservation.getGridCoordinate().getX(), y = reservation.getGridCoordinate().getY();
             reservationTiles[x][y].addReservation(reservation);
@@ -120,7 +121,7 @@ public class ReservationManager {
         }
     }
 
-    public void reserve(Reservation reservation) {
+    public void reserve(Reservation reservation) throws DoubleReservationException {
         int x = reservation.getGridCoordinate().getX(), y = reservation.getGridCoordinate().getY();
         reservationTiles[x][y].addReservation(reservation);
         mapReservation(reservation);
