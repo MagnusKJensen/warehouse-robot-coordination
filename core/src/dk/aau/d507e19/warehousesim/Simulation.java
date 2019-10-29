@@ -191,9 +191,6 @@ public class Simulation {
     }
 
     private void renderSelectedRobotsPaths() {
-        for(PickerTile pickerTile : server.getAvailablePickers()){
-            pickerTile.renderOverlay(shapeRenderer, Color.BLACK);
-        }
         for(Robot robot : selectedRobots){
             server.getReservationManager().removeOutdatedReservationsBy(robot); // todo move this elsewhere
             ArrayList<Reservation> reservations = server.getReservationManager().getReservationsBy(robot);
