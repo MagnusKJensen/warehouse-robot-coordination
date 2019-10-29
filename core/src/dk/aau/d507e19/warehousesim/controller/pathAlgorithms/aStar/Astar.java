@@ -307,9 +307,10 @@ public class Astar implements PathFinder {
             if (reservationManager.isReserved(listOfReservations.get(j).getGridCoordinate(), listOfReservations.get(j).getTimeFrame())) {
                 isReservedList.add(listOfReservations.get(j).getGridCoordinate());
                 i = true;
-            } else if (reservationManager.hasConflictingReservations(listOfReservations.get(listOfReservations.size() - 1))) {
+            } else if (reservationManager.hasConflictingReservations(listOfReservations.get(listOfReservations.size() - 1)) || reservationManager.isReservedIndefinitely(new GridCoordinate(listOfReservations.get(j).getGridCoordinate().getX(),listOfReservations.get(j).getGridCoordinate().getY()))) {
                 throw new NoPathFoundException(listOfReservations.get(0).getGridCoordinate(), listOfReservations.get(listOfReservations.size() - 1).getGridCoordinate());
             }
+
         }
         return i;
     }
