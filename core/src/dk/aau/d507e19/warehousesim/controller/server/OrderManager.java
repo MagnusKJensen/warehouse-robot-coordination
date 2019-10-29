@@ -95,6 +95,7 @@ public class OrderManager {
 
         int maxOrderAssignPerTick = 50;
         Iterator<Order> orderIterator = orderQueue.iterator();
+
         while(orderIterator.hasNext() && !availablePickers.isEmpty() && maxOrderAssignPerTick != 0){
             Order order = orderIterator.next();
             // Assign order to picker
