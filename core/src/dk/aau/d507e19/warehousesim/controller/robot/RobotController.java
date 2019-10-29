@@ -11,6 +11,7 @@ import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.exception.DoubleReservationException;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -65,20 +66,21 @@ public class RobotController {
     }
 
     public void update() {
-        // If robot has nothing to do, set status available and return.
-        if (tasks.isEmpty()) {
-            robot.setCurrentStatus(Status.AVAILABLE);
+        if(tasks.isEmpty()){
             return;
-        }else{
-            robot.setCurrentStatus(Status.BUSY);
         }
 
         Task currentTask = tasks.peekFirst();
         if (!currentTask.isCompleted())
             currentTask.perform();
 
-        if (currentTask.isCompleted())
-            tasks.removeFirst();
+        removeCompletedTasks();
+
+        updateStatus();
+    }
+
+    private void removeCompletedTasks() {
+        tasks.removeIf(Task::isCompleted);
     }
 
     public PathFinder getPathFinder() {
@@ -95,5 +97,10 @@ public class RobotController {
 
     public boolean hasTask(){
         return !tasks.isEmpty();
+    }
+
+    public void updateStatus() {
+       if(tasks.isEmpty()) robot.setCurrentStatus(Status.AVAILABLE);
+       else robot.setCurrentStatus(Status.BUSY);
     }
 }

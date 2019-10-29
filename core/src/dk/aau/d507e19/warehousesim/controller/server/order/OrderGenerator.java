@@ -67,20 +67,16 @@ public class OrderGenerator {
         int amount;
         OrderLine line;
         // Edge case for last orders
-        if(server.getProductsAvailable().size() < MAX_LINES * MAX_AMOUNT && !server.getProductsAvailable().isEmpty()){
+        if(server.getProductsAvailable().size() < MAX_LINES * MAX_AMOUNT){
             if(bound == 1) prod = server.getProductsAvailable().get(0);
             else prod = server.getProductsAvailable().get(random.nextInt(bound - 1));
             amount = server.getAmountLeftOfProduct(prod);
             line = new OrderLine(prod,amount);
-            System.out.println("Last OrderLine" + line);
-        } else {
+        } else { // Normal case
             prod = server.getProductsAvailable().get(random.nextInt(bound - 1));
             amount = random.nextInt(MAX_AMOUNT - 1) + 1;
             line = new OrderLine(prod,amount);
         }
-
-
-
 
         return line;
     }
