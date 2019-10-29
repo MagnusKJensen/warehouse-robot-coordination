@@ -12,7 +12,7 @@ import java.util.Random;
 
 public class SimulationApp extends ApplicationAdapter {
 
-	private static final long RANDOM_SEED = 12345442352525L;
+	public static final long RANDOM_SEED = 12345442352525L;
 	public static Random random = new Random(RANDOM_SEED);
 
 	public static final int MENU_WIDTH_IN_PIXELS = 300;

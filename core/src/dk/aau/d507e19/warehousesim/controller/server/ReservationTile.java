@@ -45,15 +45,15 @@ public class ReservationTile {
         return Optional.empty();
     }
 
-    public void addReservation(Reservation reservation) throws DoubleReservationException {
-        for (Reservation res : reservations) {
-            if (res.getTimeFrame().overlaps(reservation.getTimeFrame())
-                    && !res.getRobot().equals(reservation.getRobot())){
-                throw new DoubleReservationException(res, reservation);
+    public void addReservation(Reservation newReservation) throws DoubleReservationException {
+        for (Reservation existingReservation : reservations) {
+            if (existingReservation.getTimeFrame().overlaps(newReservation.getTimeFrame())
+                    && !existingReservation.getRobot().equals(newReservation.getRobot())){
+                throw new DoubleReservationException(existingReservation, newReservation);
             }
         }
 
-        reservations.add(reservation);
+        reservations.add(newReservation);
     }
 
     public void removeReservation(Reservation reservation) {

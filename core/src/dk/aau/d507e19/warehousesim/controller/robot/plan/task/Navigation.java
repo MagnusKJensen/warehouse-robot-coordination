@@ -101,7 +101,6 @@ public class Navigation implements Task {
             // Path planning failed - Retrying after delay
             System.out.println("Path finding failed. Start : " + e.getStart() + " Destination : " + e.getDest()
                     + "at time : " + server.getTimeInTicks());
-            e.printStackTrace();
             return false;
         }
 
