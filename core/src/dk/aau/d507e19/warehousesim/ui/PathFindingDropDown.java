@@ -41,7 +41,7 @@ public class PathFindingDropDown {
     private void createDropDown() {
         selectBox = new SelectBox<>(skin);
 
-        selectBox.setItems("DummyPathFinder", "Astar", "RRT", "RRT*", "CustomH - Turns");
+        selectBox.setItems("DummyPathFinder", "Astar", "AstarExtended","RRT", "RRT*", "CustomH - Turns");
 
         selectBox.addListener(new ChangeListener() {
             @Override
