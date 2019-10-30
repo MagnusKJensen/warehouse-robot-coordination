@@ -26,17 +26,7 @@ public class OrderManager {
 
     OrderManager(Server server) {
         this.server = server;
-        this.taskAllocator = generateTaskAllocator();
-    }
-
-    private TaskAllocator generateTaskAllocator() {
-        switch (server.getSimulation().getSimulationApp().getTaskAllocatorSelected()){
-            // If a task allocator is added, also add it to the side menu at ui.TaskAllocationDropDown.createDropDown()
-            case "DummyTaskAllocator" : return new DummyTaskAllocator();
-            case "ShortestDistanceTaskAllocator" : return new ShortestDistanceTaskAllocator(server.getSimulation().getStorageGrid());
-            case "NaiveShortestDistanceTaskAllocator" : return new NaiveShortestDistanceTaskAllocator(server.getSimulation().getStorageGrid());
-            default : throw new IllegalArgumentException("Could not identify task allocator " + server.getSimulation().getSimulationApp().getTaskAllocatorSelected());
-        }
+        this.taskAllocator = server.getSimulation().getSimulationApp().getTaskAllocatorSelected().getTaskAllocator(server.getSimulation().getStorageGrid());
     }
 
     public void takeOrder(Order order){
@@ -172,8 +162,5 @@ public class OrderManager {
             }
         }
         return tasksNotComplete;
-
-
-
     }
 }

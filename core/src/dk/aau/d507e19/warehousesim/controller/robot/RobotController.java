@@ -1,6 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.chp.CHPathfinder;
@@ -22,10 +23,10 @@ public class RobotController {
 
     private LinkedList<Task> tasks = new LinkedList<>();
 
-    public RobotController(Server server, Robot robot, String pathFinderString){
+    public RobotController(Server server, Robot robot, PathFinderEnum pathFinderEnum){
         this.server = server;
         this.robot = robot;
-        this.pathFinder = generatePathFinder(pathFinderString);
+        this.pathFinder = pathFinderEnum.getPathFinder(server, this);
         reserveCurrentSpot();
     }
 
@@ -35,23 +36,6 @@ public class RobotController {
             server.getReservationManager().reserve(robot, robot.getGridCoordinate(), indefiniteTimeFrame);
         } catch (DoubleReservationException e) {
             throw new RuntimeException("Robot could not reserve the tile it starts on");
-        }
-    }
-
-    private PathFinder generatePathFinder(String pathFinderString) {
-        switch (pathFinderString) {
-            case "Astar":
-                return new Astar(server, robot);
-            case "RRT*":
-                return new RRTPlanner(RRTType.RRT_STAR, this);
-            case "RRT":
-                return new RRTPlanner(RRTType.RRT, this);
-            case "DummyPathFinder":
-                return new DummyPathFinder();
-            case "CustomH - Turns":
-                return CHPathfinder.defaultCHPathfinder(server.getGridBounds(), this);
-            default:
-                throw new RuntimeException("Could not identify pathfinder " + pathFinderString);
         }
     }
 
