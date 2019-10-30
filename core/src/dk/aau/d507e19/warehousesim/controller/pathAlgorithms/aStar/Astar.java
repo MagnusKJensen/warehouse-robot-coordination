@@ -11,7 +11,9 @@ import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
+import dk.aau.d507e19.warehousesim.exception.DestinationReservedIndefinitelyException;
 import dk.aau.d507e19.warehousesim.exception.NoPathFoundException;
+import dk.aau.d507e19.warehousesim.exception.NoValidPathException;
 import dk.aau.d507e19.warehousesim.exception.pathExceptions.BlockedEndDestinationException;
 import dk.aau.d507e19.warehousesim.exception.pathExceptions.NoValidNeighborException;
 
@@ -244,18 +246,19 @@ public class Astar implements PathFinder {
 
         // While is true if the currentTile does not have the same x coordinate and the same y coordinate as the end Tile.
         while (!(currentTile.getCurrentXPosition() == xEndPosition && currentTile.getCurrentYPosition() == yEndPosition)) {
-
             // Add the valid tiles to openList
             checkNeighborValidity();
 
             // Small exceptions too see if it is stuck or if end destination is blocked.
             if (openList.size() < 1) {
                 if (closedList.size() > 1) {
-
-                    throw new BlockedEndDestinationException(robot, closedList.size());
+                  //  throw new BlockedEndDestinationException(robot, closedList.size());
+                    GridCoordinate startGC = new GridCoordinate(xStart,yStart);
+                    GridCoordinate endGC = new GridCoordinate(xEndPosition,yEndPosition);
+                    throw new DestinationReservedIndefinitelyException(startGC,endGC);
                 }
-
-                throw new NoValidNeighborException(robot);
+                throw new NoValidPathException(new GridCoordinate(xStart,yStart), new GridCoordinate(xEndPosition,yEndPosition),"No valid Neighbor could be found");
+               // throw new NoValidNeighborException(robot);
             }
 
             // Sorts openList in ascending order
@@ -300,20 +303,24 @@ public class Astar implements PathFinder {
         // Calculates the path into a list of reservations.
         ArrayList<Reservation> listOfReservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
 
+        Reservation lastReservation = listOfReservations.get(listOfReservations.size()-1);
+
         for (int j = 1; j < listOfReservations.size(); j++) {
             if (reservationManager.isReserved(listOfReservations.get(j).getGridCoordinate(), listOfReservations.get(j).getTimeFrame())) {
                 isReservedList.add(listOfReservations.get(j).getGridCoordinate());
                 i = true;
+            } else if (reservationManager.hasConflictingReservations(lastReservation) ||
+                    !reservationManager.canReserve(lastReservation.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(lastReservation.getTimeFrame().getStart()))) {
+                throw new NoPathFoundException(listOfReservations.get(0).getGridCoordinate(), lastReservation.getGridCoordinate());
             }
-            else if(reservationManager.hasConflictingReservations(listOfReservations.get(listOfReservations.size()-1))){
-                throw new NoPathFoundException(listOfReservations.get(0).getGridCoordinate(), listOfReservations.get(listOfReservations.size()-1).getGridCoordinate());
-            }
+
         }
         return i;
     }
 
     @Override
     public Path calculatePath(GridCoordinate start, GridCoordinate destination) throws NoPathFoundException {
+
         // Clears all lists and objects so that it is clean next time it calculates a path.
         isReservedList.clear();
         clear();
@@ -326,7 +333,6 @@ public class Astar implements PathFinder {
 
         // Calculates the optimal A* path
         calculatePath();
-
         return new Path(Step.fromGridCoordinates(finalPath));
     }
 }
