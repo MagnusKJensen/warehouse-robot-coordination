@@ -10,6 +10,9 @@ import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 public class Robot {
     private Simulation simulation;
     private Position currentPosition;
@@ -47,9 +50,9 @@ public class Robot {
         robotController.update();
     }
 
-    public void deliverBinToPicker(GridCoordinate pickerCoords, Order order) {
-        for(Product prod : order.getAllProductsInOrder()){
-            bin.removeProduct(prod);
+    public void deliverBinToPicker(GridCoordinate pickerCoords, ArrayList<Product> productsToPick) {
+        for(Product product : productsToPick){
+            bin.getProducts().remove(product);
         }
         simulation.incrementOrderProcessedCount();
     }
