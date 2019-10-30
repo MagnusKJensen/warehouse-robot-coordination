@@ -12,6 +12,8 @@ import dk.aau.d507e19.warehousesim.Position;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 
+import java.util.Objects;
+
 public class Tile implements Drawable {
 
     private static final float GRID_LINE_WIDTH = 0.1f;
@@ -110,5 +112,20 @@ public class Tile implements Drawable {
                 "posX=" + posX +
                 ", posY=" + posY +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tile tile = (Tile) o;
+        return posX == tile.posX &&
+                posY == tile.posY &&
+                Objects.equals(gridCoordinate, tile.gridCoordinate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(posX, posY, gridCoordinate);
     }
 }

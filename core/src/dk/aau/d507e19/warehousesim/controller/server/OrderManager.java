@@ -1,13 +1,11 @@
 package dk.aau.d507e19.warehousesim.controller.server;
 
+import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.BinDelivery;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.controller.server.order.Order;
 import dk.aau.d507e19.warehousesim.controller.server.order.OrderLine;
-import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.DummyTaskAllocator;
-import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.NaiveShortestDistanceTaskAllocator;
-import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.ShortestDistanceTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocator;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
@@ -18,41 +16,19 @@ import java.util.*;
 
 public class OrderManager {
     private ArrayList<Order> orderQueue = new ArrayList<>();
-    private ArrayList<Order> ordersProcessing = new ArrayList<>();
     private ArrayList<Order> ordersFinished = new ArrayList<>();
     private Server server;
     private TaskAllocator taskAllocator;
     private ArrayList<Task> tasksQueue = new ArrayList<>();
-    private ArrayList<Task> assignedTasks = new ArrayList<>();
     private HashMap<Order, ArrayList<Task>> processingOrdersToTaskMap = new HashMap<>();
 
-    public OrderManager(Server server) {
+    OrderManager(Server server) {
         this.server = server;
-        this.taskAllocator = generateTaskAllocator();
+        this.taskAllocator = server.getSimulation().getSimulationApp().getTaskAllocatorSelected().getTaskAllocator(server.getSimulation().getStorageGrid());
     }
 
-    private TaskAllocator generateTaskAllocator() {
-        switch (server.getSimulation().getSimulationApp().getTaskAllocatorSelected()){
-            // If a task allocator is added, also add it to the side menu at ui.TaskAllocationDropDown.createDropDown()
-            case "DummyTaskAllocator" : return new DummyTaskAllocator();
-            case "ShortestDistanceTaskAllocator" : return new ShortestDistanceTaskAllocator(server.getSimulation().getStorageGrid());
-            case "NaiveShortestDistanceTaskAllocator" : return new NaiveShortestDistanceTaskAllocator(server.getSimulation().getStorageGrid());
-            default : throw new IllegalArgumentException("Could not identify task allocator " + server.getSimulation().getSimulationApp().getTaskAllocatorSelected());
-        }
-    }
-
-    public boolean takeOrder(Order order){
+    public void takeOrder(Order order){
         this.orderQueue.add(order);
-        return true;
-    }
-
-    private void removeProducts(ArrayList<Product> productsToRemove){
-        for(Product prod : productsToRemove)
-            server.getProductsAvailable().remove(prod);
-    }
-
-    private boolean isOrderServiceable(Order order){
-        return server.getProductsAvailable().containsAll(order.getAllProductsInOrder());
     }
 
     private void checkIfOrdersAreCompleted() {
@@ -67,7 +43,6 @@ public class OrderManager {
 
                 if(isCompleted){
                     order.getPicker().setAvailable();
-                    ordersProcessing.remove(order);
                     ordersFinished.add(order);
                     ordersToRemove.add(order);
                 }
@@ -94,8 +69,6 @@ public class OrderManager {
             availablePickers.get(0).assignOrder(order);
             // Give order a reference to picker
             order.setPicker(availablePickers.get(0));
-            // Add to orders being processed
-            ordersProcessing.add(order);
             // Divide order into tasks to robots and add to list of available tasks
             ArrayList<Task> tasksFromOrder = createTasksFromOrder(order);
             if(tasksFromOrder != null){
@@ -111,7 +84,6 @@ public class OrderManager {
             else {
                 availablePickers.get(0).setAvailable();
                 order.removePicker();
-                ordersProcessing.remove(order);
             }
             maxOrderAssignPerTick--;
         }
@@ -123,7 +95,6 @@ public class OrderManager {
                 Optional<Robot> optimalRobot = taskAllocator.findOptimalRobot(server.getAllRobots(), task);
                 if(optimalRobot.isPresent()){
                     if(optimalRobot.get().getRobotController().assignTask(task)){
-                        assignedTasks.add(task);
                         task.setRobot(optimalRobot.get());
                         taskIterator.remove();
                     }
@@ -134,23 +105,24 @@ public class OrderManager {
 
     private ArrayList<Task> createTasksFromOrder(Order order) {
         ArrayList<Task> orderTasks = new ArrayList<>();
+        ArrayList<BinTile> tempReservations = new ArrayList<>();
 
         // Go through all lines in order
         for(OrderLine line : order.getLinesInOrder()){
             // Split each line into tasks
-            ArrayList<Task> orderLineTasks = splitIntoTasks(line, order);
+            ArrayList<Task> orderLineTasks = splitLineIntoTasks(line, order, tempReservations);
             if(orderLineTasks == null) return null;
             orderTasks.addAll(orderLineTasks);
         }
 
         // Reserve the bin for all tasks
-        for(Task task : orderTasks)
-            server.getReservationManager().reserveBinTile(((BinDelivery)task).getBinCoords());
+        server.getReservationManager().reserveBinTiles(tempReservations);
 
         return orderTasks;
     }
 
-    private ArrayList<Task> splitIntoTasks(OrderLine line, Order order) {
+    private ArrayList<Task> splitLineIntoTasks(OrderLine line, Order order, ArrayList<BinTile> tempReservations) {
+        ArrayList<BinTile> newReservations = new ArrayList<>();
         Product product = line.getProduct();
 
         StorageGrid storageGrid = server.getSimulation().getStorageGrid();
@@ -162,12 +134,16 @@ public class OrderManager {
         int remainingProducts = line.getAmount();
         for(BinTile tile : binTiles){
             if(server.getReservationManager().isBinReserved(tile.getGridCoordinate())) continue;
+            if(tempReservations.contains(tile)) continue;
             remainingProducts -= tile.getBin().productCount(product);
             productTasks.add(new BinDelivery(order, tile.getGridCoordinate()));
+            newReservations.add(tile);
             if(remainingProducts <= 0) break;
         }
 
         if(remainingProducts > 0) return null;
+
+        tempReservations.addAll(newReservations);
 
         return productTasks;
     }
@@ -178,5 +154,15 @@ public class OrderManager {
 
     public int ordersFinished(){
         return ordersFinished.size();
+    }
+
+    public int tasksInQueue(){
+        int tasksNotComplete = 0;
+        for(ArrayList<Task> taskArray : processingOrdersToTaskMap.values()){
+            for(Task task : taskArray){
+                if(!task.isCompleted()) tasksNotComplete++;
+            }
+        }
+        return tasksNotComplete;
     }
 }
