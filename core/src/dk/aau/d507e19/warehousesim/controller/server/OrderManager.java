@@ -42,15 +42,8 @@ public class OrderManager {
     }
 
     public boolean takeOrder(Order order){
-        if(isOrderServiceable(order)) {
-            // Divide into RetrievalTasks ??
-            removeProducts(order.getAllProductsInOrder());
-            this.orderQueue.add(order);
-            return true;
-        } else {
-            System.out.println("Rejected order " + order);
-            return false;
-        }
+        this.orderQueue.add(order);
+        return true;
     }
 
     private void removeProducts(ArrayList<Product> productsToRemove){

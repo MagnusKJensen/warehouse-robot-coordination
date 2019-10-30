@@ -37,7 +37,7 @@ public class OrderGoal implements Goal {
     // Call in the simulation update method
     @Override
     public void update() {
-        if(simulation.getOrdersProcessed() >= orderGoal && !done){
+        if(simulation.getServer().getOrderManager().ordersFinished() >= orderGoal && !done){
             done = true;
             finishTime = simulation.getSimulatedTimeInMS();
         }

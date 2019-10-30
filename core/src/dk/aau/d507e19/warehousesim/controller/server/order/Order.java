@@ -6,11 +6,14 @@ import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 import java.util.ArrayList;
 
 public class Order {
-    private ArrayList<OrderLine> linesInOrder;
+    private ArrayList<OrderLine> linesInOrder = new ArrayList<>();
     private PickerTile picker;
 
     public Order(ArrayList<OrderLine> linesInOrder) {
         this.linesInOrder = linesInOrder;
+    }
+
+    public Order() {
     }
 
     public ArrayList<OrderLine> getLinesInOrder() {
@@ -47,4 +50,17 @@ public class Order {
     public void removePicker(){
         this.picker = null;
     }
+
+    public void addProducts(Product prod){
+        boolean wasContained = false;
+        for(OrderLine line : linesInOrder){
+            if(line.getProduct().equals(prod)){
+                line.setAmount(line.getAmount() + 1);
+                wasContained = true;
+            }
+        }
+        if(!wasContained) linesInOrder.add(new OrderLine(prod, 1));
+    }
+
+
 }
