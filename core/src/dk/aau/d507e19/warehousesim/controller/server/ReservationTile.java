@@ -25,7 +25,7 @@ public class ReservationTile {
         return false;
     }
 
-    public ArrayList<Reservation> getReservations(TimeFrame timeFrame) {
+    public ArrayList<Reservation> getOverlappingReservations(TimeFrame timeFrame) {
         ArrayList<Reservation> overlappingReservations = new ArrayList<>();
 
         for (Reservation reservation : reservations) {

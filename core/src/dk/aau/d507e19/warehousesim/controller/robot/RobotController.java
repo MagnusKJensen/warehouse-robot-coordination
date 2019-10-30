@@ -6,6 +6,7 @@ import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.chp.CHPathfinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTType;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Navigation;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
@@ -107,4 +108,15 @@ public class RobotController {
     public LinkedList<Task> getTasks() {
         return tasks;
     }
+
+
+    public boolean requestMove(){
+        if(robot.getCurrentStatus() == Status.BUSY)
+            return false;
+
+        GridCoordinate newPosition = server.getNewPosition();
+        assignTask(new Navigation(this, newPosition));
+        return true;
+    }
+
 }

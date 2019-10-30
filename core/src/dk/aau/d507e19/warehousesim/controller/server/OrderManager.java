@@ -47,9 +47,8 @@ public class OrderManager {
     }
 
     private void removeProducts(ArrayList<Product> productsToRemove){
-        for(Product prod : productsToRemove){
+        for(Product prod : productsToRemove)
             server.getProductsAvailable().remove(prod);
-        }
     }
 
     private boolean isOrderServiceable(Order order){
@@ -102,7 +101,6 @@ public class OrderManager {
             if(tasksFromOrder != null){
                 processingOrdersToTaskMap.put(order, tasksFromOrder);
                 tasksQueue.addAll(tasksFromOrder);
-                System.out.println("Commenced order: " + orderQueue.get(0));
                 // Remove order from queue
                 orderIterator.remove();
                 // Picker is no longer available
