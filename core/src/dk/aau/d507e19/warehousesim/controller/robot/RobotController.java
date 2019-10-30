@@ -7,6 +7,7 @@ import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.chp.CHPathfinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTType;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Navigation;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
@@ -41,6 +42,12 @@ public class RobotController {
 
     public boolean assignTask(Task task){
         tasks.add(task);
+        robot.setCurrentStatus(Status.BUSY);
+        return true;
+    }
+
+    public boolean assignImmediateTask(Task task){
+        tasks.add(0, task);
         robot.setCurrentStatus(Status.BUSY);
         return true;
     }
@@ -91,4 +98,23 @@ public class RobotController {
     public LinkedList<Task> getTasks() {
         return tasks;
     }
+
+
+    public boolean requestMove(){
+
+        if(robot.getCurrentStatus() == Status.BUSY){
+            if(!interruptCurrentTask())
+                return false;
+        }
+
+        GridCoordinate newPosition = server.getNewPosition();
+        assignImmediateTask(new Navigation(this, newPosition));
+        return true;
+    }
+
+    private boolean interruptCurrentTask() {
+        if(tasks.isEmpty()) return true;
+        return tasks.getFirst().interrupt();
+    }
+
 }

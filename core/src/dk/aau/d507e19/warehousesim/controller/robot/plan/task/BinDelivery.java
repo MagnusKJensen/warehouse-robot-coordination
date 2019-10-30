@@ -28,9 +28,17 @@ public class BinDelivery implements Task {
         this.productsToPick = productsToPick;
     }
 
-    public void setRobot(Robot robot){
+    public void setRobot(Robot robot) {
         this.robotController = robot.getRobotController();
         this.robot = robot;
+    }
+
+    @Override
+    public boolean interrupt() {
+        if (!subTasks.isEmpty()) {
+           return subTasks.get(0).interrupt();
+        }
+        return false;
     }
 
     private void planTasks() {
@@ -51,19 +59,19 @@ public class BinDelivery implements Task {
 
     @Override
     public void perform() {
-        if(!isPlanned)
+        if (!isPlanned)
             planTasks();
 
-        if(isCompleted())
+        if (isCompleted())
             throw new RuntimeException("Cannot perform BinDelivery that is already completed");
 
         Task currentTask = subTasks.get(0);
         currentTask.perform();
 
-        if(currentTask.isCompleted()){
+        if (currentTask.isCompleted()) {
             subTasks.remove(0);
 
-            if(subTasks.isEmpty())
+            if (subTasks.isEmpty())
                 complete();
         }
     }

@@ -46,4 +46,9 @@ public class LineTraversal implements Task {
     public void setRobot(Robot robot) {
         this.robot = robot;
     }
+
+    @Override
+    public boolean interrupt() {
+        return false;
+    }
 }
