@@ -18,15 +18,13 @@ import java.util.*;
 
 public class OrderManager {
     private ArrayList<Order> orderQueue = new ArrayList<>();
-    private ArrayList<Order> ordersProcessing = new ArrayList<>();
     private ArrayList<Order> ordersFinished = new ArrayList<>();
     private Server server;
     private TaskAllocator taskAllocator;
     private ArrayList<Task> tasksQueue = new ArrayList<>();
-    private ArrayList<Task> assignedTasks = new ArrayList<>();
     private HashMap<Order, ArrayList<Task>> processingOrdersToTaskMap = new HashMap<>();
 
-    public OrderManager(Server server) {
+    OrderManager(Server server) {
         this.server = server;
         this.taskAllocator = generateTaskAllocator();
     }
@@ -41,19 +39,8 @@ public class OrderManager {
         }
     }
 
-    public boolean takeOrder(Order order){
+    public void takeOrder(Order order){
         this.orderQueue.add(order);
-        return true;
-    }
-
-    private void removeProducts(ArrayList<Product> productsToRemove){
-        for(Product prod : productsToRemove){
-            server.getProductsAvailable().remove(prod);
-        }
-    }
-
-    private boolean isOrderServiceable(Order order){
-        return server.getProductsAvailable().containsAll(order.getAllProductsInOrder());
     }
 
     private void checkIfOrdersAreCompleted() {
@@ -68,7 +55,6 @@ public class OrderManager {
 
                 if(isCompleted){
                     order.getPicker().setAvailable();
-                    ordersProcessing.remove(order);
                     ordersFinished.add(order);
                     ordersToRemove.add(order);
                 }
@@ -95,8 +81,6 @@ public class OrderManager {
             availablePickers.get(0).assignOrder(order);
             // Give order a reference to picker
             order.setPicker(availablePickers.get(0));
-            // Add to orders being processed
-            ordersProcessing.add(order);
             // Divide order into tasks to robots and add to list of available tasks
             ArrayList<Task> tasksFromOrder = createTasksFromOrder(order);
             if(tasksFromOrder != null){
@@ -113,7 +97,6 @@ public class OrderManager {
             else {
                 availablePickers.get(0).setAvailable();
                 order.removePicker();
-                ordersProcessing.remove(order);
             }
             maxOrderAssignPerTick--;
         }
@@ -125,7 +108,6 @@ public class OrderManager {
                 Optional<Robot> optimalRobot = taskAllocator.findOptimalRobot(server.getAllRobots(), task);
                 if(optimalRobot.isPresent()){
                     if(optimalRobot.get().getRobotController().assignTask(task)){
-                        assignedTasks.add(task);
                         task.setRobot(optimalRobot.get());
                         taskIterator.remove();
                     }
@@ -180,5 +162,15 @@ public class OrderManager {
 
     public int ordersFinished(){
         return ordersFinished.size();
+    }
+
+    public int tasksInQueue(){
+        int tasksNotComplete = 0;
+        for(ArrayList<Task> taskArray : processingOrdersToTaskMap.values()){
+            for(Task task : taskArray){
+                if(!task.isCompleted()) tasksNotComplete++;
+            }
+        }
+        return tasksNotComplete;
     }
 }
