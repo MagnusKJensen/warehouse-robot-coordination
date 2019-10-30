@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -51,6 +50,7 @@ public class SideMenu {
     // Performance Metrics
     private Text performanceMetricsTitle;
     private Text ordersProcessed;
+    private Text tasksInQueue;
     private Text ordersPerMinute;
     private Text productsLeftInGrid;
     private Text goalReachedText;
@@ -116,12 +116,14 @@ public class SideMenu {
         this.ordersInQueue = new Text("Orders in queue: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 50, performanceMetricColor);
         this.ordersProcessed = new Text("Orders Processed: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 75, performanceMetricColor);
         this.ordersPerMinute = new Text("Orders / minute: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 100, performanceMetricColor);
-        this.goalReachedText = new Text("Goal not yet finished", performanceMetricsOffset.x, performanceMetricsOffset.y - 125, performanceMetricColor);
+        this.tasksInQueue = new Text("Tasks processing: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 125, performanceMetricColor);
+        this.goalReachedText = new Text("Goal not yet finished", performanceMetricsOffset.x, performanceMetricsOffset.y - 150, performanceMetricColor);
         menuStage.addActor(performanceMetricsTitle);
         menuStage.addActor(productsLeftInGrid);
         menuStage.addActor(ordersInQueue);
         menuStage.addActor(ordersProcessed);
         menuStage.addActor(ordersPerMinute);
+        menuStage.addActor(tasksInQueue);
         menuStage.addActor(goalReachedText);
     }
 
@@ -134,12 +136,13 @@ public class SideMenu {
         productsLeftInGrid.setText("Available products left: " + simulationApp.getSimulation().getServer().getProductsAvailable().size());
         goalReachedText.setText(simulationApp.getSimulation().getGoal().toString());
         ordersInQueue.setText("Orders in queue: " + simulationApp.getSimulation().getServer().getOrderManager().ordersInQueue());
+        tasksInQueue.setText("Tasks in queue: " + simulationApp.getSimulation().getServer().getOrderManager().tasksInQueue());
         updateOrdersPerMinute();
         updateOrdersProcessed();
     }
 
     private void updateOrdersProcessed() {
-        String str = "Orders Processed: " + simulationApp.getSimulation().getOrdersProcessed();
+        String str = "Orders finished: " + simulationApp.getSimulation().getServer().getOrderManager().ordersFinished();
         ordersProcessed.setText(str);
     }
 
@@ -169,7 +172,8 @@ public class SideMenu {
         ordersInQueue.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 50);
         ordersProcessed.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 75);
         ordersPerMinute.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 100);
-        goalReachedText.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 125);
+        tasksInQueue.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 125);
+        goalReachedText.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 150);
 
         // Menus
         pathFindingDropDown.changeOffSet(pathFindingDropDownOffset);
@@ -189,7 +193,7 @@ public class SideMenu {
         pathFindingDropDownOffset = new Vector2(0, Gdx.graphics.getHeight() - 370);
         taskAllocationDropDownOffset = new Vector2(0, Gdx.graphics.getHeight() - 440);
         performanceMetricsOffset = new Vector2(10, Gdx.graphics.getHeight() - 510);
-        tickStopperOffset = new Vector2(10, Gdx.graphics.getHeight() - 680);
+        tickStopperOffset = new Vector2(10, Gdx.graphics.getHeight() - 710);
     }
 
     private void renderBackground(OrthographicCamera camera){

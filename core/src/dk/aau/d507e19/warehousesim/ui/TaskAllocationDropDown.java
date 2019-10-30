@@ -8,7 +8,10 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Array;
 import dk.aau.d507e19.warehousesim.SimulationApp;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
+import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocatorEnum;
 
 public class TaskAllocationDropDown {
     private SideMenu sideMenu;
@@ -37,14 +40,19 @@ public class TaskAllocationDropDown {
 
     private void createDropDown() {
         selectBox = new SelectBox<>(skin);
-        // If a task allocator is added, also add it to the server.OrderManager.generateTaskAllocator()
-        selectBox.setItems("DummyTaskAllocator", "NaiveShortestDistanceTaskAllocator", "ShortestDistanceTaskAllocator");
+
+        Array<String> taskAllocatorEnumNames = new Array<>();
+        for(TaskAllocatorEnum taskAllEnum : TaskAllocatorEnum.values()){
+            taskAllocatorEnumNames.add(taskAllEnum.getName());
+        }
+        selectBox.setItems(taskAllocatorEnumNames);
 
         selectBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 String selected = selectBox.getSelected();
-                simulationApp.setTaskAllocatorSelected(selected);
+                TaskAllocatorEnum taskAllEnum = getEnumFromString(selected);
+                simulationApp.setTaskAllocatorSelected(taskAllEnum);
                 simulationApp.resetSimulation();
             }
         });
@@ -53,6 +61,13 @@ public class TaskAllocationDropDown {
         selectBox.setPosition(screenOffSet.x + PADDING_LEFT_SIDE, screenOffSet.y - 55);
 
         menuStage.addActor(selectBox);
+    }
+
+    public TaskAllocatorEnum getEnumFromString(String taskAllocator){
+        for(TaskAllocatorEnum taskAllEnum : TaskAllocatorEnum.values()){
+            if(taskAllEnum.getName().equals(taskAllocator)) return taskAllEnum;
+        }
+        throw new IllegalArgumentException("Could not match taskAllocator '" + taskAllocator + "' with any taskAllocator.");
     }
 
     public void changeOffSet(Vector2 offSet){

@@ -14,16 +14,21 @@ public class SKU {
         return "{EAN='" + EAN + '\'' + "}";
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SKU sku = (SKU) o;
-        return EAN.equals(sku.EAN);
+        return Objects.equals(EAN, sku.EAN);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(EAN);
+    }
+
+    public String getEAN() {
+        return EAN;
     }
 }

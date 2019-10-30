@@ -106,14 +106,14 @@ public class RRTStarTest {
         ArrayList<Step> oldPath = rrtStar.makePath(n5);
         rrtStar.attemptOptimise();
         assertNotEquals(oldPath,rrtStar.getPath());
-        System.out.println("OLD PATH");
+        /*System.out.println("OLD PATH");
         for(Step s : oldPath){
             System.out.println(s.getGridCoordinate());
         }
         System.out.println("NEW PATH");
         for(Step s : rrtStar.getPath()){
             System.out.println(s.getGridCoordinate());
-        }
+        }*/
     }
     @Test
     public void testFindTurns(){

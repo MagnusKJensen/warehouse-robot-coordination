@@ -1,6 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.server;
 
 import dk.aau.d507e19.warehousesim.Simulation;
+import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.Status;
@@ -14,6 +15,7 @@ import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class Server {
     private Simulation simulation;
@@ -21,6 +23,7 @@ public class Server {
     private HashMap<SKU, ArrayList<BinTile>> productMap = new HashMap<>();
     private OrderManager orderManager;
     private OrderGenerator orderGenerator;
+    private Random random = new Random(SimulationApp.RANDOM_SEED);
 
     private ArrayList<Product> productsAvailable = new ArrayList<>();
 
@@ -135,4 +138,35 @@ public class Server {
 
         return availablePickers;
     }
+
+    public int getProductSKUsRemaining() {
+        ArrayList<SKU> SKUs = new ArrayList<>();
+        for (Product prod : productsAvailable) {
+            if(!SKUs.contains(prod.getSKU())) SKUs.add(prod.getSKU());
+        }
+
+        return SKUs.size();
+    }
+
+    public int getAmountLeftOfProduct(Product prod) {
+        int amountLeft = 0;
+        for (Product product : productsAvailable){
+            if(prod.equals(product)) amountLeft++;
+        }
+
+        return amountLeft;
+    }
+
+    public GridCoordinate getNewPosition() {
+        int x = random.nextInt(getGridBounds().endX - 1);
+        int y = random.nextInt(4) + 1; // todo more intelligent move request
+
+        GridCoordinate gridCoordinate = new GridCoordinate(x, y);
+        if(reservationManager.isReserved(gridCoordinate, TimeFrame.indefiniteTimeFrameFrom(getTimeInTicks())))
+            return getNewPosition();
+
+        return gridCoordinate;
+    }
+
+
 }

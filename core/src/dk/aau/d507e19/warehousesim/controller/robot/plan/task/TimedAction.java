@@ -35,4 +35,9 @@ public class TimedAction implements Task {
     public void setRobot(Robot robot) {
         // todo
     }
+
+    @Override
+    public boolean interrupt() {
+        return false;
+    }
 }

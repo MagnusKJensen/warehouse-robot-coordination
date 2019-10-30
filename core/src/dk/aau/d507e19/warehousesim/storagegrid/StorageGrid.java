@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class StorageGrid {
 
     private final Tile[][] tiles;
-    private final int width, height;
+    public final int width, height;
 
     private ShapeRenderer shapeRenderer;
     private SpriteBatch spriteBatch;

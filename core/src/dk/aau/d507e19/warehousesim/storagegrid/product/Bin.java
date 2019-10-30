@@ -37,8 +37,10 @@ public class Bin {
         }
     }
 
-    public void removeProduct(Product prod){
+    public boolean removeProduct(Product prod){
+        if(!products.contains(prod)) return false;
         this.products.remove(prod);
+        return true;
     }
 
     public void removeProducts(ArrayList<Product> products){
@@ -111,5 +113,9 @@ public class Bin {
             if(prod.equals(product)) count++;
         }
         return count;
+    }
+
+    public boolean isEmpty(){
+        return products.isEmpty();
     }
 }

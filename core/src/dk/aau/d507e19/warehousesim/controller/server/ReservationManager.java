@@ -2,13 +2,12 @@ package dk.aau.d507e19.warehousesim.controller.server;
 
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.exception.DoubleReservationException;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
+import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Optional;
+import java.util.*;
 
 public class ReservationManager {
 
@@ -32,7 +31,7 @@ public class ReservationManager {
         }
     }
 
-    public void reserve(Robot robot, GridCoordinate resCoordinate, TimeFrame timeFrame) {
+    public void reserve(Robot robot, GridCoordinate resCoordinate, TimeFrame timeFrame) throws DoubleReservationException {
         Reservation reservation = new Reservation(robot, resCoordinate, timeFrame);
         reservationTiles[resCoordinate.getX()][resCoordinate.getY()].addReservation(reservation);
 
@@ -54,7 +53,7 @@ public class ReservationManager {
 
     public HashSet<Robot> whoReserved(GridCoordinate gridCoordinate, TimeFrame timeFrame) {
         int x = gridCoordinate.getX(), y = gridCoordinate.getY();
-        ArrayList<Reservation> reservations = reservationTiles[x][y].getReservations(timeFrame);
+        ArrayList<Reservation> reservations = reservationTiles[x][y].getOverlappingReservations(timeFrame);
         HashSet<Robot> robots = new HashSet<>();
 
         for (Reservation reservation : reservations) {
@@ -112,7 +111,7 @@ public class ReservationManager {
         return reservedBinTiles.contains(tile);
     }
 
-    public void reserve(ArrayList<Reservation> reservations) {
+    public void reserve(ArrayList<Reservation> reservations) throws DoubleReservationException {
         for (Reservation reservation : reservations) {
             int x = reservation.getGridCoordinate().getX(), y = reservation.getGridCoordinate().getY();
             reservationTiles[x][y].addReservation(reservation);
@@ -120,7 +119,7 @@ public class ReservationManager {
         }
     }
 
-    public void reserve(Reservation reservation) {
+    public void reserve(Reservation reservation) throws DoubleReservationException {
         int x = reservation.getGridCoordinate().getX(), y = reservation.getGridCoordinate().getY();
         reservationTiles[x][y].addReservation(reservation);
         mapReservation(reservation);
@@ -155,7 +154,7 @@ public class ReservationManager {
         int x = reservation.getGridCoordinate().getX();
         int y = reservation.getGridCoordinate().getY();
         ArrayList<Reservation> sameTimeReservations =
-                reservationTiles[x][y].getReservations(reservation.getTimeFrame());
+                reservationTiles[x][y].getOverlappingReservations(reservation.getTimeFrame());
 
         // Check if conflicting reservations are made by the same robot
         for(Reservation sameTimeReservation : sameTimeReservations){
@@ -190,5 +189,16 @@ public class ReservationManager {
 
     public ArrayList<BinTile> getReservedBinTiles() {
         return reservedBinTiles;
+    }
+
+    public ArrayList<Reservation> getConflictingReservations(Reservation newReservation) {
+        int x = newReservation.getGridCoordinate().getX();
+        int y = newReservation.getGridCoordinate().getY();
+
+        ArrayList<Reservation> conflictingReservations;
+        conflictingReservations = reservationTiles[x][y].getOverlappingReservations(newReservation.getTimeFrame());
+        conflictingReservations.removeIf((r) -> r.getRobot().equals(newReservation.getRobot()));
+
+        return conflictingReservations;
     }
 }

@@ -5,12 +5,16 @@ import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.server.OrderManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
+import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
+import org.graalvm.compiler.core.common.type.ArithmeticOpTable;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.Random;
 
 public class OrderGenerator {
-    private static final long RANDOM_SEED = 123456789L;
+    private static final long RANDOM_SEED = SimulationApp.RANDOM_SEED;
     private Random random = new Random(RANDOM_SEED);
     private final int TICKS_BETWEEN_ORDERS = WarehouseSpecs.secondsBetweenOrders * SimulationApp.TICKS_PER_SECOND;
 
@@ -18,8 +22,7 @@ public class OrderGenerator {
     private int tickSinceLastOrder = TICKS_BETWEEN_ORDERS;
     private Server server;
 
-    private final int MAX_LINES = 3;
-    private final int MAX_AMOUNT = 4;
+    private final int MAX_PRODUCTS = WarehouseSpecs.productsPerOrder;
 
     public OrderGenerator(OrderManager orderManager, Server server) {
         this.orderManager = orderManager;
@@ -27,30 +30,39 @@ public class OrderGenerator {
     }
 
     public void update(){
-        if(tickSinceLastOrder == TICKS_BETWEEN_ORDERS){
+        if(tickSinceLastOrder == TICKS_BETWEEN_ORDERS && !server.getProductsAvailable().isEmpty()){
             Order randomOrder = generateRandomOrder();
             orderManager.takeOrder(randomOrder);
             tickSinceLastOrder = 0;
         }
-        tickSinceLastOrder += 1;
+        else tickSinceLastOrder += 1;
+
     }
 
-    private Order generateRandomOrder() {
-        int linesInOrder = random.nextInt(MAX_LINES - 1) + 1;
+    private Order generateRandomOrder(){
+        Order order = new Order();
 
-        ArrayList<OrderLine> orderLines = new ArrayList<>();
-        for(int i = 0; i < linesInOrder; i++){
-            orderLines.add(generateRandomLine());
+        ArrayList<Product> allProducts = server.getProductsAvailable();
+
+        // Can't be 0
+        int amountInOrder = random.nextInt(MAX_PRODUCTS) + 1;
+
+        // for the products in the order
+        ArrayList<Product> productsInOrder = new ArrayList<>();
+
+        // Take out all products from the list of available products from server
+        while(productsInOrder.size() < amountInOrder && !allProducts.isEmpty()){
+            int nextProduct = random.nextInt(allProducts.size());
+            productsInOrder.add(allProducts.get(nextProduct));
+            allProducts.remove(nextProduct);
         }
 
-        return new Order(orderLines);
-    }
+        // Add all the products to the order
+        for(Product prod : productsInOrder){
+            order.addProducts(prod);
+        }
 
-    private OrderLine generateRandomLine(){
-        int bound = server.getProductsAvailable().size();
-        Product prod = server.getProductsAvailable().get(random.nextInt(bound));
-        int amount = random.nextInt(MAX_AMOUNT - 1) + 1;
-        return new OrderLine(prod, amount);
+        return order;
     }
 
 }

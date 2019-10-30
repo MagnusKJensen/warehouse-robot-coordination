@@ -26,4 +26,12 @@ public class OrderLine {
                 ", amount=" + amount +
                 '}';
     }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
+    }
 }

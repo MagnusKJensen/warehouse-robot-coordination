@@ -12,4 +12,6 @@ public interface Task {
 
     void setRobot(Robot robot);
 
+    boolean interrupt();
+
 }
