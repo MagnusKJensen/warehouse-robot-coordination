@@ -30,6 +30,10 @@ public class AStarTile {
         isBlocked = blocked;
     }
 
+    public void setG(int g){
+        G = g;
+    }
+
     //Getters
 
     public int getCurrentXPosition() {

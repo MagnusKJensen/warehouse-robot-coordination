@@ -48,7 +48,7 @@ public class OrderManager {
             this.orderQueue.add(order);
             return true;
         } else {
-            System.out.println("Rejected order " + order);
+            //System.out.println("Rejected order " + order);
             return false;
         }
     }
@@ -108,7 +108,7 @@ public class OrderManager {
             if(tasksFromOrder != null){
                 processingOrdersToTaskMap.put(order, tasksFromOrder);
                 tasksQueue.addAll(tasksFromOrder);
-                System.out.println("Commenced order: " + orderQueue.get(0));
+                //System.out.println("Commenced order: " + orderQueue.get(0));
                 // Remove order from queue
                 orderIterator.remove();
                 // Picker is no longer available
