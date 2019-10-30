@@ -14,9 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
-
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 public class RRTStarTest {
@@ -116,6 +114,32 @@ public class RRTStarTest {
         for(Step s : rrtStar.getPath()){
             System.out.println(s.getGridCoordinate());
         }*/
+    }
+    @Test
+    public void testFindTurns(){
+        RRTStar rrtStar = new RRTStar(robotController);
+        Node<GridCoordinate> n0 = new Node<>(new GridCoordinate(0,0),null,false);
+        Node<GridCoordinate> n1 = new Node<>(new GridCoordinate(0,1),null,false);
+        Node<GridCoordinate> n2 = new Node<>(new GridCoordinate(1,1),null,false);
+        Node<GridCoordinate> n3 = new Node<>(new GridCoordinate(2,1),null,false);
+        Node<GridCoordinate> n4 = new Node<>(new GridCoordinate(2,0),null,false);
+        Node<GridCoordinate> n5 = new Node<>(new GridCoordinate(3,0),null,false);
+        Node<GridCoordinate> n6 = new Node<>(new GridCoordinate(3,1),null,false);
+        ArrayList<Node<GridCoordinate>> path = new ArrayList<>(), turnNodes = new ArrayList<>();
+        path.add(n0);
+        path.add(n1);
+        path.add(n2);
+        path.add(n3);
+        path.add(n4);
+        path.add(n5);
+        path.add(n6);
+        turnNodes.add(n1);
+        turnNodes.add(n3);
+        turnNodes.add(n4);
+        turnNodes.add(n5);
+        ArrayList<Node<GridCoordinate>> foundTurns = rrtStar.findTurns(path);
+        assertFalse(foundTurns.contains(n0));
+        assertEquals(turnNodes,rrtStar.findTurns(path));
     }
 
 }
