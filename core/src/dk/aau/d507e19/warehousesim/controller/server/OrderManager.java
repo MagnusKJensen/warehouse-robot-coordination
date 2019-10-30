@@ -116,7 +116,9 @@ public class OrderManager {
                 if(server.getReservationManager().isBinReserved(tile.getGridCoordinate())) continue;
                 BinDelivery delivery = generateDelivery((BinTile) tile, productsToPick, order);
                 if(delivery != null) deliveries.add(delivery);
+                if(productsToPick.isEmpty()) break;
             }
+            if(productsToPick.isEmpty()) break;
         }
 
         if(productsToPick.isEmpty()) return deliveries;
@@ -150,55 +152,6 @@ public class OrderManager {
         return null;
     }
 
-
-    /*
-    private ArrayList<Task> splitLineIntoTasks(OrderLine line, Order order, ArrayList<BinTile> tempReservations) {
-        ArrayList<BinTile> newReservations = new ArrayList<>();
-        Product product = line.getProduct();
-
-        StorageGrid storageGrid = server.getSimulation().getStorageGrid();
-        ArrayList<BinTile> binTiles = storageGrid.tilesWithProduct(line.getProduct());
-        binTiles.sort(Comparator.comparingInt(tile -> tile.getBin().productCount(product)));
-
-        ArrayList<Task> productTasks = new ArrayList<>();
-
-        int remainingProducts = line.getAmount();
-        int productInBin;
-        int productsToPick;
-        for(BinTile tile : binTiles){
-            if(server.getReservationManager().isBinReserved(tile.getGridCoordinate())){
-                continue;
-            }
-            if(tempReservations.contains(tile)){
-                continue;
-            }
-
-            productInBin = tile.getBin().productCount(product);
-            // Only pick up all products from the bin, if they are needed
-            if(remainingProducts > productInBin){
-                remainingProducts -= productInBin;
-                productsToPick = productInBin;
-            } else {
-                productsToPick = remainingProducts;
-                remainingProducts = 0;
-            }
-
-            productTasks.add(new BinDelivery(order, tile.getGridCoordinate(), product, productsToPick));
-            newReservations.add(tile);
-            if(remainingProducts <= 0){
-                break;
-            }
-        }
-
-        if(remainingProducts > 0){
-            return null;
-        }
-
-        tempReservations.addAll(newReservations);
-
-        return productTasks;
-    }
-    */
     public int ordersInQueue(){
         return orderQueue.size();
     }
