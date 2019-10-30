@@ -169,10 +169,17 @@ public class Navigation implements Task {
         return new Reservation(lastReservation.getRobot(), lastReservation.getGridCoordinate(), indefiniteTimeFrame);
     }
 
-    public void interrupt(){
+    public boolean interrupt(){
+        if(isMoving())
+            return false;
+
         this.path = null;
         lineTraversals.clear();
-        // todo clear reservations
+        return true;
+    }
+
+    private boolean isMoving() {
+        return path != null;
     }
 
     @Override

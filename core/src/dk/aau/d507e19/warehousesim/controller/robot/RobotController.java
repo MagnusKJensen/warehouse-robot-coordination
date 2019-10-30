@@ -46,6 +46,12 @@ public class RobotController {
         return true;
     }
 
+    public boolean assignImmediateTask(Task task){
+        tasks.add(0, task);
+        robot.setCurrentStatus(Status.BUSY);
+        return true;
+    }
+
     public void cancelTask(Task task) {
         // todo
     }
@@ -95,12 +101,20 @@ public class RobotController {
 
 
     public boolean requestMove(){
-        if(robot.getCurrentStatus() == Status.BUSY)
-            return false;
+
+        if(robot.getCurrentStatus() == Status.BUSY){
+            if(!interruptCurrentTask())
+                return false;
+        }
 
         GridCoordinate newPosition = server.getNewPosition();
-        assignTask(new Navigation(this, newPosition));
+        assignImmediateTask(new Navigation(this, newPosition));
         return true;
+    }
+
+    private boolean interruptCurrentTask() {
+        if(tasks.isEmpty()) return true;
+        return tasks.getFirst().interrupt();
     }
 
 }
