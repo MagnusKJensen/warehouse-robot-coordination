@@ -103,8 +103,8 @@ public class Navigation implements Task {
             return false;
         } catch (NoPathFoundException e) {
             // Path planning failed - Retrying after delay
-            System.out.println("Path finding failed. Start : " + e.getStart() + " Destination : " + e.getDest()
-                    + "at time : " + server.getTimeInTicks());
+            //System.out.println("Path finding failed. Start : " + e.getStart() + " Destination : " + e.getDest()
+                    //+ "at time : " + server.getTimeInTicks());
             return false;
         }
 
