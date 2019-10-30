@@ -225,6 +225,11 @@ public class Astar implements PathFinder {
         // Adds the starting tile to closed list.
         addStartTileToClosedList(xStart, yStart);
 
+        GridCoordinate destination = new GridCoordinate(xEndPosition, yEndPosition);
+        GridCoordinate start = new GridCoordinate(xStart, yStart);
+        if (server.getReservationManager().isReservedIndefinitely(destination))
+            throw new DestinationReservedIndefinitelyException(start, destination);
+
         // While is true if the currentTile does not have the same x coordinate and the same y coordinate as the end Tile.
         while (!(currentTile.getCurrentXPosition() == xEndPosition && currentTile.getCurrentYPosition() == yEndPosition)) {
             // Add the valid tiles to openList
@@ -236,7 +241,7 @@ public class Astar implements PathFinder {
                   //  throw new BlockedEndDestinationException(robot, closedList.size());
                     GridCoordinate startGC = new GridCoordinate(xStart,yStart);
                     GridCoordinate endGC = new GridCoordinate(xEndPosition,yEndPosition);
-                    throw new DestinationReservedIndefinitelyException(startGC,endGC);
+                    throw new NoPathFoundException(startGC,endGC);
                 }
                 throw new NoValidPathException(new GridCoordinate(xStart,yStart), new GridCoordinate(xEndPosition,yEndPosition),"No valid Neighbor could be found");
                // throw new NoValidNeighborException(robot);
