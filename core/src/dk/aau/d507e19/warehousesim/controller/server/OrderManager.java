@@ -109,8 +109,8 @@ public class OrderManager {
 
         StorageGrid storageGrid = server.getSimulation().getStorageGrid();
 
-        for(int x = 0; x < storageGrid.width; x++){
-            for(int y = 0; y < storageGrid.height; y++){
+        for(int y = 0; y < storageGrid.height; y++){
+            for(int x = 0; x < storageGrid.width; x++){
                 Tile tile = storageGrid.getTile(x,y);
                 if(!(tile instanceof BinTile)) continue;
                 if(server.getReservationManager().isBinReserved(tile.getGridCoordinate())) continue;
