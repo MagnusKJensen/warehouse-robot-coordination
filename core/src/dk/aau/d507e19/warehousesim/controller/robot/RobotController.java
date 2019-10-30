@@ -13,7 +13,6 @@ import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.exception.DoubleReservationException;
 
 import java.util.LinkedList;
-import java.util.Optional;
 
 public class RobotController {
     private Server server;
