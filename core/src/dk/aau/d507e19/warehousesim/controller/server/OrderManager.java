@@ -1,13 +1,11 @@
 package dk.aau.d507e19.warehousesim.controller.server;
 
+import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.BinDelivery;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.controller.server.order.Order;
 import dk.aau.d507e19.warehousesim.controller.server.order.OrderLine;
-import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.DummyTaskAllocator;
-import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.NaiveShortestDistanceTaskAllocator;
-import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.ShortestDistanceTaskAllocator;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocator;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
@@ -76,7 +74,6 @@ public class OrderManager {
             if(tasksFromOrder != null){
                 processingOrdersToTaskMap.put(order, tasksFromOrder);
                 tasksQueue.addAll(tasksFromOrder);
-                System.out.println("Commenced order: " + orderQueue.get(0));
                 // Remove order from queue
                 orderIterator.remove();
                 // Picker is no longer available
@@ -108,23 +105,24 @@ public class OrderManager {
 
     private ArrayList<Task> createTasksFromOrder(Order order) {
         ArrayList<Task> orderTasks = new ArrayList<>();
+        ArrayList<BinTile> tempReservations = new ArrayList<>();
 
         // Go through all lines in order
         for(OrderLine line : order.getLinesInOrder()){
             // Split each line into tasks
-            ArrayList<Task> orderLineTasks = splitIntoTasks(line, order);
+            ArrayList<Task> orderLineTasks = splitLineIntoTasks(line, order, tempReservations);
             if(orderLineTasks == null) return null;
             orderTasks.addAll(orderLineTasks);
         }
 
         // Reserve the bin for all tasks
-        for(Task task : orderTasks)
-            server.getReservationManager().reserveBinTile(((BinDelivery)task).getBinCoords());
+        server.getReservationManager().reserveBinTiles(tempReservations);
 
         return orderTasks;
     }
 
-    private ArrayList<Task> splitIntoTasks(OrderLine line, Order order) {
+    private ArrayList<Task> splitLineIntoTasks(OrderLine line, Order order, ArrayList<BinTile> tempReservations) {
+        ArrayList<BinTile> newReservations = new ArrayList<>();
         Product product = line.getProduct();
 
         StorageGrid storageGrid = server.getSimulation().getStorageGrid();
@@ -136,12 +134,16 @@ public class OrderManager {
         int remainingProducts = line.getAmount();
         for(BinTile tile : binTiles){
             if(server.getReservationManager().isBinReserved(tile.getGridCoordinate())) continue;
+            if(tempReservations.contains(tile)) continue;
             remainingProducts -= tile.getBin().productCount(product);
             productTasks.add(new BinDelivery(order, tile.getGridCoordinate()));
+            newReservations.add(tile);
             if(remainingProducts <= 0) break;
         }
 
         if(remainingProducts > 0) return null;
+
+        tempReservations.addAll(newReservations);
 
         return productTasks;
     }
