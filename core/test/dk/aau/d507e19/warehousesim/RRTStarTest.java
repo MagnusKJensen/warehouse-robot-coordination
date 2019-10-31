@@ -36,30 +36,26 @@ public class RRTStarTest {
         RRTStar rrtStar = new RRTStar(robotController);
         RRT rrt = new RRT(robotController);
         GridCoordinate start = new GridCoordinate(0, 0);
-        GridCoordinate dest1 = new GridCoordinate(10, 10);
+        GridCoordinate dest1 = new GridCoordinate(11, 7);
         GridCoordinate dest2 = new GridCoordinate(2, 3);
         ArrayList<Step> rrtList,rrtStarList;
         //generate both paths
         rrtList = rrt.generateRRTPath(start,dest1);
         rrtStarList = rrtStar.generatePath(start,dest1);
-        System.out.println(rrtList.size() + " : " + rrtStarList.size());
-        //can fail if somehow random == optimized (low chance)
-        assertNotEquals(rrtList,rrtStarList);
         RRTTest test = new RRTTest();
         assertTrue(test.isValidPath(start,dest1,rrtStarList));
         rrtStarList = rrtStar.generatePath(dest1,dest2);
         assertTrue(test.isValidPath(dest1,dest2,rrtStarList));
         rrtStarList = rrtStar.generatePath(dest2,start);
         assertTrue(test.isValidPath(dest2,start,rrtStarList));
-
-        /*for (Step gc: rrtList){
+/*
+        for (Step gc: rrtList){
             System.out.println(gc.getGridCoordinate());
         }
         for (Step gc: rrtStarList){
             System.out.println(gc.getGridCoordinate());
-        }*/
-
-
+        }
+*/
     }
     @Test
     public void generatePathFromEmptyTest(){
