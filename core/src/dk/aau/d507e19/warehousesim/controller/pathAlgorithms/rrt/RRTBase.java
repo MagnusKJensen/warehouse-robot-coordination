@@ -28,7 +28,7 @@ public abstract class RRTBase {
 
     public Node<GridCoordinate> root, destinationNode,shortestLengthNode,latestNode;
     //Free list of all free points in the grid. populateFreeList() intializes the array with grid coordinates.
-    public ArrayList<GridCoordinate> freeNodeList = populateFreeList();
+    public ArrayList<GridCoordinate> freeNodeList;
     //blockedNodeList
     public ArrayList<GridCoordinate> blockedNodeList = new ArrayList<>();
     protected ArrayList<Step> path = new ArrayList<>();
@@ -323,10 +323,11 @@ public abstract class RRTBase {
         ArrayList<GridCoordinate> freeListInitializer = new ArrayList<>();
         for(int i = 0; i < WarehouseSpecs.wareHouseWidth ; i++){
             for(int j = 0; j < WarehouseSpecs.wareHouseHeight; j++ ){
-                //If coordinate is root(The robot's position), dont add.
                 freeListInitializer.add(new GridCoordinate(i,j));
             }
         }
+        //remove robot position when done populating
+        freeListInitializer.remove(robotController.getRobot().getGridCoordinate());
         return freeListInitializer;
     }
     private void updateFreeList(GridCoordinate pos){
@@ -335,9 +336,10 @@ public abstract class RRTBase {
         }
     }
     protected ArrayList<Step> generatePathFromEmpty(GridCoordinate start, GridCoordinate destination){
-        boolean foundPath = false;
         dest = destination;
-        root = new Node<GridCoordinate>(start, null, false);
+        root = new Node<>(start, null, false);
+        //populate the freenodelist
+        freeNodeList = populateFreeList();
         //add root node to list of nodes
         allNodesMap.put(root.getData(),root);
         //grow until we have a path
@@ -364,18 +366,7 @@ public abstract class RRTBase {
             growUntilPathFound(destination);
         }
         destinationNode = allNodesMap.get(destination);
-
         path = makePath(destinationNode);
-/*        Node<GridCoordinate> tempDestinationNode;
-        assignBlockedNodeStatus(robotController.getServer().getReservationManager().getAllCurrentReservations(robotController.getServer().getTimeInTicks()));
-        for(int i = 0; i < path.size(); i++){
-            if(allNodesMap.get(path.get(i).getGridCoordinate()).getBlockedStatus()){
-                tempDestinationNode = allNodesMap.get(path.get(i+1).getGridCoordinate());
-                rewireTreeFromCollision(allNodesMap.get(path.get(i-1).getGridCoordinate()), tempDestinationNode);
-            }
-
-        }*/
-
         return makePath(destinationNode);
     }
     private void growKtimes(GridCoordinate destination, int k){
