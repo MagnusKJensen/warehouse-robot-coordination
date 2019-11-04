@@ -14,6 +14,7 @@ import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
+import dk.aau.d507e19.warehousesim.exception.DestinationReservedIndefinitelyException;
 import dk.aau.d507e19.warehousesim.exception.DoubleReservationException;
 import dk.aau.d507e19.warehousesim.exception.NoPathFoundException;
 
@@ -97,6 +98,9 @@ public class Navigation implements Task {
         GridCoordinate start = robot.getGridCoordinate();
         try {
             path = robotController.getPathFinder().calculatePath(start, destination);
+        } catch (DestinationReservedIndefinitelyException e) {
+            askOccupyingRobotToMove(e.getDest());
+            return false;
         } catch (NoPathFoundException e) {
             // Path planning failed - Retrying after delay
             //System.out.println("Path finding failed. Start : " + e.getStart() + " Destination : " + e.getDest()
@@ -111,13 +115,26 @@ public class Navigation implements Task {
         if(path.getFullPath().size() > 1){
             if(!(robotController.getPathFinder() instanceof DummyPathFinder))
                 reservePath(path, true);
-            return true;
+            return false;
         }else{
             if(!(robotController.getPathFinder() instanceof DummyPathFinder))
                 reserveCurrentTileIndefinitely();
             complete();
             return false;
         }
+    }
+
+    private boolean askOccupyingRobotToMove(GridCoordinate dest) {
+        Server server = robotController.getServer();
+        Reservation indefiniteRes = new Reservation(robot, dest, TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks()));
+        ArrayList<Reservation> conflicts = server.getReservationManager().getConflictingReservations(indefiniteRes);
+
+        for(Reservation reservation : conflicts){
+            if(reservation.getTimeFrame().getTimeMode() == TimeFrame.TimeMode.UNBOUNDED)
+                return reservation.getRobot().getRobotController().requestMove();
+        }
+
+        throw new RuntimeException("No occupying robot; no robot has reserved grid tile :" + dest + " indefinitely");
     }
 
     private void reservePath(Path path, boolean reserveLastTileIndefinitely) {
@@ -152,10 +169,17 @@ public class Navigation implements Task {
         return new Reservation(lastReservation.getRobot(), lastReservation.getGridCoordinate(), indefiniteTimeFrame);
     }
 
-    public void interrupt(){
+    public boolean interrupt(){
+        if(isMoving())
+            return false;
+
         this.path = null;
         lineTraversals.clear();
-        // todo clear reservations
+        return true;
+    }
+
+    private boolean isMoving() {
+        return path != null;
     }
 
     @Override

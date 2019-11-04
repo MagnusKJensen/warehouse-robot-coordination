@@ -1,18 +1,21 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStarExtended.AstarExtended;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.chp.CHPathfinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTType;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Navigation;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.exception.DoubleReservationException;
 
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Optional;
 
 public class RobotController {
     private Server server;
@@ -21,10 +24,10 @@ public class RobotController {
 
     private LinkedList<Task> tasks = new LinkedList<>();
 
-    public RobotController(Server server, Robot robot, String pathFinderString){
+    public RobotController(Server server, Robot robot, PathFinderEnum pathFinderEnum){
         this.server = server;
         this.robot = robot;
-        this.pathFinder = generatePathFinder(pathFinderString);
+        this.pathFinder = pathFinderEnum.getPathFinder(server, this);
         reserveCurrentSpot();
     }
 
@@ -37,28 +40,15 @@ public class RobotController {
         }
     }
 
-    private PathFinder generatePathFinder(String pathFinderString) {
-        switch (pathFinderString) {
-            case "Astar":
-                return new Astar(server, robot);
-            case "AstarExtended":
-                return new AstarExtended(server, robot);
-            case "RRT*":
-                return new RRTPlanner(RRTType.RRT_STAR, this);
-            case "RRT":
-                return new RRTPlanner(RRTType.RRT, this);
-            case "DummyPathFinder":
-                return new DummyPathFinder();
-            case "CustomH - Turns":
-                return CHPathfinder.defaultCHPathfinder(server.getGridBounds(), this);
-            default:
-                throw new RuntimeException("Could not identify pathfinder " + pathFinderString);
-        }
-    }
-
     public boolean assignTask(Task task){
         tasks.add(task);
-        // tasks.add(new TotalReset());  todo
+        robot.setCurrentStatus(Status.BUSY);
+        return true;
+    }
+
+    public boolean assignImmediateTask(Task task){
+        tasks.add(0, task);
+        robot.setCurrentStatus(Status.BUSY);
         return true;
     }
 
@@ -67,20 +57,21 @@ public class RobotController {
     }
 
     public void update() {
-        // If robot has nothing to do, set status available and return.
-        if (tasks.isEmpty()) {
-            robot.setCurrentStatus(Status.AVAILABLE);
+        if(tasks.isEmpty()){
             return;
-        }else{
-            robot.setCurrentStatus(Status.BUSY);
         }
 
         Task currentTask = tasks.peekFirst();
         if (!currentTask.isCompleted())
             currentTask.perform();
 
-        if (currentTask.isCompleted())
-            tasks.removeFirst();
+        removeCompletedTasks();
+
+        updateStatus();
+    }
+
+    private void removeCompletedTasks() {
+        tasks.removeIf(Task::isCompleted);
     }
 
     public PathFinder getPathFinder() {
@@ -98,4 +89,32 @@ public class RobotController {
     public boolean hasTask(){
         return !tasks.isEmpty();
     }
+
+    public void updateStatus() {
+       if(tasks.isEmpty()) robot.setCurrentStatus(Status.AVAILABLE);
+       else robot.setCurrentStatus(Status.BUSY);
+    }
+
+    public LinkedList<Task> getTasks() {
+        return tasks;
+    }
+
+
+    public boolean requestMove(){
+
+        if(robot.getCurrentStatus() == Status.BUSY){
+            if(!interruptCurrentTask())
+                return false;
+        }
+
+        GridCoordinate newPosition = server.getNewPosition();
+        assignImmediateTask(new Navigation(this, newPosition));
+        return true;
+    }
+
+    private boolean interruptCurrentTask() {
+        if(tasks.isEmpty()) return true;
+        return tasks.getFirst().interrupt();
+    }
+
 }

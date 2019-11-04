@@ -10,8 +10,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Array;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
+
+import java.util.ArrayList;
 
 public class PathFindingDropDown {
     private SideMenu sideMenu;
@@ -41,13 +45,19 @@ public class PathFindingDropDown {
     private void createDropDown() {
         selectBox = new SelectBox<>(skin);
 
-        selectBox.setItems("DummyPathFinder", "Astar", "AstarExtended","RRT", "RRT*", "CustomH - Turns");
+
+        Array<String> pfNames = new Array<>();
+        for(PathFinderEnum pf : PathFinderEnum.values()){
+            pfNames.add(pf.getName());
+        }
+        selectBox.setItems(pfNames);
 
         selectBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 String selected = selectBox.getSelected();
-                simulationApp.setPathFinderSelected(selected);
+                PathFinderEnum selectedPathFinder = findSelectedPathFinderFromString(selected);
+                simulationApp.setPathFinderSelected(selectedPathFinder);
                 simulationApp.resetSimulation();
             }
         });
@@ -56,6 +66,13 @@ public class PathFindingDropDown {
         selectBox.setPosition(screenOffSet.x + LEFT_SIDE_PADDING, screenOffSet.y - 55);
 
         menuStage.addActor(selectBox);
+    }
+
+    private PathFinderEnum findSelectedPathFinderFromString(String selected) {
+        for(PathFinderEnum pf : PathFinderEnum.values()){
+            if(selected.equals(pf.getName())) return pf;
+        }
+        throw new IllegalArgumentException("Could not match pathfinder '" + selected + "' with any pathfinder.");
     }
 
     public void changeOffSet(Vector2 offSet){

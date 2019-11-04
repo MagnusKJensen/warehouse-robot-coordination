@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
+import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocatorEnum;
 import dk.aau.d507e19.warehousesim.input.CameraMover;
 import dk.aau.d507e19.warehousesim.ui.SideMenu;
 
@@ -12,8 +14,8 @@ import java.util.Random;
 
 public class SimulationApp extends ApplicationAdapter {
 
-	private static final long RANDOM_SEED = 12345442352525L;
-	public static Random random = new Random();
+	public static final long RANDOM_SEED = 12345442352525L;
+	public static Random random = new Random(RANDOM_SEED);
 
 	public static final int MENU_WIDTH_IN_PIXELS = 300;
 	// Size of a single square/tile in the grid
@@ -45,8 +47,8 @@ public class SimulationApp extends ApplicationAdapter {
     private InputMultiplexer inputMultiplexer;
 
     // Currently using the following pathFinder and TaskAllocators.
-	public static String pathFinderSelected = "DummyPathFinder";
-	private String taskAllocatorSelected = "DummyTaskAllocator";
+	public static PathFinderEnum pathFinderSelected = PathFinderEnum.DUMMYPATHFINDER;
+	private static TaskAllocatorEnum taskAllocatorSelected = TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR;
 
 	@Override
 	public void create () {
@@ -260,19 +262,19 @@ public class SimulationApp extends ApplicationAdapter {
 		return updateMode;
 	}
 
-	public String getPathFinderSelected() {
+	public PathFinderEnum getPathFinderSelected() {
 		return pathFinderSelected;
 	}
 
-	public void setPathFinderSelected(String pathFinderSelected) {
+	public void setPathFinderSelected(PathFinderEnum pathFinderSelected) {
 		this.pathFinderSelected = pathFinderSelected;
 	}
 
-	public void setTaskAllocatorSelected(String taskAllocatorSelected) {
+	public void setTaskAllocatorSelected(TaskAllocatorEnum taskAllocatorSelected) {
 		this.taskAllocatorSelected = taskAllocatorSelected;
 	}
 
-	public String getTaskAllocatorSelected() {
+	public TaskAllocatorEnum getTaskAllocatorSelected() {
 		return taskAllocatorSelected;
 	}
 }
