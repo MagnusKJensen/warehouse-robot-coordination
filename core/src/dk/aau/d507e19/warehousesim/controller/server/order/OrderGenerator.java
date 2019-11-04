@@ -6,7 +6,6 @@ import dk.aau.d507e19.warehousesim.controller.server.OrderManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
-import org.graalvm.compiler.core.common.type.ArithmeticOpTable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
