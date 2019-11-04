@@ -8,6 +8,8 @@ import java.util.ArrayList;
 public class Order {
     private ArrayList<OrderLine> linesInOrder = new ArrayList<>();
     private PickerTile picker;
+    private long startTimeInSeconds;
+    private long finishTimeInSeconds;
 
     public Order(ArrayList<OrderLine> linesInOrder) {
         this.linesInOrder = linesInOrder;
@@ -44,6 +46,8 @@ public class Order {
         return "Order{" +
                 "linesInOrder=" + linesInOrder +
                 ", picker=" + picker +
+                ", startTimeInSeconds=" + startTimeInSeconds +
+                ", finishTimeInSeconds=" + finishTimeInSeconds +
                 '}';
     }
 
@@ -62,5 +66,19 @@ public class Order {
         if(!wasContained) linesInOrder.add(new OrderLine(prod, 1));
     }
 
+    public long getStartTimeInSeconds() {
+        return startTimeInSeconds;
+    }
 
+    public void setStartTimeInMS(long startTimeInSeconds) {
+        this.startTimeInSeconds = startTimeInSeconds;
+    }
+
+    public long getFinishTimeInSeconds() {
+        return finishTimeInSeconds;
+    }
+
+    public void setFinishTimeInSeconds(long finishTimeInSeconds) {
+        this.finishTimeInSeconds = finishTimeInSeconds;
+    }
 }

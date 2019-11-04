@@ -50,6 +50,8 @@ public class SimulationApp extends ApplicationAdapter {
 	public static PathFinderEnum pathFinderSelected = PathFinderEnum.DUMMYPATHFINDER;
 	private static TaskAllocatorEnum taskAllocatorSelected = TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR;
 
+	private StatisticsManager statsManager;
+
 	@Override
 	public void create () {
         GraphicsManager.loadAssets();
@@ -73,6 +75,8 @@ public class SimulationApp extends ApplicationAdapter {
 		inputMultiplexer.addProcessor(cameraMover);
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());
         lastUpdateTime = System.currentTimeMillis();
+
+        statsManager = new StatisticsManager(this);
 	}
 
 	private void centerCamera(OrthographicCamera camera) {
@@ -276,5 +280,9 @@ public class SimulationApp extends ApplicationAdapter {
 
 	public TaskAllocatorEnum getTaskAllocatorSelected() {
 		return taskAllocatorSelected;
+	}
+
+	public StatisticsManager getStatsManager() {
+		return statsManager;
 	}
 }

@@ -1,10 +1,8 @@
 package dk.aau.d507e19.warehousesim.controller.server;
 
 
-import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -29,7 +27,7 @@ public class ReservationManagerTest {
     @Test
     public void isReserved() {
         Server server = Mockito.mock(Server.class);
-        when(server.getTimeInSeconds()).thenReturn(30L);
+        when(server.getTimeInMS()).thenReturn(30L);
 
         Robot robot = Mockito.mock(Robot.class);
         when(robot.getGridCoordinate()).thenReturn(new GridCoordinate(0, 0));
@@ -43,7 +41,7 @@ public class ReservationManagerTest {
     @Test
     public void isReservedOverlapping() {
         Server server = Mockito.mock(Server.class);
-        when(server.getTimeInSeconds()).thenReturn(30L);
+        when(server.getTimeInMS()).thenReturn(30L);
 
         Robot robot = Mockito.mock(Robot.class);
         when(robot.getGridCoordinate()).thenReturn(new GridCoordinate(0, 0));

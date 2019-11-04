@@ -46,6 +46,11 @@ public class SideMenu {
     private Vector2 taskAllocationDropDownOffset;
     private Vector2 performanceMetricsOffset;
     private Vector2 tickStopperOffset;
+    private Vector2 printStatsOffset;
+
+    // Print stats button
+    private TextButton printStatsButton;
+    private Text printStatsText;
 
     // Performance Metrics
     private Text performanceMetricsTitle;
@@ -80,7 +85,26 @@ public class SideMenu {
         taskAllocationDropDown = new TaskAllocationDropDown(menuStage, simulationApp, taskAllocationDropDownOffset, this);
         addTickStopper();
         addPerformanceMetrics();
+        addPrintStatsButton();
+    }
 
+    private void addPrintStatsButton() {
+        // Button
+        printStatsButton = new TextButton("Print stats to file", skin);
+        printStatsButton.setSize(280,40);
+
+        printStatsButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                simulationApp.getStatsManager().printStatistics();
+            }
+        });
+
+        // Text above
+        printStatsText = new Text("Print statistics to file", printStatsOffset.x, printStatsOffset.y, Color.CORAL);
+
+        menuStage.addActor(printStatsText);
+        menuStage.addActor(printStatsButton);
     }
 
     private void addTickStopper() {
@@ -185,6 +209,10 @@ public class SideMenu {
         tickStopperTextField.setPosition(tickStopperOffset.x, tickStopperOffset.y - 60);
         tickStopperButton.setPosition(tickStopperOffset.x + 190, tickStopperOffset.y - 60);
         tickStopperText.changeOffSet(tickStopperOffset.x, tickStopperOffset.y);
+
+        // Stats button
+        printStatsText.changeOffSet(printStatsOffset.x, printStatsOffset.y);
+        printStatsButton.setPosition(printStatsOffset.x, printStatsOffset.y - 60);
     }
 
     private void updateOffSetsToWindowSize() {
@@ -194,6 +222,7 @@ public class SideMenu {
         taskAllocationDropDownOffset = new Vector2(0, Gdx.graphics.getHeight() - 440);
         performanceMetricsOffset = new Vector2(10, Gdx.graphics.getHeight() - 510);
         tickStopperOffset = new Vector2(10, Gdx.graphics.getHeight() - 710);
+        printStatsOffset = new Vector2(10, Gdx.graphics.getHeight() - 783);
     }
 
     private void renderBackground(OrthographicCamera camera){
