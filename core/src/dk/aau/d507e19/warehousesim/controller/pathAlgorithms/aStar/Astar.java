@@ -302,15 +302,16 @@ public class Astar implements PathFinder {
 
         // Calculates the path into a list of reservations.
         ArrayList<Reservation> listOfReservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
-
+if(xEndPosition == 0 && yEndPosition == 7)
+    System.out.println("test");
         for (int j = 1; j < listOfReservations.size(); j++) {
-            if (reservationManager.isReserved(listOfReservations.get(j).getGridCoordinate(), listOfReservations.get(j).getTimeFrame())) {
-                isReservedList.add(listOfReservations.get(j).getGridCoordinate());
+            Reservation resBeingChecked = listOfReservations.get(j);
+            if (reservationManager.isReserved(resBeingChecked.getGridCoordinate(), resBeingChecked.getTimeFrame())) {
+                isReservedList.add(resBeingChecked.getGridCoordinate());
                 i = true;
-            } else if (reservationManager.hasConflictingReservations(listOfReservations.get(listOfReservations.size() - 1)) || reservationManager.isReservedIndefinitely(new GridCoordinate(listOfReservations.get(j).getGridCoordinate().getX(),listOfReservations.get(j).getGridCoordinate().getY()))) {
+            } else if ( reservationManager.isReservedIndefinitely(listOfReservations.get(listOfReservations.size()-1).getGridCoordinate()) || !(reservationManager.canReserve(resBeingChecked.getGridCoordinate(),TimeFrame.indefiniteTimeFrameFrom(resBeingChecked.getTimeFrame().getStart())))) {
                 throw new NoPathFoundException(listOfReservations.get(0).getGridCoordinate(), listOfReservations.get(listOfReservations.size() - 1).getGridCoordinate());
             }
-
         }
         return i;
     }
@@ -326,6 +327,7 @@ public class Astar implements PathFinder {
 
         xStart = start.getX();
         yStart = start.getY();
+
 
         // Calculates the optimal A* path
         calculatePath();
