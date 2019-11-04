@@ -78,8 +78,17 @@ public class Simulation {
 
     private void initRobots() {
         // Auto generate robots
+        int x = 0, y = 0;
         for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++){
-            robots.add(new Robot(new Position(i*2, 0), i, this));
+
+            robots.add(new Robot(new Position(x, y), i, this));
+            x+=2;
+
+            if(x > 25){
+                x = 0;
+                y += 2;
+            }
+
         }
     }
 
