@@ -23,22 +23,22 @@ import java.util.Optional;
 
 public class Astar implements PathFinder {
 
-    private AStarTile[][] grid;
-    private int xEndPosition;
-    private int yEndPosition;
-    private int xStart;
-    private int yStart;
+    public AStarTile[][] grid;
+    public int xEndPosition;
+    public int yEndPosition;
+    public int xStart;
+    public int yStart;
 
-    private ArrayList<GridCoordinate> finalPath = new ArrayList<>();
+    public ArrayList<GridCoordinate> finalPath = new ArrayList<>();
 
-    private ArrayList<AStarTile> openList = new ArrayList<>();
-    private ArrayList<AStarTile> closedList = new ArrayList<>();
-    private ArrayList<GridCoordinate> isReservedList = new ArrayList<>();
+    public ArrayList<AStarTile> openList = new ArrayList<>();
+    public ArrayList<AStarTile> closedList = new ArrayList<>();
+    public ArrayList<GridCoordinate> isReservedList = new ArrayList<>();
 
-    private AStarTile currentTile;
-    private final ReservationManager reservationManager;
-    private Server server;
-    private Robot robot;
+    public AStarTile currentTile;
+    public final ReservationManager reservationManager;
+    public Server server;
+    public Robot robot;
 
     public Astar(Server server, Robot robot) {
         this.grid = fillGrid(server.getGridWidth(), server.getGridHeight());
@@ -51,7 +51,7 @@ public class Astar implements PathFinder {
         return grid;
     }
 
-    private AStarTile[][] fillGrid(int gridLength, int gridHeight) {
+    public AStarTile[][] fillGrid(int gridLength, int gridHeight) {
         AStarTile[][] grid = new AStarTile[gridLength][gridHeight];
         // Fills grid with tiles matching the coordinates
         for (int i = 0; i < gridLength; i++) {
@@ -62,7 +62,7 @@ public class Astar implements PathFinder {
         return grid;
     }
 
-    private void addStartTileToClosedList(int xStartposition, int yStartposition) {
+    public void addStartTileToClosedList(int xStartposition, int yStartposition) {
 
         // Adds startTile to closedList
         closedList.add(grid[xStartposition][yStartposition]);
@@ -75,7 +75,7 @@ public class Astar implements PathFinder {
 
     }
 
-    private void checkNeighborValidity() {
+    public void checkNeighborValidity() {
 
         //Checks every potential neighbor to currentTile the same way.
         GridCoordinate aboveNeighbor = new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition() + 1);
@@ -128,29 +128,10 @@ public class Astar implements PathFinder {
         }
     }
 
-    private TimeFrame getTimeFrameFromLastReservation(ArrayList<GridCoordinate> tempPath) {
-
-        ArrayList<Reservation> listOfReservations;
-
-        // Makes the tempPath to steps
-        Path path = new Path(Step.fromGridCoordinates(tempPath));
-
-        // Calculates the path into a list of reservations.
-        listOfReservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
-
-        // Returns the timeFrame of the last reservations.
-        return listOfReservations.get(listOfReservations.size() - 1).getTimeFrame();
-    }
-
-    private void addNeighborTileToOpenList(GridCoordinate gcNeighbor) {
-
-        ArrayList<GridCoordinate> temporaryPath;
+    public void addNeighborTileToOpenList(GridCoordinate gcNeighbor) {
 
         // Make AstarTile from neighbor.
         AStarTile aStarNeighbor = grid[gcNeighbor.getX()][gcNeighbor.getY()];
-
-        // Creates a temp path to the neighbor tile.
-        temporaryPath = createTemporaryPath(currentTile, gcNeighbor);
 
         // If the neighbor tile is not reserved in the right timeFrame, then proceed.
         if (!(isReservedList.contains(gcNeighbor))) {
@@ -192,7 +173,7 @@ public class Astar implements PathFinder {
 
     }
 
-    private void addTilesToClosedList() {
+    public void addTilesToClosedList() {
         // Blocks the current tile in the grid before it is moved to closedList.
         grid[openList.get(0).getCurrentXPosition()][openList.get(0).getCurrentYPosition()].setBlocked(true);
 
@@ -203,7 +184,7 @@ public class Astar implements PathFinder {
         openList.remove(0);
     }
 
-    private ArrayList<GridCoordinate> createTemporaryPath(AStarTile currentTile, GridCoordinate neighborTile) {
+    public ArrayList<GridCoordinate> createTemporaryPath(AStarTile currentTile, GridCoordinate neighborTile) {
 
         ArrayList<GridCoordinate> temp = new ArrayList<>();
 
@@ -216,7 +197,7 @@ public class Astar implements PathFinder {
         return temp;
     }
 
-    private void createPathListFromClosedList(AStarTile currentTile, ArrayList<GridCoordinate> temp) {
+    public void createPathListFromClosedList(AStarTile currentTile, ArrayList<GridCoordinate> temp) {
 
         // If the list is bigger than one object, then go through the whole list
         if (closedList.size() > 1) {
@@ -240,7 +221,7 @@ public class Astar implements PathFinder {
         Collections.reverse(temp);
     }
 
-    private void calculatePath() throws NoPathFoundException {
+    public void calculatePath() throws NoPathFoundException {
         // Adds the starting tile to closed list.
         addStartTileToClosedList(xStart, yStart);
 
@@ -279,7 +260,7 @@ public class Astar implements PathFinder {
         }
     }
 
-    private void clear() {
+    public void clear() {
         for (AStarTile tile : closedList) {
             tile.setBlocked(false);
         }
@@ -302,22 +283,25 @@ public class Astar implements PathFinder {
 
         // Calculates the path into a list of reservations.
         ArrayList<Reservation> listOfReservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
-if(xEndPosition == 0 && yEndPosition == 7)
-    System.out.println("test");
+
+        Reservation lastReservation = listOfReservations.get(listOfReservations.size()-1);
+
         for (int j = 1; j < listOfReservations.size(); j++) {
-            Reservation resBeingChecked = listOfReservations.get(j);
-            if (reservationManager.isReserved(resBeingChecked.getGridCoordinate(), resBeingChecked.getTimeFrame())) {
-                isReservedList.add(resBeingChecked.getGridCoordinate());
+            if (reservationManager.isReserved(listOfReservations.get(j).getGridCoordinate(), listOfReservations.get(j).getTimeFrame())) {
+                isReservedList.add(listOfReservations.get(j).getGridCoordinate());
                 i = true;
-            } else if ( reservationManager.isReservedIndefinitely(listOfReservations.get(listOfReservations.size()-1).getGridCoordinate()) || !(reservationManager.canReserve(resBeingChecked.getGridCoordinate(),TimeFrame.indefiniteTimeFrameFrom(resBeingChecked.getTimeFrame().getStart())))) {
-                throw new NoPathFoundException(listOfReservations.get(0).getGridCoordinate(), listOfReservations.get(listOfReservations.size() - 1).getGridCoordinate());
+            } else if (reservationManager.hasConflictingReservations(lastReservation) ||
+                    !reservationManager.canReserve(lastReservation.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(lastReservation.getTimeFrame().getStart()))) {
+                throw new NoPathFoundException(listOfReservations.get(0).getGridCoordinate(), lastReservation.getGridCoordinate());
             }
+
         }
         return i;
     }
 
     @Override
     public Path calculatePath(GridCoordinate start, GridCoordinate destination) throws NoPathFoundException {
+
         // Clears all lists and objects so that it is clean next time it calculates a path.
         isReservedList.clear();
         clear();
@@ -327,7 +311,6 @@ if(xEndPosition == 0 && yEndPosition == 7)
 
         xStart = start.getX();
         yStart = start.getY();
-
 
         // Calculates the optimal A* path
         calculatePath();

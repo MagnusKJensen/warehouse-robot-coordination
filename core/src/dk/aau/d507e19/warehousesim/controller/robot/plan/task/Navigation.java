@@ -99,9 +99,8 @@ public class Navigation implements Task {
             path = robotController.getPathFinder().calculatePath(start, destination);
         } catch (NoPathFoundException e) {
             // Path planning failed - Retrying after delay
-            System.out.println("Path finding failed. Start : " + e.getStart() + " Destination : " + e.getDest()
-                    + "at time : " + server.getTimeInTicks());
-            e.printStackTrace();
+            //System.out.println("Path finding failed. Start : " + e.getStart() + " Destination : " + e.getDest()
+                    //+ "at time : " + server.getTimeInTicks());
             return false;
         }
 

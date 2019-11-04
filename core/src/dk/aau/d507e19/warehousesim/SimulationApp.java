@@ -12,8 +12,8 @@ import java.util.Random;
 
 public class SimulationApp extends ApplicationAdapter {
 
-	private static final long RANDOM_SEED = 10000000;
-	public static Random random = new Random(RANDOM_SEED);
+	private static final long RANDOM_SEED = 12345442352525L;
+	public static Random random = new Random();
 
 	public static final int MENU_WIDTH_IN_PIXELS = 300;
 	// Size of a single square/tile in the grid

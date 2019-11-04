@@ -3,6 +3,7 @@ package dk.aau.d507e19.warehousesim.controller.robot;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStarExtended.AstarExtended;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.chp.CHPathfinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTType;
@@ -12,7 +13,6 @@ import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.exception.DoubleReservationException;
 
 import java.util.LinkedList;
-import java.util.Optional;
 
 public class RobotController {
     private Server server;
@@ -41,6 +41,8 @@ public class RobotController {
         switch (pathFinderString) {
             case "Astar":
                 return new Astar(server, robot);
+            case "AstarExtended":
+                return new AstarExtended(server, robot);
             case "RRT*":
                 return new RRTPlanner(RRTType.RRT_STAR, this);
             case "RRT":
