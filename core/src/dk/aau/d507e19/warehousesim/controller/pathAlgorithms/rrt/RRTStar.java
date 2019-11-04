@@ -156,6 +156,10 @@ public class RRTStar extends RRTBase {
             }
         }
 
+        if(bestNeighbour == null){
+            //this happens for some unknown reason so if it does we cant optimise(for now) todo fix nullpointer here - potentially due to copies of trees
+            return false;
+        }
         //if best neighbour is worse than node, return false
         if(distance(bestNeighbour.getData(),destination.getData()) > distance(node.getData(),destination.getData())){
             return false;
