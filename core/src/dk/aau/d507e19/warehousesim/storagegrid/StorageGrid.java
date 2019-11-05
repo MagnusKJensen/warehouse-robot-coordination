@@ -54,19 +54,9 @@ public class StorageGrid {
     }
 
     private void generatePickerPoints() {
-        int[][] pickers = WarehouseSpecs.pickerPoints;
-
-        // Check to see if all picker points are inside the grid
-        arePickerPointsOutsideGrid(pickers);
-
-        // Go through all picker points and add them, if one is not already present at a given tile.
-        for(int i = 0; i < pickers.length; ++i){
-            GridCoordinate cord = new GridCoordinate(pickers[i][0], pickers[i][1]);
-            if(pickerPoints.contains(cord))
-                throw new RuntimeException("Picker point already present at (" + cord.getX() + "," + cord.getY() +
-                        "). Cannot have two picker points at the same tile");
-            else pickerPoints.add(new GridCoordinate(pickers[i][0], pickers[i][1]));
-        }
+        ArrayList<GridCoordinate> gridCoordinates;
+        gridCoordinates = WarehouseSpecs.pickerPlacementPattern.generatePattern(WarehouseSpecs.numberOfPickers);
+        pickerPoints.addAll(gridCoordinates);
     }
 
     private void arePickerPointsOutsideGrid(int[][] pickers) {

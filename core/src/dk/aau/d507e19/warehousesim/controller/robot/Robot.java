@@ -11,6 +11,7 @@ import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 
 public class Robot {
@@ -33,6 +34,9 @@ public class Robot {
     private final float accelerationBinSecond = WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters;
     private final float decelerationBinSecond = WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters;
     private final float minSpeedBinsPerSecond = WarehouseSpecs.robotMinimumSpeed / WarehouseSpecs.binSizeInMeters;
+
+    private final float breakingDistanceMaxSpeedBins = decelerationBinSecond / maxSpeedBinsPerSecond;
+
 
     private final float ROBOT_SIZE = Tile.TILE_SIZE;
 
@@ -104,22 +108,6 @@ public class Robot {
         return currentPosition;
     }
 
-    public void decelerate() {
-        if (currentSpeed > 0) {
-            currentSpeed -= decelerationBinSecond / (float) SimulationApp.TICKS_PER_SECOND;
-            if (currentSpeed < minSpeedBinsPerSecond)
-                currentSpeed = minSpeedBinsPerSecond;
-        }
-    }
-
-    public void accelerate() {
-        if (currentSpeed < maxSpeedBinsPerSecond) {
-            currentSpeed += accelerationBinSecond / (float) SimulationApp.TICKS_PER_SECOND;
-            if (currentSpeed > maxSpeedBinsPerSecond)
-                currentSpeed = maxSpeedBinsPerSecond;
-        }
-    }
-
     public float getAccelerationBinSecond() {
         return accelerationBinSecond;
     }
@@ -136,14 +124,6 @@ public class Robot {
         return maxSpeedBinsPerSecond;
     }
 
-    public void move(float deltaX, float deltaY) {
-        currentPosition.setX(currentPosition.getX() + deltaX);
-        currentPosition.setY(currentPosition.getY() + deltaY);
-    }
-
-    public float getMinimumSpeed() {
-        return WarehouseSpecs.robotMinimumSpeed;
-    }
 
     public Status getCurrentStatus() {
         return currentStatus;
@@ -195,9 +175,9 @@ public class Robot {
         return bin != null;
     }
 
-    public void setPosition(Position positionAfter) {
-        this.currentPosition = positionAfter;
-        // TODO: 15/10/2019 Check legality
+    public void updatePosition(Position newPosition, float newSpeed){
+        currentPosition = newPosition;
+        currentSpeed = newSpeed;
     }
 
     public int getSize() {
@@ -211,4 +191,14 @@ public class Robot {
     public RobotController getRobotController() {
         return robotController;
     }
+
+    // Simulates a sensor that predicts collisions
+    public void senseCollision(){
+        if(Math.abs(currentSpeed) < 0.001)
+            return; // No need for emergency break when standing still
+
+        float breakingDistance = currentSpeed / decelerationBinSecond;
+
+    }
+
 }

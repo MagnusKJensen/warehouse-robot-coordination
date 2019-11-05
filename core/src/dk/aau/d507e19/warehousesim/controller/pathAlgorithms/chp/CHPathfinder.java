@@ -19,7 +19,6 @@ import java.util.PriorityQueue;
 
 public class CHPathfinder implements PathFinder {
 
-
     private static final long MAXIMUM_WAIT_TIME = TimeUtils.secondsToTicks(10);
     private static final long MAXIMUM_ITERATIONS = 1000;
     private final RobotController robotController;

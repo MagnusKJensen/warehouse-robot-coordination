@@ -1,21 +1,14 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.chp.CHPathfinder;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTType;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Navigation;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.exception.DoubleReservationException;
 
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Optional;
 
 public class RobotController {
     private Server server;
@@ -52,14 +45,9 @@ public class RobotController {
         return true;
     }
 
-    public void cancelTask(Task task) {
-        // todo
-    }
-
     public void update() {
-        if(tasks.isEmpty()){
+        if(tasks.isEmpty())
             return;
-        }
 
         Task currentTask = tasks.peekFirst();
         if (!currentTask.isCompleted())

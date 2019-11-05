@@ -1,6 +1,5 @@
 package dk.aau.d507e19.warehousesim.controller.robot.plan;
 
-import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.path.Line;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
@@ -25,7 +24,8 @@ public class LineTraversal implements Task {
         if(isCompleted())
             throw new IllegalStateException("Attempting to perform a line traversal that is already completed");
 
-        robot.setPosition(speedCalculator.getPositionAfter(ticksSinceStart));
+        robot.updatePosition(speedCalculator.getPositionAfter(ticksSinceStart),
+                speedCalculator.getSpeedAfter(ticksSinceStart));
         ticksSinceStart++;
 
         if(ticksSinceStart >= speedCalculator.getTotalTimeInTicks())
