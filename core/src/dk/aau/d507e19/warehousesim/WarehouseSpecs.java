@@ -21,7 +21,7 @@ public class WarehouseSpecs {
     public static final boolean isRandomProductDistribution = true;
 
     /** Robot **/
-    public static final int numberOfRobots = 200;
+    public static final int numberOfRobots = 40;
     public static final float robotTopSpeed = 3f; // Meters/second
     public static final float robotAcceleration = 0.8f; // m/s^2
     public static final float robotDeceleration = 2f; // m/s^2
