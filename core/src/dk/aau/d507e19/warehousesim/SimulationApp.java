@@ -10,6 +10,8 @@ import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocator
 import dk.aau.d507e19.warehousesim.input.CameraMover;
 import dk.aau.d507e19.warehousesim.ui.SideMenu;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
 
 public class SimulationApp extends ApplicationAdapter {
@@ -50,6 +52,9 @@ public class SimulationApp extends ApplicationAdapter {
 	public static PathFinderEnum pathFinderSelected = PathFinderEnum.DUMMYPATHFINDER;
 	private static TaskAllocatorEnum taskAllocatorSelected = TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR;
 
+	private StatisticsManager statsManager;
+	private Date simulationStartTime;
+
 	@Override
 	public void create () {
         GraphicsManager.loadAssets();
@@ -73,6 +78,11 @@ public class SimulationApp extends ApplicationAdapter {
 		inputMultiplexer.addProcessor(cameraMover);
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());
         lastUpdateTime = System.currentTimeMillis();
+
+        statsManager = new StatisticsManager(this);
+
+
+        simulationStartTime = new Date(System.currentTimeMillis());
 	}
 
 	private void centerCamera(OrthographicCamera camera) {
@@ -240,6 +250,7 @@ public class SimulationApp extends ApplicationAdapter {
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());
 
 		sideMenu.resetSideMenu();
+		simulationStartTime = new Date(System.currentTimeMillis());
 	}
 
 	public OrthographicCamera getWorldCamera() {
@@ -276,5 +287,13 @@ public class SimulationApp extends ApplicationAdapter {
 
 	public TaskAllocatorEnum getTaskAllocatorSelected() {
 		return taskAllocatorSelected;
+	}
+
+	public StatisticsManager getStatsManager() {
+		return statsManager;
+	}
+
+	public Date getSimulationStartTime() {
+		return simulationStartTime;
 	}
 }

@@ -63,7 +63,7 @@ public class Server {
         return simulation.getGridWidth();
     }
 
-    public long getTimeInSeconds() {
+    public long getTimeInMS() {
         return simulation.getSimulatedTimeInMS();
     }
 

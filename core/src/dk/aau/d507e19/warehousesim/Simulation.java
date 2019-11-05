@@ -169,6 +169,12 @@ public class Simulation {
         }
     }
 
+    public void selectAllRobots(){
+        // If all robots are selected already
+        if(selectedRobots.containsAll(robots)) selectedRobots.clear();
+        else selectedRobots.addAll(robots);
+    }
+
     public void render(OrthographicCamera gridCamera, OrthographicCamera fontCamera){
         shapeRenderer.setProjectionMatrix(gridCamera.combined);
         batch.setProjectionMatrix(gridCamera.combined);

@@ -14,6 +14,7 @@ public class RobotController {
     private Server server;
     private PathFinder pathFinder;
     private Robot robot;
+    private long idleTimeTicks = 0;
 
     private LinkedList<Task> tasks = new LinkedList<>();
 
@@ -46,8 +47,10 @@ public class RobotController {
     }
 
     public void update() {
-        if(tasks.isEmpty())
+        if(tasks.isEmpty()){
+            idleTimeTicks++;
             return;
+        }
 
         Task currentTask = tasks.peekFirst();
         if (!currentTask.isCompleted())
@@ -89,7 +92,6 @@ public class RobotController {
 
 
     public boolean requestMove(){
-
         if(robot.getCurrentStatus() == Status.BUSY){
             if(!interruptCurrentTask())
                 return false;
@@ -105,4 +107,7 @@ public class RobotController {
         return tasks.getFirst().interrupt();
     }
 
+    public long getIdleTimeTicks() {
+        return idleTimeTicks;
+    }
 }

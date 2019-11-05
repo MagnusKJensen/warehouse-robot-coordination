@@ -72,7 +72,7 @@ public class RRTStarTest {
         assertTrue(test.isValidPath(start,dest1,list));
     }
 
-    @Test
+    @Ignore
     public void testAttemptOptimise(){
         //create a tree
         Node<GridCoordinate> n0 = new Node<>(new GridCoordinate(1,0),null,false);

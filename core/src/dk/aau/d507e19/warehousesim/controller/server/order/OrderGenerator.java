@@ -6,7 +6,6 @@ import dk.aau.d507e19.warehousesim.controller.server.OrderManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
-import org.graalvm.compiler.core.common.type.ArithmeticOpTable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -24,6 +23,8 @@ public class OrderGenerator {
 
     private final int MAX_PRODUCTS = WarehouseSpecs.productsPerOrder;
 
+    private long nextOrderID = 0;
+
     public OrderGenerator(OrderManager orderManager, Server server) {
         this.orderManager = orderManager;
         this.server = server;
@@ -40,7 +41,8 @@ public class OrderGenerator {
     }
 
     private Order generateRandomOrder(){
-        Order order = new Order();
+        Order order = new Order(nextOrderID);
+        nextOrderID++;
 
         ArrayList<Product> allProducts = server.getProductsAvailable();
 

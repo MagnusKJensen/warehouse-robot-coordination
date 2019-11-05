@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -46,13 +47,18 @@ public class SideMenu {
     private Vector2 taskAllocationDropDownOffset;
     private Vector2 performanceMetricsOffset;
     private Vector2 tickStopperOffset;
+    private Vector2 printStatsOffset;
+
+    // Print stats button
+    private TextButton printStatsButton;
+    private Text printStatsText;
 
     // Performance Metrics
     private Text performanceMetricsTitle;
     private Text ordersProcessed;
     private Text tasksInQueue;
     private Text ordersPerMinute;
-    private Text productsLeftInGrid;
+    private Text availableProductsLeft;
     private Text goalReachedText;
     private Text ordersInQueue;
     private Color performanceMetricColor = Color.WHITE;
@@ -80,7 +86,26 @@ public class SideMenu {
         taskAllocationDropDown = new TaskAllocationDropDown(menuStage, simulationApp, taskAllocationDropDownOffset, this);
         addTickStopper();
         addPerformanceMetrics();
+        addPrintStatsButton();
+    }
 
+    private void addPrintStatsButton() {
+        // Button
+        printStatsButton = new TextButton("Print stats to file", skin);
+        printStatsButton.setSize(280,40);
+
+        printStatsButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                simulationApp.getStatsManager().printStatistics();
+            }
+        });
+
+        // Text above
+        printStatsText = new Text("Print statistics to file", printStatsOffset.x, printStatsOffset.y, Color.CORAL);
+
+        menuStage.addActor(printStatsText);
+        menuStage.addActor(printStatsButton);
     }
 
     private void addTickStopper() {
@@ -97,6 +122,7 @@ public class SideMenu {
                 try{
                     long tickStopGoal = Long.parseLong(input);
                     simulationApp.getSimulation().setTickStopperGoal(tickStopGoal);
+                    tickStopperTextField.setText("");
                 } catch (NumberFormatException e){
                     tickStopperTextField.setText("");
                 }
@@ -108,18 +134,26 @@ public class SideMenu {
         menuStage.addActor(tickStopperText);
         menuStage.addActor(tickStopperButton);
         menuStage.addActor(tickStopperTextField);
+
+        // Make sure, that the textfield does not take input, if it is not in focus.
+        menuStage.getRoot().addCaptureListener(new InputListener() {
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                if (!(event.getTarget() instanceof TextField)) menuStage.setKeyboardFocus(null);
+                return false;
+            }
+        });
     }
 
     private void addPerformanceMetrics() {
         this.performanceMetricsTitle = new Text("Performance Metrics", performanceMetricsOffset.x, performanceMetricsOffset.y, Color.CORAL);
-        this.productsLeftInGrid = new Text ("Products left: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 25, performanceMetricColor);
+        this.availableProductsLeft = new Text ("Products left: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 25, performanceMetricColor);
         this.ordersInQueue = new Text("Orders in queue: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 50, performanceMetricColor);
         this.ordersProcessed = new Text("Orders Processed: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 75, performanceMetricColor);
         this.ordersPerMinute = new Text("Orders / minute: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 100, performanceMetricColor);
         this.tasksInQueue = new Text("Tasks processing: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 125, performanceMetricColor);
         this.goalReachedText = new Text("Goal not yet finished", performanceMetricsOffset.x, performanceMetricsOffset.y - 150, performanceMetricColor);
         menuStage.addActor(performanceMetricsTitle);
-        menuStage.addActor(productsLeftInGrid);
+        menuStage.addActor(availableProductsLeft);
         menuStage.addActor(ordersInQueue);
         menuStage.addActor(ordersProcessed);
         menuStage.addActor(ordersPerMinute);
@@ -133,15 +167,15 @@ public class SideMenu {
     }
 
     private void updatePerformanceMetrics(){
-        productsLeftInGrid.setText("Available products left: " + simulationApp.getSimulation().getServer().getProductsAvailable().size());
+        availableProductsLeft.setText("Available products left: " + simulationApp.getSimulation().getServer().getProductsAvailable().size());
         goalReachedText.setText(simulationApp.getSimulation().getGoal().toString());
         ordersInQueue.setText("Orders in queue: " + simulationApp.getSimulation().getServer().getOrderManager().ordersInQueue());
         tasksInQueue.setText("Tasks in queue: " + simulationApp.getSimulation().getServer().getOrderManager().tasksInQueue());
         updateOrdersPerMinute();
-        updateOrdersProcessed();
+        updateOrdersFinished();
     }
 
-    private void updateOrdersProcessed() {
+    private void updateOrdersFinished() {
         String str = "Orders finished: " + simulationApp.getSimulation().getServer().getOrderManager().ordersFinished();
         ordersProcessed.setText(str);
     }
@@ -168,7 +202,7 @@ public class SideMenu {
         updateOffSetsToWindowSize();
         // Performance metrics
         performanceMetricsTitle.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y);
-        productsLeftInGrid.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 25);
+        availableProductsLeft.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 25);
         ordersInQueue.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 50);
         ordersProcessed.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 75);
         ordersPerMinute.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 100);
@@ -185,6 +219,10 @@ public class SideMenu {
         tickStopperTextField.setPosition(tickStopperOffset.x, tickStopperOffset.y - 60);
         tickStopperButton.setPosition(tickStopperOffset.x + 190, tickStopperOffset.y - 60);
         tickStopperText.changeOffSet(tickStopperOffset.x, tickStopperOffset.y);
+
+        // Stats button
+        printStatsText.changeOffSet(printStatsOffset.x, printStatsOffset.y);
+        printStatsButton.setPosition(printStatsOffset.x, printStatsOffset.y - 60);
     }
 
     private void updateOffSetsToWindowSize() {
@@ -194,6 +232,7 @@ public class SideMenu {
         taskAllocationDropDownOffset = new Vector2(0, Gdx.graphics.getHeight() - 440);
         performanceMetricsOffset = new Vector2(10, Gdx.graphics.getHeight() - 510);
         tickStopperOffset = new Vector2(10, Gdx.graphics.getHeight() - 710);
+        printStatsOffset = new Vector2(10, Gdx.graphics.getHeight() - 783);
     }
 
     private void renderBackground(OrthographicCamera camera){
