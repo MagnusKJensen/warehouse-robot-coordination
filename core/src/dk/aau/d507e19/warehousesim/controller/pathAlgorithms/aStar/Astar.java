@@ -51,10 +51,10 @@ public class Astar implements PathFinder {
         return grid;
     }
 
-    public AStarTile[][] fillGrid(int gridLength, int gridHeight) {
-        AStarTile[][] grid = new AStarTile[gridLength][gridHeight];
+    public AStarTile[][] fillGrid(int gridWidth, int gridHeight) {
+        AStarTile[][] grid = new AStarTile[gridWidth][gridHeight];
         // Fills grid with tiles matching the coordinates
-        for (int i = 0; i < gridLength; i++) {
+        for (int i = 0; i < gridWidth; i++) {
             for (int j = 0; j < gridHeight; j++) {
                 grid[i][j] = new AStarTile(i, j);
             }
