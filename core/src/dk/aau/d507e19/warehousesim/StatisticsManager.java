@@ -110,7 +110,7 @@ public class StatisticsManager {
         // Write to file
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(file.getPath()))){
             // Write header
-            String[] header = {"ID,", "Deliveries_Completed,", "Distance_traveled_in_meters"};
+            String[] header = {"ID,", "Deliveries_Completed,", "Distance_traveled_in_meters,", "IdleTimeInSeconds"};
             for(String str : header){
                 writer.write(str);
             }

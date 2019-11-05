@@ -219,12 +219,20 @@ public class Robot {
 
     public String getStatsAsCSV(){
         StringBuilder builder = new StringBuilder();
+        // Robot ID
         builder.append(robotID).append(',');
+
+        // Deliveries completed
         builder.append(binDeliveriesCompleted).append(',');
+
         NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
         DecimalFormat df = (DecimalFormat) nf;
         df.setRoundingMode(RoundingMode.HALF_UP);
-        builder.append(df.format(getDistanceTraveledInMeters()));
+        // Distance traveled in meters
+        builder.append(df.format(getDistanceTraveledInMeters())).append(',');
+
+        // Idle time
+        builder.append(df.format(getIdleTimeInSeconds()));
 
         return builder.toString();
     }
@@ -239,5 +247,9 @@ public class Robot {
 
     public double getDistanceTraveledInMeters(){
         return distanceTraveled * WarehouseSpecs.binSizeInMeters;
+    }
+
+    public double getIdleTimeInSeconds(){
+        return (double)robotController.getIdleTimeTicks() / SimulationApp.TICKS_PER_SECOND;
     }
 }

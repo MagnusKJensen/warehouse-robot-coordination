@@ -15,6 +15,7 @@ public class SimulationInputProcessor implements InputProcessor {
 
     private Simulation simulation;
     private boolean ctrlDown = false;
+    private boolean aDown = false;
 
     public SimulationInputProcessor(Simulation simulation) {
         this.simulation = simulation;
@@ -78,6 +79,10 @@ public class SimulationInputProcessor implements InputProcessor {
         if(Input.Keys.CONTROL_LEFT == keycode){
             ctrlDown = true;
         }
+        if(Input.Keys.A == keycode){
+            aDown = true;
+        }
+        if(ctrlDown && aDown) simulation.selectAllRobots();
         return false;
     }
 
@@ -85,6 +90,9 @@ public class SimulationInputProcessor implements InputProcessor {
     public boolean keyUp(int keycode) {
         if(Input.Keys.CONTROL_LEFT == keycode){
             ctrlDown = false;
+        }
+        if(Input.Keys.A == keycode){
+            aDown = false;
         }
         return false;
     }

@@ -21,6 +21,7 @@ public class RobotController {
     private Server server;
     private PathFinder pathFinder;
     private Robot robot;
+    private long idleTimeTicks = 0;
 
     private LinkedList<Task> tasks = new LinkedList<>();
 
@@ -58,6 +59,7 @@ public class RobotController {
 
     public void update() {
         if(tasks.isEmpty()){
+            idleTimeTicks++;
             return;
         }
 
@@ -116,4 +118,7 @@ public class RobotController {
         return tasks.getFirst().interrupt();
     }
 
+    public long getIdleTimeTicks() {
+        return idleTimeTicks;
+    }
 }
