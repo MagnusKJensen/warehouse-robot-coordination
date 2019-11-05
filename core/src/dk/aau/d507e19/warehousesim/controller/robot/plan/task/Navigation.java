@@ -15,7 +15,6 @@ import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.exception.DestinationReservedIndefinitelyException;
-import dk.aau.d507e19.warehousesim.exception.DoubleReservationException;
 import dk.aau.d507e19.warehousesim.exception.NoPathFoundException;
 
 import java.util.ArrayList;
@@ -34,7 +33,6 @@ public class Navigation implements Task {
 
     private TickTimer retryTimer = new TickTimer(TICKS_BETWEEN_RETRIES);
     private boolean isCompleted = false;
-
 
     public Navigation(RobotController robotController, GridCoordinate destination) {
         this.robotController = robotController;
@@ -74,6 +72,7 @@ public class Navigation implements Task {
         LineTraversal currentLineTraversal = lineTraversals.get(0);
         currentLineTraversal.perform();
         if(currentLineTraversal.isCompleted()){
+            robot.addToDistanceTraveled(currentLineTraversal.getDistance());
             lineTraversals.remove(currentLineTraversal);
 
             // Path has finished traversing
@@ -87,15 +86,16 @@ public class Navigation implements Task {
     private void createLineTraversals() {
         lineTraversals.clear();
         ArrayList<Line> lines = path.getLines();
-        for(Line line : lines)
+        for(Line line : lines){
             lineTraversals.add(new LineTraversal(robot, line));
+        }
     }
 
     // Returns true if a valid path is found
     private boolean planPath() {
         Server server = robotController.getServer();
 
-        GridCoordinate start = robot.getGridCoordinate();
+        GridCoordinate start = robot.getApproximateGridCoordinate();
         try {
             path = robotController.getPathFinder().calculatePath(start, destination);
         } catch (DestinationReservedIndefinitelyException e) {

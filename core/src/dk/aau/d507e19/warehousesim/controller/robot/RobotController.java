@@ -101,7 +101,6 @@ public class RobotController {
 
 
     public boolean requestMove(){
-
         if(robot.getCurrentStatus() == Status.BUSY){
             if(!interruptCurrentTask())
                 return false;

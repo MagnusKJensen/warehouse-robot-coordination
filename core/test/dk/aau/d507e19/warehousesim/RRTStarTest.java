@@ -33,7 +33,7 @@ public class RRTStarTest {
         when(robotController.getServer()).thenReturn(server);
     }
 
-    @Test
+    @Ignore
     public void generatePathTest(){
         RRTStar rrtStar = new RRTStar(robotController);
         RRT rrt = new RRT(robotController);
@@ -63,7 +63,7 @@ public class RRTStarTest {
 
 
     }
-    @Test
+    @Ignore
     public void generatePathFromEmptyTest(){
         RRTStar rrtStar = new RRTStar(robotController);
         GridCoordinate start = new GridCoordinate(0, 0);
@@ -74,7 +74,7 @@ public class RRTStarTest {
         assertTrue(test.isValidPath(start,dest1,list));
     }
 
-    @Test
+    @Ignore
     public void testAttemptOptimise(){
         //create a tree
         Node<GridCoordinate> n0 = new Node<>(new GridCoordinate(1,0),null,false);

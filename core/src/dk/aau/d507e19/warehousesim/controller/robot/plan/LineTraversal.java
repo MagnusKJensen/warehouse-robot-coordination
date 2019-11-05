@@ -13,11 +13,13 @@ public class LineTraversal implements Task {
     private SpeedCalculator speedCalculator;
     private long ticksSinceStart = 0;
     private boolean doneTraversing = false;
+    private int distance;
 
     public LineTraversal(Robot robot, Line line) {
         this.line = line;
         setRobot(robot);
         this.speedCalculator = new SpeedCalculator(robot, line);
+        this.distance = line.getLength();
     }
 
     @Override
@@ -50,5 +52,9 @@ public class LineTraversal implements Task {
     @Override
     public boolean interrupt() {
         return false;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 }

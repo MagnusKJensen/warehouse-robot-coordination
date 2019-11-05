@@ -10,8 +10,12 @@ import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Locale;
 
 public class Robot {
     private Simulation simulation;
@@ -21,6 +25,8 @@ public class Robot {
     private Bin bin = null;
     private int robotID;
     private RobotController robotController;
+    private long binDeliveriesCompleted = 0;
+    private int distanceTraveled = 0;
 
     // TODO: 15/10/2019 is a temporary solution until it becomes part of the task itself.
     private GridCoordinate lastPickUp;
@@ -58,18 +64,17 @@ public class Robot {
     }
 
     public void putDownBin(){
-        GridCoordinate coordinate = getGridCoordinate();
+        GridCoordinate coordinate = getApproximateGridCoordinate();
         Tile tile = simulation.getStorageGrid().getTile(coordinate.getX(), coordinate.getY());
         if (tile instanceof BinTile && !((BinTile) tile).hasBin()) {
             ((BinTile) tile).addBin(bin);
             bin = null;
         } else throw new RuntimeException("Robot could not put back bin at ("
                 + coordinate.getX() + "," + coordinate.getY() + ")");
-
     }
 
     public void pickUpBin() {
-        GridCoordinate coordinate = getGridCoordinate();
+        GridCoordinate coordinate = getApproximateGridCoordinate();
         Tile tile = simulation.getStorageGrid().getTile(coordinate.getX(), coordinate.getY());
         if (tile instanceof BinTile && ((BinTile) tile).hasBin()) {
             bin = ((BinTile) tile).releaseBin();
@@ -210,5 +215,29 @@ public class Robot {
 
     public RobotController getRobotController() {
         return robotController;
+    }
+
+    public String getStatsAsCSV(){
+        StringBuilder builder = new StringBuilder();
+        builder.append(robotID).append(',');
+        builder.append(binDeliveriesCompleted).append(',');
+        NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
+        DecimalFormat df = (DecimalFormat) nf;
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        builder.append(df.format(getDistanceTraveledInMeters()));
+
+        return builder.toString();
+    }
+
+    public void incrementDeliveriesCompleted(){
+        binDeliveriesCompleted++;
+    }
+
+    public void addToDistanceTraveled(int extraDistance){
+        distanceTraveled += extraDistance;
+    }
+
+    public double getDistanceTraveledInMeters(){
+        return distanceTraveled * WarehouseSpecs.binSizeInMeters;
     }
 }

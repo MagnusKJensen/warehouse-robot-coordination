@@ -23,6 +23,8 @@ public class OrderGenerator {
 
     private final int MAX_PRODUCTS = WarehouseSpecs.productsPerOrder;
 
+    private long nextOrderID = 0;
+
     public OrderGenerator(OrderManager orderManager, Server server) {
         this.orderManager = orderManager;
         this.server = server;
@@ -39,7 +41,8 @@ public class OrderGenerator {
     }
 
     private Order generateRandomOrder(){
-        Order order = new Order();
+        Order order = new Order(nextOrderID);
+        nextOrderID++;
 
         ArrayList<Product> allProducts = server.getProductsAvailable();
 

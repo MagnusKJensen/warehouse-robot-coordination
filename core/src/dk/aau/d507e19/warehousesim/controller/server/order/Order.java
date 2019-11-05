@@ -6,16 +6,18 @@ import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 import java.util.ArrayList;
 
 public class Order {
+    private String orderID;
     private ArrayList<OrderLine> linesInOrder = new ArrayList<>();
     private PickerTile picker;
-    private long startTimeInSeconds;
-    private long finishTimeInSeconds;
+    private long startTimeInMS;
+    private long finishTimeInMS;
 
     public Order(ArrayList<OrderLine> linesInOrder) {
         this.linesInOrder = linesInOrder;
     }
 
-    public Order() {
+    public Order(long nextOrderID) {
+        orderID = String.valueOf(nextOrderID);
     }
 
     public ArrayList<OrderLine> getLinesInOrder() {
@@ -46,8 +48,8 @@ public class Order {
         return "Order{" +
                 "linesInOrder=" + linesInOrder +
                 ", picker=" + picker +
-                ", startTimeInSeconds=" + startTimeInSeconds +
-                ", finishTimeInSeconds=" + finishTimeInSeconds +
+                ", startTimeInSeconds=" + startTimeInMS +
+                ", finishTimeInSeconds=" + finishTimeInMS +
                 '}';
     }
 
@@ -66,19 +68,32 @@ public class Order {
         if(!wasContained) linesInOrder.add(new OrderLine(prod, 1));
     }
 
-    public long getStartTimeInSeconds() {
-        return startTimeInSeconds;
+    public long getStartTimeInMS() {
+        return startTimeInMS;
     }
 
-    public void setStartTimeInMS(long startTimeInSeconds) {
-        this.startTimeInSeconds = startTimeInSeconds;
+    public void setStartTimeInMS(long startTimeInMS) {
+        this.startTimeInMS = startTimeInMS;
     }
 
-    public long getFinishTimeInSeconds() {
-        return finishTimeInSeconds;
+    public long getFinishTimeInMS() {
+        return finishTimeInMS;
     }
 
-    public void setFinishTimeInSeconds(long finishTimeInSeconds) {
-        this.finishTimeInSeconds = finishTimeInSeconds;
+    public void setFinishTimeInMS(long finishTimeInMS) {
+        this.finishTimeInMS = finishTimeInMS;
+    }
+
+    public String getStatsAsCSV(){
+        StringBuilder builder = new StringBuilder();
+
+        long timeSpentOnOrder = finishTimeInMS - startTimeInMS;
+
+        builder.append(orderID).append(',');
+        builder.append(startTimeInMS).append(',');
+        builder.append(finishTimeInMS).append(',');
+        builder.append(timeSpentOnOrder);
+
+        return builder.toString();
     }
 }

@@ -57,7 +57,7 @@ public class SideMenu {
     private Text ordersProcessed;
     private Text tasksInQueue;
     private Text ordersPerMinute;
-    private Text productsLeftInGrid;
+    private Text availableProductsLeft;
     private Text goalReachedText;
     private Text ordersInQueue;
     private Color performanceMetricColor = Color.WHITE;
@@ -136,14 +136,14 @@ public class SideMenu {
 
     private void addPerformanceMetrics() {
         this.performanceMetricsTitle = new Text("Performance Metrics", performanceMetricsOffset.x, performanceMetricsOffset.y, Color.CORAL);
-        this.productsLeftInGrid = new Text ("Products left: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 25, performanceMetricColor);
+        this.availableProductsLeft = new Text ("Products left: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 25, performanceMetricColor);
         this.ordersInQueue = new Text("Orders in queue: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 50, performanceMetricColor);
         this.ordersProcessed = new Text("Orders Processed: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 75, performanceMetricColor);
         this.ordersPerMinute = new Text("Orders / minute: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 100, performanceMetricColor);
         this.tasksInQueue = new Text("Tasks processing: ", performanceMetricsOffset.x, performanceMetricsOffset.y - 125, performanceMetricColor);
         this.goalReachedText = new Text("Goal not yet finished", performanceMetricsOffset.x, performanceMetricsOffset.y - 150, performanceMetricColor);
         menuStage.addActor(performanceMetricsTitle);
-        menuStage.addActor(productsLeftInGrid);
+        menuStage.addActor(availableProductsLeft);
         menuStage.addActor(ordersInQueue);
         menuStage.addActor(ordersProcessed);
         menuStage.addActor(ordersPerMinute);
@@ -157,15 +157,15 @@ public class SideMenu {
     }
 
     private void updatePerformanceMetrics(){
-        productsLeftInGrid.setText("Available products left: " + simulationApp.getSimulation().getServer().getProductsAvailable().size());
+        availableProductsLeft.setText("Available products left: " + simulationApp.getSimulation().getServer().getProductsAvailable().size());
         goalReachedText.setText(simulationApp.getSimulation().getGoal().toString());
         ordersInQueue.setText("Orders in queue: " + simulationApp.getSimulation().getServer().getOrderManager().ordersInQueue());
         tasksInQueue.setText("Tasks in queue: " + simulationApp.getSimulation().getServer().getOrderManager().tasksInQueue());
         updateOrdersPerMinute();
-        updateOrdersProcessed();
+        updateOrdersFinished();
     }
 
-    private void updateOrdersProcessed() {
+    private void updateOrdersFinished() {
         String str = "Orders finished: " + simulationApp.getSimulation().getServer().getOrderManager().ordersFinished();
         ordersProcessed.setText(str);
     }
@@ -192,7 +192,7 @@ public class SideMenu {
         updateOffSetsToWindowSize();
         // Performance metrics
         performanceMetricsTitle.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y);
-        productsLeftInGrid.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 25);
+        availableProductsLeft.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 25);
         ordersInQueue.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 50);
         ordersProcessed.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 75);
         ordersPerMinute.changeOffSet(performanceMetricsOffset.x, performanceMetricsOffset.y - 100);

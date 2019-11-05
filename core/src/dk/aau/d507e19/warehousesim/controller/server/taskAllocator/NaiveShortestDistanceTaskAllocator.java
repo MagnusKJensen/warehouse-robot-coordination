@@ -28,7 +28,7 @@ public class NaiveShortestDistanceTaskAllocator implements TaskAllocator {
         int shortestDistance = -1;
         int newDistance;
         for(Robot robot : availableRobots){
-            newDistance = calculateDistance(robot.getGridCoordinate(), ((BinDelivery) task).getBinCoords());
+            newDistance = calculateDistance(robot.getApproximateGridCoordinate(), ((BinDelivery) task).getBinCoords());
             if(shortestDistance == -1 || newDistance < shortestDistance){
                 shortestDistance = newDistance;
                 optimalRobot = robot;

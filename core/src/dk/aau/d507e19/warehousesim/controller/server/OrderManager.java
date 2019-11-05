@@ -43,7 +43,7 @@ public class OrderManager {
                 if(isCompleted){
                     order.getPicker().setAvailable();
                     ordersFinished.add(order);
-                    order.setFinishTimeInSeconds(server.getTimeInMS());
+                    order.setFinishTimeInMS(server.getTimeInMS());
                     ordersToRemove.add(order);
                 }
             }
