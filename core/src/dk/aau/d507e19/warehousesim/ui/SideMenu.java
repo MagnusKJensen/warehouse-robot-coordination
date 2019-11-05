@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -121,6 +122,7 @@ public class SideMenu {
                 try{
                     long tickStopGoal = Long.parseLong(input);
                     simulationApp.getSimulation().setTickStopperGoal(tickStopGoal);
+                    tickStopperTextField.setText("");
                 } catch (NumberFormatException e){
                     tickStopperTextField.setText("");
                 }
@@ -132,6 +134,14 @@ public class SideMenu {
         menuStage.addActor(tickStopperText);
         menuStage.addActor(tickStopperButton);
         menuStage.addActor(tickStopperTextField);
+
+        // Make sure, that the textfield does not take input, if it is not in focus.
+        menuStage.getRoot().addCaptureListener(new InputListener() {
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                if (!(event.getTarget() instanceof TextField)) menuStage.setKeyboardFocus(null);
+                return false;
+            }
+        });
     }
 
     private void addPerformanceMetrics() {
