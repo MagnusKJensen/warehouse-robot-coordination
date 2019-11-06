@@ -1,5 +1,6 @@
-package dk.aau.d507e19.warehousesim;
+package dk.aau.d507e19.warehousesim.statistics;
 
+import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.server.order.Order;
 
@@ -8,6 +9,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.RoundingMode;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Time;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -23,7 +26,7 @@ public class StatisticsManager {
     private SimulationApp simulationApp;
     // Has to be ; instead og :, because windows does not accept : in file name - Philip
     SimpleDateFormat dateFormatter = new SimpleDateFormat("HH;mm;ss'_'dd-MM-yyyy");
-    DecimalFormat decimalFormatter = new DecimalFormat("#,000");
+    DecimalFormat decimalFormatter = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
 
 
     public StatisticsManager(SimulationApp simulationApp) {
@@ -31,6 +34,7 @@ public class StatisticsManager {
     }
 
     public void printStatistics(){
+        decimalFormatter.applyPattern("###.00");
         decimalFormatter.setRoundingMode(RoundingMode.HALF_UP);
         decimalFormatter.setGroupingUsed(false);
         // Create statistics folder if it does not exist
@@ -43,6 +47,22 @@ public class StatisticsManager {
         writeOrderStatsToFile(pathToSimulationFolder);
         writeRobotStatsToFile(pathToSimulationFolder);
         writeGeneralStatsToFile(pathToSimulationFolder);
+
+        // Copy file with specs from the run. Only done, if it is not already copied once.
+        copySpecsFile(pathToSimulationFolder);
+    }
+
+    private void copySpecsFile(String pathToSimulationFolder) {
+        String pathToSpecFile = SimulationApp.PATH_TO_RUN_CONFIGS + SimulationApp.CURRENT_RUN_CONFIG;
+
+        String pathToNewFile = pathToSimulationFolder + File.separator + SimulationApp.CURRENT_RUN_CONFIG;
+        try {
+            if(!new File(pathToNewFile).exists()){
+                Files.copy(Paths.get(pathToSpecFile), Paths.get(pathToNewFile));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void createStatisticsFolder() {

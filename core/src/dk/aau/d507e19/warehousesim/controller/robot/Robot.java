@@ -222,9 +222,10 @@ public class Robot {
         builder.append(df.format(getDistanceTraveledInMeters())).append(',');
 
         // Idle time
-        DecimalFormat df2 = new DecimalFormat("#,0");
-        df.setRoundingMode(RoundingMode.HALF_UP);
-        df.setGroupingUsed(false);
+        DecimalFormat df2 = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
+        df2.setRoundingMode(RoundingMode.HALF_UP);
+        df2.setGroupingUsed(false);
+        df2.applyPattern("###.00");
         builder.append(df2.format(getIdleTimeInSeconds()));
 
         return builder.toString();

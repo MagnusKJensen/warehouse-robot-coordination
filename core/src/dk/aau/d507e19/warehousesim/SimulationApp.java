@@ -4,19 +4,15 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonWriter;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocatorEnum;
 import dk.aau.d507e19.warehousesim.input.CameraMover;
+import dk.aau.d507e19.warehousesim.statistics.StatisticsManager;
 import dk.aau.d507e19.warehousesim.ui.SideMenu;
 
 import java.io.*;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
@@ -25,6 +21,7 @@ public class SimulationApp extends ApplicationAdapter {
 	public static final long RANDOM_SEED = 12345442352525L;
 	public static Random random = new Random(RANDOM_SEED);
 	public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "runconfigurations/";
+	public static String CURRENT_RUN_CONFIG = "defaultSpecs.json";
 
 	public static final int MENU_WIDTH_IN_PIXELS = 300;
 	// Size of a single square/tile in the grid
@@ -79,7 +76,7 @@ public class SimulationApp extends ApplicationAdapter {
 		// Quick way to generate new json files
 		// createJsonFileFromSpecs("newSpecName.json");
 
-		WarehouseSpecs warehouseSpecs = readWarehouseSpecsFromFile("defaultSpecs.json");
+		WarehouseSpecs warehouseSpecs = readWarehouseSpecsFromFile(CURRENT_RUN_CONFIG);
 
 		simulation = new Simulation(this, warehouseSpecs);
 		sideMenu = new SideMenu(menuViewport, this);
@@ -331,5 +328,9 @@ public class SimulationApp extends ApplicationAdapter {
 
 	public Date getSimulationStartTime() {
 		return simulationStartTime;
+	}
+
+	public static String getCurrentRunConfig() {
+		return CURRENT_RUN_CONFIG;
 	}
 }

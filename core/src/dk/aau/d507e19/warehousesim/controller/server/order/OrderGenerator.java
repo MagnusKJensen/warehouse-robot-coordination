@@ -2,15 +2,10 @@ package dk.aau.d507e19.warehousesim.controller.server.order;
 
 import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.SimulationApp;
-import dk.aau.d507e19.warehousesim.WarehouseSpecs;
-import dk.aau.d507e19.warehousesim.controller.server.OrderManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
-import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Random;
 
 public class OrderGenerator {
