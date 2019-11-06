@@ -1,7 +1,10 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
+import dk.aau.d507e19.warehousesim.Simulation;
+import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.BinDelivery;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Navigation;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
@@ -97,14 +100,32 @@ public class RobotController {
                 return false;
         }
 
-        GridCoordinate newPosition = server.getNewPosition();
+        GridCoordinate newPosition;// = server.getNewPosition();
+
+        do { // Find random neighbour tile to go to
+            Direction randomDirection = Direction.values()[SimulationApp.random.nextInt(Direction.values().length)];
+            newPosition = new GridCoordinate(robot.getGridCoordinate().getX() + randomDirection.xDir, robot.getGridCoordinate().getY() + randomDirection.yDir);
+        }while (!server.getGridBounds().isWithinBounds(newPosition));
+
         assignImmediateTask(new Navigation(this, newPosition));
         return true;
     }
 
     private boolean interruptCurrentTask() {
         if(tasks.isEmpty()) return true;
-        return tasks.getFirst().interrupt();
+        Task firstTask = tasks.getFirst();
+
+        // Simple navigation tasks are discarded if they are interrupted
+        if(firstTask instanceof Navigation){
+            boolean interrupted = firstTask.interrupt();
+            if(interrupted){
+                tasks.removeFirst();
+                return true;
+            }
+            return false;
+        }
+
+        return firstTask.interrupt();
     }
 
     public long getIdleTimeTicks() {
