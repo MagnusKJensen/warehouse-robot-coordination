@@ -139,23 +139,23 @@ public class RRTStarTest {
     }
 
     @Test
-    public void testTreeValid(){
+    public void testRootReachable(){
         RRTStar rrtStar = new RRTStar(robotController);
         GridCoordinate start = new GridCoordinate(0, 0);
         GridCoordinate dest1 = new GridCoordinate(29, 15);
         GridCoordinate dest2 = new GridCoordinate(15, 4);
         rrtStar.generatePath(start,dest1);
-        checkReachabilityOfNodes(start,rrtStar);
+        canReachRoot(start,rrtStar);
         rrtStar.generatePath(dest1,dest2);
-        checkReachabilityOfNodes(dest1,rrtStar);
+        canReachRoot(dest1,rrtStar);
         rrtStar.generatePath(dest2,start);
-        checkReachabilityOfNodes(dest2,rrtStar);
+        canReachRoot(dest2,rrtStar);
     }
-    public void checkReachabilityOfNodes(GridCoordinate root, RRTStar rrtStar){
+    public void canReachRoot(GridCoordinate root, RRTStar rrtStar){
         ArrayList<GridCoordinate> coords = new ArrayList<>(rrtStar.allNodesMap.keySet());
         System.out.println("checking for " + coords.size() + " nodes");
         for(GridCoordinate coord : coords){
-            assertNotNull(rrtStar.allNodesMap.get(root).findNode(coord));
+            assertSame(rrtStar.allNodesMap.get(root),rrtStar.allNodesMap.get(coord).getRoot());
         }
     }
 

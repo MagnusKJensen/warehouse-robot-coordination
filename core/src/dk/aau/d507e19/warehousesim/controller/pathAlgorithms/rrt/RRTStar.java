@@ -74,6 +74,14 @@ public class RRTStar extends RRTBase {
         }
     }
     private boolean canBeRewired(Node<GridCoordinate> node, Node<GridCoordinate> n){
+        if(node.getData().equals(new GridCoordinate(7,5)) && n.getData().equals(new GridCoordinate(8,5))){
+            System.out.println("node: " + node.getData() + " || n: " + n.getData());
+        }
+
+        if(node.equals(root)){
+            //if node is root then n can always have node as its parent
+            return true;
+        }
         if(n.getParent() == null){
             return false;
         } else if (n.getParent().equals(node)) {
@@ -85,7 +93,8 @@ public class RRTStar extends RRTBase {
         }else if (isInPathToRoot(node,n)){
             //if we get here then n is not the direct parent, but might be parents parent,
             //therefore its always beneficial for us to set nodes parent to n.
-            node.setParent(n);
+            //however this is a side effect and might be unknown to others, so we dont do it
+            //node.setParent(n);
             return false;
         }else return true;
     }
@@ -109,7 +118,6 @@ public class RRTStar extends RRTBase {
                 if(optimise(nodesInPath.get(i),copyRoot.findNode(destinationNode.getData()))){
                     //check if it is actually faster
                     if(cost(copyRoot.findNode(destinationNode.getData())) < cost(destinationNode)){
-                       // possibleOptimisations.add(copyRoot);
                         root = copyRoot;
                         destinationNode = copyRoot.findNode(destinationNode.getData());
                         path = makePath(destinationNode);
@@ -120,7 +128,6 @@ public class RRTStar extends RRTBase {
                 //reset copied tree
                 copyRoot = backupCpy;
             }
-            //reset copied tree
     }
     private boolean optimise(Node<GridCoordinate> node, Node<GridCoordinate> destination){
         Node<GridCoordinate> bestNeighbour = null;
@@ -140,8 +147,10 @@ public class RRTStar extends RRTBase {
             String nodeDirection = calcDirection(node.getParent().getData(),node.getData());
             for(Node<GridCoordinate> n : neighbours){
                 if(calcDirection(node.getData(),n.getData()).equals(nodeDirection) && !n.getData().equals(node.getParent().getData())){
+                    if(canBeRewired(node,n)){
+                        bestNeighbour = node.getRoot().findNode(n.getData());
+                    }
                     //if n is in the same direction as we're currently going and its not the parent node of turnnode then we can rewire
-                    bestNeighbour = node.getRoot().findNode(n.getData());
                 }
             }
        }
@@ -151,7 +160,9 @@ public class RRTStar extends RRTBase {
             for (Node<GridCoordinate> neighbour : neighbours){
                 if(bestNeighbour == null || distance(neighbour.getData(),destination.getData()) < distance(bestNeighbour.getData(),destination.getData())){
                     //neighbour is a node from allNodesMap, meaning it is a part of the orignial root. We need to set bestNeighbour = to the copied version
-                    bestNeighbour = node.getRoot().findNode(neighbour.getData());
+                    if(canBeRewired(node,neighbour)){
+                        bestNeighbour = node.getRoot().findNode(neighbour.getData());
+                    }
                 }
             }
         }
