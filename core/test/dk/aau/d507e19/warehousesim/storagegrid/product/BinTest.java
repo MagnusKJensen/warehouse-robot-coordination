@@ -1,13 +1,17 @@
 package dk.aau.d507e19.warehousesim.storagegrid.product;
 
-import dk.aau.d507e19.warehousesim.WarehouseSpecs;
+import dk.aau.d507e19.warehousesim.RunConfigurator;
+import dk.aau.d507e19.warehousesim.Simulation;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
 
-import static org.junit.Assert.*;
-
 public class BinTest {
+    @BeforeClass
+    public static void init(){
+        RunConfigurator.setDefaultRunConfiguration();
+    }
 
     @Test (expected = IllegalArgumentException.class)
     public void addProducts01() {
@@ -15,7 +19,7 @@ public class BinTest {
 
         ArrayList<Product> myProducts = new ArrayList<>();
 
-        for (int i = 0; i < WarehouseSpecs.SKUsPerBin + 1; ++i){
+        for (int i = 0; i < Simulation.getWarehouseSpecs().SKUsPerBin + 1; ++i){
             myProducts.add(new Product(new SKU("SKU" + i)));
         }
 
@@ -29,7 +33,7 @@ public class BinTest {
 
         ArrayList<Product> myProducts = new ArrayList<>();
 
-        for (int i = 0; i < WarehouseSpecs.productsPerBin + 1; ++i){
+        for (int i = 0; i < Simulation.getWarehouseSpecs().productsPerBin + 1; ++i){
             myProducts.add(new Product(new SKU("SKU")));
         }
 
@@ -43,7 +47,7 @@ public class BinTest {
 
         ArrayList<Product> myProducts = new ArrayList<>();
 
-        for (int i = 0; i < WarehouseSpecs.productsPerBin; ++i){
+        for (int i = 0; i < Simulation.getWarehouseSpecs().productsPerBin; ++i){
             myProducts.add(new Product(new SKU("SKU")));
         }
         bin.addProducts(myProducts);
@@ -58,7 +62,7 @@ public class BinTest {
 
         ArrayList<Product> myProducts = new ArrayList<>();
 
-        for (int i = 0; i < WarehouseSpecs.SKUsPerBin; ++i){
+        for (int i = 0; i < Simulation.getWarehouseSpecs().SKUsPerBin; ++i){
             myProducts.add(new Product(new SKU("SKU" + i)));
         }
         bin.addProducts(myProducts);

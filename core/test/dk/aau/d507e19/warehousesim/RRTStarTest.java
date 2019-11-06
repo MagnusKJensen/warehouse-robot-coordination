@@ -8,6 +8,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -25,8 +26,9 @@ public class RRTStarTest {
 
     @Before
     public void initiateRobotController(){
-        when(robot.getAccelerationBinSecond()).thenReturn(WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters);
-        when(robot.getDecelerationBinSecond()).thenReturn(WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters);
+        RunConfigurator.setDefaultRunConfiguration();
+        when(robot.getAccelerationBinSecond()).thenReturn(Simulation.getWarehouseSpecs().robotAcceleration / Simulation.getWarehouseSpecs().binSizeInMeters);
+        when(robot.getDecelerationBinSecond()).thenReturn(Simulation.getWarehouseSpecs().robotDeceleration / Simulation.getWarehouseSpecs().binSizeInMeters);
         when(robotController.getRobot()).thenReturn(robot);
         when(robotController.getServer()).thenReturn(server);
     }

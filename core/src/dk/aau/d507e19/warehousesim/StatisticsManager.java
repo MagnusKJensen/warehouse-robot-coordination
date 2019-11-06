@@ -23,6 +23,7 @@ public class StatisticsManager {
     private SimulationApp simulationApp;
     // Has to be ; instead og :, because windows does not accept : in file name - Philip
     SimpleDateFormat dateFormatter = new SimpleDateFormat("HH;mm;ss'_'dd-MM-yyyy");
+    DecimalFormat decimalFormatter = new DecimalFormat("#,000");
 
 
     public StatisticsManager(SimulationApp simulationApp) {
@@ -30,6 +31,8 @@ public class StatisticsManager {
     }
 
     public void printStatistics(){
+        decimalFormatter.setRoundingMode(RoundingMode.HALF_UP);
+        decimalFormatter.setGroupingUsed(false);
         // Create statistics folder if it does not exist
         createStatisticsFolder();
 
@@ -94,10 +97,8 @@ public class StatisticsManager {
 
             long msSinceStart = simulationApp.getSimulation().getSimulatedTimeInMS();
             double ordersPerMinute = simulationApp.getSimulation().getOrdersProcessed() / ((double) msSinceStart / 1000 / 60);
-            NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
-            DecimalFormat df = (DecimalFormat) nf;
-            df.setRoundingMode(RoundingMode.HALF_UP);
-            writer.write("OrdersPerMinute," + df.format(ordersPerMinute) + '\n');
+
+            writer.write("OrdersPerMinute," + decimalFormatter.format(ordersPerMinute) + '\n');
 
             int tasksInQueue = simulationApp.getSimulation().getServer().getOrderManager().tasksInQueue();
             writer.write("tasksInQueue," + tasksInQueue + '\n');

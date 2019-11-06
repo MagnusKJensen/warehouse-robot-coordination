@@ -4,12 +4,18 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonWriter;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocatorEnum;
 import dk.aau.d507e19.warehousesim.input.CameraMover;
 import dk.aau.d507e19.warehousesim.ui.SideMenu;
 
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -18,6 +24,7 @@ public class SimulationApp extends ApplicationAdapter {
 
 	public static final long RANDOM_SEED = 12345442352525L;
 	public static Random random = new Random(RANDOM_SEED);
+	public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "runconfigurations/";
 
 	public static final int MENU_WIDTH_IN_PIXELS = 300;
 	// Size of a single square/tile in the grid
@@ -34,7 +41,7 @@ public class SimulationApp extends ApplicationAdapter {
 	// Variables for simulation loop logic
 	public static final int TICKS_PER_SECOND = 30;
 	public static final long MILLIS_PER_TICK = 1000 / TICKS_PER_SECOND;
-	public static final int FAST_FORWARD_MULTIPLIER = 5;
+	public static final int FAST_FORWARD_MULTIPLIER = 50;
 	public UpdateMode updateMode = UpdateMode.MANUAL;
 	private long millisSinceUpdate = 0L;
 	private long lastUpdateTime = 0L;
@@ -69,7 +76,9 @@ public class SimulationApp extends ApplicationAdapter {
 		centerCamera(simulationCamera);
 		centerCamera(menuCamera);
 
-		simulation = new Simulation(this);
+		WarehouseSpecs warehouseSpecs = readWarehouseSpecsFromFile("defaultSpecs.json");
+
+		simulation = new Simulation(this, warehouseSpecs);
 		sideMenu = new SideMenu(menuViewport, this);
 
 		Gdx.input.setInputProcessor(inputMultiplexer);
@@ -81,8 +90,20 @@ public class SimulationApp extends ApplicationAdapter {
 
         statsManager = new StatisticsManager(this);
 
-
         simulationStartTime = new Date(System.currentTimeMillis());
+	}
+
+	private WarehouseSpecs readWarehouseSpecsFromFile(String specFileName) {
+		File runConfigFile = new File(PATH_TO_RUN_CONFIGS + File.separator + specFileName);
+		Gson gson = new Gson();
+		try(BufferedReader reader = new BufferedReader(new FileReader(runConfigFile))){
+			WarehouseSpecs specs = gson.fromJson(reader, WarehouseSpecs.class);
+			return specs;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 	private void centerCamera(OrthographicCamera camera) {
@@ -246,7 +267,7 @@ public class SimulationApp extends ApplicationAdapter {
 		simulation.dispose();
 		random = new Random(RANDOM_SEED);
 		pause();
-		simulation = new Simulation(this);
+		simulation = new Simulation(this, new WarehouseSpecs());
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());
 
 		sideMenu.resetSideMenu();

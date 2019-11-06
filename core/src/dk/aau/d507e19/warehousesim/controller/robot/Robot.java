@@ -36,10 +36,10 @@ public class Robot {
      * Robot STATS
      */
     // Speed
-    private final float maxSpeedBinsPerSecond = WarehouseSpecs.robotTopSpeed / WarehouseSpecs.binSizeInMeters;
-    private final float accelerationBinSecond = WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters;
-    private final float decelerationBinSecond = WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters;
-    private final float minSpeedBinsPerSecond = WarehouseSpecs.robotMinimumSpeed / WarehouseSpecs.binSizeInMeters;
+    private final float maxSpeedBinsPerSecond = Simulation.getWarehouseSpecs().robotTopSpeed / Simulation.getWarehouseSpecs().binSizeInMeters;
+    private final float accelerationBinSecond = Simulation.getWarehouseSpecs().robotAcceleration / Simulation.getWarehouseSpecs().binSizeInMeters;
+    private final float decelerationBinSecond = Simulation.getWarehouseSpecs().robotDeceleration / Simulation.getWarehouseSpecs().binSizeInMeters;
+    private final float minSpeedBinsPerSecond = Simulation.getWarehouseSpecs().robotMinimumSpeed / Simulation.getWarehouseSpecs().binSizeInMeters;
 
     private final float breakingDistanceMaxSpeedBins = decelerationBinSecond / maxSpeedBinsPerSecond;
 
@@ -215,14 +215,17 @@ public class Robot {
         // Deliveries completed
         builder.append(binDeliveriesCompleted).append(',');
 
-        NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
-        DecimalFormat df = (DecimalFormat) nf;
+        DecimalFormat df = new DecimalFormat("#,000");
         df.setRoundingMode(RoundingMode.HALF_UP);
+        df.setGroupingUsed(false);
         // Distance traveled in meters
         builder.append(df.format(getDistanceTraveledInMeters())).append(',');
 
         // Idle time
-        builder.append(df.format(getIdleTimeInSeconds()));
+        DecimalFormat df2 = new DecimalFormat("#,0");
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        df.setGroupingUsed(false);
+        builder.append(df2.format(getIdleTimeInSeconds()));
 
         return builder.toString();
     }
@@ -236,7 +239,7 @@ public class Robot {
     }
 
     public double getDistanceTraveledInMeters(){
-        return distanceTraveled * WarehouseSpecs.binSizeInMeters;
+        return distanceTraveled * Simulation.getWarehouseSpecs().binSizeInMeters;
     }
 
     public double getIdleTimeInSeconds(){

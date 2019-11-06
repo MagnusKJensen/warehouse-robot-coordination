@@ -44,8 +44,8 @@ public class SimulationInputProcessor implements InputProcessor {
 
         // Run through all tiles. If one is selected show info in tileMenu
         StorageGrid grid = simulation.getStorageGrid();
-        for(int x = 0; x < WarehouseSpecs.wareHouseWidth; x++){
-            for(int y = 0; y < WarehouseSpecs.wareHouseHeight; ++y){
+        for(int x = 0; x < Simulation.getWarehouseSpecs().wareHouseWidth; x++){
+            for(int y = 0; y < Simulation.getWarehouseSpecs().wareHouseHeight; ++y){
                 if(grid.getTile(x,y).collidesWith(simulation.screenToWorldPosition(screenX, screenY))){
                     simulation.selectTile(grid.getTile(x,y));
                 }

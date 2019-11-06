@@ -53,11 +53,14 @@ public class Simulation {
 
     private long tickStopperGoal;
 
-    public Simulation(SimulationApp simulationApp){
+    private static WarehouseSpecs warehouseSpecs;
+
+    public Simulation(SimulationApp simulationApp, WarehouseSpecs warehouseSpecs){
         this.simulationApp = simulationApp;
         this.gridCamera = simulationApp.getWorldCamera();
         this.fontCamera = simulationApp.getFontCamera();
         this.gridViewport = simulationApp.getWorldViewport();
+        Simulation.warehouseSpecs = warehouseSpecs;
 
         inputProcessor = new SimulationInputProcessor(this);
 
@@ -65,13 +68,13 @@ public class Simulation {
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
 
-        storageGrid = new StorageGrid(WarehouseSpecs.wareHouseWidth, WarehouseSpecs.wareHouseHeight, this);
-        if(WarehouseSpecs.isRandomProductDistribution) ProductDistributor.distributeProductsRandomly(storageGrid);
+        storageGrid = new StorageGrid(Simulation.warehouseSpecs.wareHouseWidth, Simulation.warehouseSpecs.wareHouseHeight, this);
+        if(Simulation.warehouseSpecs.isRandomProductDistribution) ProductDistributor.distributeProductsRandomly(storageGrid);
         else ProductDistributor.distributeProducts(storageGrid);
 
         server = new Server(this, storageGrid);
 
-        goal = new OrderGoal(WarehouseSpecs.orderGoal, this);
+        goal = new OrderGoal(Simulation.warehouseSpecs.orderGoal, this);
 
         initRobots();
     }
@@ -80,7 +83,7 @@ public class Simulation {
         // Auto generate robots
         int x = 0, y = 0;
         ArrayList<GridCoordinate> gridCoordinates;
-        gridCoordinates = WarehouseSpecs.robotPlacementPattern.generatePattern(WarehouseSpecs.numberOfRobots);
+        gridCoordinates = Simulation.warehouseSpecs.robotPlacementPattern.generatePattern(Simulation.warehouseSpecs.numberOfRobots);
 
         int id = 0;
         for(GridCoordinate gridCoordinate : gridCoordinates)
@@ -94,7 +97,7 @@ public class Simulation {
         }
         server.updateNew();
         goal.update();
-        if(WarehouseSpecs.collisionDetectedEnabled){
+        if(Simulation.warehouseSpecs.collisionDetectedEnabled){
             checkForCollisions();
         }
         updateSideMenuScrollPanes();
@@ -265,11 +268,11 @@ public class Simulation {
     }
 
     public int getGridHeight() {
-        return WarehouseSpecs.wareHouseHeight;
+        return Simulation.warehouseSpecs.wareHouseHeight;
     }
 
     public int getGridWidth() {
-        return WarehouseSpecs.wareHouseWidth;
+        return Simulation.warehouseSpecs.wareHouseWidth;
     }
 
     public Server getServer() {
@@ -302,5 +305,13 @@ public class Simulation {
 
     public void setTickStopperGoal(long tickStopperGoal) {
         this.tickStopperGoal = tickStopperGoal;
+    }
+
+    public static WarehouseSpecs getWarehouseSpecs() {
+        return warehouseSpecs;
+    }
+
+    public static void setWarehouseSpecs(WarehouseSpecs warehouseSpecs) {
+        Simulation.warehouseSpecs = warehouseSpecs;
     }
 }

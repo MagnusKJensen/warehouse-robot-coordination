@@ -55,16 +55,16 @@ public class StorageGrid {
 
     private void generatePickerPoints() {
         ArrayList<GridCoordinate> gridCoordinates;
-        gridCoordinates = WarehouseSpecs.pickerPlacementPattern.generatePattern(WarehouseSpecs.numberOfPickers);
+        gridCoordinates = Simulation.getWarehouseSpecs().pickerPlacementPattern.generatePattern(Simulation.getWarehouseSpecs().numberOfPickers);
         pickerPoints.addAll(gridCoordinates);
     }
 
     private void arePickerPointsOutsideGrid(int[][] pickers) {
         for(int i = 0; i < pickers.length; ++i){
-            if(pickers[i][0] > WarehouseSpecs.wareHouseWidth - 1 || pickers[i][1] > WarehouseSpecs.wareHouseHeight - 1)
+            if(pickers[i][0] > Simulation.getWarehouseSpecs().wareHouseWidth - 1 || pickers[i][1] > Simulation.getWarehouseSpecs().wareHouseHeight - 1)
                 throw new IllegalArgumentException("Picker point is outside grid at (" + pickers[i][0] + "," + pickers[i][1] + "). " +
-                        "Gridsize (" + WarehouseSpecs.wareHouseWidth + ", " + WarehouseSpecs.wareHouseHeight + ")" +
-                        " counting from 0 to " + (WarehouseSpecs.wareHouseWidth - 1) + ".");
+                        "Gridsize (" + Simulation.getWarehouseSpecs().wareHouseWidth + ", " + Simulation.getWarehouseSpecs().wareHouseHeight + ")" +
+                        " counting from 0 to " + (Simulation.getWarehouseSpecs().wareHouseWidth - 1) + ".");
         }
     }
 
