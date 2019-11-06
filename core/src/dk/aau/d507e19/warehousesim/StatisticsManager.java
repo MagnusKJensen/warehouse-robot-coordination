@@ -21,7 +21,8 @@ public class StatisticsManager {
     private String GENERAL_STATS_FILENAME = "generalStats_";
     private String PATH_TO_STATS_FOLDER = System.getProperty("user.dir") + File.separator + "statistics" + File.separator;
     private SimulationApp simulationApp;
-    SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss'_'dd-MM-yyyy");
+    // Has to be ; instead og :, because windows does not accept : in file name - Philip
+    SimpleDateFormat dateFormatter = new SimpleDateFormat("HH;mm;ss'_'dd-MM-yyyy");
 
 
     public StatisticsManager(SimulationApp simulationApp) {
