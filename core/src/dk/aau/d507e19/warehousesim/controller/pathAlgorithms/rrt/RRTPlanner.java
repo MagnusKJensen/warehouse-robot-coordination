@@ -36,4 +36,9 @@ public class RRTPlanner implements PathFinder {
             default: throw new RuntimeException("No type called " + algorithm);
         }
     }
+
+    @Override
+    public boolean accountsForReservations() {
+        return false;
+    }
 }

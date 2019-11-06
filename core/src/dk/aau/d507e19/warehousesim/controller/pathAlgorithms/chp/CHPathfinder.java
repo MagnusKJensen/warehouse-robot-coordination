@@ -89,6 +89,11 @@ public class CHPathfinder implements PathFinder {
         throw new NoValidPathException(start, destination, "Pathfinder max wait time per tile : " + MAXIMUM_WAIT_TIME);
     }
 
+    @Override
+    public boolean accountsForReservations() {
+        return true;
+    }
+
     private ArrayList<CHNode> getValidSuccessors(CHNode parent, GridCoordinate target) {
         ArrayList<GridCoordinate> neighbourCoords = getValidNeighbours(parent.getGridCoordinate());
         ArrayList<CHNode> successors = new ArrayList<>();

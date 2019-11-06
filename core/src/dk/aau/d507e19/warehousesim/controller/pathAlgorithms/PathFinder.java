@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface PathFinder {
     Path calculatePath(GridCoordinate start, GridCoordinate destination) throws NoPathFoundException;
+
+    boolean accountsForReservations();
 }

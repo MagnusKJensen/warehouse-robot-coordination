@@ -327,4 +327,9 @@ public class Astar implements PathFinder {
         calculatePath();
         return new Path(Step.fromGridCoordinates(finalPath));
     }
+
+    @Override
+    public boolean accountsForReservations() {
+        return true;
+    }
 }
