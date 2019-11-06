@@ -104,8 +104,8 @@ public class RRTTest {
         assertTrue(isValidPath(dest2, start, list));
         Path p3 = new Path(list);
     }
-    @Test
-    public void assignBlockedNodesTest(){
+
+    /*public void assignBlockedNodesTest(){
         generateTree();
         //blockedNodesList
         RobotController robotController = Mockito.mock(RobotController.class);
@@ -129,7 +129,8 @@ public class RRTTest {
         rrt.assignBlockedNodeStatus(nodesToBeBlocked);
         assertFalse(oneleft.getBlockedStatus());
 
-    }
+    }*/
+
     public boolean isValidPath(GridCoordinate start, GridCoordinate destination, ArrayList<Step> path){
         GridCoordinate prev = start;
         assertEquals(path.get(0).getGridCoordinate(), start);
@@ -198,8 +199,7 @@ public class RRTTest {
         assertEquals(listOfNeighbours, actualNeighbours);
     }
 
-    @Ignore
-    public void rewireTreeFromCollisionTest(){
+    /*public void rewireTreeFromCollisionTest(){
         rrt = new RRT(robotController);
         generateTree();
         Node<GridCoordinate> destNode = twoleft;
@@ -219,8 +219,7 @@ public class RRTTest {
         assertNotEquals(currentPath, updatedPath);
         assertEquals(2, currentPath.size());
         assertEquals(4, updatedPath);
-
-    }
+    }*/
 
 
 
