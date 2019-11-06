@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.server.order;
 
+import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.BinDelivery;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
@@ -24,7 +25,7 @@ public class OrderManager {
 
     public OrderManager(Server server) {
         this.server = server;
-        this.taskAllocator = server.getSimulation().getSimulationApp().getTaskAllocatorSelected().getTaskAllocator(server.getSimulation().getStorageGrid());
+        this.taskAllocator = Simulation.getTaskAllocator().getTaskAllocator(server.getSimulation().getStorageGrid());
     }
 
     public void takeOrder(Order order){

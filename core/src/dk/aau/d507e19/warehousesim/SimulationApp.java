@@ -53,11 +53,8 @@ public class SimulationApp extends ApplicationAdapter {
     private InputMultiplexer inputMultiplexer;
 
     // Currently using the following pathFinder and TaskAllocators.
-	public static PathFinderEnum pathFinderSelected = PathFinderEnum.DUMMYPATHFINDER;
+	public static PathFinderEnum pathFinderSelected = PathFinderEnum.ASTAR;
 	private static TaskAllocatorEnum taskAllocatorSelected = TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR;
-
-	private StatisticsManager statsManager;
-	private Date simulationStartTime;
 
 	@Override
 	public void create () {
@@ -87,10 +84,6 @@ public class SimulationApp extends ApplicationAdapter {
 		inputMultiplexer.addProcessor(cameraMover);
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());
         lastUpdateTime = System.currentTimeMillis();
-
-        statsManager = new StatisticsManager(this);
-
-        simulationStartTime = new Date(System.currentTimeMillis());
 	}
 
 	private WarehouseSpecs readWarehouseSpecsFromFile(String specFileName) {
@@ -145,24 +138,27 @@ public class SimulationApp extends ApplicationAdapter {
 	@Override
 	// Called repeatedly by the libgdx framework
 	public void render () {
-		cameraMover.update();
-		int updatesSinceLastRender = 0;
-		while(shouldUpdateSimulation() && updatesSinceLastRender < MAX_UPDATES_PER_FRAME){
-			simulation.update();
-			updatesSinceLastRender++;
-		}
+		if(updateMode == UpdateMode.NO_GRAPHICS){
+		} else {
+			cameraMover.update();
+			int updatesSinceLastRender = 0;
+			while(shouldUpdateSimulation() && updatesSinceLastRender < MAX_UPDATES_PER_FRAME){
+				simulation.update();
+				updatesSinceLastRender++;
+			}
 
-		updateMenu();
-		clearScreen();
-		renderMenu();
-		renderSimulation();
+			updateMenu();
+			clearScreen();
+			renderMenu();
+			renderSimulation();
+		}
 	}
 
 	// Determines whether it is time to update to simulation
 	// by comparing the time that has passed
 	private boolean shouldUpdateSimulation(){
 		// Always update when in fast mode
-		if(updateMode == UpdateMode.FASTEST_FORWARD)
+		if(updateMode == UpdateMode.FASTEST_FORWARD || updateMode == UpdateMode.NO_GRAPHICS)
 			return true;
 
 		// Fast forward
@@ -283,7 +279,6 @@ public class SimulationApp extends ApplicationAdapter {
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());
 
 		sideMenu.resetSideMenu();
-		simulationStartTime = new Date(System.currentTimeMillis());
 	}
 
 	public OrthographicCamera getWorldCamera() {
@@ -312,22 +307,16 @@ public class SimulationApp extends ApplicationAdapter {
 
 	public void setPathFinderSelected(PathFinderEnum pathFinderSelected) {
 		this.pathFinderSelected = pathFinderSelected;
+		Simulation.setPathFinder(pathFinderSelected);
 	}
 
 	public void setTaskAllocatorSelected(TaskAllocatorEnum taskAllocatorSelected) {
 		this.taskAllocatorSelected = taskAllocatorSelected;
+		Simulation.setTaskAllocator(taskAllocatorSelected);
 	}
 
 	public TaskAllocatorEnum getTaskAllocatorSelected() {
 		return taskAllocatorSelected;
-	}
-
-	public StatisticsManager getStatsManager() {
-		return statsManager;
-	}
-
-	public Date getSimulationStartTime() {
-		return simulationStartTime;
 	}
 
 	public static String getCurrentRunConfig() {

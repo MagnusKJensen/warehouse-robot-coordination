@@ -99,7 +99,7 @@ public class Server {
         return productsAvailable;
     }
 
-    public void updateNew(){
+    public void update(){
         orderGenerator.update();
         orderManager.update();
     }

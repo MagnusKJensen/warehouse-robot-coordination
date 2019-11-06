@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.statistics;
 
+import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.server.order.Order;
@@ -23,14 +24,14 @@ public class StatisticsManager {
     private String ROBOT_STATS_FILENAME = "robotStats_";
     private String GENERAL_STATS_FILENAME = "generalStats_";
     private String PATH_TO_STATS_FOLDER = System.getProperty("user.dir") + File.separator + "statistics" + File.separator;
-    private SimulationApp simulationApp;
+    private Simulation simulation;
     // Has to be ; instead og :, because windows does not accept : in file name - Philip
     SimpleDateFormat dateFormatter = new SimpleDateFormat("HH;mm;ss'_'dd-MM-yyyy");
     DecimalFormat decimalFormatter = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
 
 
-    public StatisticsManager(SimulationApp simulationApp) {
-        this.simulationApp = simulationApp;
+    public StatisticsManager(Simulation simulation) {
+        this.simulation = simulation;
     }
 
     public void printStatistics(){
@@ -74,7 +75,7 @@ public class StatisticsManager {
 
     private String createSimulationFolder() {
         // Add folder for this specific simulation run
-        String pathToSimulationFolder = PATH_TO_STATS_FOLDER + dateFormatter.format(simulationApp.getSimulationStartTime()) + File.separator;
+        String pathToSimulationFolder = PATH_TO_STATS_FOLDER + dateFormatter.format(simulation.getSimulationStartTime()) + File.separator;
 
         File newDirectory = new File(pathToSimulationFolder);
         if(newDirectory.exists()) return pathToSimulationFolder;
@@ -88,7 +89,7 @@ public class StatisticsManager {
     }
 
     private void writeGeneralStatsToFile(String pathToSimulationFolder) {
-        File file = new File(pathToSimulationFolder + GENERAL_STATS_FILENAME + simulationApp.getSimulation().getTimeInTicks() + ".csv");
+        File file = new File(pathToSimulationFolder + GENERAL_STATS_FILENAME + simulation.getTimeInTicks() + ".csv");
 
         // Overwrite if clicked twice
         if(file.exists()){
@@ -103,27 +104,27 @@ public class StatisticsManager {
             }
             writer.write("\n");
 
-            long currentTick = simulationApp.getSimulation().getTimeInTicks();
+            long currentTick = simulation.getTimeInTicks();
             writer.write("CurrentTick, " + currentTick + '\n');
 
-            long availableProductsLeft = simulationApp.getSimulation().getServer().getProductsAvailable().size();
+            long availableProductsLeft = simulation.getServer().getProductsAvailable().size();
             writer.write("availableProductsLeft," + availableProductsLeft + '\n');
 
-            int ordersInQueue = simulationApp.getSimulation().getServer().getOrderManager().ordersInQueue();
+            int ordersInQueue = simulation.getServer().getOrderManager().ordersInQueue();
             writer.write("ordersInQueue," + ordersInQueue + '\n');
 
-            int ordersFinished = simulationApp.getSimulation().getServer().getOrderManager().ordersFinished();
+            int ordersFinished = simulation.getServer().getOrderManager().ordersFinished();
             writer.write("ordersFinished," + ordersFinished + '\n');
 
-            long msSinceStart = simulationApp.getSimulation().getSimulatedTimeInMS();
-            double ordersPerMinute = simulationApp.getSimulation().getOrdersProcessed() / ((double) msSinceStart / 1000 / 60);
+            long msSinceStart = simulation.getSimulatedTimeInMS();
+            double ordersPerMinute = simulation.getOrdersProcessed() / ((double) msSinceStart / 1000 / 60);
 
             writer.write("OrdersPerMinute," + decimalFormatter.format(ordersPerMinute) + '\n');
 
-            int tasksInQueue = simulationApp.getSimulation().getServer().getOrderManager().tasksInQueue();
+            int tasksInQueue = simulation.getServer().getOrderManager().tasksInQueue();
             writer.write("tasksInQueue," + tasksInQueue + '\n');
 
-            String orderGoalReached = simulationApp.getSimulation().getGoal().getStatsAsCSV();
+            String orderGoalReached = simulation.getGoal().getStatsAsCSV();
             writer.write("orderGoalReached," + orderGoalReached + '\n');
         } catch (IOException e) {
             e.printStackTrace();
@@ -131,7 +132,7 @@ public class StatisticsManager {
     }
 
     private void writeRobotStatsToFile(String pathToSimulationFolder) {
-        File file = new File(pathToSimulationFolder + ROBOT_STATS_FILENAME + simulationApp.getSimulation().getTimeInTicks() + ".csv");
+        File file = new File(pathToSimulationFolder + ROBOT_STATS_FILENAME + simulation.getTimeInTicks() + ".csv");
 
         // Overwrite if clicked twice
         if(file.exists()){
@@ -148,7 +149,7 @@ public class StatisticsManager {
             writer.write("\n");
 
             // Write robot stats
-            ArrayList<Robot> robots = simulationApp.getSimulation().getAllRobots();
+            ArrayList<Robot> robots = simulation.getAllRobots();
             for(Robot robot : robots){
                 writer.write(robot.getStatsAsCSV());
                 writer.write("\n");
@@ -160,7 +161,7 @@ public class StatisticsManager {
     }
 
     private void writeOrderStatsToFile(String pathToSimulationFolder){
-        File file = new File(pathToSimulationFolder + ORDER_STATS_FILENAME + simulationApp.getSimulation().getTimeInTicks() + ".csv");
+        File file = new File(pathToSimulationFolder + ORDER_STATS_FILENAME + simulation.getTimeInTicks() + ".csv");
 
         // Overwrite if clicked twice
         if(file.exists()){
@@ -177,7 +178,7 @@ public class StatisticsManager {
             writer.write("\n");
 
             // Write robot stats
-            ArrayList<Order> orders = simulationApp.getSimulation().getServer().getOrderManager().getOrdersFinished();
+            ArrayList<Order> orders = simulation.getServer().getOrderManager().getOrdersFinished();
             for(Order order : orders){
                 writer.write(order.getStatsAsCSV());
                 writer.write("\n");

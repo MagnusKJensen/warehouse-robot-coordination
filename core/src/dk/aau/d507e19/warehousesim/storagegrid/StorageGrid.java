@@ -18,9 +18,6 @@ public class StorageGrid {
     private final Tile[][] tiles;
     public final int width, height;
 
-    private ShapeRenderer shapeRenderer;
-    private SpriteBatch spriteBatch;
-
     private ArrayList<GridCoordinate> pickerPoints = new ArrayList<>();
     private Simulation simulation;
     private ArrayList<Product> allProducts = new ArrayList<>();
@@ -29,12 +26,9 @@ public class StorageGrid {
         this.height = height;
         this.width = width;
         this.tiles = new Tile[width][height];
-        this.shapeRenderer = new ShapeRenderer();
-        this.spriteBatch = new SpriteBatch();
         this.simulation = simulation;
         generatePickerPoints();
         fillGrid();
-
     }
 
     public ArrayList<BinTile> tilesWithProduct(Product prod){
