@@ -24,6 +24,7 @@ public class StatisticsManager {
     private String ROBOT_STATS_FILENAME = "robotStats_";
     private String GENERAL_STATS_FILENAME = "generalStats_";
     private String PATH_TO_STATS_FOLDER = System.getProperty("user.dir") + File.separator + "statistics" + File.separator;
+    private String PATH_TO_STATS_FOLDER_TESTING = System.getProperty("user.dir") + File.separator + "core" + File.separator + "assets" + File.separator + "statistics" + File.separator;
     private Simulation simulation;
     // Has to be ; instead og :, because windows does not accept : in file name - Philip
     SimpleDateFormat dateFormatter = new SimpleDateFormat("HH;mm;ss'_'dd-MM-yyyy");
@@ -54,9 +55,11 @@ public class StatisticsManager {
     }
 
     private void copySpecsFile(String pathToSimulationFolder) {
-        String pathToSpecFile = SimulationApp.PATH_TO_RUN_CONFIGS + SimulationApp.CURRENT_RUN_CONFIG;
+        String pathToOldSpecFile = Simulation.PATH_TO_RUN_CONFIGS + Simulation.CURRENT_RUN_CONFIG;
+        String pathToSpecFile = Simulation.PATH_TO_RUN_CONFIGS + Simulation.CURRENT_RUN_CONFIG;
 
-        String pathToNewFile = pathToSimulationFolder + File.separator + SimulationApp.CURRENT_RUN_CONFIG;
+        String pathToNewFile = pathToSimulationFolder + File.separator + Simulation.CURRENT_RUN_CONFIG;
+
         try {
             if(!new File(pathToNewFile).exists()){
                 Files.copy(Paths.get(pathToSpecFile), Paths.get(pathToNewFile));
@@ -188,5 +191,9 @@ public class StatisticsManager {
         catch(IOException e){
             e.printStackTrace();
         }
+    }
+
+    public void setPATH_TO_STATS_FOLDER(String PATH_TO_STATS_FOLDER) {
+        this.PATH_TO_STATS_FOLDER = PATH_TO_STATS_FOLDER;
     }
 }

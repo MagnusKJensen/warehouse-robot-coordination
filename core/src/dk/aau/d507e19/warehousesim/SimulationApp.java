@@ -73,9 +73,7 @@ public class SimulationApp extends ApplicationAdapter {
 		// Quick way to generate new json files
 		// createJsonFileFromSpecs("newSpecName.json");
 
-		WarehouseSpecs warehouseSpecs = readWarehouseSpecsFromFile(CURRENT_RUN_CONFIG);
-
-		simulation = new Simulation(this, warehouseSpecs);
+		simulation = new Simulation(this, CURRENT_RUN_CONFIG);
 		sideMenu = new SideMenu(menuViewport, this);
 
 		Gdx.input.setInputProcessor(inputMultiplexer);
@@ -84,19 +82,6 @@ public class SimulationApp extends ApplicationAdapter {
 		inputMultiplexer.addProcessor(cameraMover);
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());
         lastUpdateTime = System.currentTimeMillis();
-	}
-
-	private WarehouseSpecs readWarehouseSpecsFromFile(String specFileName) {
-		File runConfigFile = new File(PATH_TO_RUN_CONFIGS + File.separator + specFileName);
-		Gson gson = new Gson();
-		try(BufferedReader reader = new BufferedReader(new FileReader(runConfigFile))){
-			WarehouseSpecs specs = gson.fromJson(reader, WarehouseSpecs.class);
-			return specs;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return null;
 	}
 
 	private void createJsonFileFromSpecs(String newSpecName){
@@ -274,8 +259,7 @@ public class SimulationApp extends ApplicationAdapter {
 		simulation.dispose();
 		random = new Random(RANDOM_SEED);
 		pause();
-		WarehouseSpecs warehouseSpecs = readWarehouseSpecsFromFile("defaultSpecs.json");
-		simulation = new Simulation(this, warehouseSpecs);
+		simulation = new Simulation(this, CURRENT_RUN_CONFIG);
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());
 
 		sideMenu.resetSideMenu();

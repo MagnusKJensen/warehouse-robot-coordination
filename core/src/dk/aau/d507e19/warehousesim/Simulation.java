@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.google.gson.Gson;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
@@ -23,6 +24,10 @@ import dk.aau.d507e19.warehousesim.statistics.StatisticsManager;
 import dk.aau.d507e19.warehousesim.storagegrid.*;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -57,17 +62,22 @@ public class Simulation {
 
     private long tickStopperGoal;
 
+    public static String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "runconfigurations/";
+    public static String CURRENT_RUN_CONFIG = "defaultSpecs.json";
     private static WarehouseSpecs warehouseSpecs;
     private static PathFinderEnum pathFinder;
     private static TaskAllocatorEnum taskAllocator;
 
     private Date simulationStartTime;
 
-    StatisticsManager statsManager;
+    private StatisticsManager statsManager;
 
     // Used for fast no graphics simulations
-    public Simulation(WarehouseSpecs warehouseSpecs, PathFinderEnum pathfinder, TaskAllocatorEnum taskAllocator){
-        Simulation.warehouseSpecs = warehouseSpecs;
+    public Simulation(String runConfigName, PathFinderEnum pathfinder, TaskAllocatorEnum taskAllocator){
+        // Todo - Fix this ugly shit. It is caused by user.dir returning something different, if the program is run without gradle using StatisticsAutomator
+        PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "core" + File.separator + "assets" + File.separator + "runconfigurations/";
+        Simulation.warehouseSpecs = readWarehouseSpecsFromFile(runConfigName);
+        System.out.println(Simulation.warehouseSpecs);
         Simulation.pathFinder = pathfinder;
         Simulation.taskAllocator = taskAllocator;
 
@@ -86,12 +96,12 @@ public class Simulation {
         statsManager = new StatisticsManager(this);
     }
 
-    public Simulation(SimulationApp simulationApp, WarehouseSpecs warehouseSpecs){
+    public Simulation(SimulationApp simulationApp, String pathToRunConfig){
         this.simulationApp = simulationApp;
         this.gridCamera = simulationApp.getWorldCamera();
         this.fontCamera = simulationApp.getFontCamera();
         this.gridViewport = simulationApp.getWorldViewport();
-        Simulation.warehouseSpecs = warehouseSpecs;
+        Simulation.warehouseSpecs = readWarehouseSpecsFromFile(pathToRunConfig);
 
         Simulation.pathFinder = simulationApp.getPathFinderSelected();
         Simulation.taskAllocator = simulationApp.getTaskAllocatorSelected();
@@ -115,6 +125,19 @@ public class Simulation {
         simulationStartTime = new Date(System.currentTimeMillis());
 
         statsManager = new StatisticsManager(this);
+    }
+
+    private WarehouseSpecs readWarehouseSpecsFromFile(String specFileName) {
+        File runConfigFile = new File(PATH_TO_RUN_CONFIGS + File.separator + specFileName);
+        Gson gson = new Gson();
+        try(BufferedReader reader = new BufferedReader(new FileReader(runConfigFile.getPath()))){
+            WarehouseSpecs specs = gson.fromJson(reader, WarehouseSpecs.class);
+            return specs;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     private void initRobots() {

@@ -22,11 +22,13 @@ public class StatisticsAutomator {
 
     private static void runAllConfigurations(){
         ArrayList<WarehouseSpecs> runConfigs = getAllRunConfigs();
-        Simulation simulation = new Simulation(runConfigs.get(0), PathFinderEnum.ASTAR, TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR);
+        Simulation simulation = new Simulation("defaultSpecs.json", PathFinderEnum.CHPATHFINDER, TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR);
+        simulation.getStatsManager().setPATH_TO_STATS_FOLDER(System.getProperty("user.dir") + File.separator + "core" + File.separator + "assets" + File.separator + "statistics" + File.separator);
 
         while(simulation.getTimeInTicks() < 100000){
             if(simulation.getTimeInTicks() % 10000 == 0){
                 simulation.getStatsManager().printStatistics();
+                System.out.println(simulation.getTimeInTicks());
             }
             simulation.update();
         }
