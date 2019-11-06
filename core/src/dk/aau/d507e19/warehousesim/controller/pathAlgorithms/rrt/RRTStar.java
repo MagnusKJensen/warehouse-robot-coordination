@@ -85,9 +85,6 @@ public class RRTStar extends RRTBase {
         if(n.getParent() == null){
             //n is root
             return false;
-        } else if (n.getParent().equals(node)) {
-            //n already has node as parent
-            return false;
         } else if(n.getParent() == null){
             //n has root as parent
             return false;
@@ -153,9 +150,6 @@ public class RRTStar extends RRTBase {
                 if(!canBeRewired(node,neighbour)) {
                     continue;
                 }
-                /*if(neighbour.getParent()==null){
-                    continue;
-                }*/
                 //if n is in the same direction as we're currently going and its not the parent node of turnnode then we can rewire
                 if(calcDirection(node.getData(),neighbour.getData()).equals(nodeDirection) && !neighbour.getData().equals(node.getParent().getData()) ){
                         bestNeighbour = node.getRoot().findNode(neighbour.getData());
@@ -168,13 +162,10 @@ public class RRTStar extends RRTBase {
             for (Node<GridCoordinate> neighbour : neighbours){
                 if(!canBeRewired(node,neighbour)) {
                     continue;
-                }/*
-                if(neighbour.getParent()==null){
-                    continue;
-                }*/
+                }
                 if(bestNeighbour == null || distance(neighbour.getData(),destination.getData()) < distance(bestNeighbour.getData(),destination.getData())){
                     //neighbour is a node from allNodesMap, meaning it is a part of the orignial root. We need to set bestNeighbour = to the copied version
-                        bestNeighbour = node.getRoot().findNode(neighbour.getData());
+                    bestNeighbour = node.getRoot().findNode(neighbour.getData());
                 }
             }
         }
