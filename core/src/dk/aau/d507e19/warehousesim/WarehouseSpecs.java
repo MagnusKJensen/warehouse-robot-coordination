@@ -21,7 +21,7 @@ public class WarehouseSpecs {
     public static final boolean isRandomProductDistribution = true;
 
     /** Robot **/
-    public static final int numberOfRobots = 40;
+    public static final int numberOfRobots = 100;
     public static final float robotTopSpeed = 3f; // Meters/second
     public static final float robotAcceleration = 0.8f; // m/s^2
     public static final float robotDeceleration = 2f; // m/s^2
@@ -31,9 +31,9 @@ public class WarehouseSpecs {
     public static final Pattern robotPlacementPattern = new Pattern(Pattern.PatternType.STACKED_LINES, 1, WAREHOUSE_BOUNDS);
 
     /** Picker **/
-    public static final Pattern pickerPlacementPattern = new Pattern(Pattern.PatternType.SPIRAL, 1, WAREHOUSE_BOUNDS);
+    public static final int[][] customPickerPoints = {{0,1}, {2,1}, {4,1}, {6,1}, {8,1}, {10,1}, {12,0}, {14,0}, {16,0}, {18,0}, {20,0}, {22,0}, {24,0},{26,0}, {28,0}};
     public static final int numberOfPickers = 60;
-    public static final int[][] pickerPoints = {{0,0}, {2,0}, {4,0}, {6,0}, {8,0}, {10,0}, {12,0}, {14,0}, {16,0}, {18,0}, {20,0}, {22,0}, {24,0},{26,0}, {28,0}};
+    public static final Pattern pickerPlacementPattern = new Pattern(customPickerPoints);
 
     /** Orders **/
     public static final int secondsBetweenOrders = 1;

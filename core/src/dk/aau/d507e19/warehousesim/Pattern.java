@@ -11,17 +11,25 @@ import java.util.ArrayList;
 public class Pattern {
 
     public enum PatternType {
-        STACKED_LINES, SPIRAL;
+        STACKED_LINES, SPIRAL, CUSTOM;
     }
 
     private PatternType patternType;
     private int padding;
     private GridBounds bounds;
+    private int[][] customPoints;
 
     public Pattern(PatternType patternType, int padding, GridBounds bounds) {
         this.patternType = patternType;
         this.padding = padding;
         this.bounds = bounds;
+    }
+
+    public Pattern(int[][] customPoints) {
+        this.patternType = PatternType.CUSTOM;
+        this.padding = 0;
+        this.bounds = null;
+        this.customPoints = customPoints;
     }
 
     public ArrayList<GridCoordinate> generatePattern(int points) {
@@ -30,8 +38,18 @@ public class Pattern {
                 return generateSpiral(points);
             case STACKED_LINES:
                 return generateStackedLines(points);
+            case CUSTOM:
+                return customPointsToGridCoordinates();
         }
         throw new IllegalArgumentException("No pattern generation method exists for the given patternType");
+    }
+
+    private ArrayList<GridCoordinate> customPointsToGridCoordinates() {
+        ArrayList<GridCoordinate> customGridCoordinates = new ArrayList<>();
+        for(int[] i : customPoints)
+            customGridCoordinates.add(new GridCoordinate(i[0], i[1]));
+
+        return customGridCoordinates;
     }
 
     private ArrayList<GridCoordinate> generateStackedLines(int points) {
