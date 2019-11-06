@@ -29,14 +29,23 @@ public class StatisticsManager {
     }
 
     public void printStatistics(){
+        // Create statistics folder if it does not exist
+        createStatisticsFolder();
+
+        // Create folder for this specific simulation run
         String pathToSimulationFolder = createSimulationFolder();
 
+        // Write all statistics to files
         writeOrderStatsToFile(pathToSimulationFolder);
-
         writeRobotStatsToFile(pathToSimulationFolder);
-
         writeGeneralStatsToFile(pathToSimulationFolder);
+    }
 
+    private void createStatisticsFolder() {
+        File statisticsFolder = new File(PATH_TO_STATS_FOLDER);
+
+        if(statisticsFolder.exists()) return;
+        else statisticsFolder.mkdir();
     }
 
     private String createSimulationFolder() {
