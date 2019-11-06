@@ -62,8 +62,8 @@ public class Simulation {
 
     private long tickStopperGoal;
 
-    public static String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "runconfigurations/";
-    public static String CURRENT_RUN_CONFIG = "defaultSpecs.json";
+    public static String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations/";
+    public static String CURRENT_RUN_CONFIG;
     private static WarehouseSpecs warehouseSpecs;
     private static PathFinderEnum pathFinder;
     private static TaskAllocatorEnum taskAllocator;
@@ -74,10 +74,8 @@ public class Simulation {
 
     // Used for fast no graphics simulations
     public Simulation(String runConfigName, PathFinderEnum pathfinder, TaskAllocatorEnum taskAllocator){
-        // Todo - Fix this ugly shit. It is caused by user.dir returning something different, if the program is run without gradle using StatisticsAutomator
-        PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "core" + File.separator + "assets" + File.separator + "runconfigurations/";
         Simulation.warehouseSpecs = readWarehouseSpecsFromFile(runConfigName);
-        System.out.println(Simulation.warehouseSpecs);
+        Simulation.CURRENT_RUN_CONFIG = runConfigName;
         Simulation.pathFinder = pathfinder;
         Simulation.taskAllocator = taskAllocator;
 

@@ -20,11 +20,10 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class StatisticsManager {
-    private String ORDER_STATS_FILENAME = "orderStats_";
-    private String ROBOT_STATS_FILENAME = "robotStats_";
-    private String GENERAL_STATS_FILENAME = "generalStats_";
-    private String PATH_TO_STATS_FOLDER = System.getProperty("user.dir") + File.separator + "statistics" + File.separator;
-    private String PATH_TO_STATS_FOLDER_TESTING = System.getProperty("user.dir") + File.separator + "core" + File.separator + "assets" + File.separator + "statistics" + File.separator;
+    private final String ORDER_STATS_FILENAME = "orderStats_";
+    private final String ROBOT_STATS_FILENAME = "robotStats_";
+    private final String GENERAL_STATS_FILENAME = "generalStats_";
+    private final String PATH_TO_STATS_FOLDER = System.getProperty("user.dir") + File.separator + "statistics" + File.separator;
     private Simulation simulation;
     // Has to be ; instead og :, because windows does not accept : in file name - Philip
     SimpleDateFormat dateFormatter = new SimpleDateFormat("HH;mm;ss'_'dd-MM-yyyy");
@@ -55,14 +54,13 @@ public class StatisticsManager {
     }
 
     private void copySpecsFile(String pathToSimulationFolder) {
-        String pathToOldSpecFile = Simulation.PATH_TO_RUN_CONFIGS + Simulation.CURRENT_RUN_CONFIG;
-        String pathToSpecFile = Simulation.PATH_TO_RUN_CONFIGS + Simulation.CURRENT_RUN_CONFIG;
+        String configFileToCopy = Simulation.PATH_TO_RUN_CONFIGS + Simulation.CURRENT_RUN_CONFIG;
 
-        String pathToNewFile = pathToSimulationFolder + File.separator + Simulation.CURRENT_RUN_CONFIG;
+        String newPath = pathToSimulationFolder + File.separator + Simulation.CURRENT_RUN_CONFIG;
 
         try {
-            if(!new File(pathToNewFile).exists()){
-                Files.copy(Paths.get(pathToSpecFile), Paths.get(pathToNewFile));
+            if(!new File(newPath).exists()){
+                Files.copy(Paths.get(configFileToCopy), Paths.get(newPath));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -191,9 +189,5 @@ public class StatisticsManager {
         catch(IOException e){
             e.printStackTrace();
         }
-    }
-
-    public void setPATH_TO_STATS_FOLDER(String PATH_TO_STATS_FOLDER) {
-        this.PATH_TO_STATS_FOLDER = PATH_TO_STATS_FOLDER;
     }
 }

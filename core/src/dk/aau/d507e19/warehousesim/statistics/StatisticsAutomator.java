@@ -14,52 +14,44 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 
 public class StatisticsAutomator {
-    public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "core" + File.separator + "assets" + File.separator + "runconfigurations";
+    public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations";
 
     public static void main(String[] args) {
         runAllConfigurations();
     }
 
     private static void runAllConfigurations(){
-        ArrayList<WarehouseSpecs> runConfigs = getAllRunConfigs();
-        Simulation simulation = new Simulation("defaultSpecs.json", PathFinderEnum.CHPATHFINDER, TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR);
-        simulation.getStatsManager().setPATH_TO_STATS_FOLDER(System.getProperty("user.dir") + File.separator + "core" + File.separator + "assets" + File.separator + "statistics" + File.separator);
+        ArrayList<String> runConfigs = getAllRunConfigs();
 
-        while(simulation.getTimeInTicks() < 100000){
-            if(simulation.getTimeInTicks() % 10000 == 0){
-                simulation.getStatsManager().printStatistics();
-                System.out.println(simulation.getTimeInTicks());
+        Simulation simulation;
+        for(String warehouseConfig : runConfigs){
+            simulation = new Simulation(warehouseConfig, PathFinderEnum.CHPATHFINDER, TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR);
+
+            while(simulation.getTimeInTicks() <= 100000){
+                if(simulation.getTimeInTicks() % 10000 == 0){
+                    simulation.getStatsManager().printStatistics();
+                    System.out.println(simulation.getTimeInTicks());
+                }
+                simulation.update();
             }
-            simulation.update();
         }
+
+
     }
 
-    private static ArrayList<WarehouseSpecs> getAllRunConfigs(){
-        ArrayList<WarehouseSpecs> runConfigs = new ArrayList<>();
+    private static ArrayList<String> getAllRunConfigs(){
+        ArrayList<String> runConfigs = new ArrayList<>();
 
         File runConfigFolder = new File(PATH_TO_RUN_CONFIGS);
-
-        ArrayList<File> files = new ArrayList<>();
 
         // Get all files in dir
         try {
             Files.list(runConfigFolder.toPath())
                     .forEach(path -> {
-                        files.add(path.toFile());
+                        runConfigs.add(path.getFileName().toString());
                     });
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
-        // Deserialize all files from dir
-        Gson gson = new Gson();
-        for(File runConfig : files){
-            try(BufferedReader reader = new BufferedReader(new FileReader(runConfig.getPath()))){
-                WarehouseSpecs specs = gson.fromJson(reader, WarehouseSpecs.class);
-                runConfigs.add(specs);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
 
         return runConfigs;

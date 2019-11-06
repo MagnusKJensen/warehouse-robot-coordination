@@ -8,7 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class RunConfigurator {
-    public static final String PATH_TO_TEST_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "testassets" + File.separator + "runconfigurations/";
+    public static final String PATH_TO_TEST_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "testassets" + File.separator + "warehouseconfigurations/";
 
     public static void setRunConfiguration(String runConfigurationFileName){
         File runConfigFile = new File(PATH_TO_TEST_RUN_CONFIGS + File.separator + runConfigurationFileName);
