@@ -4,7 +4,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.Direction;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
-import javafx.geometry.Bounds;
+
 
 import java.util.ArrayList;
 
