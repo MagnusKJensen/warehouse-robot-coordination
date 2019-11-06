@@ -76,6 +76,9 @@ public class SimulationApp extends ApplicationAdapter {
 		centerCamera(simulationCamera);
 		centerCamera(menuCamera);
 
+		// Quick way to generate new json files
+		// createJsonFileFromSpecs("newSpecName.json");
+
 		WarehouseSpecs warehouseSpecs = readWarehouseSpecsFromFile("defaultSpecs.json");
 
 		simulation = new Simulation(this, warehouseSpecs);
@@ -104,6 +107,17 @@ public class SimulationApp extends ApplicationAdapter {
 		}
 
 		return null;
+	}
+
+	private void createJsonFileFromSpecs(String newSpecName){
+		File newSpecFile = new File(PATH_TO_RUN_CONFIGS + File.separator + newSpecName);
+		Gson gson = new Gson();
+		try(BufferedWriter writer = new BufferedWriter(new FileWriter(newSpecFile.getPath()))){
+			String jsonString = gson.toJson(new WarehouseSpecs());
+			writer.write(jsonString);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void centerCamera(OrthographicCamera camera) {
@@ -267,7 +281,8 @@ public class SimulationApp extends ApplicationAdapter {
 		simulation.dispose();
 		random = new Random(RANDOM_SEED);
 		pause();
-		simulation = new Simulation(this, new WarehouseSpecs());
+		WarehouseSpecs warehouseSpecs = readWarehouseSpecsFromFile("defaultSpecs.json");
+		simulation = new Simulation(this, warehouseSpecs);
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());
 
 		sideMenu.resetSideMenu();

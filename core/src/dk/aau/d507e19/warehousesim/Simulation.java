@@ -67,8 +67,8 @@ public class Simulation {
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
 
-        storageGrid = new StorageGrid(Simulation.warehouseSpecs.wareHouseWidth, Simulation.warehouseSpecs.wareHouseHeight, this);
-        if(Simulation.warehouseSpecs.isRandomProductDistribution) ProductDistributor.distributeProductsRandomly(storageGrid);
+        storageGrid = new StorageGrid(Simulation.getWarehouseSpecs().wareHouseWidth, Simulation.getWarehouseSpecs().wareHouseHeight, this);
+        if(Simulation.getWarehouseSpecs().isRandomProductDistribution) ProductDistributor.distributeProductsRandomly(storageGrid);
         else ProductDistributor.distributeProducts(storageGrid);
 
         server = new Server(this, storageGrid);
