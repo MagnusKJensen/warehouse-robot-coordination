@@ -103,7 +103,8 @@ public class Robot {
                 else batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotMovingOutOfWay.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
             case RELOCATING_BUSY:
-                batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotMovingOutOfWayBusy.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
+                if(isCarrying())batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotMovingOutOfWayCarrying.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
+                else batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotMovingOutOfWayBusy.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
             default:
                 throw new RuntimeException("Robot status unavailable");
