@@ -27,7 +27,7 @@
     ]
   ],
   "isRandomProductDistribution": true,
-  "numberOfRobots": 20,
+  "numberOfRobots": 10,
   "robotTopSpeed": 3.0,
   "robotAcceleration": 0.8,
   "robotDeceleration": 2.0,
@@ -45,14 +45,76 @@
     }
   },
   "pickerPlacementPattern": {
-    "patternType": "SPIRAL",
+    "patternType": "CUSTOM",
     "padding": 1,
     "bounds": {
       "startX": 0,
       "startY": 0,
       "endX": 29,
       "endY": 29
-    }
+    },
+    "customPoints": [
+      [
+        1,
+        0
+      ],
+      [
+        2,
+        0
+      ],
+      [
+        4,
+        0
+      ],
+      [
+        6,
+        0
+      ],
+      [
+        8,
+        0
+      ],
+      [
+        10,
+        0
+      ],
+      [
+        12,
+        0
+      ],
+      [
+        14,
+        0
+      ],
+      [
+        16,
+        0
+      ],
+      [
+        18,
+        0
+      ],
+      [
+        20,
+        0
+      ],
+      [
+        22,
+        0
+      ],
+      [
+        24,
+        0
+      ],
+      [
+        26,
+        0
+      ],
+      [
+        28,
+        0
+      ]
+    ]
   },
   "numberOfPickers": 60,
   "pickerPoints": [

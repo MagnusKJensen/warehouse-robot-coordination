@@ -20,29 +20,42 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class StatisticsManager {
+    // This changes the name of the folder containing the statistics to reflect the version number
+    private final String VERSION_NAME = "Philip";
+
+    // For statistics file names
     private final String ORDER_STATS_FILENAME = "orderStats_";
     private final String ROBOT_STATS_FILENAME = "robotStats_";
     private final String GENERAL_STATS_FILENAME = "generalStats_";
+
+    // Path to the upper statistics folder
     private final String PATH_TO_STATS_FOLDER = System.getProperty("user.dir") + File.separator + "statistics" + File.separator;
-    private Simulation simulation;
+
+    // Formatting date and decimals in file names and statistics
     // Has to be ; instead og :, because windows does not accept : in file name - Philip
     SimpleDateFormat dateFormatter = new SimpleDateFormat("HH;mm;ss'_'dd-MM-yyyy");
     DecimalFormat decimalFormatter = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
 
+    private Simulation simulation;
 
     public StatisticsManager(Simulation simulation) {
         this.simulation = simulation;
     }
 
     public void printStatistics(){
+        // Apply patterns to the decimal formatter, that is used in the statistics files
         decimalFormatter.applyPattern("###.00");
         decimalFormatter.setRoundingMode(RoundingMode.HALF_UP);
         decimalFormatter.setGroupingUsed(false);
-        // Create statistics folder if it does not exist
+
+        // Create statistics folder if it does not exist    .../core/assets/statistics/
         createStatisticsFolder();
 
-        // Create folder for this specific simulation run
-        String pathToSimulationFolder = createSimulationFolder();
+        // Create folder for current warehouse specs / run config     .../core/assets/statistics/*runConfig*/
+        String runConfigFolder = createRunConfigFolder();
+
+        // Create folder for this specific simulation run    .../core/assets/statistics/*runConfig*/*TaskAllocator___PathFinder*/
+        String pathToSimulationFolder = createSimulationFolder(runConfigFolder);
 
         // Write all statistics to files
         writeOrderStatsToFile(pathToSimulationFolder);
@@ -51,6 +64,47 @@ public class StatisticsManager {
 
         // Copy file with specs from the run. Only done, if it is not already copied once.
         copySpecsFile(pathToSimulationFolder);
+    }
+
+    private String createSimulationFolder(String runConfigFolder) {
+        // Add folder for this specific simulation run
+        String simulationFolderName = Simulation.getTaskAllocator() + "___" + Simulation.getPathFinder();
+
+        String pathToSimulationFolder = runConfigFolder + File.separator + simulationFolderName + File.separator;
+
+        File newDirectory = new File(pathToSimulationFolder);
+        if(newDirectory.exists()) return pathToSimulationFolder;
+        else {
+            boolean folderCreated = newDirectory.mkdir();
+            if(!folderCreated) {
+                throw new IllegalArgumentException("Could not create folder " + newDirectory);
+            }
+            return pathToSimulationFolder;
+        }
+    }
+
+    private void createStatisticsFolder() {
+        File statisticsFolder = new File(PATH_TO_STATS_FOLDER);
+
+        if(statisticsFolder.exists()) return;
+        else statisticsFolder.mkdir();
+    }
+
+    private String createRunConfigFolder() {
+        // Add folder for this specific simulation run
+        String runConfigFolderName = Simulation.CURRENT_RUN_CONFIG + "_" + VERSION_NAME;
+
+        String pathToRunConfigFolder = PATH_TO_STATS_FOLDER + runConfigFolderName + File.separator;
+
+        File newDirectory = new File(pathToRunConfigFolder);
+        if(newDirectory.exists()) return pathToRunConfigFolder;
+        else {
+            boolean folderCreated = newDirectory.mkdir();
+            if(!folderCreated) {
+                throw new IllegalArgumentException("Could not create folder " + newDirectory);
+            }
+            return pathToRunConfigFolder;
+        }
     }
 
     private void copySpecsFile(String pathToSimulationFolder) {
@@ -64,28 +118,6 @@ public class StatisticsManager {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    private void createStatisticsFolder() {
-        File statisticsFolder = new File(PATH_TO_STATS_FOLDER);
-
-        if(statisticsFolder.exists()) return;
-        else statisticsFolder.mkdir();
-    }
-
-    private String createSimulationFolder() {
-        // Add folder for this specific simulation run
-        String pathToSimulationFolder = PATH_TO_STATS_FOLDER + dateFormatter.format(simulation.getSimulationStartTime()) + File.separator;
-
-        File newDirectory = new File(pathToSimulationFolder);
-        if(newDirectory.exists()) return pathToSimulationFolder;
-        else {
-            boolean folderCreated = newDirectory.mkdir();
-            if(!folderCreated) {
-                throw new IllegalArgumentException("Could not create folder " + newDirectory);
-            }
-            return pathToSimulationFolder;
         }
     }
 

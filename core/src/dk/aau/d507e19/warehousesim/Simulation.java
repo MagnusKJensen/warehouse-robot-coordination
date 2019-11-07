@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.google.gson.Gson;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
@@ -70,7 +69,7 @@ public class Simulation {
 
     private Date simulationStartTime;
 
-    private StatisticsManager statsManager;
+    private StatisticsManager statisticsManager;
 
     // Used for fast no graphics simulations
     public Simulation(String runConfigName, PathFinderEnum pathfinder, TaskAllocatorEnum taskAllocator){
@@ -90,8 +89,7 @@ public class Simulation {
         initRobots();
 
         simulationStartTime = new Date(System.currentTimeMillis());
-
-        statsManager = new StatisticsManager(this);
+        statisticsManager = new StatisticsManager(this);
     }
 
     public Simulation(SimulationApp simulationApp, String pathToRunConfig){
@@ -122,7 +120,7 @@ public class Simulation {
 
         simulationStartTime = new Date(System.currentTimeMillis());
 
-        statsManager = new StatisticsManager(this);
+        statisticsManager = new StatisticsManager(this);
     }
 
     private WarehouseSpecs readWarehouseSpecsFromFile(String specFileName) {
@@ -395,7 +393,7 @@ public class Simulation {
         return simulationStartTime;
     }
 
-    public StatisticsManager getStatsManager() {
-        return statsManager;
+    public StatisticsManager getStatisticsManager() {
+        return statisticsManager;
     }
 }
