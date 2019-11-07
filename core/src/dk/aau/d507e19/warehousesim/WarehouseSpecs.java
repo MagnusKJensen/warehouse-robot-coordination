@@ -20,7 +20,7 @@ public class WarehouseSpecs {
     public int wareHouseWidth = 30;
     public int wareHouseHeight = 30;
     public GridBounds WAREHOUSE_BOUNDS = new GridBounds(wareHouseWidth - 1, wareHouseHeight - 1);
-    public int binSizeInMeters = 1;
+    public float binSizeInMeters = 1;
     public int productsPerBin = 15;
     public int SKUsPerBin = 9;
     public int SKUs = 20;
@@ -38,6 +38,7 @@ public class WarehouseSpecs {
     public float robotDeceleration = 2f; // m/s^2
     public float robotMinimumSpeed = 0.1f;
     public int robotPickUpSpeedInSeconds = 3;
+    public int robotDeliverToPickInSeconds = 12;
     public boolean collisionDetectedEnabled = true; // TEMP - Should not be enabled until reservationManager done.
     public Pattern robotPlacementPattern = new Pattern(Pattern.PatternType.STACKED_LINES, 1, WAREHOUSE_BOUNDS);
 
