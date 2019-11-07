@@ -44,13 +44,13 @@ public class RobotController {
 
     public boolean assignTask(Task task){
         tasks.add(task);
-        robot.setCurrentStatus(Status.BUSY);
+        updateStatus();
         return true;
     }
 
     public boolean assignImmediateTask(Task task){
         tasks.add(0, task);
-        robot.setCurrentStatus(Status.BUSY);
+        updateStatus();
         return true;
     }
 
@@ -112,10 +112,17 @@ public class RobotController {
 
         GridCoordinate newPosition;// = server.getNewPosition();
 
-        do { // Find random neighbour tile to go to
-            Direction randomDirection = Direction.values()[random.nextInt(Direction.values().length)];
-            newPosition = new GridCoordinate(robot.getGridCoordinate().getX() + randomDirection.xDir, robot.getGridCoordinate().getY() + randomDirection.yDir);
-        }while (!server.getGridBounds().isWithinBounds(newPosition));
+        if(robot.getCurrentStatus() == Status.AVAILABLE){
+            // Go to optimal spot to wait for task
+            newPosition = server.getOptimalIdleRobotPosition();
+        }else{
+            do { // Find random neighbour tile to go to
+                Direction randomDirection = Direction.values()[random.nextInt(Direction.values().length)];
+                newPosition = new GridCoordinate(robot.getGridCoordinate().getX() + randomDirection.xDir, robot.getGridCoordinate().getY() + randomDirection.yDir);
+            }while (!server.getGridBounds().isWithinBounds(newPosition));
+        }
+
+
 
         assignImmediateTask(Navigation.getInstance(this, newPosition));
         return true;

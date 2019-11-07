@@ -8,6 +8,7 @@ import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import dk.aau.d507e19.warehousesim.controller.server.HeatMap;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
@@ -146,4 +147,16 @@ public class StorageGrid {
         }
         return binTiles;
     }
+
+    public void renderHeatMap(int[][] heatMap, ShapeRenderer shapeRenderer) {
+        for(int x = 0; x < heatMap[0].length; x++){
+            for(int y = 0; y < heatMap.length; y++) {
+                Color color = HeatMap.heatColor(heatMap[x][y]);
+                tiles[x][y].renderOverlay(shapeRenderer, color);
+            }
+        }
+    }
+
+
+
 }

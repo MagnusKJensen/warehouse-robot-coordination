@@ -1,6 +1,7 @@
 apply plugin: "java"
 
 sourceCompatibility = 11
+
 sourceSets.main.java.srcDirs = [ "src/" ]
 sourceSets.main.resources.srcDirs = ["../core/assets"]
 sourceSets.test.resources.srcDirs = ["../core/testassets"]

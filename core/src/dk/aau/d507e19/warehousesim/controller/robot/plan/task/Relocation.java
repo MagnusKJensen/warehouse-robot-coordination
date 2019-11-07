@@ -1,11 +1,16 @@
 package dk.aau.d507e19.warehousesim.controller.robot.plan.task;
 
+import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
+import dk.aau.d507e19.warehousesim.controller.server.Server;
 
-public class TotalReset implements Task{
+public class Relocation implements Task {
 
+    private GridCoordinate Destination;
+    private Server server;
+    private RobotController robotController;
 
-    private Robot robot;
 
     @Override
     public void perform() {
@@ -24,7 +29,7 @@ public class TotalReset implements Task{
 
     @Override
     public void setRobot(Robot robot) {
-        this.robot = robot;
+
     }
 
     @Override

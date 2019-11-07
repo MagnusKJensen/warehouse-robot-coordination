@@ -74,6 +74,7 @@ public class Simulation {
     private Date simulationStartTime;
 
     private StatisticsManager statisticsManager;
+    private boolean showHeatMap;
 
     // Used for fast no graphics simulations
     public Simulation(long randSeed, String runConfigName, PathFinderEnum pathfinder, TaskAllocatorEnum taskAllocator){
@@ -249,6 +250,7 @@ public class Simulation {
         storageGrid.render(shapeRenderer, batch);
         renderSelectedRobotsPaths();
         renderCtrlSelectedRobotTrees();
+        if(showHeatMap) storageGrid.renderHeatMap(server.getHeatMap(), shapeRenderer);
         renderRobots();
         renderTickCountAndRealTime(gridCamera, fontCamera);
     }
@@ -401,5 +403,9 @@ public class Simulation {
 
     public StatisticsManager getStatisticsManager() {
         return statisticsManager;
+    }
+
+    public void toggleHeatMap() {
+        showHeatMap = !showHeatMap;
     }
 }

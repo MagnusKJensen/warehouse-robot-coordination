@@ -82,6 +82,7 @@ public class SimulationInputProcessor implements InputProcessor {
         if(Input.Keys.A == keycode){
             aDown = true;
         }
+
         if(ctrlDown && aDown) simulation.selectAllRobots();
         return false;
     }
@@ -94,6 +95,7 @@ public class SimulationInputProcessor implements InputProcessor {
         if(Input.Keys.A == keycode){
             aDown = false;
         }
+        if(ctrlDown && keycode == Input.Keys.H) simulation.toggleHeatMap();
         return false;
     }
 
