@@ -112,19 +112,27 @@ public class OrderManager {
 
         StorageGrid storageGrid = server.getSimulation().getStorageGrid();
 
-        for(int y = 0; y < storageGrid.height; y++){
-            for(int x = 0; x < storageGrid.width; x++){
-                Tile tile = storageGrid.getTile(x,y);
-                if(!(tile instanceof BinTile)) continue;
-                if(server.getReservationManager().isBinReserved(tile.getGridCoordinate())) continue;
-                BinDelivery delivery = generateDelivery((BinTile) tile, productsToPick, order);
-                if(delivery != null) deliveries.add(delivery);
-                if(productsToPick.isEmpty()) break;
+        ArrayList<BinTile> binTiles = storageGrid.getAllBinTiles();
+
+        binTiles.sort(new Comparator<BinTile>() {
+            @Override
+            public int compare(BinTile o1, BinTile o2) {
+                int distanceFrom1 = o1.getGridCoordinate().naiveDistanceFrom(order.getPicker().getGridCoordinate());
+                int distanceFrom2 = o2.getGridCoordinate().naiveDistanceFrom(order.getPicker().getGridCoordinate());
+                return Integer.compare(distanceFrom1, distanceFrom2);
             }
+        });
+
+        for(BinTile tile : binTiles){
+            if(server.getReservationManager().isBinReserved(tile.getGridCoordinate())) continue;
+            BinDelivery delivery = generateDelivery(tile, productsToPick, order);
+            if(delivery != null) deliveries.add(delivery);
             if(productsToPick.isEmpty()) break;
         }
 
-        if(productsToPick.isEmpty()) return deliveries;
+        if(!deliveries.isEmpty()){
+            return deliveries;
+        }
 
         return null;
     }
