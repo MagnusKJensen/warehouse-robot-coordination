@@ -112,6 +112,7 @@ public class OrderManager {
 
         ArrayList<BinTile> binTiles = storageGrid.getAllBinTiles();
 
+        // Sort by distance to picker
         binTiles.sort(new Comparator<BinTile>() {
             @Override
             public int compare(BinTile o1, BinTile o2) {
