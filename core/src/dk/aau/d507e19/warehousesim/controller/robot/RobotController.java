@@ -58,12 +58,19 @@ public class RobotController {
         }
 
         Task currentTask = tasks.peekFirst();
-        if (!currentTask.isCompleted())
-            currentTask.perform();
+        currentTask.perform();
+
+        if(currentTask.hasFailed() && currentTask instanceof BinDelivery)
+            throw new RuntimeException("Bindelivery failed");
 
         removeCompletedTasks();
+        removeFailedTasks();
 
         updateStatus();
+    }
+
+    private void removeFailedTasks() {
+        tasks.removeIf(Task::hasFailed);
     }
 
     private void removeCompletedTasks() {

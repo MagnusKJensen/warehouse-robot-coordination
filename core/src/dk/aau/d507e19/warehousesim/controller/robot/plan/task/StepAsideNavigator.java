@@ -22,7 +22,11 @@ public class StepAsideNavigator extends Navigation{
     private Random rand = new Random(Simulation.RANDOM_SEED);
 
     public StepAsideNavigator(RobotController robotController, GridCoordinate destination) {
-        super(robotController, destination);
+        this(robotController, destination, UNLIMITED_RETRIES);
+    }
+
+    public StepAsideNavigator(RobotController robotController, GridCoordinate destination, int maxRetries) {
+        super(robotController, destination, maxRetries);
         pathFinder = robotController.getPathFinder();
         server = robotController.getServer();
         setTicksBetweenRetries(TimeUtils.secondsToTicks(2.5f));
@@ -163,10 +167,6 @@ public class StepAsideNavigator extends Navigation{
     @Override
     boolean canInterrupt() {
         return !isMoving();
-    }
-    @Override
-    public boolean hasFailed() {
-        return false;
     }
 
     public Direction[] randomizeArray(Direction[] array){

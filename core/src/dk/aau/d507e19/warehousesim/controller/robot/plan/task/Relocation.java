@@ -14,6 +14,7 @@ public class Relocation implements Task {
     private boolean completed;
     private Navigation navigation;
     private Random random;
+    private boolean hasFailed = false;
 
     public Relocation(Server server, RobotController robotController) {
         this.server = server;
@@ -23,6 +24,9 @@ public class Relocation implements Task {
 
     @Override
     public void perform() {
+        if(hasFailed() || isCompleted())
+            throw new RuntimeException("Task already completed");
+
         if(destination == null){
             Robot robot = robotController.getRobot();
             if(!robotController.hasOrderAssigned()){
@@ -36,12 +40,18 @@ public class Relocation implements Task {
                 }while (!server.getGridBounds().isWithinBounds(destination));
             }
 
-            navigation = Navigation.getInstance(robotController, destination);
+            navigation = Navigation.getInstance(robotController, destination, 1);
         }
 
         navigation.perform();
         if(navigation.isCompleted())
             complete();
+        if(navigation.hasFailed())
+            fail();
+    }
+
+    private void fail() {
+        hasFailed = true;
     }
 
     private void complete(){
@@ -55,7 +65,7 @@ public class Relocation implements Task {
 
     @Override
     public boolean hasFailed() {
-        return false;
+        return hasFailed;
     }
 
     @Override
