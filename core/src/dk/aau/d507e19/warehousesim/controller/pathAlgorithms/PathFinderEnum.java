@@ -5,13 +5,12 @@ import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStarExtended.Astar
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.chp.CHPathfinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTType;
-import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 
 public enum PathFinderEnum {
     DUMMYPATHFINDER("DummyPathFinder", true), ASTAR("A*", true), ASTARCORNERS("A* Corners", true),
-    CHPATHFINDER("CustomH - Turns", true), RTT("RTT", true), RRTSTAR("RTT*", true);
+    CHPATHFINDER("CustomH - Turns", true), RRT("RRT", true), RRTSTAR("RRT*", true);
 
     private String name;
     private boolean works;
@@ -34,7 +33,7 @@ public enum PathFinderEnum {
                 return new Astar(server, robotController.getRobot());
             case CHPATHFINDER:
                 return CHPathfinder.defaultCHPathfinder(server.getGridBounds(), robotController);
-            case RTT:
+            case RRT:
                 return new RRTPlanner(RRTType.RRT, robotController);
             case RRTSTAR:
                 return new RRTPlanner(RRTType.RRT_STAR, robotController);

@@ -13,10 +13,10 @@ import java.util.ArrayList;
 
 public class StatisticsAutomator {
     public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations";
-    private static final int TICKS_PER_RUN = 100000; // Is about 55min per run
-    private static final int PRINT_EVERY_TICK = 10000;
+    private static final int TICKS_PER_RUN = 2000; // 10.000 is about 55min per run
+    private static final int PRINT_EVERY_TICK = 100;
     private static final String VERSION_NAME = "single";
-    private static final String SPEC_FILE_NAME = "proshop.json";
+    private static final String SPEC_FILE_NAME = "massProducts.json";
     private static final long DEFAULT_RANDOM_SEED = SimulationApp.DEFAULT_SEED;
 
     public static void main(String[] args) {
@@ -24,7 +24,7 @@ public class StatisticsAutomator {
         // runAllConfigurations(VERSION_NAME);
 
         // Run a single configuration with all taskAllocators and PathFinders.
-        // runOneConfig(SPEC_FILE_NAME, VERSION_NAME);
+        runOneConfig(SPEC_FILE_NAME, VERSION_NAME);
 
         // Run a single configuration only with only on taskAllocator, but all pathfinders
         // runOneConfig(SPEC_FILE_NAME, VERSION_NAME, TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR);
@@ -33,7 +33,7 @@ public class StatisticsAutomator {
         // runOneConfig(SPEC_FILE_NAME, VERSION_NAME, PathFinderEnum.DUMMYPATHFINDER);
 
         // Run a single configuration with a singe pathFinder and a single TaskAllocator
-        runOneConfig(SPEC_FILE_NAME, VERSION_NAME, TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR, PathFinderEnum.DUMMYPATHFINDER);
+        // runOneConfig(SPEC_FILE_NAME, VERSION_NAME, TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR, PathFinderEnum.DUMMYPATHFINDER);
     }
 
     private static void runOneConfig(String configFileName, String versionName, TaskAllocatorEnum taskAllocator, PathFinderEnum pathFinder){
