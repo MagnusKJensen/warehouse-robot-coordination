@@ -49,7 +49,7 @@ public class ReservationTile {
         for (Reservation existingReservation : reservations) {
             if (existingReservation.getTimeFrame().overlaps(newReservation.getTimeFrame())
                     && !existingReservation.getRobot().equals(newReservation.getRobot())){
-                throw new DoubleReservationException(existingReservation, newReservation);
+                //throw new DoubleReservationException(existingReservation, newReservation);
             }
         }
 

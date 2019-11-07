@@ -135,7 +135,7 @@ public abstract class RRTBase {
         //down
         pos = edge.getDistanceBetweenPoints(new GridCoordinate(pos.getX(), pos.getY() - 1), randPos) < edge.getDistanceBetweenPoints(pos, randPos) ? new GridCoordinate(originalPos.getX(), originalPos.getY() -1 ) : pos;
 
-        //System.out.println("NEW: "+ pos.toString()+"\nNEAR: " + originalPos.toString() + "\nRAND: " + randPos.toString()+"\n");
+
 
         //remove the newly created note from the freeList
         updateFreeList(pos);
@@ -270,33 +270,7 @@ public abstract class RRTBase {
         path.add(destNode);
         return path;
     }
-    public void assignBlockedNodeStatus(ArrayList<Reservation> nodesToBeUpdated){
-        ArrayList<GridCoordinate> nodesToBeUpdatedConverted = new ArrayList<>();
-        for(Reservation n: nodesToBeUpdated){
-            nodesToBeUpdatedConverted.add(n.getGridCoordinate());
-        }
-        //find the nodes to be blocked and set its statuses to true
-        for(GridCoordinate n: nodesToBeUpdatedConverted) {
-            if (allNodesMap.containsKey(n)) {
-                //checks if node is already in blockedNodeList
-                if(!blockedNodeList.contains(n)) {
-                    //add blocked node to blockedNodeList and sets the status of node to "blocked"
-                    blockedNodeList.add(n);
-                    allNodesMap.get(n).setBlockedStatus(true);
-                }
-            }
-        }
-        //Find nodes that are not blocked anymore, and free them. TODO: make help functions to make function pretty
-        if(blockedNodeList.size() != nodesToBeUpdated.size()){
-            ArrayList<GridCoordinate> tempList = blockedNodeList;
-            tempList.remove(nodesToBeUpdated);
-            for(GridCoordinate m: tempList){
-                if(allNodesMap.containsKey(m)){
-                    allNodesMap.get(m).setBlockedStatus(false);
-                }
-            }
-        }
-    }
+
     protected void growUntilPathFound(GridCoordinate destination){
         boolean foundPath = false;
         //Run until a route is found
@@ -377,6 +351,35 @@ public abstract class RRTBase {
     }
 
     //rewire tree to ignore collideable object
+}
+/*
+    public void assignBlockedNodeStatus(ArrayList<Reservation> nodesToBeUpdated){
+        ArrayList<GridCoordinate> nodesToBeUpdatedConverted = new ArrayList<>();
+        for(Reservation n: nodesToBeUpdated){
+            nodesToBeUpdatedConverted.add(n.getGridCoordinate());
+        }
+        //find the nodes to be blocked and set its statuses to true
+        for(GridCoordinate n: nodesToBeUpdatedConverted) {
+            if (allNodesMap.containsKey(n)) {
+                //checks if node is already in blockedNodeList
+                if(!blockedNodeList.contains(n)) {
+                    //add blocked node to blockedNodeList and sets the status of node to "blocked"
+                    blockedNodeList.add(n);
+                    allNodesMap.get(n).setBlockedStatus(true);
+                }
+            }
+        }
+        //Find nodes that are not blocked anymore, and free them. TODO: make help functions to make function pretty
+        if(blockedNodeList.size() != nodesToBeUpdated.size()){
+            ArrayList<GridCoordinate> tempList = blockedNodeList;
+            tempList.remove(nodesToBeUpdated);
+            for(GridCoordinate m: tempList){
+                if(allNodesMap.containsKey(m)){
+                    allNodesMap.get(m).setBlockedStatus(false);
+                }
+            }
+        }
+    }
     public void rewireTreeFromCollision(Node<GridCoordinate> collideableNode, Node<GridCoordinate> tempDestNode){
 
         rewireToTempDestNode(collideableNode.getParent(), tempDestNode);
@@ -432,4 +435,4 @@ public abstract class RRTBase {
             rewireToTempDestNode(bestChildNode, tempDestNode);
         }
     }
-}
+ */
