@@ -103,8 +103,17 @@ public class StepAsideNavigator extends Navigation{
             reservations = MovementPredictor.calculateReservations(robot, extendedPath, server.getTimeInTicks(), 0);
             reservations.add(createLastTileIndefiniteReservation(reservations));
 
-            if(!server.getReservationManager().hasConflictingReservations(reservations))
+            if(!server.getReservationManager().hasConflictingReservations(reservations)){
+
+                // Janky fix for RRT
+                try {
+                    pathFinder.calculatePath(extendedSteps.get(extendedSteps.size() - 2).getGridCoordinate(), extendedSteps.get(extendedSteps.size() - 1).getGridCoordinate());
+                } catch (NoPathFoundException e) {
+                    e.printStackTrace();
+                }
                 return extendedPath;
+            }
+
         }
         return shortenedPath;
     }
