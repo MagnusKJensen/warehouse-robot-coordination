@@ -15,7 +15,33 @@ public class StatisticsAutomator {
     private static final int PRINT_EVERY_TICK = 50000;
 
     public static void main(String[] args) {
-        runAllConfigurations();
+        // Run with all configurations
+        // runAllConfigurations();
+
+        // Run a single configuration with all taskAllocators and PathFinders.
+        runOneConfig("defaultSpecs.json");
+    }
+
+    private static void runOneConfig(String configFileName){
+        Simulation simulation;
+
+        System.out.println("WarehouseConfig: " + configFileName);
+        System.out.println("________________________________________________________________");
+        for(TaskAllocatorEnum taskAllocator : TaskAllocatorEnum.values()) {
+            for (PathFinderEnum pathFinder : PathFinderEnum.values()) {
+                if (taskAllocator.works() && pathFinder.works()) {
+                    System.out.println("TaskAllocator: " + taskAllocator.getName() + ", PathFinder: " + pathFinder.getName());
+                    simulation = new Simulation(configFileName, pathFinder, taskAllocator);
+                    while (simulation.getTimeInTicks() <= TICKS_PER_RUN) {
+                        if (simulation.getTimeInTicks() % PRINT_EVERY_TICK == 0) {
+                            simulation.getStatisticsManager().printStatistics();
+                            System.out.println(simulation.getTimeInTicks());
+                        }
+                        simulation.update();
+                    }
+                }
+            }
+        }
     }
 
     private static void runAllConfigurations(){

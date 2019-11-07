@@ -33,6 +33,7 @@
   "robotDeceleration": 2.0,
   "robotMinimumSpeed": 0.1,
   "robotPickUpSpeedInSeconds": 3,
+  "robotDeliverToPickInSeconds": 12,
   "collisionDetectedEnabled": true,
   "robotPlacementPattern": {
     "patternType": "STACKED_LINES",

@@ -28,7 +28,7 @@ public class StatisticsManager {
     private final String ROBOT_STATS_FILENAME = "robotStats_";
     private final String GENERAL_STATS_FILENAME = "generalStats_";
 
-    // Path to the upper statistics folder
+    // Path to the upper statistics folder. This should be .../core/assets/statistics/
     private final String PATH_TO_STATS_FOLDER = System.getProperty("user.dir") + File.separator + "statistics" + File.separator;
 
     // Formatting date and decimals in file names and statistics
@@ -48,13 +48,16 @@ public class StatisticsManager {
         decimalFormatter.setRoundingMode(RoundingMode.HALF_UP);
         decimalFormatter.setGroupingUsed(false);
 
-        // Create statistics folder if it does not exist    .../core/assets/statistics/
+        // Create statistics folder if it does not exist
+        // .../core/assets/statistics/
         createStatisticsFolder();
 
-        // Create folder for current warehouse specs / run config     .../core/assets/statistics/*runConfig*/
+        // Create folder for current warehouse specs / run config
+        // .../core/assets/statistics/*runConfig*_*versionName*/
         String runConfigFolder = createRunConfigFolder();
 
-        // Create folder for this specific simulation run    .../core/assets/statistics/*runConfig*/*TaskAllocator___PathFinder*/
+        // Create folder for this specific simulation run
+        // .../core/assets/statistics/*runConfig*_*versionName*/*TaskAllocator___PathFinder*/
         String pathToSimulationFolder = createSimulationFolder(runConfigFolder);
 
         // Write all statistics to files
