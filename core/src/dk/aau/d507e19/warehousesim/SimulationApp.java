@@ -20,7 +20,7 @@ public class SimulationApp extends ApplicationAdapter {
 
 	public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "runconfigurations/";
     public static final long DEFAULT_SEED = 123456789L;
-	public static String CURRENT_RUN_CONFIG = "artShop.json";
+	public static String CURRENT_RUN_CONFIG = "manyRobots.json";
 
 	public static final int MENU_WIDTH_IN_PIXELS = 300;
 	// Size of a single square/tile in the grid

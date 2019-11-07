@@ -4,26 +4,18 @@
   "WAREHOUSE_BOUNDS": {
     "startX": 0,
     "startY": 0,
-    "endX": 29,
-    "endY": 29
+    "endX": 9,
+    "endY": 9
   },
   "binSizeInMeters": 1,
   "productsPerBin": 15,
   "SKUsPerBin": 9,
   "SKUs": 10,
-  "productsInStock": 1000,
+  "productsInStock": 100,
   "skuDistribution": [
     [
-      20.5,
-      50.0
-    ],
-    [
-      9.5,
-      30.0
-    ],
-    [
-      70.0,
-      20.0
+      100,
+      100
     ]
   ],
   "isRandomProductDistribution": true,
@@ -37,22 +29,22 @@
   "collisionDetectedEnabled": true,
   "robotPlacementPattern": {
     "patternType": "STACKED_LINES",
-    "padding": 1,
+    "padding": 0,
     "bounds": {
       "startX": 0,
       "startY": 0,
-      "endX": 29,
-      "endY": 29
+      "endX": 9,
+      "endY": 9
     }
   },
   "pickerPlacementPattern": {
     "patternType": "SPIRAL",
-    "padding": 8,
+    "padding": 3,
     "bounds": {
       "startX": 0,
       "startY": 0,
-      "endX": 29,
-      "endY": 29
+      "endX": 9,
+      "endY": 9
     },
     "customPoints": [
       [
@@ -117,7 +109,7 @@
       ]
     ]
   },
-  "numberOfPickers": 10,
+  "numberOfPickers": 5,
   "pickerPoints": [
     [
       0,
