@@ -1,20 +1,18 @@
 package dk.aau.d507e19.warehousesim.statistics;
 
-import com.google.gson.Gson;
 import dk.aau.d507e19.warehousesim.Simulation;
-import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocatorEnum;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 
 public class StatisticsAutomator {
     public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations";
+    private static final int TICKS_PER_RUN = 100000;
+    private static final int PRINT_EVERY_TICK = 50000;
 
     public static void main(String[] args) {
         runAllConfigurations();
@@ -25,18 +23,25 @@ public class StatisticsAutomator {
 
         Simulation simulation;
         for(String warehouseConfig : runConfigs){
-            simulation = new Simulation(warehouseConfig, PathFinderEnum.CHPATHFINDER, TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR);
-
-            while(simulation.getTimeInTicks() <= 100000){
-                if(simulation.getTimeInTicks() % 10000 == 0){
-                    simulation.getStatsManager().printStatistics();
-                    System.out.println(simulation.getTimeInTicks());
+            System.out.println("WarehouseConfig: " + warehouseConfig);
+            System.out.println("________________________________________________________________");
+            for(TaskAllocatorEnum taskAllocator : TaskAllocatorEnum.values()){
+                for(PathFinderEnum pathFinder : PathFinderEnum.values()){
+                    if(taskAllocator.works() && pathFinder.works()){
+                        System.out.println("TaskAllocator: " + taskAllocator.getName() + ", PathFinder: " + pathFinder.getName());
+                        simulation = new Simulation(warehouseConfig, pathFinder, taskAllocator);
+                        while(simulation.getTimeInTicks() <= TICKS_PER_RUN){
+                            if(simulation.getTimeInTicks() % PRINT_EVERY_TICK == 0){
+                                simulation.getStatisticsManager().printStatistics();
+                                System.out.println(simulation.getTimeInTicks());
+                            }
+                            simulation.update();
+                        }
+                    }
                 }
-                simulation.update();
             }
+            System.out.println("\n");
         }
-
-
     }
 
     private static ArrayList<String> getAllRunConfigs(){

@@ -24,6 +24,7 @@ public class NodeTest {
 
     @Before
     public void makeTree() {
+        RunConfigurator.setDefaultRunConfiguration();
         root = new Node<>(new Object(), null, false);
         rootLeft = new Node<>(new Object(), root, false);
         rootRight = new Node<>(new Object(), root,false );
