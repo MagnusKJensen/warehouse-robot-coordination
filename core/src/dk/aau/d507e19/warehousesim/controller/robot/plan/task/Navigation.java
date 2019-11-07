@@ -5,12 +5,10 @@ import dk.aau.d507e19.warehousesim.TimeUtils;
 import dk.aau.d507e19.warehousesim.controller.path.Line;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import dk.aau.d507e19.warehousesim.controller.robot.MovementPredictor;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.LineTraversal;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
-import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 
@@ -18,16 +16,14 @@ import java.util.ArrayList;
 
 public abstract class Navigation implements Task{
 
-
-    private int maximumRetries = -1;
-    private static final int TICKS_BETWEEN_RETRIES = TimeUtils.secondsToTicks(1);
+    protected int TICKS_BETWEEN_RETRIES = TimeUtils.secondsToTicks(1);
 
     protected GridCoordinate destination;
     private Path path;
     private ArrayList<LineTraversal> lineTraversals = new ArrayList<>();
 
-    private RobotController robotController;
-    private Robot robot;
+    RobotController robotController;
+    Robot robot;
 
     private TickTimer retryTimer = new TickTimer(TICKS_BETWEEN_RETRIES);
     private boolean isCompleted = false;
@@ -39,8 +35,8 @@ public abstract class Navigation implements Task{
         retryTimer.setRemainingTicks(0);
     }
 
-    public void setMaximumRetries(int maxRetries){
-        this.maximumRetries = maxRetries;
+    void setTicksBetweenRetries(int i) {
+        TICKS_BETWEEN_RETRIES = i;
     }
 
     protected void setNewPath(Path newPath){
@@ -53,23 +49,37 @@ public abstract class Navigation implements Task{
             throw new RuntimeException("Can't perform task that is already completed");
 
         if(path == null){
-            if(!retryTimer.isDone()){
-                retryTimer.decrement();
-            }else {
-                if(planPath()){
+            if(retryTimer.isDone()){
+                retryTimer.reset();
+
+                boolean pathFound = planPath();
+                if(pathFound)
                     traversePath();
-                }else{
-                    retryTimer.reset();
-                }
+            }else{
+                retryTimer.decrement();
             }
         }else{
             traversePath();
         }
     }
 
+    protected final boolean destinationReached(){
+        return robot.getGridCoordinate().equals(destination);
+    }
+
     private void traversePath() {
         if(lineTraversals.isEmpty())
             createLineTraversals();
+
+        // If still empty check if we have reached the destination
+        if(lineTraversals.isEmpty()){
+            if(destinationReached())
+                complete();
+            else
+                clearPath();
+
+            return;
+        }
 
         LineTraversal currentLineTraversal = lineTraversals.get(0);
         currentLineTraversal.perform();
@@ -92,7 +102,7 @@ public abstract class Navigation implements Task{
     }
 
     private void clearPath(){
-        path = null;
+        this.path = null;
         lineTraversals.clear();
     }
 

@@ -197,16 +197,6 @@ public class Robot {
         return robotController;
     }
 
-    // Simulates a sensor that predicts collisions
-    public void senseCollision(){
-        if(Math.abs(currentSpeed) < 0.001)
-            return; // No need for emergency break when standing still
-
-        float breakingDistance = currentSpeed / decelerationBinSecond;
-
-    }
-
-
     public String getStatsAsCSV(){
         StringBuilder builder = new StringBuilder();
         // Robot ID

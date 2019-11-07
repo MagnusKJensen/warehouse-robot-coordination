@@ -22,8 +22,6 @@ public class ReservationNavigation extends Navigation {
     private Robot robot;
     private Server server;
 
-    private boolean isCompleted = false;
-
     public ReservationNavigation(RobotController robotController, GridCoordinate destination) {
         super(robotController, destination);
         this.robotController = robotController;
@@ -90,10 +88,6 @@ public class ReservationNavigation extends Navigation {
         reservationManager.reserve(robot, robot.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks()));
     }
 
-    private void complete() {
-        isCompleted = true;
-    }
-
     private Reservation createLastTileIndefiniteReservation(ArrayList<Reservation> reservations) {
         Reservation lastReservation = reservations.get(reservations.size() - 1);
         TimeFrame indefiniteTimeFrame = TimeFrame.indefiniteTimeFrameFrom(lastReservation.getTimeFrame().getStart());
@@ -103,11 +97,6 @@ public class ReservationNavigation extends Navigation {
     @Override
     protected boolean canInterrupt() {
         return !isMoving();
-    }
-
-    @Override
-    public boolean isCompleted() {
-        return isCompleted;
     }
 
     @Override
