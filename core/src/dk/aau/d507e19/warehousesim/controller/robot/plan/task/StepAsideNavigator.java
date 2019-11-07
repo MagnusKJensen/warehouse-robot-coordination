@@ -22,6 +22,7 @@ public class StepAsideNavigator extends Navigation{
 
     private PathFinder pathFinder;
     private Server server;
+    private Random rand = new Random(Simulation.RANDOM_SEED);
 
     public StepAsideNavigator(RobotController robotController, GridCoordinate destination) {
         super(robotController, destination);
@@ -162,11 +163,9 @@ public class StepAsideNavigator extends Navigation{
         return false;
     }
 
-    public static Direction[] randomizeArray(Direction[] array){
-        Random rgen = SimulationApp.random;  // Random number generator
-
+    public Direction[] randomizeArray(Direction[] array){
         for (int i=0; i<array.length; i++) {
-            int randomPosition = rgen.nextInt(array.length);
+            int randomPosition = rand.nextInt(array.length);
             Direction temp = array[i];
             array[i] = array[randomPosition];
             array[randomPosition] = temp;

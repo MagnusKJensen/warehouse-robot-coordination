@@ -35,7 +35,6 @@ public abstract class Navigation implements Task{
         }else{
             return new StepAsideNavigator(robotController, destination);
         }
-
     }
 
     public Navigation(RobotController robotController, GridCoordinate destination) {

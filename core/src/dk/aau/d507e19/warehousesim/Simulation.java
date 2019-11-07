@@ -31,8 +31,12 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Random;
 
 public class Simulation {
+
+    public static long RANDOM_SEED;
+
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
     private BitmapFont font;
@@ -72,7 +76,8 @@ public class Simulation {
     private StatisticsManager statisticsManager;
 
     // Used for fast no graphics simulations
-    public Simulation(String runConfigName, PathFinderEnum pathfinder, TaskAllocatorEnum taskAllocator){
+    public Simulation(long randSeed, String runConfigName, PathFinderEnum pathfinder, TaskAllocatorEnum taskAllocator){
+        RANDOM_SEED = randSeed;
         Simulation.warehouseSpecs = readWarehouseSpecsFromFile(runConfigName);
         Simulation.CURRENT_RUN_CONFIG = runConfigName;
         Simulation.pathFinder = pathfinder;
@@ -92,7 +97,8 @@ public class Simulation {
         statisticsManager = new StatisticsManager(this);
     }
 
-    public Simulation(SimulationApp simulationApp, String pathToRunConfig){
+    public Simulation(long randSeed, SimulationApp simulationApp, String pathToRunConfig){
+        RANDOM_SEED = randSeed;
         this.simulationApp = simulationApp;
         this.gridCamera = simulationApp.getWorldCamera();
         this.fontCamera = simulationApp.getFontCamera();

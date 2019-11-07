@@ -16,16 +16,17 @@ import dk.aau.d507e19.warehousesim.controller.server.Server;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 public abstract class RRTBase {
     RobotController robotController;
     ReservationManager reservationManager;
+    private Random random = new Random(Simulation.RANDOM_SEED);
 
     public RRTBase(RobotController robotController) {
         this.robotController = robotController;
         reservationManager = robotController.getServer().getReservationManager();
     }
-
 
     public Node<GridCoordinate> root, destinationNode,shortestLengthNode,latestNode;
     //Free list of all free points in the grid. populateFreeList() intializes the array with grid coordinates.
@@ -243,7 +244,7 @@ public abstract class RRTBase {
     protected GridCoordinate generateRandomPos() {
         GridCoordinate randPos;
         do {
-            randPos = freeNodeList.get(SimulationApp.random.nextInt(freeNodeList.size()));
+            randPos = freeNodeList.get(random.nextInt(freeNodeList.size()));
         }while(doesNodeExist(randPos));
 
         return randPos;

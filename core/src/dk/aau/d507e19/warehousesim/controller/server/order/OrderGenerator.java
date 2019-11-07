@@ -11,8 +11,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class OrderGenerator {
-    private static final long RANDOM_SEED = SimulationApp.RANDOM_SEED;
-    private Random random = new Random(RANDOM_SEED);
+    private Random random = new Random(Simulation.RANDOM_SEED);
     private final int TICKS_BETWEEN_ORDERS = Simulation.getWarehouseSpecs().secondsBetweenOrders * SimulationApp.TICKS_PER_SECOND;
 
     private OrderManager orderManager;
