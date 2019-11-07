@@ -4,6 +4,7 @@ import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.BinDelivery;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Navigation;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.ReservationNavigation;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
@@ -89,6 +90,11 @@ public class RobotController {
 
     public void updateStatus() {
        if(tasks.isEmpty()) robot.setCurrentStatus(Status.AVAILABLE);
+       else if(tasks.get(0) instanceof BinDelivery) robot.setCurrentStatus(Status.BUSY);
+       else if(tasks.get(0) instanceof Navigation){
+           if(tasks.size() > 1) robot.setCurrentStatus(Status.RELOCATING_BUSY);
+           else robot.setCurrentStatus(Status.RELOCATING);
+       }
        else robot.setCurrentStatus(Status.BUSY);
     }
 

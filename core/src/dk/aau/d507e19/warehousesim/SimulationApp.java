@@ -37,7 +37,7 @@ public class SimulationApp extends ApplicationAdapter {
 	// Variables for simulation loop logic
 	public static final int TICKS_PER_SECOND = 30;
 	public static final long MILLIS_PER_TICK = 1000 / TICKS_PER_SECOND;
-	public static final int FAST_FORWARD_MULTIPLIER = 50;
+	public static final int FAST_FORWARD_MULTIPLIER = 8;
 	public UpdateMode updateMode = UpdateMode.MANUAL;
 	private long millisSinceUpdate = 0L;
 	private long lastUpdateTime = 0L;

@@ -136,4 +136,14 @@ public class StorageGrid {
         }
         return false;
     }
+
+    public ArrayList<BinTile> getAllBinTiles(){
+        ArrayList<BinTile> binTiles = new ArrayList<>();
+        for(int x = 0; x < Simulation.getWarehouseSpecs().wareHouseHeight; ++x){
+            for(int y = 0; y < Simulation.getWarehouseSpecs().wareHouseWidth; ++y){
+                if(getTile(x,y) instanceof BinTile) binTiles.add((BinTile) getTile(x,y));
+            }
+        }
+        return binTiles;
+    }
 }
