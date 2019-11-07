@@ -21,7 +21,7 @@ public class SimulationApp extends ApplicationAdapter {
 	public static final long RANDOM_SEED = 12345442352525L;
 	public static Random random = new Random(RANDOM_SEED);
 	public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "runconfigurations/";
-	public static String CURRENT_RUN_CONFIG = "defaultSpecs.json";
+	public static String CURRENT_RUN_CONFIG = "proshop.json";
 
 	public static final int MENU_WIDTH_IN_PIXELS = 300;
 	// Size of a single square/tile in the grid
@@ -291,12 +291,10 @@ public class SimulationApp extends ApplicationAdapter {
 
 	public void setPathFinderSelected(PathFinderEnum pathFinderSelected) {
 		this.pathFinderSelected = pathFinderSelected;
-		Simulation.setPathFinder(pathFinderSelected);
 	}
 
 	public void setTaskAllocatorSelected(TaskAllocatorEnum taskAllocatorSelected) {
 		this.taskAllocatorSelected = taskAllocatorSelected;
-		Simulation.setTaskAllocator(taskAllocatorSelected);
 	}
 
 	public TaskAllocatorEnum getTaskAllocatorSelected() {
