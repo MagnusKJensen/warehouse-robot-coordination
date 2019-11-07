@@ -79,7 +79,7 @@ public class GridCoordinate {
         return 0;
     }
 
-    public int naiveDistanceFrom(GridCoordinate comparedCoordinate){
+    public int manhattanDistanceFrom(GridCoordinate comparedCoordinate){
         // distance = abs(ydistance) + abs(xdistance)
         return Math.abs(this.getX() - comparedCoordinate.getX()) + Math.abs(this.getY() - comparedCoordinate.getY());
     }
