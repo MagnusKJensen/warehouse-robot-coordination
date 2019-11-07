@@ -6,14 +6,18 @@ import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 import java.util.ArrayList;
 
 public class Order {
+    private String orderID;
     private ArrayList<OrderLine> linesInOrder = new ArrayList<>();
     private PickerTile picker;
+    private long startTimeInMS;
+    private long finishTimeInMS;
 
     public Order(ArrayList<OrderLine> linesInOrder) {
         this.linesInOrder = linesInOrder;
     }
 
-    public Order() {
+    public Order(long nextOrderID) {
+        orderID = String.valueOf(nextOrderID);
     }
 
     public ArrayList<OrderLine> getLinesInOrder() {
@@ -44,6 +48,8 @@ public class Order {
         return "Order{" +
                 "linesInOrder=" + linesInOrder +
                 ", picker=" + picker +
+                ", startTimeInSeconds=" + startTimeInMS +
+                ", finishTimeInSeconds=" + finishTimeInMS +
                 '}';
     }
 
@@ -62,5 +68,32 @@ public class Order {
         if(!wasContained) linesInOrder.add(new OrderLine(prod, 1));
     }
 
+    public long getStartTimeInMS() {
+        return startTimeInMS;
+    }
 
+    public void setStartTimeInMS(long startTimeInMS) {
+        this.startTimeInMS = startTimeInMS;
+    }
+
+    public long getFinishTimeInMS() {
+        return finishTimeInMS;
+    }
+
+    public void setFinishTimeInMS(long finishTimeInMS) {
+        this.finishTimeInMS = finishTimeInMS;
+    }
+
+    public String getStatsAsCSV(){
+        StringBuilder builder = new StringBuilder();
+
+        long timeSpentOnOrder = finishTimeInMS - startTimeInMS;
+
+        builder.append(orderID).append(',');
+        builder.append(startTimeInMS).append(',');
+        builder.append(finishTimeInMS).append(',');
+        builder.append(timeSpentOnOrder);
+
+        return builder.toString();
+    }
 }

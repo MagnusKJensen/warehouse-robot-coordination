@@ -1,28 +1,21 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
+import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar.Astar;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.chp.CHPathfinder;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTType;
-import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Navigation;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.ReservationNavigation;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.exception.DoubleReservationException;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Optional;
-import java.util.function.Function;
 
 public class RobotController {
     private Server server;
     private PathFinder pathFinder;
     private Robot robot;
+    private long idleTimeTicks = 0;
 
     private LinkedList<Task> tasks = new LinkedList<>();
 
@@ -54,12 +47,9 @@ public class RobotController {
         return true;
     }
 
-    public void cancelTask(Task task) {
-        // todo
-    }
-
     public void update() {
         if(tasks.isEmpty()){
+            idleTimeTicks++;
             return;
         }
 
@@ -101,59 +91,42 @@ public class RobotController {
         return tasks;
     }
 
-    public boolean requestMove(){
 
+    public boolean requestMove(){
         if(robot.getCurrentStatus() == Status.BUSY){
             if(!interruptCurrentTask())
                 return false;
         }
 
-        GridCoordinate newPosition = server.getNewPosition();
-        assignImmediateTask(new Navigation(this, newPosition));
+        GridCoordinate newPosition;// = server.getNewPosition();
+
+        do { // Find random neighbour tile to go to
+            Direction randomDirection = Direction.values()[SimulationApp.random.nextInt(Direction.values().length)];
+            newPosition = new GridCoordinate(robot.getGridCoordinate().getX() + randomDirection.xDir, robot.getGridCoordinate().getY() + randomDirection.yDir);
+        }while (!server.getGridBounds().isWithinBounds(newPosition));
+
+        assignImmediateTask(new ReservationNavigation(this, newPosition));
         return true;
     }
 
     private boolean interruptCurrentTask() {
         if(tasks.isEmpty()) return true;
-        return tasks.getFirst().interrupt();
-    }
+        Task firstTask = tasks.getFirst();
 
-    private void checkForCollisions(){
-        //find nearby robots
-        ArrayList<Robot> nearbyRobots = scanForNearbyRobots();
-        if(!nearbyRobots.isEmpty()){
-            for(Robot r : nearbyRobots){
-                if(goingToCollide(r.getRobotController())){
-                    handleCollision();
-                }
+        // Simple navigation tasks are discarded if they are interrupted
+        if(firstTask instanceof ReservationNavigation){
+            boolean interrupted = firstTask.interrupt();
+            if(interrupted){
+                tasks.removeFirst();
+                return true;
             }
+            return false;
         }
+
+        return firstTask.interrupt();
     }
 
-    private ArrayList<Robot> scanForNearbyRobots(){
-        ArrayList<Robot> nearbyRobots = new ArrayList<>();
-        //more readable
-        Function<GridCoordinate,Double> distance = gc -> Math.sqrt(Math.pow(gc.getX() - robot.getGridCoordinate().getX(), 2) + Math.pow(gc.getY() - robot.getGridCoordinate().getY(), 2));
-        for(Robot r: server.getAllRobots()){
-            if(distance.apply(r.getGridCoordinate()) <= 2){
-                if(!r.equals(robot)){
-                    nearbyRobots.add(r);
-                }
-            }
-        }
-        return nearbyRobots;
+    public long getIdleTimeTicks() {
+        return idleTimeTicks;
     }
-
-    private boolean goingToCollide(RobotController them){
-        //Check if paths have any of the same coordinates
-        //If they do, then check if they are in the same timeframe
-        //How: Get reservation lists for both, then check the timeframe for the potential collision coordinate
-        //If they will collide, return true
-        return false;
-    }
-
-    private void handleCollision(){
-
-    }
-
 }

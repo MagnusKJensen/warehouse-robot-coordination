@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.storagegrid;
 
+import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
@@ -10,12 +11,9 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class ProductDistributor {
-    private static final int totalSKUsInWarehouse = WarehouseSpecs.SKUs;
-    private static final int productsInWarehouse = WarehouseSpecs.productsInStock;
-    private static final int numberOfBins = WarehouseSpecs.wareHouseWidth * WarehouseSpecs.wareHouseHeight;
-    private static final int productsPerBin = WarehouseSpecs.productsPerBin;
-    private static final int SKUsPerBin = WarehouseSpecs.SKUsPerBin;
-    private static double[][] SKUDistribution = WarehouseSpecs.skuDistribution;
+    private static int totalSKUsInWarehouse = Simulation.getWarehouseSpecs().SKUs;
+    private static final int productsInWarehouse = Simulation.getWarehouseSpecs().productsInStock;
+    private static double[][] SKUDistribution = Simulation.getWarehouseSpecs().skuDistribution;
     private static final long RANDOM_SEED = SimulationApp.RANDOM_SEED;
     private static Random random;
 
@@ -72,8 +70,8 @@ public class ProductDistributor {
     private static ArrayList<BinTile> getAllBinTiles(StorageGrid grid) {
         ArrayList<BinTile> tiles = new ArrayList<>();
 
-        for(int x = 0; x < WarehouseSpecs.wareHouseWidth; ++x){
-            for(int y = 0; y < WarehouseSpecs.wareHouseHeight; ++y){
+        for(int x = 0; x < Simulation.getWarehouseSpecs().wareHouseWidth; ++x){
+            for(int y = 0; y < Simulation.getWarehouseSpecs().wareHouseHeight; ++y){
                 if(grid.getTile(x,y) instanceof BinTile) tiles.add((BinTile) grid.getTile(x,y));
             }
         }
@@ -86,8 +84,8 @@ public class ProductDistributor {
         Bin bin;
 
         // Run though all tiles in the warehouse
-        for(int x = 0; x < WarehouseSpecs.wareHouseWidth; ++x){
-            for(int y = 0; y < WarehouseSpecs.wareHouseHeight; ++y){
+        for(int x = 0; x < Simulation.getWarehouseSpecs().wareHouseWidth; ++x){
+            for(int y = 0; y < Simulation.getWarehouseSpecs().wareHouseHeight; ++y){
                 tile = grid.getTile(x,y);
                 if(tile instanceof BinTile){
                     // If it does not have a bin, add one

@@ -57,7 +57,6 @@ public class ReservationTile {
     }
 
     public void removeReservation(Reservation reservation) {
-        // TODO: 16/10/2019 add achecks
         reservations.remove(reservation);
     }
 

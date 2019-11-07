@@ -11,6 +11,7 @@ import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -33,6 +34,7 @@ public class RRTTest {
     private ArrayList<Reservation> nodesToBeBlocked = new ArrayList<>();
     @Before
     public void initiateServer(){
+        RunConfigurator.setDefaultRunConfiguration();
         when(robotController.getServer()).thenReturn(server);
         when(robotController.getRobot()).thenReturn(robot);
         when(robotController.getServer().getReservationManager()).thenReturn(reservationManager);
@@ -154,8 +156,8 @@ public class RRTTest {
     }
     @Test
     public void improvePathTest(){
-        when(robotController.getRobot().getAccelerationBinSecond()).thenReturn(WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters);
-        when(robotController.getRobot().getDecelerationBinSecond()).thenReturn(WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters);
+        when(robotController.getRobot().getAccelerationBinSecond()).thenReturn(Simulation.getWarehouseSpecs().robotAcceleration / Simulation.getWarehouseSpecs().binSizeInMeters);
+        when(robotController.getRobot().getDecelerationBinSecond()).thenReturn(Simulation.getWarehouseSpecs().robotDeceleration / Simulation.getWarehouseSpecs().binSizeInMeters);
         rrt = new RRT(robotController);
         Node<GridCoordinate> n0 = new Node<>(new GridCoordinate(0,0),null,false);
         Node<GridCoordinate> n1 = new Node<>(new GridCoordinate(0,1),n0,false);

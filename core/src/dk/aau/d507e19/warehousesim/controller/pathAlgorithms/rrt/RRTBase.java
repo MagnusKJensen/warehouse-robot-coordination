@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt;
 
+import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
@@ -230,10 +231,10 @@ public abstract class RRTBase {
 
     private GridCoordinate updateBottomRight(GridCoordinate old){
         GridCoordinate bottomRight = new GridCoordinate(old.getX(),old.getY());
-        if(bottomRight.getX() + 1 <= WarehouseSpecs.wareHouseWidth){
+        if(bottomRight.getX() + 1 <= Simulation.getWarehouseSpecs().wareHouseWidth){
             bottomRight.setX(bottomRight.getX()+1);
         }
-        if(bottomRight.getY() + 1 <= WarehouseSpecs.wareHouseHeight){
+        if(bottomRight.getY() + 1 <= Simulation.getWarehouseSpecs().wareHouseHeight){
             bottomRight.setY(bottomRight.getY()+1);
         }
         return bottomRight;
@@ -287,7 +288,7 @@ public abstract class RRTBase {
         }
     }
     protected boolean isFullyExplored(){
-        if(allNodesMap.size() == WarehouseSpecs.wareHouseWidth*WarehouseSpecs.wareHouseHeight){
+        if(allNodesMap.size() == Simulation.getWarehouseSpecs().wareHouseWidth * Simulation.getWarehouseSpecs().wareHouseHeight){
             return true;
         }
         return false;
@@ -295,8 +296,8 @@ public abstract class RRTBase {
 
     private ArrayList<GridCoordinate> populateFreeList(){
         ArrayList<GridCoordinate> freeListInitializer = new ArrayList<>();
-        for(int i = 0; i < WarehouseSpecs.wareHouseWidth ; i++){
-            for(int j = 0; j < WarehouseSpecs.wareHouseHeight; j++ ){
+        for(int i = 0; i < Simulation.getWarehouseSpecs().wareHouseWidth ; i++){
+            for(int j = 0; j < Simulation.getWarehouseSpecs().wareHouseHeight; j++ ){
                 freeListInitializer.add(new GridCoordinate(i,j));
             }
         }
@@ -336,7 +337,7 @@ public abstract class RRTBase {
         }
         //grow until we have a path
         //when function completes we know that we have a path
-        if(allNodesMap.size()!=WarehouseSpecs.wareHouseHeight*WarehouseSpecs.wareHouseWidth){
+        if(allNodesMap.size()!= Simulation.getWarehouseSpecs().wareHouseHeight * Simulation.getWarehouseSpecs().wareHouseWidth){
             growUntilPathFound(destination);
         }
         destinationNode = allNodesMap.get(destination);

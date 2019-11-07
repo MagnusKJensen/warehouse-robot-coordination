@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.storagegrid.product;
 
+import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 
 import java.lang.reflect.Array;
@@ -24,14 +25,14 @@ public class Bin {
 
     public void addProduct(Product newProd){
         // If the number of SKUs per bin is already full, and the new product has a new SKU
-        if(getSKUs().size() == WarehouseSpecs.SKUsPerBin && !hasSKU(newProd.getSKU())){
+        if(getSKUs().size() == Simulation.getWarehouseSpecs().SKUsPerBin && !hasSKU(newProd.getSKU())){
             throw new IllegalArgumentException("Cannot add more SKUs to bin. Already have '" + getSKUs().size()
-                    + "' out of '" + WarehouseSpecs.SKUsPerBin + "'");
+                    + "' out of '" + Simulation.getWarehouseSpecs().SKUsPerBin + "'");
         }
         // If the bin is already full of products
-        else if(products.size() == WarehouseSpecs.productsPerBin){
+        else if(products.size() == Simulation.getWarehouseSpecs().productsPerBin){
             throw new IllegalArgumentException("Cannot add more products to bin. Already has '" + products.size()
-                    + "' out of '" + WarehouseSpecs.productsPerBin + "'");
+                    + "' out of '" + Simulation.getWarehouseSpecs().productsPerBin + "'");
         } else {
             products.add(newProd);
         }
@@ -60,7 +61,7 @@ public class Bin {
     }
 
     public boolean isFull(){
-        return products.size() == WarehouseSpecs.productsPerBin;
+        return products.size() == Simulation.getWarehouseSpecs().productsPerBin;
     }
 
     public boolean hasSKU(SKU sku){

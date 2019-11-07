@@ -1,10 +1,11 @@
-package dk.aau.d507e19.warehousesim.controller.server;
+package dk.aau.d507e19.warehousesim.controller.server.order;
 
+import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.BinDelivery;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
+import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.order.Order;
-import dk.aau.d507e19.warehousesim.controller.server.order.OrderLine;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocator;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
@@ -22,9 +23,9 @@ public class OrderManager {
     private ArrayList<Task> tasksQueue = new ArrayList<>();
     private HashMap<Order, ArrayList<BinDelivery>> processingOrdersToTaskMap = new HashMap<>();
 
-    OrderManager(Server server) {
+    public OrderManager(Server server) {
         this.server = server;
-        this.taskAllocator = server.getSimulation().getSimulationApp().getTaskAllocatorSelected().getTaskAllocator(server.getSimulation().getStorageGrid());
+        this.taskAllocator = Simulation.getTaskAllocator().getTaskAllocator(server.getSimulation().getStorageGrid());
     }
 
     public void takeOrder(Order order){
@@ -44,6 +45,7 @@ public class OrderManager {
                 if(isCompleted){
                     order.getPicker().setAvailable();
                     ordersFinished.add(order);
+                    order.setFinishTimeInMS(server.getTimeInMS());
                     ordersToRemove.add(order);
                 }
             }
@@ -72,6 +74,7 @@ public class OrderManager {
             // Divide order into tasks to robots and add to list of available tasks
             ArrayList<BinDelivery> tasksFromOrder = createTasksFromOrder(order);
             if(tasksFromOrder != null){
+                order.setStartTimeInMS(server.getTimeInMS());
                 processingOrdersToTaskMap.put(order, tasksFromOrder);
                 tasksQueue.addAll(tasksFromOrder);
                 // Remove order from queue
@@ -168,5 +171,9 @@ public class OrderManager {
             }
         }
         return tasksNotComplete;
+    }
+
+    public ArrayList<Order> getOrdersFinished() {
+        return ordersFinished;
     }
 }

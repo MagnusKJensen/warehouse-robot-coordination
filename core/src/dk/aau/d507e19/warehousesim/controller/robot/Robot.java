@@ -10,8 +10,13 @@ import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Locale;
 
 public class Robot {
     private Simulation simulation;
@@ -21,6 +26,8 @@ public class Robot {
     private Bin bin = null;
     private int robotID;
     private RobotController robotController;
+    private long binDeliveriesCompleted = 0;
+    private int distanceTraveled = 0;
 
     // TODO: 15/10/2019 is a temporary solution until it becomes part of the task itself.
     private GridCoordinate lastPickUp;
@@ -29,10 +36,13 @@ public class Robot {
      * Robot STATS
      */
     // Speed
-    private final float maxSpeedBinsPerSecond = WarehouseSpecs.robotTopSpeed / WarehouseSpecs.binSizeInMeters;
-    private final float accelerationBinSecond = WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters;
-    private final float decelerationBinSecond = WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters;
-    private final float minSpeedBinsPerSecond = WarehouseSpecs.robotMinimumSpeed / WarehouseSpecs.binSizeInMeters;
+    private final float maxSpeedBinsPerSecond = Simulation.getWarehouseSpecs().robotTopSpeed / Simulation.getWarehouseSpecs().binSizeInMeters;
+    private final float accelerationBinSecond = Simulation.getWarehouseSpecs().robotAcceleration / Simulation.getWarehouseSpecs().binSizeInMeters;
+    private final float decelerationBinSecond = Simulation.getWarehouseSpecs().robotDeceleration / Simulation.getWarehouseSpecs().binSizeInMeters;
+    private final float minSpeedBinsPerSecond = Simulation.getWarehouseSpecs().robotMinimumSpeed / Simulation.getWarehouseSpecs().binSizeInMeters;
+
+    private final float breakingDistanceMaxSpeedBins = decelerationBinSecond / maxSpeedBinsPerSecond;
+
 
     private final float ROBOT_SIZE = Tile.TILE_SIZE;
 
@@ -43,7 +53,7 @@ public class Robot {
         currentStatus = Status.AVAILABLE;
 
         // Initialize controller for this robot
-        this.robotController = new RobotController(simulation.getServer(), this, simulation.getSimulationApp().getPathFinderSelected());
+        this.robotController = new RobotController(simulation.getServer(), this, Simulation.getPathFinder());
     }
 
     public void update() {
@@ -58,18 +68,17 @@ public class Robot {
     }
 
     public void putDownBin(){
-        GridCoordinate coordinate = getGridCoordinate();
+        GridCoordinate coordinate = getApproximateGridCoordinate();
         Tile tile = simulation.getStorageGrid().getTile(coordinate.getX(), coordinate.getY());
         if (tile instanceof BinTile && !((BinTile) tile).hasBin()) {
             ((BinTile) tile).addBin(bin);
             bin = null;
         } else throw new RuntimeException("Robot could not put back bin at ("
                 + coordinate.getX() + "," + coordinate.getY() + ")");
-
     }
 
     public void pickUpBin() {
-        GridCoordinate coordinate = getGridCoordinate();
+        GridCoordinate coordinate = getApproximateGridCoordinate();
         Tile tile = simulation.getStorageGrid().getTile(coordinate.getX(), coordinate.getY());
         if (tile instanceof BinTile && ((BinTile) tile).hasBin()) {
             bin = ((BinTile) tile).releaseBin();
@@ -104,22 +113,6 @@ public class Robot {
         return currentPosition;
     }
 
-    public void decelerate() {
-        if (currentSpeed > 0) {
-            currentSpeed -= decelerationBinSecond / (float) SimulationApp.TICKS_PER_SECOND;
-            if (currentSpeed < minSpeedBinsPerSecond)
-                currentSpeed = minSpeedBinsPerSecond;
-        }
-    }
-
-    public void accelerate() {
-        if (currentSpeed < maxSpeedBinsPerSecond) {
-            currentSpeed += accelerationBinSecond / (float) SimulationApp.TICKS_PER_SECOND;
-            if (currentSpeed > maxSpeedBinsPerSecond)
-                currentSpeed = maxSpeedBinsPerSecond;
-        }
-    }
-
     public float getAccelerationBinSecond() {
         return accelerationBinSecond;
     }
@@ -136,14 +129,6 @@ public class Robot {
         return maxSpeedBinsPerSecond;
     }
 
-    public void move(float deltaX, float deltaY) {
-        currentPosition.setX(currentPosition.getX() + deltaX);
-        currentPosition.setY(currentPosition.getY() + deltaY);
-    }
-
-    public float getMinimumSpeed() {
-        return WarehouseSpecs.robotMinimumSpeed;
-    }
 
     public Status getCurrentStatus() {
         return currentStatus;
@@ -195,9 +180,9 @@ public class Robot {
         return bin != null;
     }
 
-    public void setPosition(Position positionAfter) {
-        this.currentPosition = positionAfter;
-        // TODO: 15/10/2019 Check legality
+    public void updatePosition(Position newPosition, float newSpeed){
+        currentPosition = newPosition;
+        currentSpeed = newSpeed;
     }
 
     public int getSize() {
@@ -210,5 +195,45 @@ public class Robot {
 
     public RobotController getRobotController() {
         return robotController;
+    }
+
+    public String getStatsAsCSV(){
+        StringBuilder builder = new StringBuilder();
+        // Robot ID
+        builder.append(robotID).append(',');
+
+        // Deliveries completed
+        builder.append(binDeliveriesCompleted).append(',');
+
+        DecimalFormat df = new DecimalFormat("#,000");
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        df.setGroupingUsed(false);
+        // Distance traveled in meters
+        builder.append(df.format(getDistanceTraveledInMeters())).append(',');
+
+        // Idle time
+        DecimalFormat df2 = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
+        df2.setRoundingMode(RoundingMode.HALF_UP);
+        df2.setGroupingUsed(false);
+        df2.applyPattern("###.00");
+        builder.append(df2.format(getIdleTimeInSeconds()));
+
+        return builder.toString();
+    }
+
+    public void incrementDeliveriesCompleted(){
+        binDeliveriesCompleted++;
+    }
+
+    public void addToDistanceTraveled(int extraDistance){
+        distanceTraveled += extraDistance;
+    }
+
+    public double getDistanceTraveledInMeters(){
+        return distanceTraveled * Simulation.getWarehouseSpecs().binSizeInMeters;
+    }
+
+    public double getIdleTimeInSeconds(){
+        return (double)robotController.getIdleTimeTicks() / SimulationApp.TICKS_PER_SECOND;
     }
 }
