@@ -14,7 +14,6 @@ public class ProductDistributor {
     private static int totalSKUsInWarehouse = Simulation.getWarehouseSpecs().SKUs;
     private static final int productsInWarehouse = Simulation.getWarehouseSpecs().productsInStock;
     private static double[][] SKUDistribution = Simulation.getWarehouseSpecs().skuDistribution;
-    private static final long RANDOM_SEED = SimulationApp.RANDOM_SEED;
     private static Random random;
 
     public static void distributeProducts(StorageGrid grid){
@@ -28,7 +27,7 @@ public class ProductDistributor {
     }
 
     public static void distributeProductsRandomly(StorageGrid grid){
-        random = new Random(RANDOM_SEED);
+        random = new Random(Simulation.RANDOM_SEED);
 
         int[][] SKUs = calculateProductsPerSKU();
 

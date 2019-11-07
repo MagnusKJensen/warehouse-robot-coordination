@@ -1,33 +1,29 @@
 {
-  "wareHouseWidth": 30,
-  "wareHouseHeight": 30,
+  "wareHouseWidth": 80,
+  "wareHouseHeight": 80,
   "WAREHOUSE_BOUNDS": {
     "startX": 0,
     "startY": 0,
-    "endX": 29,
-    "endY": 29
+    "endX": 79,
+    "endY": 79
   },
-  "binSizeInMeters": 1,
-  "productsPerBin": 15,
+  "binSizeInMeters": 0.5,
+  "productsPerBin": 10,
   "SKUsPerBin": 9,
-  "SKUs": 20,
-  "productsInStock": 1000,
+  "SKUs": 20800,
+  "productsInStock": 50000,
   "skuDistribution": [
     [
-      20.5,
-      50.0
+      20,
+      80
     ],
     [
-      9.5,
-      30.0
-    ],
-    [
-      70.0,
-      20.0
+      80,
+      20
     ]
   ],
   "isRandomProductDistribution": true,
-  "numberOfRobots": 20,
+  "numberOfRobots": 30,
   "robotTopSpeed": 3.0,
   "robotAcceleration": 0.8,
   "robotDeceleration": 2.0,
@@ -41,21 +37,21 @@
     "bounds": {
       "startX": 0,
       "startY": 0,
-      "endX": 29,
-      "endY": 29
+      "endX": 79,
+      "endY": 79
     }
   },
   "pickerPlacementPattern": {
     "patternType": "SPIRAL",
-    "padding": 1,
+    "padding": 10,
     "bounds": {
       "startX": 0,
       "startY": 0,
-      "endX": 29,
-      "endY": 29
+      "endX": 79,
+      "endY": 79
     }
   },
-  "numberOfPickers": 20,
+  "numberOfPickers": 5,
   "pickerPoints": [
     [
       0,
@@ -118,7 +114,7 @@
       0
     ]
   ],
-  "secondsBetweenOrders": 1,
+  "secondsBetweenOrders": 26,
   "orderGoal": 50,
   "productsPerOrder": 4
 }

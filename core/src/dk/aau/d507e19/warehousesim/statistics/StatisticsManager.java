@@ -20,15 +20,16 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class StatisticsManager {
-    // This changes the name of the folder containing the statistics to reflect the version number
-    private final String VERSION_NAME = "Philip";
+    // This changes the name of the folder containing the statistics to reflect the version number.
+    // Should be changed in the StatisticsAutomater
+    private String VERSION_NAME = "";
 
     // For statistics file names
     private final String ORDER_STATS_FILENAME = "orderStats_";
     private final String ROBOT_STATS_FILENAME = "robotStats_";
     private final String GENERAL_STATS_FILENAME = "generalStats_";
 
-    // Path to the upper statistics folder
+    // Path to the upper statistics folder. This should be .../core/assets/statistics/
     private final String PATH_TO_STATS_FOLDER = System.getProperty("user.dir") + File.separator + "statistics" + File.separator;
 
     // Formatting date and decimals in file names and statistics
@@ -48,13 +49,16 @@ public class StatisticsManager {
         decimalFormatter.setRoundingMode(RoundingMode.HALF_UP);
         decimalFormatter.setGroupingUsed(false);
 
-        // Create statistics folder if it does not exist    .../core/assets/statistics/
+        // Create statistics folder if it does not exist
+        // .../core/assets/statistics/
         createStatisticsFolder();
 
-        // Create folder for current warehouse specs / run config     .../core/assets/statistics/*runConfig*/
+        // Create folder for current warehouse specs / run config
+        // .../core/assets/statistics/*runConfig*_*versionName*/
         String runConfigFolder = createRunConfigFolder();
 
-        // Create folder for this specific simulation run    .../core/assets/statistics/*runConfig*/*TaskAllocator___PathFinder*/
+        // Create folder for this specific simulation run
+        // .../core/assets/statistics/*runConfig*_*versionName*/*TaskAllocator___PathFinder*/
         String pathToSimulationFolder = createSimulationFolder(runConfigFolder);
 
         // Write all statistics to files
@@ -221,5 +225,13 @@ public class StatisticsManager {
         catch(IOException e){
             e.printStackTrace();
         }
+    }
+
+    public String getVERSION_NAME() {
+        return VERSION_NAME;
+    }
+
+    public void setVERSION_NAME(String VERSION_NAME) {
+        this.VERSION_NAME = VERSION_NAME;
     }
 }

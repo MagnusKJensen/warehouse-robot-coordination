@@ -18,10 +18,9 @@ import java.util.Random;
 
 public class SimulationApp extends ApplicationAdapter {
 
-	public static final long RANDOM_SEED = 12345442352525L;
-	public static Random random = new Random(RANDOM_SEED);
 	public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "runconfigurations/";
-	public static String CURRENT_RUN_CONFIG = "defaultSpecs.json";
+    public static final long DEFAULT_SEED = 123456789L;
+	public static String CURRENT_RUN_CONFIG = "artShop.json";
 
 	public static final int MENU_WIDTH_IN_PIXELS = 300;
 	// Size of a single square/tile in the grid
@@ -53,7 +52,7 @@ public class SimulationApp extends ApplicationAdapter {
     private InputMultiplexer inputMultiplexer;
 
     // Currently using the following pathFinder and TaskAllocators.
-	public static PathFinderEnum pathFinderSelected = PathFinderEnum.ASTAR;
+	public static PathFinderEnum pathFinderSelected = PathFinderEnum.DUMMYPATHFINDER;
 	private static TaskAllocatorEnum taskAllocatorSelected = TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR;
 
 	@Override
@@ -73,7 +72,7 @@ public class SimulationApp extends ApplicationAdapter {
 		// Quick way to generate new json files
 		// createJsonFileFromSpecs("newSpecName.json");
 
-		simulation = new Simulation(this, CURRENT_RUN_CONFIG);
+		simulation = new Simulation(DEFAULT_SEED, this, CURRENT_RUN_CONFIG);
 		sideMenu = new SideMenu(menuViewport, this);
 
 		Gdx.input.setInputProcessor(inputMultiplexer);
@@ -113,7 +112,7 @@ public class SimulationApp extends ApplicationAdapter {
 		//updateSimulationScreenSize(width, height);
 		//updateMenuScreenSize(width, height);
 		centerCamera(menuCamera);
-		centerCamera(simulationCamera); // TODO: 26/09/2019 Add more intelligent system for repositioning camera when resizing
+		centerCamera(simulationCamera);
 		centerCamera(simFontCamera);
 		simFontCamera.update();
 
@@ -257,9 +256,8 @@ public class SimulationApp extends ApplicationAdapter {
 	public void resetSimulation() {
 		inputMultiplexer.removeProcessor(simulation.getInputProcessor());
 		simulation.dispose();
-		random = new Random(RANDOM_SEED);
 		pause();
-		simulation = new Simulation(this, CURRENT_RUN_CONFIG);
+		simulation = new Simulation(DEFAULT_SEED, this, CURRENT_RUN_CONFIG);
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());
 
 		sideMenu.resetSideMenu();
@@ -291,12 +289,10 @@ public class SimulationApp extends ApplicationAdapter {
 
 	public void setPathFinderSelected(PathFinderEnum pathFinderSelected) {
 		this.pathFinderSelected = pathFinderSelected;
-		Simulation.setPathFinder(pathFinderSelected);
 	}
 
 	public void setTaskAllocatorSelected(TaskAllocatorEnum taskAllocatorSelected) {
 		this.taskAllocatorSelected = taskAllocatorSelected;
-		Simulation.setTaskAllocator(taskAllocatorSelected);
 	}
 
 	public TaskAllocatorEnum getTaskAllocatorSelected() {

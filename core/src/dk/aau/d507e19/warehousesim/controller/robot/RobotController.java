@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
+import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
@@ -10,6 +11,7 @@ import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.exception.DoubleReservationException;
 
 import java.util.LinkedList;
+import java.util.Random;
 
 public class RobotController {
     private Server server;
@@ -18,11 +20,13 @@ public class RobotController {
     private long idleTimeTicks = 0;
 
     private LinkedList<Task> tasks = new LinkedList<>();
+    private Random random;
 
     public RobotController(Server server, Robot robot, PathFinderEnum pathFinderEnum){
         this.server = server;
         this.robot = robot;
         this.pathFinder = pathFinderEnum.getPathFinder(server, this);
+        this.random = new Random(Simulation.RANDOM_SEED);
         reserveCurrentSpot();
     }
 
@@ -101,7 +105,7 @@ public class RobotController {
         GridCoordinate newPosition;// = server.getNewPosition();
 
         do { // Find random neighbour tile to go to
-            Direction randomDirection = Direction.values()[SimulationApp.random.nextInt(Direction.values().length)];
+            Direction randomDirection = Direction.values()[random.nextInt(Direction.values().length)];
             newPosition = new GridCoordinate(robot.getGridCoordinate().getX() + randomDirection.xDir, robot.getGridCoordinate().getY() + randomDirection.yDir);
         }while (!server.getGridBounds().isWithinBounds(newPosition));
 

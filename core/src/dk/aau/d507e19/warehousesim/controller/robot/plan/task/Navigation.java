@@ -4,6 +4,7 @@ import dk.aau.d507e19.warehousesim.TickTimer;
 import dk.aau.d507e19.warehousesim.TimeUtils;
 import dk.aau.d507e19.warehousesim.controller.path.Line;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
@@ -27,6 +28,14 @@ public abstract class Navigation implements Task{
 
     private TickTimer retryTimer = new TickTimer(TICKS_BETWEEN_RETRIES);
     private boolean isCompleted = false;
+
+    public static Navigation getInstance(RobotController robotController, GridCoordinate destination){
+        if(robotController.getPathFinder().accountsForReservations()){
+            return new ReservationNavigation(robotController, destination);
+        }else{
+            return new StepAsideNavigator(robotController, destination);
+        }
+    }
 
     public Navigation(RobotController robotController, GridCoordinate destination) {
         this.robotController = robotController;
@@ -125,8 +134,13 @@ public abstract class Navigation implements Task{
         ArrayList<Reservation> conflicts = server.getReservationManager().getConflictingReservations(indefiniteRes);
 
         for(Reservation reservation : conflicts){
-            if(reservation.getTimeFrame().getTimeMode() == TimeFrame.TimeMode.UNBOUNDED)
+            if(reservation.getTimeFrame().getTimeMode() == TimeFrame.TimeMode.UNBOUNDED){
+                if(reservation.getRobot().equals(robot))
+                    throw new RuntimeException("Robot tried to ask itself to move");
+
                 return reservation.getRobot().getRobotController().requestMove();
+            }
+
         }
 
         throw new RuntimeException("No occupying robot; no robot has reserved grid tile :" + dest + " indefinitely");

@@ -46,10 +46,11 @@ public class Order {
     @Override
     public String toString() {
         return "Order{" +
-                "linesInOrder=" + linesInOrder +
+                "orderID='" + orderID + '\'' +
+                ", linesInOrder=" + linesInOrder +
                 ", picker=" + picker +
-                ", startTimeInSeconds=" + startTimeInMS +
-                ", finishTimeInSeconds=" + finishTimeInMS +
+                ", startTimeInMS=" + startTimeInMS +
+                ", finishTimeInMS=" + finishTimeInMS +
                 '}';
     }
 

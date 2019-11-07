@@ -27,12 +27,13 @@
     ]
   ],
   "isRandomProductDistribution": true,
-  "numberOfRobots": 10,
+  "numberOfRobots": 15,
   "robotTopSpeed": 3.0,
   "robotAcceleration": 0.8,
   "robotDeceleration": 2.0,
   "robotMinimumSpeed": 0.1,
   "robotPickUpSpeedInSeconds": 3,
+  "robotDeliverToPickInSeconds": 12,
   "collisionDetectedEnabled": true,
   "robotPlacementPattern": {
     "patternType": "STACKED_LINES",
@@ -45,8 +46,8 @@
     }
   },
   "pickerPlacementPattern": {
-    "patternType": "CUSTOM",
-    "padding": 1,
+    "patternType": "SPIRAL",
+    "padding": 8,
     "bounds": {
       "startX": 0,
       "startY": 0,
@@ -116,7 +117,7 @@
       ]
     ]
   },
-  "numberOfPickers": 60,
+  "numberOfPickers": 10,
   "pickerPoints": [
     [
       0,
@@ -179,7 +180,7 @@
       0
     ]
   ],
-  "secondsBetweenOrders": 1,
-  "orderGoal": 50,
+  "secondsBetweenOrders": 5,
+  "orderGoal": 10,
   "productsPerOrder": 4
 }
