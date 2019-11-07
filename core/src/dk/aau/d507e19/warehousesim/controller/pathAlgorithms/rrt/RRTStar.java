@@ -101,17 +101,17 @@ public class RRTStar extends RRTBase {
     public void attemptOptimise(){
         //create a copy of the tree
         Node<GridCoordinate> copyRoot = root.copy();
-        Node<GridCoordinate> backupCpy = copyRoot;
-        Node<GridCoordinate> destination = copyRoot.findNode(destinationNode.getData());
+        ArrayList<Node<GridCoordinate>> nodesInPath = getNodesInPath(copyRoot.findNode(destinationNode.getData()));
+        Node<GridCoordinate> backupCpy = root.copy();
         //then call optimise on the copy, if copy is better then root = copy
         //we check for every node in the path starting from root, if we find a optimization we end the loop immediately
-            for(int i=0; i < getNodesInPath(destination).size(); i++){
-                if(optimise(getNodesInPath(destination).get(i),destination)){
+            for(int i=0; i <nodesInPath.size(); i++){
+                if(optimise(nodesInPath.get(i),copyRoot.findNode(destinationNode.getData()))){
                     //check if it is actually faster
-                    if(cost(destination) < cost(destinationNode)){
+                    if(cost(copyRoot.findNode(destinationNode.getData())) < cost(destinationNode)){
                        // possibleOptimisations.add(copyRoot);
                         root = copyRoot;
-                        destinationNode = destination;
+                        destinationNode = copyRoot.findNode(destinationNode.getData());
                         path = makePath(destinationNode);
                         updateAllNodes(root);
                         break;
@@ -156,6 +156,10 @@ public class RRTStar extends RRTBase {
             }
         }
 
+        if(bestNeighbour == null){
+            //this happens for some unknown reason so if it does we cant optimise(for now) todo fix nullpointer here - potentially due to copies of trees
+            return false;
+        }
         //if best neighbour is worse than node, return false
         if(distance(bestNeighbour.getData(),destination.getData()) > distance(node.getData(),destination.getData())){
             return false;

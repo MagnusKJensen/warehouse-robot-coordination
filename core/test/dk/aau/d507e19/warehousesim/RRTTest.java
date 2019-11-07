@@ -88,7 +88,7 @@ public class RRTTest {
         rrt = new RRT(robotController);
         //todo find a way to check that tree is actually re-used
         GridCoordinate start = new GridCoordinate(0, 0);
-        GridCoordinate dest1 = new GridCoordinate(6, 8);
+        GridCoordinate dest1 = new GridCoordinate(7, 0);
         GridCoordinate dest2 = new GridCoordinate(12, 7);
         ArrayList<Step> list;
         //generate initial path
