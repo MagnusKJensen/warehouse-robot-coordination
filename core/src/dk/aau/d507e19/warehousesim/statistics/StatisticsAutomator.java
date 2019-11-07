@@ -13,26 +13,27 @@ import java.util.ArrayList;
 
 public class StatisticsAutomator {
     public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations";
-    private static final int TICKS_PER_RUN = 10000; // Is about 55min per run
-    private static final int PRINT_EVERY_TICK = 1000;
+    private static final int TICKS_PER_RUN = 100000; // Is about 55min per run
+    private static final int PRINT_EVERY_TICK = 10000;
     private static final String VERSION_NAME = "single";
+    private static final String SPEC_FILE_NAME = "proshop.json";
     private static final long DEFAULT_RANDOM_SEED = SimulationApp.DEFAULT_SEED;
 
     public static void main(String[] args) {
-        // Run with all configurations
+        // Run with all configurations inside the .../core/assets/warehouseconfigurations/ folder
         // runAllConfigurations(VERSION_NAME);
 
         // Run a single configuration with all taskAllocators and PathFinders.
-        // runOneConfig("proshop.json", VERSION_NAME);
+        // runOneConfig(SPEC_FILE_NAME, VERSION_NAME);
 
         // Run a single configuration only with only on taskAllocator, but all pathfinders
-        // runOneConfig("proshop.json", VERSION_NAME, TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR);
+        // runOneConfig(SPEC_FILE_NAME, VERSION_NAME, TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR);
 
         // Run a single configuration only with one pathFinder but all taskAllocators
-        // runOneConfig("proshop.json", VERSION_NAME, PathFinderEnum.DUMMYPATHFINDER);
+        // runOneConfig(SPEC_FILE_NAME, VERSION_NAME, PathFinderEnum.DUMMYPATHFINDER);
 
         // Run a single configuration with a singe pathFinder and a single TaskAllocator
-        runOneConfig("proshop.json", VERSION_NAME, TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR, PathFinderEnum.DUMMYPATHFINDER);
+        runOneConfig(SPEC_FILE_NAME, VERSION_NAME, TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR, PathFinderEnum.DUMMYPATHFINDER);
     }
 
     private static void runOneConfig(String configFileName, String versionName, TaskAllocatorEnum taskAllocator, PathFinderEnum pathFinder){

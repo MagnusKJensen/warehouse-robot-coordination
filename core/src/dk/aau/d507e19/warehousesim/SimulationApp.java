@@ -20,7 +20,7 @@ public class SimulationApp extends ApplicationAdapter {
 
 	public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "runconfigurations/";
     public static final long DEFAULT_SEED = 123456789L;
-	public static String CURRENT_RUN_CONFIG = "defaultSpecs.json";
+	public static String CURRENT_RUN_CONFIG = "default.json";
 
 	public static final int MENU_WIDTH_IN_PIXELS = 300;
 	// Size of a single square/tile in the grid
@@ -52,7 +52,7 @@ public class SimulationApp extends ApplicationAdapter {
     private InputMultiplexer inputMultiplexer;
 
     // Currently using the following pathFinder and TaskAllocators.
-	public static PathFinderEnum pathFinderSelected = PathFinderEnum.ASTAR;
+	public static PathFinderEnum pathFinderSelected = PathFinderEnum.DUMMYPATHFINDER;
 	private static TaskAllocatorEnum taskAllocatorSelected = TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR;
 
 	@Override
