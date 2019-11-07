@@ -1,7 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.robot.plan.task;
 
 import dk.aau.d507e19.warehousesim.Simulation;
-import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.TimeUtils;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
@@ -11,11 +10,9 @@ import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
-import dk.aau.d507e19.warehousesim.exception.DestinationReservedIndefinitelyException;
 import dk.aau.d507e19.warehousesim.exception.NoPathFoundException;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Random;
 
 public class StepAsideNavigator extends Navigation{
@@ -39,6 +36,11 @@ public class StepAsideNavigator extends Navigation{
         } catch (NoPathFoundException e) {
             e.printStackTrace();
             return false;
+        }
+
+
+        if(server.getReservationManager().isReservedIndefinitely(destination)){
+            askOccupyingRobotToMove(destination);
         }
 
         server.getReservationManager().removeReservationsBy(robot);
@@ -157,7 +159,6 @@ public class StepAsideNavigator extends Navigation{
     boolean canInterrupt() {
         return isMoving();
     }
-
     @Override
     public boolean hasFailed() {
         return false;

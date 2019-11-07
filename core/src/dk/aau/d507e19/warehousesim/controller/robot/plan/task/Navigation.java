@@ -134,8 +134,13 @@ public abstract class Navigation implements Task{
         ArrayList<Reservation> conflicts = server.getReservationManager().getConflictingReservations(indefiniteRes);
 
         for(Reservation reservation : conflicts){
-            if(reservation.getTimeFrame().getTimeMode() == TimeFrame.TimeMode.UNBOUNDED)
+            if(reservation.getTimeFrame().getTimeMode() == TimeFrame.TimeMode.UNBOUNDED){
+                if(reservation.getRobot().equals(robot))
+                    throw new RuntimeException("Robot tried to ask itself to move");
+
                 return reservation.getRobot().getRobotController().requestMove();
+            }
+
         }
 
         throw new RuntimeException("No occupying robot; no robot has reserved grid tile :" + dest + " indefinitely");

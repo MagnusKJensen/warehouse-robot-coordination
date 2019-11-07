@@ -103,8 +103,8 @@ public class Simulation {
         this.gridCamera = simulationApp.getWorldCamera();
         this.fontCamera = simulationApp.getFontCamera();
         this.gridViewport = simulationApp.getWorldViewport();
-        Simulation.warehouseSpecs = readWarehouseSpecsFromFile(pathToRunConfig);
 
+        Simulation.warehouseSpecs = readWarehouseSpecsFromFile(pathToRunConfig);
         Simulation.pathFinder = simulationApp.getPathFinderSelected();
         Simulation.taskAllocator = simulationApp.getTaskAllocatorSelected();
 
