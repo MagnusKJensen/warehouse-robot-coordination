@@ -30,7 +30,6 @@ public class OrderGenerator {
     public void update(){
         if(tickSinceLastOrder == TICKS_BETWEEN_ORDERS && !server.getProductsAvailable().isEmpty()){
             Order randomOrder = generateRandomOrder();
-            System.out.println("Order generated: " + randomOrder);
             orderManager.takeOrder(randomOrder);
             tickSinceLastOrder = 0;
         }
