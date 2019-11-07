@@ -144,8 +144,7 @@ public abstract class RRTBase {
 
     public Node<GridCoordinate> findNearestNeighbour(Node<GridCoordinate> tree, GridCoordinate randPos) {
         Edge shortestEdge = new Edge(tree.getData(),randPos);
-        //todo change findKNodesInSquare to be more dynamic - set k to 4 and then handle logic in function?
-        for(Node<GridCoordinate> n : findKNodesInSquare(randPos,allNodesMap.size())){
+        for(Node<GridCoordinate> n : findNodesInSquare(randPos)){
             Edge newEdge = new Edge(n.getData(),randPos);
 
             if (newEdge.getDistance() < shortestEdge.getDistance()){
@@ -165,12 +164,12 @@ public abstract class RRTBase {
         return shortestLengthNode;
     }
 
-    private List<Node<GridCoordinate>> findKNodesInSquare(GridCoordinate randPos, int k){
-        List<Node<GridCoordinate>> listOfNodes =  new ArrayList<>(),foundNodes;
+    private ArrayList<Node<GridCoordinate>> findNodesInSquare(GridCoordinate randPos){
+        ArrayList<Node<GridCoordinate>> listOfNodes =  new ArrayList<>(),foundNodes;
         //GridCoordinate relativePos = new GridCoordinate(0,0);
         GridCoordinate topLeft = new GridCoordinate(randPos.getX(),randPos.getY());
         GridCoordinate bottomRight = new GridCoordinate(randPos.getX(),randPos.getY());
-        while(listOfNodes.size() < k){
+        while(listOfNodes.isEmpty()){
             //check if new corners are out of grid bounds
             // Create new corners (probably not necessary)
             topLeft = updateTopLeft(topLeft);
