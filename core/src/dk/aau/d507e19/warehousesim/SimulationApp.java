@@ -19,7 +19,7 @@ import java.util.Random;
 public class SimulationApp extends ApplicationAdapter {
 
 	public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "runconfigurations/";
-	private static final long DEFAULT_SEED = 123456789L;
+    public static final long DEFAULT_SEED = 123456789L;
 	public static String CURRENT_RUN_CONFIG = "defaultSpecs.json";
 
 	public static final int MENU_WIDTH_IN_PIXELS = 300;

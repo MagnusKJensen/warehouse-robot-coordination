@@ -1,6 +1,7 @@
 package dk.aau.d507e19.warehousesim.statistics;
 
 import dk.aau.d507e19.warehousesim.Simulation;
+import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocatorEnum;
@@ -15,7 +16,7 @@ public class StatisticsAutomator {
     private static final int TICKS_PER_RUN = 10000; // Is about 55min per run
     private static final int PRINT_EVERY_TICK = 1000;
     private static final String VERSION_NAME = "single";
-    private static final long DEFAULT_RANDOM_SEED = 159753L;
+    private static final long DEFAULT_RANDOM_SEED = SimulationApp.DEFAULT_SEED;
 
     public static void main(String[] args) {
         // Run with all configurations
@@ -42,7 +43,7 @@ public class StatisticsAutomator {
 
         if (taskAllocator.works() && pathFinder.works()) {
             System.out.println("TaskAllocator: " + taskAllocator.getName() + ", PathFinder: " + pathFinder.getName());
-            simulation = new Simulation(configFileName, pathFinder, taskAllocator);
+            simulation = new Simulation(DEFAULT_RANDOM_SEED, configFileName, pathFinder, taskAllocator);
             simulation.getStatisticsManager().setVERSION_NAME(versionName);
             while (simulation.getTimeInTicks() <= TICKS_PER_RUN) {
                 if (simulation.getTimeInTicks() % PRINT_EVERY_TICK == 0) {
@@ -62,7 +63,7 @@ public class StatisticsAutomator {
         for (PathFinderEnum pathFinder : PathFinderEnum.values()) {
             if (taskAllocator.works() && pathFinder.works()) {
                 System.out.println("TaskAllocator: " + taskAllocator.getName() + ", PathFinder: " + pathFinder.getName());
-                simulation = new Simulation(configFileName, pathFinder, taskAllocator);
+                simulation = new Simulation(DEFAULT_RANDOM_SEED, configFileName, pathFinder, taskAllocator);
                 simulation.getStatisticsManager().setVERSION_NAME(versionName);
                 while (simulation.getTimeInTicks() <= TICKS_PER_RUN) {
                     if (simulation.getTimeInTicks() % PRINT_EVERY_TICK == 0) {
@@ -83,7 +84,7 @@ public class StatisticsAutomator {
         for(TaskAllocatorEnum taskAllocator : TaskAllocatorEnum.values()) {
             if (taskAllocator.works() && pathFinder.works()) {
                 System.out.println("TaskAllocator: " + taskAllocator.getName() + ", PathFinder: " + pathFinder.getName());
-                simulation = new Simulation(configFileName, pathFinder, taskAllocator);
+                simulation = new Simulation(DEFAULT_RANDOM_SEED, configFileName, pathFinder, taskAllocator);
                 simulation.getStatisticsManager().setVERSION_NAME(versionName);
                 while (simulation.getTimeInTicks() <= TICKS_PER_RUN) {
                     if (simulation.getTimeInTicks() % PRINT_EVERY_TICK == 0) {
