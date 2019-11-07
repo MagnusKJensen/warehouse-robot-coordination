@@ -80,7 +80,7 @@ public class RRTStar extends RRTBase {
         }
     }
 
-    private boolean canBeRewired(Node<GridCoordinate> node, Node<GridCoordinate> n) {
+    boolean canBeRewired(Node<GridCoordinate> node, Node<GridCoordinate> n) {
         if (node.getParent() == null) {
             //if node is root then n can always have node as its parent
             return true;
@@ -88,7 +88,7 @@ public class RRTStar extends RRTBase {
         if (n.getParent() == null) {
             //n is root
             return false;
-        } else if (n.getParent() == null) {
+        } else if (n.getParent().getParent() == null) {
             //n has root as parent
             return false;
         } else if (node.getParent().equals(n)) {

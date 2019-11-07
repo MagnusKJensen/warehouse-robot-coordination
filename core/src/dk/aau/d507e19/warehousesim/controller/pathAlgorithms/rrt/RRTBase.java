@@ -97,16 +97,16 @@ public abstract class RRTBase {
     }
 
     public double cost(Node<GridCoordinate> node){
-        return calculateTravelTime(node);
+        return calculateTravelTime(new Path(makePath(node)));
     }
-    private long calculateTravelTime(Node<GridCoordinate> dest){
+    protected long calculateTravelTime(Path p){
         //generate path from root to dest
         //find out how long it takes according to movement predictor
         //return time that it takes
-        Path p = new Path(makePath(dest));
         ArrayList<Reservation> list = MovementPredictor.calculateReservations(this.robotController.getRobot(),p,0,0);
         return list.get(list.size()-1).getTimeFrame().getStart();
     }
+
     protected ArrayList<Node<GridCoordinate>> trimImprovementsList(ArrayList<Node<GridCoordinate>> list, GridCoordinate dest){
         if(list.isEmpty()){
             return list;
