@@ -44,15 +44,15 @@ public class BinDelivery implements Task {
 
     private void planTasks() {
         // Pickup
-        subTasks.add(new StepAsideNavigator(robotController, binCoords));
+        subTasks.add(Navigation.getInstance(robotController, binCoords));
         subTasks.add(new TimedAction(() -> robot.pickUpBin(), TimeUtils.secondsToTicks(Simulation.getWarehouseSpecs().robotPickUpSpeedInSeconds)));
 
         // Delivery
-        subTasks.add(new StepAsideNavigator(robotController, order.getPicker().getGridCoordinate()));
+        subTasks.add(Navigation.getInstance(robotController, order.getPicker().getGridCoordinate()));
         subTasks.add(new TimedAction(() -> robot.deliverBinToPicker(order.getPicker().getGridCoordinate(), productsToPick), TimeUtils.secondsToTicks(Simulation.getWarehouseSpecs().robotPickUpSpeedInSeconds)));
 
         // Bin return
-        subTasks.add(new StepAsideNavigator(robotController, binCoords));
+        subTasks.add(Navigation.getInstance(robotController, binCoords));
         subTasks.add(new TimedAction(() -> robot.putDownBin(), TimeUtils.secondsToTicks(Simulation.getWarehouseSpecs().robotPickUpSpeedInSeconds)));
 
         isPlanned = true;
