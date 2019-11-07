@@ -33,7 +33,7 @@ public class RRTStarTest {
         when(robotController.getServer()).thenReturn(server);
     }
 
-    @Ignore
+    @Test
     public void generatePathTest(){
         RRTStar rrtStar = new RRTStar(robotController);
         RRT rrt = new RRT(robotController);
@@ -58,7 +58,7 @@ public class RRTStarTest {
         }
 */
     }
-    @Ignore
+    @Test
     public void generatePathFromEmptyTest(){
         RRTStar rrtStar = new RRTStar(robotController);
         GridCoordinate start = new GridCoordinate(0, 0);
