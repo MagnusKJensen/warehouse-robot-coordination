@@ -160,7 +160,6 @@ public class Server {
 
     public GridCoordinate getOptimalIdleRobotPosition() {
         GridCoordinate optimalCoord = HeatMap.getLeastCrowdedCoordinate(this);
-        System.out.println(optimalCoord);
         return optimalCoord;
     }
 
