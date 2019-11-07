@@ -6,6 +6,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.Status;
 import dk.aau.d507e19.warehousesim.controller.server.order.OrderGenerator;
+import dk.aau.d507e19.warehousesim.controller.server.order.OrderManager;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
 import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
@@ -98,7 +99,7 @@ public class Server {
         return productsAvailable;
     }
 
-    public void updateNew(){
+    public void update(){
         orderGenerator.update();
         orderManager.update();
     }

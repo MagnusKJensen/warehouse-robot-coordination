@@ -5,12 +5,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.google.gson.Gson;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocatorEnum;
 import dk.aau.d507e19.warehousesim.input.CameraMover;
+import dk.aau.d507e19.warehousesim.statistics.StatisticsManager;
 import dk.aau.d507e19.warehousesim.ui.SideMenu;
 
-import java.text.SimpleDateFormat;
+import java.io.*;
 import java.util.Date;
 import java.util.Random;
 
@@ -18,6 +20,8 @@ public class SimulationApp extends ApplicationAdapter {
 
 	public static final long RANDOM_SEED = 12345442352525L;
 	public static Random random = new Random(RANDOM_SEED);
+	public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "runconfigurations/";
+	public static String CURRENT_RUN_CONFIG = "defaultSpecs.json";
 
 	public static final int MENU_WIDTH_IN_PIXELS = 300;
 	// Size of a single square/tile in the grid
@@ -34,7 +38,7 @@ public class SimulationApp extends ApplicationAdapter {
 	// Variables for simulation loop logic
 	public static final int TICKS_PER_SECOND = 30;
 	public static final long MILLIS_PER_TICK = 1000 / TICKS_PER_SECOND;
-	public static final int FAST_FORWARD_MULTIPLIER = 5;
+	public static final int FAST_FORWARD_MULTIPLIER = 50;
 	public UpdateMode updateMode = UpdateMode.MANUAL;
 	private long millisSinceUpdate = 0L;
 	private long lastUpdateTime = 0L;
@@ -49,11 +53,8 @@ public class SimulationApp extends ApplicationAdapter {
     private InputMultiplexer inputMultiplexer;
 
     // Currently using the following pathFinder and TaskAllocators.
-	public static PathFinderEnum pathFinderSelected = PathFinderEnum.DUMMYPATHFINDER;
+	public static PathFinderEnum pathFinderSelected = PathFinderEnum.ASTAR;
 	private static TaskAllocatorEnum taskAllocatorSelected = TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR;
-
-	private StatisticsManager statsManager;
-	private Date simulationStartTime;
 
 	@Override
 	public void create () {
@@ -69,7 +70,10 @@ public class SimulationApp extends ApplicationAdapter {
 		centerCamera(simulationCamera);
 		centerCamera(menuCamera);
 
-		simulation = new Simulation(this);
+		// Quick way to generate new json files
+		// createJsonFileFromSpecs("newSpecName.json");
+
+		simulation = new Simulation(this, CURRENT_RUN_CONFIG);
 		sideMenu = new SideMenu(menuViewport, this);
 
 		Gdx.input.setInputProcessor(inputMultiplexer);
@@ -78,11 +82,17 @@ public class SimulationApp extends ApplicationAdapter {
 		inputMultiplexer.addProcessor(cameraMover);
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());
         lastUpdateTime = System.currentTimeMillis();
+	}
 
-        statsManager = new StatisticsManager(this);
-
-
-        simulationStartTime = new Date(System.currentTimeMillis());
+	private void createJsonFileFromSpecs(String newSpecName){
+		File newSpecFile = new File(PATH_TO_RUN_CONFIGS + File.separator + newSpecName);
+		Gson gson = new Gson();
+		try(BufferedWriter writer = new BufferedWriter(new FileWriter(newSpecFile.getPath()))){
+			String jsonString = gson.toJson(new WarehouseSpecs());
+			writer.write(jsonString);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void centerCamera(OrthographicCamera camera) {
@@ -113,24 +123,27 @@ public class SimulationApp extends ApplicationAdapter {
 	@Override
 	// Called repeatedly by the libgdx framework
 	public void render () {
-		cameraMover.update();
-		int updatesSinceLastRender = 0;
-		while(shouldUpdateSimulation() && updatesSinceLastRender < MAX_UPDATES_PER_FRAME){
-			simulation.update();
-			updatesSinceLastRender++;
-		}
+		if(updateMode == UpdateMode.NO_GRAPHICS){
+		} else {
+			cameraMover.update();
+			int updatesSinceLastRender = 0;
+			while(shouldUpdateSimulation() && updatesSinceLastRender < MAX_UPDATES_PER_FRAME){
+				simulation.update();
+				updatesSinceLastRender++;
+			}
 
-		updateMenu();
-		clearScreen();
-		renderMenu();
-		renderSimulation();
+			updateMenu();
+			clearScreen();
+			renderMenu();
+			renderSimulation();
+		}
 	}
 
 	// Determines whether it is time to update to simulation
 	// by comparing the time that has passed
 	private boolean shouldUpdateSimulation(){
 		// Always update when in fast mode
-		if(updateMode == UpdateMode.FASTEST_FORWARD)
+		if(updateMode == UpdateMode.FASTEST_FORWARD || updateMode == UpdateMode.NO_GRAPHICS)
 			return true;
 
 		// Fast forward
@@ -246,11 +259,10 @@ public class SimulationApp extends ApplicationAdapter {
 		simulation.dispose();
 		random = new Random(RANDOM_SEED);
 		pause();
-		simulation = new Simulation(this);
+		simulation = new Simulation(this, CURRENT_RUN_CONFIG);
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());
 
 		sideMenu.resetSideMenu();
-		simulationStartTime = new Date(System.currentTimeMillis());
 	}
 
 	public OrthographicCamera getWorldCamera() {
@@ -279,21 +291,19 @@ public class SimulationApp extends ApplicationAdapter {
 
 	public void setPathFinderSelected(PathFinderEnum pathFinderSelected) {
 		this.pathFinderSelected = pathFinderSelected;
+		Simulation.setPathFinder(pathFinderSelected);
 	}
 
 	public void setTaskAllocatorSelected(TaskAllocatorEnum taskAllocatorSelected) {
 		this.taskAllocatorSelected = taskAllocatorSelected;
+		Simulation.setTaskAllocator(taskAllocatorSelected);
 	}
 
 	public TaskAllocatorEnum getTaskAllocatorSelected() {
 		return taskAllocatorSelected;
 	}
 
-	public StatisticsManager getStatsManager() {
-		return statsManager;
-	}
-
-	public Date getSimulationStartTime() {
-		return simulationStartTime;
+	public static String getCurrentRunConfig() {
+		return CURRENT_RUN_CONFIG;
 	}
 }

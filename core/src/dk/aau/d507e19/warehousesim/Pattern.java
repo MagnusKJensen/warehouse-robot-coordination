@@ -5,7 +5,6 @@ import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
 
-
 import java.util.ArrayList;
 
 public class Pattern {
@@ -119,9 +118,6 @@ public class Pattern {
                     }
 
                     if(points == 0){
-                        for(GridCoordinate gridCoordinate : gridCoordinates){
-                            System.out.println(gridCoordinate);
-                        }
                         return gridCoordinates;
                     }
 

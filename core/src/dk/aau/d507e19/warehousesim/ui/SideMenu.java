@@ -97,7 +97,7 @@ public class SideMenu {
         printStatsButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                simulationApp.getStatsManager().printStatistics();
+                simulationApp.getSimulation().getStatsManager().printStatistics();
             }
         });
 

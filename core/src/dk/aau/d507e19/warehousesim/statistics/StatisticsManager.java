@@ -1,5 +1,7 @@
-package dk.aau.d507e19.warehousesim;
+package dk.aau.d507e19.warehousesim.statistics;
 
+import dk.aau.d507e19.warehousesim.Simulation;
+import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.server.order.Order;
 
@@ -8,6 +10,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.RoundingMode;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Time;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -16,20 +20,24 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class StatisticsManager {
-    private String ORDER_STATS_FILENAME = "orderStats_";
-    private String ROBOT_STATS_FILENAME = "robotStats_";
-    private String GENERAL_STATS_FILENAME = "generalStats_";
-    private String PATH_TO_STATS_FOLDER = System.getProperty("user.dir") + File.separator + "statistics" + File.separator;
-    private SimulationApp simulationApp;
+    private final String ORDER_STATS_FILENAME = "orderStats_";
+    private final String ROBOT_STATS_FILENAME = "robotStats_";
+    private final String GENERAL_STATS_FILENAME = "generalStats_";
+    private final String PATH_TO_STATS_FOLDER = System.getProperty("user.dir") + File.separator + "statistics" + File.separator;
+    private Simulation simulation;
     // Has to be ; instead og :, because windows does not accept : in file name - Philip
     SimpleDateFormat dateFormatter = new SimpleDateFormat("HH;mm;ss'_'dd-MM-yyyy");
+    DecimalFormat decimalFormatter = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
 
 
-    public StatisticsManager(SimulationApp simulationApp) {
-        this.simulationApp = simulationApp;
+    public StatisticsManager(Simulation simulation) {
+        this.simulation = simulation;
     }
 
     public void printStatistics(){
+        decimalFormatter.applyPattern("###.00");
+        decimalFormatter.setRoundingMode(RoundingMode.HALF_UP);
+        decimalFormatter.setGroupingUsed(false);
         // Create statistics folder if it does not exist
         createStatisticsFolder();
 
@@ -40,6 +48,23 @@ public class StatisticsManager {
         writeOrderStatsToFile(pathToSimulationFolder);
         writeRobotStatsToFile(pathToSimulationFolder);
         writeGeneralStatsToFile(pathToSimulationFolder);
+
+        // Copy file with specs from the run. Only done, if it is not already copied once.
+        copySpecsFile(pathToSimulationFolder);
+    }
+
+    private void copySpecsFile(String pathToSimulationFolder) {
+        String configFileToCopy = Simulation.PATH_TO_RUN_CONFIGS + Simulation.CURRENT_RUN_CONFIG;
+
+        String newPath = pathToSimulationFolder + File.separator + Simulation.CURRENT_RUN_CONFIG;
+
+        try {
+            if(!new File(newPath).exists()){
+                Files.copy(Paths.get(configFileToCopy), Paths.get(newPath));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void createStatisticsFolder() {
@@ -51,7 +76,7 @@ public class StatisticsManager {
 
     private String createSimulationFolder() {
         // Add folder for this specific simulation run
-        String pathToSimulationFolder = PATH_TO_STATS_FOLDER + dateFormatter.format(simulationApp.getSimulationStartTime()) + File.separator;
+        String pathToSimulationFolder = PATH_TO_STATS_FOLDER + dateFormatter.format(simulation.getSimulationStartTime()) + File.separator;
 
         File newDirectory = new File(pathToSimulationFolder);
         if(newDirectory.exists()) return pathToSimulationFolder;
@@ -65,7 +90,7 @@ public class StatisticsManager {
     }
 
     private void writeGeneralStatsToFile(String pathToSimulationFolder) {
-        File file = new File(pathToSimulationFolder + GENERAL_STATS_FILENAME + simulationApp.getSimulation().getTimeInTicks() + ".csv");
+        File file = new File(pathToSimulationFolder + GENERAL_STATS_FILENAME + simulation.getTimeInTicks() + ".csv");
 
         // Overwrite if clicked twice
         if(file.exists()){
@@ -80,29 +105,27 @@ public class StatisticsManager {
             }
             writer.write("\n");
 
-            long currentTick = simulationApp.getSimulation().getTimeInTicks();
+            long currentTick = simulation.getTimeInTicks();
             writer.write("CurrentTick, " + currentTick + '\n');
 
-            long availableProductsLeft = simulationApp.getSimulation().getServer().getProductsAvailable().size();
+            long availableProductsLeft = simulation.getServer().getProductsAvailable().size();
             writer.write("availableProductsLeft," + availableProductsLeft + '\n');
 
-            int ordersInQueue = simulationApp.getSimulation().getServer().getOrderManager().ordersInQueue();
+            int ordersInQueue = simulation.getServer().getOrderManager().ordersInQueue();
             writer.write("ordersInQueue," + ordersInQueue + '\n');
 
-            int ordersFinished = simulationApp.getSimulation().getServer().getOrderManager().ordersFinished();
+            int ordersFinished = simulation.getServer().getOrderManager().ordersFinished();
             writer.write("ordersFinished," + ordersFinished + '\n');
 
-            long msSinceStart = simulationApp.getSimulation().getSimulatedTimeInMS();
-            double ordersPerMinute = simulationApp.getSimulation().getOrdersProcessed() / ((double) msSinceStart / 1000 / 60);
-            NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
-            DecimalFormat df = (DecimalFormat) nf;
-            df.setRoundingMode(RoundingMode.HALF_UP);
-            writer.write("OrdersPerMinute," + df.format(ordersPerMinute) + '\n');
+            long msSinceStart = simulation.getSimulatedTimeInMS();
+            double ordersPerMinute = simulation.getOrdersProcessed() / ((double) msSinceStart / 1000 / 60);
 
-            int tasksInQueue = simulationApp.getSimulation().getServer().getOrderManager().tasksInQueue();
+            writer.write("OrdersPerMinute," + decimalFormatter.format(ordersPerMinute) + '\n');
+
+            int tasksInQueue = simulation.getServer().getOrderManager().tasksInQueue();
             writer.write("tasksInQueue," + tasksInQueue + '\n');
 
-            String orderGoalReached = simulationApp.getSimulation().getGoal().getStatsAsCSV();
+            String orderGoalReached = simulation.getGoal().getStatsAsCSV();
             writer.write("orderGoalReached," + orderGoalReached + '\n');
         } catch (IOException e) {
             e.printStackTrace();
@@ -110,7 +133,7 @@ public class StatisticsManager {
     }
 
     private void writeRobotStatsToFile(String pathToSimulationFolder) {
-        File file = new File(pathToSimulationFolder + ROBOT_STATS_FILENAME + simulationApp.getSimulation().getTimeInTicks() + ".csv");
+        File file = new File(pathToSimulationFolder + ROBOT_STATS_FILENAME + simulation.getTimeInTicks() + ".csv");
 
         // Overwrite if clicked twice
         if(file.exists()){
@@ -127,7 +150,7 @@ public class StatisticsManager {
             writer.write("\n");
 
             // Write robot stats
-            ArrayList<Robot> robots = simulationApp.getSimulation().getAllRobots();
+            ArrayList<Robot> robots = simulation.getAllRobots();
             for(Robot robot : robots){
                 writer.write(robot.getStatsAsCSV());
                 writer.write("\n");
@@ -139,7 +162,7 @@ public class StatisticsManager {
     }
 
     private void writeOrderStatsToFile(String pathToSimulationFolder){
-        File file = new File(pathToSimulationFolder + ORDER_STATS_FILENAME + simulationApp.getSimulation().getTimeInTicks() + ".csv");
+        File file = new File(pathToSimulationFolder + ORDER_STATS_FILENAME + simulation.getTimeInTicks() + ".csv");
 
         // Overwrite if clicked twice
         if(file.exists()){
@@ -156,7 +179,7 @@ public class StatisticsManager {
             writer.write("\n");
 
             // Write robot stats
-            ArrayList<Order> orders = simulationApp.getSimulation().getServer().getOrderManager().getOrdersFinished();
+            ArrayList<Order> orders = simulation.getServer().getOrderManager().getOrdersFinished();
             for(Order order : orders){
                 writer.write(order.getStatsAsCSV());
                 writer.write("\n");

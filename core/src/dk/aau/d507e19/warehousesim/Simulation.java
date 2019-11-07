@@ -7,21 +7,31 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.google.gson.Gson;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
+import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocatorEnum;
 import dk.aau.d507e19.warehousesim.exception.CollisionException;
 import dk.aau.d507e19.warehousesim.goal.Goal;
 import dk.aau.d507e19.warehousesim.goal.OrderGoal;
 import dk.aau.d507e19.warehousesim.input.SimulationInputProcessor;
+import dk.aau.d507e19.warehousesim.statistics.StatisticsManager;
 import dk.aau.d507e19.warehousesim.storagegrid.*;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Simulation {
     private SpriteBatch batch;
@@ -52,11 +62,47 @@ public class Simulation {
 
     private long tickStopperGoal;
 
-    public Simulation(SimulationApp simulationApp){
+    public static String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations/";
+    public static String CURRENT_RUN_CONFIG;
+    private static WarehouseSpecs warehouseSpecs;
+    private static PathFinderEnum pathFinder;
+    private static TaskAllocatorEnum taskAllocator;
+
+    private Date simulationStartTime;
+
+    private StatisticsManager statsManager;
+
+    // Used for fast no graphics simulations
+    public Simulation(String runConfigName, PathFinderEnum pathfinder, TaskAllocatorEnum taskAllocator){
+        Simulation.warehouseSpecs = readWarehouseSpecsFromFile(runConfigName);
+        Simulation.CURRENT_RUN_CONFIG = runConfigName;
+        Simulation.pathFinder = pathfinder;
+        Simulation.taskAllocator = taskAllocator;
+
+        storageGrid = new StorageGrid(Simulation.getWarehouseSpecs().wareHouseWidth, Simulation.getWarehouseSpecs().wareHouseHeight, this);
+        if(Simulation.getWarehouseSpecs().isRandomProductDistribution) ProductDistributor.distributeProductsRandomly(storageGrid);
+        else ProductDistributor.distributeProducts(storageGrid);
+
+        server = new Server(this, storageGrid);
+
+        goal = new OrderGoal(Simulation.warehouseSpecs.orderGoal, this);
+
+        initRobots();
+
+        simulationStartTime = new Date(System.currentTimeMillis());
+
+        statsManager = new StatisticsManager(this);
+    }
+
+    public Simulation(SimulationApp simulationApp, String pathToRunConfig){
         this.simulationApp = simulationApp;
         this.gridCamera = simulationApp.getWorldCamera();
         this.fontCamera = simulationApp.getFontCamera();
         this.gridViewport = simulationApp.getWorldViewport();
+        Simulation.warehouseSpecs = readWarehouseSpecsFromFile(pathToRunConfig);
+
+        Simulation.pathFinder = simulationApp.getPathFinderSelected();
+        Simulation.taskAllocator = simulationApp.getTaskAllocatorSelected();
 
         inputProcessor = new SimulationInputProcessor(this);
 
@@ -64,22 +110,39 @@ public class Simulation {
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
 
-        storageGrid = new StorageGrid(WarehouseSpecs.wareHouseWidth, WarehouseSpecs.wareHouseHeight, this);
-        if(WarehouseSpecs.isRandomProductDistribution) ProductDistributor.distributeProductsRandomly(storageGrid);
+        storageGrid = new StorageGrid(Simulation.getWarehouseSpecs().wareHouseWidth, Simulation.getWarehouseSpecs().wareHouseHeight, this);
+        if(Simulation.getWarehouseSpecs().isRandomProductDistribution) ProductDistributor.distributeProductsRandomly(storageGrid);
         else ProductDistributor.distributeProducts(storageGrid);
 
         server = new Server(this, storageGrid);
 
-        goal = new OrderGoal(WarehouseSpecs.orderGoal, this);
+        goal = new OrderGoal(Simulation.warehouseSpecs.orderGoal, this);
 
         initRobots();
+
+        simulationStartTime = new Date(System.currentTimeMillis());
+
+        statsManager = new StatisticsManager(this);
+    }
+
+    private WarehouseSpecs readWarehouseSpecsFromFile(String specFileName) {
+        File runConfigFile = new File(PATH_TO_RUN_CONFIGS + File.separator + specFileName);
+        Gson gson = new Gson();
+        try(BufferedReader reader = new BufferedReader(new FileReader(runConfigFile.getPath()))){
+            WarehouseSpecs specs = gson.fromJson(reader, WarehouseSpecs.class);
+            return specs;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     private void initRobots() {
         // Auto generate robots
         int x = 0, y = 0;
         ArrayList<GridCoordinate> gridCoordinates;
-        gridCoordinates = WarehouseSpecs.robotPlacementPattern.generatePattern(WarehouseSpecs.numberOfRobots);
+        gridCoordinates = Simulation.warehouseSpecs.robotPlacementPattern.generatePattern(Simulation.warehouseSpecs.numberOfRobots);
 
         int id = 0;
         for(GridCoordinate gridCoordinate : gridCoordinates)
@@ -91,12 +154,13 @@ public class Simulation {
         for(Robot robot : robots){
             robot.update();
         }
-        server.updateNew();
+        server.update();
         goal.update();
-        if(WarehouseSpecs.collisionDetectedEnabled){
+        if(Simulation.warehouseSpecs.collisionDetectedEnabled){
             checkForCollisions();
         }
         updateSideMenuScrollPanes();
+
 
         if(tickStopperGoal == tickCount) simulationApp.pause();
     }
@@ -264,11 +328,11 @@ public class Simulation {
     }
 
     public int getGridHeight() {
-        return WarehouseSpecs.wareHouseHeight;
+        return Simulation.warehouseSpecs.wareHouseHeight;
     }
 
     public int getGridWidth() {
-        return WarehouseSpecs.wareHouseWidth;
+        return Simulation.warehouseSpecs.wareHouseWidth;
     }
 
     public Server getServer() {
@@ -301,5 +365,37 @@ public class Simulation {
 
     public void setTickStopperGoal(long tickStopperGoal) {
         this.tickStopperGoal = tickStopperGoal;
+    }
+
+    public static WarehouseSpecs getWarehouseSpecs() {
+        return warehouseSpecs;
+    }
+
+    public static void setWarehouseSpecs(WarehouseSpecs warehouseSpecs) {
+        Simulation.warehouseSpecs = warehouseSpecs;
+    }
+
+    public static PathFinderEnum getPathFinder() {
+        return pathFinder;
+    }
+
+    public static void setPathFinder(PathFinderEnum pathFinder) {
+        Simulation.pathFinder = pathFinder;
+    }
+
+    public static TaskAllocatorEnum getTaskAllocator() {
+        return taskAllocator;
+    }
+
+    public static void setTaskAllocator(TaskAllocatorEnum taskAllocatorEnum) {
+        Simulation.taskAllocator = taskAllocatorEnum;
+    }
+
+    public Date getSimulationStartTime() {
+        return simulationStartTime;
+    }
+
+    public StatisticsManager getStatsManager() {
+        return statsManager;
     }
 }

@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.robot.plan.task;
 
+import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.TimeUtils;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
@@ -44,15 +45,15 @@ public class BinDelivery implements Task {
     private void planTasks() {
         // Pickup
         subTasks.add(new StepAsideNavigator(robotController, binCoords));
-        subTasks.add(new TimedAction(() -> robot.pickUpBin(), TimeUtils.secondsToTicks(WarehouseSpecs.robotPickUpSpeedInSeconds)));
+        subTasks.add(new TimedAction(() -> robot.pickUpBin(), TimeUtils.secondsToTicks(Simulation.getWarehouseSpecs().robotPickUpSpeedInSeconds)));
 
         // Delivery
         subTasks.add(new StepAsideNavigator(robotController, order.getPicker().getGridCoordinate()));
-        subTasks.add(new TimedAction(() -> robot.deliverBinToPicker(order.getPicker().getGridCoordinate(), productsToPick), TimeUtils.secondsToTicks(WarehouseSpecs.robotPickUpSpeedInSeconds)));
+        subTasks.add(new TimedAction(() -> robot.deliverBinToPicker(order.getPicker().getGridCoordinate(), productsToPick), TimeUtils.secondsToTicks(Simulation.getWarehouseSpecs().robotPickUpSpeedInSeconds)));
 
         // Bin return
         subTasks.add(new StepAsideNavigator(robotController, binCoords));
-        subTasks.add(new TimedAction(() -> robot.putDownBin(), TimeUtils.secondsToTicks(WarehouseSpecs.robotPickUpSpeedInSeconds)));
+        subTasks.add(new TimedAction(() -> robot.putDownBin(), TimeUtils.secondsToTicks(Simulation.getWarehouseSpecs().robotPickUpSpeedInSeconds)));
 
         isPlanned = true;
     }
