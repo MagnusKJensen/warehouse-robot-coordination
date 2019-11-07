@@ -20,8 +20,9 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class StatisticsManager {
-    // This changes the name of the folder containing the statistics to reflect the version number
-    private final String VERSION_NAME = "Philip";
+    // This changes the name of the folder containing the statistics to reflect the version number.
+    // Should be changed in the StatisticsAutomater
+    private String VERSION_NAME = "";
 
     // For statistics file names
     private final String ORDER_STATS_FILENAME = "orderStats_";
@@ -224,5 +225,13 @@ public class StatisticsManager {
         catch(IOException e){
             e.printStackTrace();
         }
+    }
+
+    public String getVERSION_NAME() {
+        return VERSION_NAME;
+    }
+
+    public void setVERSION_NAME(String VERSION_NAME) {
+        this.VERSION_NAME = VERSION_NAME;
     }
 }

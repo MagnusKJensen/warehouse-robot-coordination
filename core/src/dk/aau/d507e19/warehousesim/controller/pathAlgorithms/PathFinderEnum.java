@@ -10,8 +10,8 @@ import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 
 public enum PathFinderEnum {
-    DUMMYPATHFINDER("DummyPathFinder", false), ASTAR("A*", true), ASTARCORNERS("A* Corners", true),
-    CHPATHFINDER("CustomH - Turns", true), RTT("RTT", false), RRTSTAR("RTT*", false);
+    DUMMYPATHFINDER("DummyPathFinder", true), ASTAR("A*", true), ASTARCORNERS("A* Corners", true),
+    CHPATHFINDER("CustomH - Turns", true), RTT("RTT", true), RRTSTAR("RTT*", true);
 
     private String name;
     private boolean works;

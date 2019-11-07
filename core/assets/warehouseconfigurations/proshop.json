@@ -37,21 +37,21 @@
     "bounds": {
       "startX": 0,
       "startY": 0,
-      "endX": 29,
-      "endY": 29
+      "endX": 79,
+      "endY": 79
     }
   },
   "pickerPlacementPattern": {
     "patternType": "SPIRAL",
-    "padding": 1,
+    "padding": 10,
     "bounds": {
       "startX": 0,
       "startY": 0,
-      "endX": 29,
-      "endY": 29
+      "endX": 79,
+      "endY": 79
     }
   },
-  "numberOfPickers": 20,
+  "numberOfPickers": 5,
   "pickerPoints": [
     [
       0,
@@ -114,7 +114,7 @@
       0
     ]
   ],
-  "secondsBetweenOrders": 1,
+  "secondsBetweenOrders": 26,
   "orderGoal": 50,
   "productsPerOrder": 4
 }

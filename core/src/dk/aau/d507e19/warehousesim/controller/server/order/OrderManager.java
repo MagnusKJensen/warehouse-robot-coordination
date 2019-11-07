@@ -43,6 +43,7 @@ public class OrderManager {
                 }
 
                 if(isCompleted){
+                    System.out.println("Finished: " + order);
                     order.getPicker().setAvailable();
                     ordersFinished.add(order);
                     order.setFinishTimeInMS(server.getTimeInMS());
