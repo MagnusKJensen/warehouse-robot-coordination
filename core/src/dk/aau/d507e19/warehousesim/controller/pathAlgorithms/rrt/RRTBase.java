@@ -27,14 +27,11 @@ public abstract class RRTBase {
     }
 
 
-    public Node<GridCoordinate> root, destinationNode,shortestLengthNode,latestNode;
+    public Node<GridCoordinate> root, destinationNode,latestNode;
     //Free list of all free points in the grid. populateFreeList() intializes the array with grid coordinates.
     public ArrayList<GridCoordinate> freeNodeList;
-    //blockedNodeList
-    public ArrayList<GridCoordinate> blockedNodeList = new ArrayList<>();
-    protected ArrayList<Step> path = new ArrayList<>();
 
-    GridCoordinate dest;
+    protected ArrayList<Step> path = new ArrayList<>();
     public HashMap<GridCoordinate,Node<GridCoordinate>> allNodesMap = new HashMap<>();
 
     public ArrayList<Step> getPath() {
@@ -46,7 +43,6 @@ public abstract class RRTBase {
         //Generate a new random location using seeded random
         for(int i =0; i < n; i++){
             GridCoordinate randPos = generateRandomPos();
-            shortestLengthNode = tree;
             Node<GridCoordinate> nearest = findNearestNeighbour(tree, randPos);
             Node<GridCoordinate> newNode = generateNewNode(nearest, randPos);
             newNode.setParent(nearest);
@@ -144,12 +140,13 @@ public abstract class RRTBase {
 
     public Node<GridCoordinate> findNearestNeighbour(Node<GridCoordinate> tree, GridCoordinate randPos) {
         Edge shortestEdge = new Edge(tree.getData(),randPos);
+        Node<GridCoordinate> shortest = tree;
         for(Node<GridCoordinate> n : findNodesInSquare(randPos)){
             Edge newEdge = new Edge(n.getData(),randPos);
 
             if (newEdge.getDistance() < shortestEdge.getDistance()){
                 shortestEdge = newEdge;
-                shortestLengthNode = n;
+                shortest = n;
             }
         }
          /*
@@ -161,7 +158,7 @@ public abstract class RRTBase {
             }
             findNearestNeighbour(n, randPos);
         } */
-        return shortestLengthNode;
+        return shortest;
     }
 
     private ArrayList<Node<GridCoordinate>> findNodesInSquare(GridCoordinate randPos){
@@ -310,7 +307,6 @@ public abstract class RRTBase {
         }
     }
     protected ArrayList<Step> generatePathFromEmpty(GridCoordinate start, GridCoordinate destination){
-        dest = destination;
         root = new Node<>(start, null, false);
         //populate the freenodelist
         freeNodeList = populateFreeList();

@@ -69,7 +69,7 @@ public class RRTStarTest {
         assertTrue(test.isValidPath(start,dest1,list));
     }
 
-    @Ignore
+    @Test
     public void testAttemptOptimise(){
         //create a tree
         Node<GridCoordinate> n0 = new Node<>(new GridCoordinate(1,0),null,false);
@@ -139,7 +139,9 @@ public class RRTStarTest {
         assertEquals(turnNodes,rrtStar.findTurns(path));
     }
 
-    @Test
+
+    //very expensive test @ignore as default
+    @Ignore
     public void testRootReachable(){
         RRTStar rrtStar = new RRTStar(robotController);
         GridCoordinate start = new GridCoordinate(0, 0);

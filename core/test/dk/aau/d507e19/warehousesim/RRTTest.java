@@ -71,7 +71,6 @@ public class RRTTest {
     @Test
     public void findNearestNeighbourTest(){
         generateTree();
-        rrt.shortestLengthNode = tree;
         Node<GridCoordinate> actual = rrt.findNearestNeighbour(tree,new GridCoordinate(2,3));
         assertEquals(twooneright.getData(),actual.getData());
     }
