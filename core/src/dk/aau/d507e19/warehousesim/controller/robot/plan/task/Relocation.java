@@ -24,29 +24,30 @@ public class Relocation implements Task {
 
     @Override
     public void perform() {
-        if(hasFailed() || isCompleted())
+        if (hasFailed() || isCompleted())
             throw new RuntimeException("Task already completed");
 
-        if(destination == null){
+        if (destination == null) {
             Robot robot = robotController.getRobot();
-            if(!robotController.hasOrderAssigned()){
+            if (!robotController.hasOrderAssigned()) {
                 // Go to optimal spot to wait for task
                 destination = server.getOptimalIdleRobotPosition();
-            }else{
+            } else {
                 do { // Find random neighbour tile to go to
                     Direction randomDirection = Direction.values()[random.nextInt(Direction.values().length)];
                     destination = new GridCoordinate(robot.getGridCoordinate().getX() + randomDirection.xDir,
                             robot.getGridCoordinate().getY() + randomDirection.yDir);
-                }while (!server.getGridBounds().isWithinBounds(destination));
+                } while (!server.getGridBounds().isWithinBounds(destination));
             }
 
             navigation = Navigation.getInstance(robotController, destination, 1);
+
         }
 
         navigation.perform();
-        if(navigation.isCompleted())
+        if (navigation.isCompleted())
             complete();
-        if(navigation.hasFailed())
+        if (navigation.hasFailed())
             fail();
     }
 
@@ -54,7 +55,7 @@ public class Relocation implements Task {
         hasFailed = true;
     }
 
-    private void complete(){
+    private void complete() {
         completed = true;
     }
 

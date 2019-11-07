@@ -23,7 +23,7 @@ public class HeatMap {
         }
     }
 
-    private static final int heatFactor = 2;
+    private static final int heatFactor = 1;
 
     // Distance at which neighbours will be affected
     private static final int robotHeat = 3 * heatFactor;
@@ -31,7 +31,7 @@ public class HeatMap {
     private static final int reservationHeat = 1 * heatFactor;
     private static final int indefiniteReservationHeat = 3 * heatFactor;
 
-    private static final int pickerCooling = 3 * heatFactor;
+    private static final int pickerCooling = 4 * heatFactor;
     private static final int pickerMinDistance = 3;
 
     public static GridCoordinate getLeastCrowdedCoordinate(Server server){
