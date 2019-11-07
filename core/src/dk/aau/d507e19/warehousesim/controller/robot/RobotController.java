@@ -1,11 +1,9 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
-import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
-import dk.aau.d507e19.warehousesim.controller.robot.plan.task.BinDelivery;
-import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Navigation;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.ReservationNavigation;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
@@ -107,7 +105,7 @@ public class RobotController {
             newPosition = new GridCoordinate(robot.getGridCoordinate().getX() + randomDirection.xDir, robot.getGridCoordinate().getY() + randomDirection.yDir);
         }while (!server.getGridBounds().isWithinBounds(newPosition));
 
-        assignImmediateTask(new Navigation(this, newPosition));
+        assignImmediateTask(new ReservationNavigation(this, newPosition));
         return true;
     }
 
@@ -116,7 +114,7 @@ public class RobotController {
         Task firstTask = tasks.getFirst();
 
         // Simple navigation tasks are discarded if they are interrupted
-        if(firstTask instanceof Navigation){
+        if(firstTask instanceof ReservationNavigation){
             boolean interrupted = firstTask.interrupt();
             if(interrupted){
                 tasks.removeFirst();

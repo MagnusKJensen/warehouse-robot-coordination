@@ -29,7 +29,7 @@ public abstract class RRTBase {
 
     public Node<GridCoordinate> root, destinationNode,shortestLengthNode,latestNode;
     //Free list of all free points in the grid. populateFreeList() intializes the array with grid coordinates.
-    public ArrayList<GridCoordinate> freeNodeList = populateFreeList();
+    public ArrayList<GridCoordinate> freeNodeList;
     //blockedNodeList
     public ArrayList<GridCoordinate> blockedNodeList = new ArrayList<>();
     protected ArrayList<Step> path = new ArrayList<>();
@@ -135,7 +135,7 @@ public abstract class RRTBase {
         //down
         pos = edge.getDistanceBetweenPoints(new GridCoordinate(pos.getX(), pos.getY() - 1), randPos) < edge.getDistanceBetweenPoints(pos, randPos) ? new GridCoordinate(originalPos.getX(), originalPos.getY() -1 ) : pos;
 
-        //System.out.println("NEW: "+ pos.toString()+"\nNEAR: " + originalPos.toString() + "\nRAND: " + randPos.toString()+"\n");
+
 
         //remove the newly created note from the freeList
         updateFreeList(pos);
@@ -270,33 +270,7 @@ public abstract class RRTBase {
         path.add(destNode);
         return path;
     }
-    public void assignBlockedNodeStatus(ArrayList<Reservation> nodesToBeUpdated){
-        ArrayList<GridCoordinate> nodesToBeUpdatedConverted = new ArrayList<>();
-        for(Reservation n: nodesToBeUpdated){
-            nodesToBeUpdatedConverted.add(n.getGridCoordinate());
-        }
-        //find the nodes to be blocked and set its statuses to true
-        for(GridCoordinate n: nodesToBeUpdatedConverted) {
-            if (allNodesMap.containsKey(n)) {
-                //checks if node is already in blockedNodeList
-                if(!blockedNodeList.contains(n)) {
-                    //add blocked node to blockedNodeList and sets the status of node to "blocked"
-                    blockedNodeList.add(n);
-                    allNodesMap.get(n).setBlockedStatus(true);
-                }
-            }
-        }
-        //Find nodes that are not blocked anymore, and free them. TODO: make help functions to make function pretty
-        if(blockedNodeList.size() != nodesToBeUpdated.size()){
-            ArrayList<GridCoordinate> tempList = blockedNodeList;
-            tempList.remove(nodesToBeUpdated);
-            for(GridCoordinate m: tempList){
-                if(allNodesMap.containsKey(m)){
-                    allNodesMap.get(m).setBlockedStatus(false);
-                }
-            }
-        }
-    }
+
     protected void growUntilPathFound(GridCoordinate destination){
         boolean foundPath = false;
         //Run until a route is found
@@ -324,10 +298,11 @@ public abstract class RRTBase {
         ArrayList<GridCoordinate> freeListInitializer = new ArrayList<>();
         for(int i = 0; i < Simulation.getWarehouseSpecs().wareHouseWidth ; i++){
             for(int j = 0; j < Simulation.getWarehouseSpecs().wareHouseHeight; j++ ){
-                //If coordinate is root(The robot's position), dont add.
                 freeListInitializer.add(new GridCoordinate(i,j));
             }
         }
+        //remove robot position when done populating
+        freeListInitializer.remove(robotController.getRobot().getGridCoordinate());
         return freeListInitializer;
     }
     private void updateFreeList(GridCoordinate pos){
@@ -336,9 +311,10 @@ public abstract class RRTBase {
         }
     }
     protected ArrayList<Step> generatePathFromEmpty(GridCoordinate start, GridCoordinate destination){
-        boolean foundPath = false;
         dest = destination;
-        root = new Node<GridCoordinate>(start, null, false);
+        root = new Node<>(start, null, false);
+        //populate the freenodelist
+        freeNodeList = populateFreeList();
         //add root node to list of nodes
         allNodesMap.put(root.getData(),root);
         //grow until we have a path
@@ -365,18 +341,7 @@ public abstract class RRTBase {
             growUntilPathFound(destination);
         }
         destinationNode = allNodesMap.get(destination);
-
         path = makePath(destinationNode);
-/*        Node<GridCoordinate> tempDestinationNode;
-        assignBlockedNodeStatus(robotController.getServer().getReservationManager().getAllCurrentReservations(robotController.getServer().getTimeInTicks()));
-        for(int i = 0; i < path.size(); i++){
-            if(allNodesMap.get(path.get(i).getGridCoordinate()).getBlockedStatus()){
-                tempDestinationNode = allNodesMap.get(path.get(i+1).getGridCoordinate());
-                rewireTreeFromCollision(allNodesMap.get(path.get(i-1).getGridCoordinate()), tempDestinationNode);
-            }
-
-        }*/
-
         return makePath(destinationNode);
     }
     private void growKtimes(GridCoordinate destination, int k){
@@ -386,6 +351,35 @@ public abstract class RRTBase {
     }
 
     //rewire tree to ignore collideable object
+}
+/*
+    public void assignBlockedNodeStatus(ArrayList<Reservation> nodesToBeUpdated){
+        ArrayList<GridCoordinate> nodesToBeUpdatedConverted = new ArrayList<>();
+        for(Reservation n: nodesToBeUpdated){
+            nodesToBeUpdatedConverted.add(n.getGridCoordinate());
+        }
+        //find the nodes to be blocked and set its statuses to true
+        for(GridCoordinate n: nodesToBeUpdatedConverted) {
+            if (allNodesMap.containsKey(n)) {
+                //checks if node is already in blockedNodeList
+                if(!blockedNodeList.contains(n)) {
+                    //add blocked node to blockedNodeList and sets the status of node to "blocked"
+                    blockedNodeList.add(n);
+                    allNodesMap.get(n).setBlockedStatus(true);
+                }
+            }
+        }
+        //Find nodes that are not blocked anymore, and free them. TODO: make help functions to make function pretty
+        if(blockedNodeList.size() != nodesToBeUpdated.size()){
+            ArrayList<GridCoordinate> tempList = blockedNodeList;
+            tempList.remove(nodesToBeUpdated);
+            for(GridCoordinate m: tempList){
+                if(allNodesMap.containsKey(m)){
+                    allNodesMap.get(m).setBlockedStatus(false);
+                }
+            }
+        }
+    }
     public void rewireTreeFromCollision(Node<GridCoordinate> collideableNode, Node<GridCoordinate> tempDestNode){
 
         rewireToTempDestNode(collideableNode.getParent(), tempDestNode);
@@ -441,4 +435,4 @@ public abstract class RRTBase {
             rewireToTempDestNode(bestChildNode, tempDestNode);
         }
     }
-}
+ */
