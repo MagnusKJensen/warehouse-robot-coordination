@@ -38,10 +38,10 @@ public class StepAsideNavigator extends Navigation{
             return false;
         }
 
-
+/*
         if(server.getReservationManager().isReservedIndefinitely(destination)){
             askOccupyingRobotToMove(destination);
-        }
+        }*/
 
         server.getReservationManager().removeReservationsBy(robot);
         newPath = stopAtCollision(newPath);
@@ -63,6 +63,11 @@ public class StepAsideNavigator extends Navigation{
                 // If no collisions are found, then add this step to the path
                 shortenedPathSteps.add(new Step(reservation.getGridCoordinate()));
             }else{
+
+                if(server.getReservationManager().isReservedIndefinitely(reservation.getGridCoordinate())){
+                    askOccupyingRobotToMove(reservation.getGridCoordinate());
+                }
+
                 // If collisions are found the path must stop here
                 if(shortenedPathSteps.size() == 1)
                     return attemptRandomExtension(Path.oneStepPath(shortenedPathSteps.get(0)));
@@ -157,7 +162,7 @@ public class StepAsideNavigator extends Navigation{
 
     @Override
     boolean canInterrupt() {
-        return isMoving();
+        return !isMoving();
     }
     @Override
     public boolean hasFailed() {

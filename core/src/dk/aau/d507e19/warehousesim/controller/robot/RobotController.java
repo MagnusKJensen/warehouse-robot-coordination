@@ -4,6 +4,7 @@ import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Navigation;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.ReservationNavigation;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
@@ -109,7 +110,7 @@ public class RobotController {
             newPosition = new GridCoordinate(robot.getGridCoordinate().getX() + randomDirection.xDir, robot.getGridCoordinate().getY() + randomDirection.yDir);
         }while (!server.getGridBounds().isWithinBounds(newPosition));
 
-        assignImmediateTask(new ReservationNavigation(this, newPosition));
+        assignImmediateTask(Navigation.getInstance(this, newPosition));
         return true;
     }
 

@@ -145,9 +145,9 @@ public class Robot {
 
     public boolean collidesWith(Position collider) {
         boolean withInXBounds = collider.getX() >= currentPosition.getX()
-                && collider.getX() <= currentPosition.getX() + ROBOT_SIZE - 0.15;
+                && collider.getX() <= currentPosition.getX() + ROBOT_SIZE - 0.01;
         boolean withInYBounds = collider.getY() >= currentPosition.getY()
-                && collider.getY() <= currentPosition.getY() + ROBOT_SIZE -0.15;
+                && collider.getY() <= currentPosition.getY() + ROBOT_SIZE -0.01;
         return withInXBounds && withInYBounds;
     }
 
