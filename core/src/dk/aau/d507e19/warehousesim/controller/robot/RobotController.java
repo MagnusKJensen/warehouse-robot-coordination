@@ -11,6 +11,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.exception.DoubleReservationException;
+import dk.aau.d507e19.warehousesim.statistics.StatisticsManager;
 
 import java.util.LinkedList;
 import java.util.Random;
@@ -104,7 +105,7 @@ public class RobotController {
 
 
     public boolean requestMove(){
-        if(robot.getCurrentStatus() == Status.BUSY){
+        if(robot.getCurrentStatus() != Status.AVAILABLE){
             if(!interruptCurrentTask())
                 return false;
         }
