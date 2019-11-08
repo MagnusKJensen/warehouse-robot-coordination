@@ -63,7 +63,6 @@ public class Astar implements PathFinder {
     }
 
     public void addStartTileToClosedList(int xStartposition, int yStartposition) {
-
         // Adds startTile to closedList
         closedList.add(grid[xStartposition][yStartposition]);
 
@@ -76,7 +75,6 @@ public class Astar implements PathFinder {
     }
 
     public void checkNeighborValidity() {
-
         //Checks every potential neighbor to currentTile the same way.
         GridCoordinate aboveNeighbor = new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition() + 1);
         GridCoordinate downstairsNeighbor = new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition() - 1);
