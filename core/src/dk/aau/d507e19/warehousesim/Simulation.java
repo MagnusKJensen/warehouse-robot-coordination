@@ -1,6 +1,8 @@
 package dk.aau.d507e19.warehousesim;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -32,6 +34,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
+
+import static dk.aau.d507e19.warehousesim.storagegrid.Tile.TILE_SIZE;
 
 public class Simulation {
 
@@ -223,6 +227,7 @@ public class Simulation {
         }else{
             ctrlSelectedRobots.add(robot);
         }
+
     }
     public void selectRobot(Robot robot) {
         if(selectedRobots.contains(robot)){
@@ -265,8 +270,19 @@ public class Simulation {
                 if(!listOfNodes.isEmpty()){
                     storageGrid.renderTreeOverlay(listOfNodes, shapeRenderer,planner.getPlanner().getPath());
                 }
+                drawTransparentRectangle(robot);
             }
         }
+    }
+
+    private void drawTransparentRectangle(Robot robot) {
+        Gdx.gl.glEnable(GL30.GL_BLEND);
+        shapeRenderer.setColor(189f/255f, 109f/255f, 227f/255f, 0.7f);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.rect(robot.getCurrentPosition().getX(), robot.getCurrentPosition().getY(), TILE_SIZE, TILE_SIZE);
+        shapeRenderer.end();
+        Gdx.gl.glDisable(GL30.GL_BLEND);
+
     }
 
     private void renderSelectedRobotsPaths() {
