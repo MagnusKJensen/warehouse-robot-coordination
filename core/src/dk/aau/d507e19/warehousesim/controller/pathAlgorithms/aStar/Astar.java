@@ -47,10 +47,6 @@ public class Astar implements PathFinder {
         this.server = server;
     }
 
-    public AStarTile[][] getGrid() {
-        return grid;
-    }
-
     public AStarTile[][] fillGrid(int gridWidth, int gridHeight) {
         AStarTile[][] grid = new AStarTile[gridWidth][gridHeight];
         // Fills grid with tiles matching the coordinates
@@ -62,13 +58,14 @@ public class Astar implements PathFinder {
         return grid;
     }
 
-    public void addStartTileToClosedList(int xStartposition, int yStartposition) {
+    public void addStartTileToClosedList(int xStartPosition, int yStartPosition) {
         // Adds startTile to closedList
-        closedList.add(grid[xStartposition][yStartposition]);
+        closedList.add(grid[xStartPosition][yStartPosition]);
 
         // Blocks startTile so that it cannot be used anymore
-        grid[xStartposition][yStartposition].setBlocked(true);
+        grid[xStartPosition][yStartPosition].setBlocked(true);
 
+        // TODO: kan man ikke bare sætte start tile til at være current tile?
         // Sets currentTile to the top tile in closedList (startTile)
         currentTile = closedList.get(closedList.size() - 1);
 
