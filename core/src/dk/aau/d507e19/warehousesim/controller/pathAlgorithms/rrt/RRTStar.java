@@ -49,7 +49,7 @@ public class RRTStar extends RRTBase {
         }
     }
 
-    private void growUntilFullyExplored() {
+    void growUntilFullyExplored() {
         while (!isFullyExplored()) {
             //grow tree by one each time(maybe inefficient?)
             growRRT(root, 1);
@@ -206,7 +206,7 @@ public class RRTStar extends RRTBase {
         return turnNodes;
     }
 
-    private String calcDirection(GridCoordinate p0, GridCoordinate p1) {
+    protected String calcDirection(GridCoordinate p0, GridCoordinate p1) {
         int vx = p1.getX() - p0.getX();
         int vy = p1.getY() - p0.getY();
         if (vx == 0) {
