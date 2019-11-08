@@ -59,6 +59,14 @@ public class Tile implements Drawable {
         shapeRenderer.end();
         Gdx.gl.glDisable(GL30.GL_BLEND);
     }
+    public void renderTransparentRectangle(ShapeRenderer shapeRenderer){
+        Gdx.gl.glEnable(GL30.GL_BLEND);
+        shapeRenderer.setColor(8,8,8,8*0.5f);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.rect(posX, posY, TILE_SIZE, TILE_SIZE);
+        shapeRenderer.end();
+        Gdx.gl.glDisable(GL30.GL_BLEND);
+    }
 
     public void renderOverlay(ShapeRenderer shapeRenderer){
         renderOverlay(shapeRenderer, overlayColor);
