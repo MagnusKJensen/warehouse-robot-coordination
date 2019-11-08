@@ -14,17 +14,15 @@ public class RRTStarExtended extends RRTStar {
         super(robotController);
     }
 
+
     @Override
     public void attemptOptimise(){
         //optimise with distance first
         //then optimise with time
-        ArrayList<Step> oldPath;
-        do{
-            oldPath = path;
-            //smartOptimiseDistance(destinationNode);
-            smartOptimiseTime(destinationNode);
-            path = makePath(destinationNode);
-        } while(calculateTravelTime(new Path(path)) < calculateTravelTime(new Path(oldPath)));
+        optimalPathOptimise(destinationNode);
+            //System.out.println("DID NOT FIND OPTIMAL");
+            //smartOptimiseTime(destinationNode);
+        path = makePath(destinationNode);
 
     }
     public void smartOptimiseDistance(Node<GridCoordinate> node){
@@ -62,7 +60,11 @@ public class RRTStarExtended extends RRTStar {
                 if(n.equals(root)){
                     node.setParent(n);
                 }else{
-                    parentOptimiser(n);
+                    //parentOptimiser(n);
+                    //might change node's parent to root so check to prevent
+                    if(node.getParent().equals(root)){
+                        continue;
+                    }
                     if(cost(n) < cost(node.getParent()) ){
                         node.setParent(n);
                     }
@@ -72,9 +74,6 @@ public class RRTStarExtended extends RRTStar {
         }
     }
     private void parentOptimiser(Node<GridCoordinate> n){
-        if(n.getData().equals(new GridCoordinate(10,1))){
-            System.out.println( "stop");
-        }
         ArrayList<Node<GridCoordinate>> neighbours = trimImprovementsList(findNodesInRadius(n.getData(),1),n.getData());
         if(neighbours.contains(root)){
             n.setParent(root);
@@ -94,12 +93,11 @@ public class RRTStarExtended extends RRTStar {
             }else{
                 if(distance(pn.getData(),root.getData()) < distance(n.getParent().getData(),root.getData())){
                     n.setParent(pn);
-                    parentOptimiser(pn);
+                    //parentOptimiser(pn);
                 }
             }
         }
     }
-
     private boolean hasBetterParent(Node<GridCoordinate> node){
         for(Node<GridCoordinate> n: trimImprovementsList(findNodesInRadius(node.getData(),1),node.getData())){
             if(node.getParent().equals(n)){
@@ -111,7 +109,47 @@ public class RRTStarExtended extends RRTStar {
         }
         return false;
     }
+    public boolean optimalPathOptimise(Node<GridCoordinate> node){
+        ArrayList<Node<GridCoordinate>> neighbours = trimImprovementsList(findNodesInRadius(node.getData(),1),node.getData());
+        if(neighbours.contains(root)){
+            node.setParent(root);
+            System.out.println("MADE OPTIMAL PATH");
+            return true;
+        }
+        if(destinationNode.getData().equals(new GridCoordinate(19,2)) && node.getData().equals(new GridCoordinate(8,2))){
+            System.out.println();
+        }
+        for(Node<GridCoordinate> neighbour : neighbours) {
+            if (!canBeRewired(neighbour, node)) {
+                continue;
+            }
+            //if n is on the same axis as root and its distance is closer then make n new parent
+            if (neighbour.getData().getX() == root.getData().getX() || neighbour.getData().getY() == root.getData().getY()) {
+                if (distance(neighbour.getData(), root.getData()) < distance(node.getData(), root.getData())) {
+                    node.setParent(neighbour);
+                    return optimalPathOptimise(neighbour);
+                }
+            }
+        }
+        for(Node<GridCoordinate> neighbour : neighbours) {
+            if (!canBeRewired(neighbour, node)) {
+                continue;
+            }
+            //if n is on the same axis as root and its distance is closer then make n new parent
+            if(calcDirection(node.getData(),root.getData()).equals(calcDirection(neighbour.getData(),root.getData()))){
 
+                node.setParent(neighbour);
+                return optimalPathOptimise(neighbour);
+            }
+        }
+        return false;
+
+    }
+    @Override
+    protected void growUntilPathFound(GridCoordinate destination) {
+        //grow tree fully to ensure perfect paths todo change to only generate within bounds
+        growUntilFullyExplored();
+    }
 
 
 }
