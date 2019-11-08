@@ -47,6 +47,9 @@ public abstract class RRTBase {
             GridCoordinate randPos = generateRandomPos();
             Node<GridCoordinate> nearest = findNearestNeighbour(tree, randPos);
             Node<GridCoordinate> newNode = generateNewNode(nearest, randPos);
+            if(allNodesMap.containsKey(newNode.getData())){
+                System.out.println();
+            }
             newNode.setParent(nearest);
             allNodesMap.put(newNode.getData(),newNode);
             latestNode = newNode;
@@ -120,20 +123,17 @@ public abstract class RRTBase {
     }
 
     protected Node<GridCoordinate> generateNewNode(Node<GridCoordinate> nearest, GridCoordinate randPos) {
+        //todo make this more readable
         GridCoordinate originalPos = nearest.getData();
         GridCoordinate pos = nearest.getData();
-        Edge edge = new Edge(pos, randPos);
-
         //right
-        pos = edge.getDistanceBetweenPoints(new GridCoordinate(pos.getX() + 1, pos.getY()), randPos) < edge.getDistanceBetweenPoints(pos, randPos) ? new GridCoordinate(originalPos.getX() + 1, originalPos.getY()) : pos;
+        pos = distance(new GridCoordinate(pos.getX() + 1, pos.getY()), randPos) < distance(pos, randPos) ? new GridCoordinate(originalPos.getX() + 1, originalPos.getY()) : pos;
         //left
-        pos = edge.getDistanceBetweenPoints(new GridCoordinate(pos.getX() - 1, pos.getY()), randPos) < edge.getDistanceBetweenPoints(pos, randPos) ? new GridCoordinate(originalPos.getX() -1, originalPos.getY()) : pos;
+        pos = distance(new GridCoordinate(pos.getX() - 1, pos.getY()), randPos) < distance(pos, randPos) ? new GridCoordinate(originalPos.getX() -1, originalPos.getY()) : pos;
         //up
-        pos = edge.getDistanceBetweenPoints(new GridCoordinate(pos.getX(), pos.getY() + 1), randPos) < edge.getDistanceBetweenPoints(pos, randPos) ? new GridCoordinate(originalPos.getX(), originalPos.getY() +1) : pos;
+        pos = distance(new GridCoordinate(pos.getX(), pos.getY() + 1), randPos) < distance(pos, randPos) ? new GridCoordinate(originalPos.getX(), originalPos.getY() +1) : pos;
         //down
-        pos = edge.getDistanceBetweenPoints(new GridCoordinate(pos.getX(), pos.getY() - 1), randPos) < edge.getDistanceBetweenPoints(pos, randPos) ? new GridCoordinate(originalPos.getX(), originalPos.getY() -1 ) : pos;
-
-
+        pos = distance(new GridCoordinate(pos.getX(), pos.getY() - 1), randPos) < distance(pos, randPos) ? new GridCoordinate(originalPos.getX(), originalPos.getY() -1 ) : pos;
 
         //remove the newly created note from the freeList
         updateFreeList(pos);
@@ -141,13 +141,9 @@ public abstract class RRTBase {
     }
 
     public Node<GridCoordinate> findNearestNeighbour(Node<GridCoordinate> tree, GridCoordinate randPos) {
-        Edge shortestEdge = new Edge(tree.getData(),randPos);
-        Node<GridCoordinate> shortest = tree;
+        Node<GridCoordinate> shortest = null;
         for(Node<GridCoordinate> n : findNodesInSquare(randPos)){
-            Edge newEdge = new Edge(n.getData(),randPos);
-
-            if (newEdge.getDistance() < shortestEdge.getDistance()){
-                shortestEdge = newEdge;
+            if (shortest == null || distance(n.getData(),randPos) < distance(shortest.getData(),randPos)){
                 shortest = n;
             }
         }
@@ -165,7 +161,6 @@ public abstract class RRTBase {
 
     private ArrayList<Node<GridCoordinate>> findNodesInSquare(GridCoordinate randPos){
         ArrayList<Node<GridCoordinate>> listOfNodes =  new ArrayList<>(),foundNodes;
-        //GridCoordinate relativePos = new GridCoordinate(0,0);
         GridCoordinate topLeft = new GridCoordinate(randPos.getX(),randPos.getY());
         GridCoordinate bottomRight = new GridCoordinate(randPos.getX(),randPos.getY());
         while(listOfNodes.isEmpty()){
@@ -242,6 +237,9 @@ public abstract class RRTBase {
         GridCoordinate randPos;
         do {
             randPos = freeNodeList.get(random.nextInt(freeNodeList.size()));
+            if(!freeNodeList.contains(randPos)){
+                System.out.println();
+            }
         }while(doesNodeExist(randPos));
 
         return randPos;
