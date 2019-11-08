@@ -5,6 +5,8 @@ import dk.aau.d507e19.warehousesim.TimeUtils;
 import dk.aau.d507e19.warehousesim.controller.path.Line;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTStar;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.MovementPredictor;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
@@ -113,7 +115,8 @@ public class Navigation implements Task {
 
         // Add reservations from new path
         if(path.getFullPath().size() > 1){
-            if(!(robotController.getPathFinder() instanceof DummyPathFinder))
+            if(!(robotController.getPathFinder() instanceof DummyPathFinder)
+            && !(robotController.getPathFinder() instanceof RRTPlanner))
                 reservePath(path, true);
             return false;
         }else{

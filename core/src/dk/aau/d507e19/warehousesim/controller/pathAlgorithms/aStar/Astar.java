@@ -51,10 +51,10 @@ public class Astar implements PathFinder {
         return grid;
     }
 
-    public AStarTile[][] fillGrid(int gridLength, int gridHeight) {
-        AStarTile[][] grid = new AStarTile[gridLength][gridHeight];
+    public AStarTile[][] fillGrid(int gridWidth, int gridHeight) {
+        AStarTile[][] grid = new AStarTile[gridWidth][gridHeight];
         // Fills grid with tiles matching the coordinates
-        for (int i = 0; i < gridLength; i++) {
+        for (int i = 0; i < gridWidth; i++) {
             for (int j = 0; j < gridHeight; j++) {
                 grid[i][j] = new AStarTile(i, j);
             }
@@ -63,7 +63,6 @@ public class Astar implements PathFinder {
     }
 
     public void addStartTileToClosedList(int xStartposition, int yStartposition) {
-
         // Adds startTile to closedList
         closedList.add(grid[xStartposition][yStartposition]);
 
@@ -76,7 +75,6 @@ public class Astar implements PathFinder {
     }
 
     public void checkNeighborValidity() {
-
         //Checks every potential neighbor to currentTile the same way.
         GridCoordinate aboveNeighbor = new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition() + 1);
         GridCoordinate downstairsNeighbor = new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition() - 1);
@@ -225,6 +223,12 @@ public class Astar implements PathFinder {
         // Adds the starting tile to closed list.
         addStartTileToClosedList(xStart, yStart);
 
+        // todo add back in. Must also check if current position is the same as target
+        /*GridCoordinate destination = new GridCoordinate(xEndPosition, yEndPosition);
+        GridCoordinate start = new GridCoordinate(xStart, yStart);
+        if (server.getReservationManager().isReservedIndefinitely(destination))
+            throw new DestinationReservedIndefinitelyException(start, destination);*/
+
         // While is true if the currentTile does not have the same x coordinate and the same y coordinate as the end Tile.
         while (!(currentTile.getCurrentXPosition() == xEndPosition && currentTile.getCurrentYPosition() == yEndPosition)) {
             // Add the valid tiles to openList
@@ -236,7 +240,7 @@ public class Astar implements PathFinder {
                   //  throw new BlockedEndDestinationException(robot, closedList.size());
                     GridCoordinate startGC = new GridCoordinate(xStart,yStart);
                     GridCoordinate endGC = new GridCoordinate(xEndPosition,yEndPosition);
-                    throw new DestinationReservedIndefinitelyException(startGC,endGC);
+                    throw new NoPathFoundException(startGC,endGC);
                 }
                 throw new NoValidPathException(new GridCoordinate(xStart,yStart), new GridCoordinate(xEndPosition,yEndPosition),"No valid Neighbor could be found");
                // throw new NoValidNeighborException(robot);
@@ -286,12 +290,21 @@ public class Astar implements PathFinder {
 
         Reservation lastReservation = listOfReservations.get(listOfReservations.size()-1);
 
+        // Goes through every reservation, except for the first, that is always reserved (where the robot is standing)
         for (int j = 1; j < listOfReservations.size(); j++) {
             if (reservationManager.isReserved(listOfReservations.get(j).getGridCoordinate(), listOfReservations.get(j).getTimeFrame())) {
+
+                // If the tile is already reserved at this time, then the tile is added to the isReservedList.
                 isReservedList.add(listOfReservations.get(j).getGridCoordinate());
+
+                // i is now true, so that it can calculate a new path.
                 i = true;
+
+                // It also checks if the last reservation is reserved indefinitely, and if it can reserve indefinitely
             } else if (reservationManager.hasConflictingReservations(lastReservation) ||
                     !reservationManager.canReserve(lastReservation.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(lastReservation.getTimeFrame().getStart()))) {
+
+                // Throw new exception if a path cannot be found.
                 throw new NoPathFoundException(listOfReservations.get(0).getGridCoordinate(), lastReservation.getGridCoordinate());
             }
 

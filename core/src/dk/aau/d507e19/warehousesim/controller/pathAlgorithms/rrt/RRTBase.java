@@ -143,6 +143,7 @@ public abstract class RRTBase {
 
     public Node<GridCoordinate> findNearestNeighbour(Node<GridCoordinate> tree, GridCoordinate randPos) {
         Edge shortestEdge = new Edge(tree.getData(),randPos);
+        //todo change findKNodesInSquare to be more dynamic - set k to 4 and then handle logic in function?
         for(Node<GridCoordinate> n : findKNodesInSquare(randPos,allNodesMap.size())){
             Edge newEdge = new Edge(n.getData(),randPos);
 
@@ -252,13 +253,20 @@ public abstract class RRTBase {
     }
 
     public ArrayList<Step> makePath(Node<GridCoordinate> destNode){
-        ArrayList<Step> path = new ArrayList<>();
+        ArrayList<Step> list = new ArrayList<>();
+        for(Node<GridCoordinate> n : getNodesInPath(destNode)){
+            list.add(new Step(n.getData()));
+        }
+        return list;
+    }
+    protected ArrayList<Node<GridCoordinate>> getNodesInPath(Node<GridCoordinate> destNode){
+        ArrayList<Node<GridCoordinate>> path = new ArrayList<>();
         if(destNode.getParent() == null){
-            path.add(new Step(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY())));
+            path.add(destNode);
             return path;
         }
-        path = makePath(destNode.getParent());
-        path.add(new Step(new GridCoordinate(destNode.getData().getX(),destNode.getData().getY())));
+        path = getNodesInPath(destNode.getParent());
+        path.add(destNode);
         return path;
     }
     public void assignBlockedNodeStatus(ArrayList<Reservation> nodesToBeUpdated){
