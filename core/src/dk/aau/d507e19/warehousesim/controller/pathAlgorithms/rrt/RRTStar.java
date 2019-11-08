@@ -207,23 +207,22 @@ public class RRTStar extends RRTBase {
     }
 
     private String calcDirection(GridCoordinate p0, GridCoordinate p1) {
-        Vector2 up, down, left, right;
-        up = new Vector2(0, -1);
-        down = new Vector2(0, 1);
-        left = new Vector2(-1, 0);
-        right = new Vector2(1, 0);
-        //create a vector from points
-        Vector2 v = new Vector2(p1.getX() - p0.getX(), p1.getY() - p0.getY());
-        if (v.equals(up)) {
+        int vx = p1.getX() - p0.getX();
+        int vy = p1.getY() - p0.getY();
+        if (vx == 0) {
+            //vx == 0: either going up or down
+            if (vy > 0) return "Down";
             return "Up";
-        } else if (v.equals(down)) {
-            return "Down";
-        } else if (v.equals(left)) {
-            return "Left";
-        } else if (v.equals(right)) {
-            return "Right";
-        } else {
-            throw new RuntimeException("Vector " + v.toString() + "is not up,down,left or right");
+        } else if (vx > 0) {
+            //if vx > 0: either down,up or right
+            if (vy == 0) return "Right";
+            else if (vy > 0) return "Down";
+            else return "Up";
+        } else{
+            //vx < 0: either down,up or left
+            if(vy == 0 ) return "Left";
+            else if(vy > 0) return "Down";
+            else return "Up";
         }
     }
 }
