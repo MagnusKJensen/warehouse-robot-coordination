@@ -33,7 +33,6 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Random;
 
 import static dk.aau.d507e19.warehousesim.storagegrid.Tile.TILE_SIZE;
 
@@ -79,6 +78,8 @@ public class Simulation {
 
     private StatisticsManager statisticsManager;
     private boolean showHeatMap;
+
+    private boolean shouldRenderGridandRobots = true;
 
     // Used for fast no graphics simulations
     public Simulation(long randSeed, String runConfigName, PathFinderEnum pathfinder, TaskAllocatorEnum taskAllocator){
@@ -252,11 +253,14 @@ public class Simulation {
         shapeRenderer.setProjectionMatrix(gridCamera.combined);
         batch.setProjectionMatrix(gridCamera.combined);
 
-        storageGrid.render(shapeRenderer, batch);
-        renderSelectedRobotsPaths();
-        renderCtrlSelectedRobotTrees();
-        if(showHeatMap) storageGrid.renderHeatMap(server.getHeatMap(), shapeRenderer);
-        renderRobots();
+        if(shouldRenderGridandRobots){
+            storageGrid.render(shapeRenderer, batch);
+            renderSelectedRobotsPaths();
+            renderCtrlSelectedRobotTrees();
+            if(showHeatMap) storageGrid.renderHeatMap(server.getHeatMap(), shapeRenderer);
+            renderRobots();
+        }
+
         renderTickCountAndRealTime(gridCamera, fontCamera);
     }
 
@@ -423,5 +427,9 @@ public class Simulation {
 
     public void toggleHeatMap() {
         showHeatMap = !showHeatMap;
+    }
+
+    public void toggleRenderGrid(){
+        shouldRenderGridandRobots = !shouldRenderGridandRobots;
     }
 }

@@ -23,7 +23,6 @@ public class Server {
     private HashMap<SKU, ArrayList<BinTile>> productMap = new HashMap<>();
     private OrderManager orderManager;
     private OrderGenerator orderGenerator;
-    private Random random = new Random(Simulation.RANDOM_SEED);
 
     private ArrayList<Product> productsAvailable = new ArrayList<>();
 

@@ -29,9 +29,6 @@ public class Robot {
     private long binDeliveriesCompleted = 0;
     private int distanceTraveled = 0;
 
-    // TODO: 15/10/2019 is a temporary solution until it becomes part of the task itself.
-    private GridCoordinate lastPickUp;
-
     /**
      * Robot STATS
      */
@@ -42,7 +39,6 @@ public class Robot {
     private final float minSpeedBinsPerSecond = Simulation.getWarehouseSpecs().robotMinimumSpeed / Simulation.getWarehouseSpecs().binSizeInMeters;
 
     private final float breakingDistanceMaxSpeedBins = decelerationBinSecond / maxSpeedBinsPerSecond;
-
 
     private final float ROBOT_SIZE = Tile.TILE_SIZE;
 
@@ -84,8 +80,6 @@ public class Robot {
             bin = ((BinTile) tile).releaseBin();
         } else throw new RuntimeException("Robot could not pick up bin at ("
                 + coordinate.getX() + "," + coordinate.getY() + ")");
-
-        lastPickUp = coordinate;
     }
 
 
@@ -173,10 +167,6 @@ public class Robot {
 
     public GridCoordinate getApproximateGridCoordinate() {
         return new GridCoordinate(Math.round(currentPosition.getX()), Math.round(currentPosition.getY()));
-    }
-
-    public GridCoordinate getLastPickUp() {
-        return lastPickUp;
     }
 
     public boolean isCarrying(){
