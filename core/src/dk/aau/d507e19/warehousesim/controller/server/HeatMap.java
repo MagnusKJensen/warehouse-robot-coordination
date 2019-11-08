@@ -54,7 +54,7 @@ public class HeatMap {
     public static int[][] getHeatMap(Server server){
         int[][] heatMap = new int[server.getGridBounds().getWidth()][server.getGridBounds().getHeight()];
         addRobotHeat(server, heatMap);
-        addEdgeHeat(heatMap);
+        // addEdgeHeat(heatMap);
         addPickerHeat(server, heatMap);
         addReservationsHeat(server, heatMap);
         return heatMap;
@@ -77,8 +77,6 @@ public class HeatMap {
                     heatMap[neighbour.gridCoordinate.getX()][neighbour.gridCoordinate.getY()] += heat;
                 }
             }
-
-
         }
     }
 
@@ -180,8 +178,4 @@ public class HeatMap {
             return new Color(neutralColor).lerp(warmColor, amount);
 
     }
-
-
-
-
 }
