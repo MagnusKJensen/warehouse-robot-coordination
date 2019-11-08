@@ -19,7 +19,7 @@ public class Relocation implements Task {
     public Relocation(Server server, RobotController robotController) {
         this.server = server;
         this.robotController = robotController;
-        this.random = new Random(Simulation.RANDOM_SEED);
+        this.random = new Random(Simulation.RANDOM_SEED + robotController.getRobot().getRobotID());
     }
 
     @Override

@@ -172,7 +172,6 @@ public abstract class Navigation implements Task{
 
                 return reservation.getRobot().getRobotController().requestMove();
             }
-
         }
 
         throw new RuntimeException("No occupying robot; no robot has reserved grid tile :" + dest + " indefinitely");
@@ -188,7 +187,6 @@ public abstract class Navigation implements Task{
             clearPath();
             return true;
         }
-
         return false;
     }
 
