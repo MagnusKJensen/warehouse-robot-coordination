@@ -4,11 +4,11 @@ import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
-import dk.aau.d507e19.warehousesim.controller.robot.plan.task.ReservationNavigation;
-import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.*;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.exception.DoubleReservationException;
+import dk.aau.d507e19.warehousesim.statistics.StatisticsManager;
 
 import java.util.LinkedList;
 import java.util.Random;
@@ -41,13 +41,13 @@ public class RobotController {
 
     public boolean assignTask(Task task){
         tasks.add(task);
-        robot.setCurrentStatus(Status.BUSY);
+        updateStatus();
         return true;
     }
 
     public boolean assignImmediateTask(Task task){
         tasks.add(0, task);
-        robot.setCurrentStatus(Status.BUSY);
+        updateStatus();
         return true;
     }
 
@@ -58,12 +58,19 @@ public class RobotController {
         }
 
         Task currentTask = tasks.peekFirst();
-        if (!currentTask.isCompleted())
-            currentTask.perform();
+        currentTask.perform();
+
+        if(currentTask.hasFailed() && currentTask instanceof BinDelivery)
+            throw new RuntimeException("Bindelivery failed");
 
         removeCompletedTasks();
+        removeFailedTasks();
 
         updateStatus();
+    }
+
+    private void removeFailedTasks() {
+        tasks.removeIf(Task::hasFailed);
     }
 
     private void removeCompletedTasks() {
@@ -88,6 +95,11 @@ public class RobotController {
 
     public void updateStatus() {
        if(tasks.isEmpty()) robot.setCurrentStatus(Status.AVAILABLE);
+       else if(tasks.get(0) instanceof BinDelivery) robot.setCurrentStatus(Status.BUSY);
+       else if(tasks.get(0) instanceof Relocation){
+           if(tasks.size() > 1) robot.setCurrentStatus(Status.RELOCATING_BUSY);
+           else robot.setCurrentStatus(Status.RELOCATING);
+       }
        else robot.setCurrentStatus(Status.BUSY);
     }
 
@@ -97,19 +109,15 @@ public class RobotController {
 
 
     public boolean requestMove(){
-        if(robot.getCurrentStatus() == Status.BUSY){
+        if(robot.getCurrentStatus() == Status.RELOCATING)
+            return false; // Already in the process of relocating
+
+        if(robot.getCurrentStatus() != Status.AVAILABLE){
             if(!interruptCurrentTask())
                 return false;
         }
 
-        GridCoordinate newPosition;// = server.getNewPosition();
-
-        do { // Find random neighbour tile to go to
-            Direction randomDirection = Direction.values()[random.nextInt(Direction.values().length)];
-            newPosition = new GridCoordinate(robot.getGridCoordinate().getX() + randomDirection.xDir, robot.getGridCoordinate().getY() + randomDirection.yDir);
-        }while (!server.getGridBounds().isWithinBounds(newPosition));
-
-        assignImmediateTask(new ReservationNavigation(this, newPosition));
+        assignImmediateTask(new Relocation(server, this));
         return true;
     }
 
@@ -132,5 +140,13 @@ public class RobotController {
 
     public long getIdleTimeTicks() {
         return idleTimeTicks;
+    }
+
+    public boolean hasOrderAssigned() {
+        for(Task task : tasks){
+            if(task instanceof BinDelivery)
+                return true;
+        }
+        return false;
     }
 }

@@ -63,6 +63,7 @@ public class GridCoordinate {
         return new Position(getX(), getY());
     }
 
+    // Works only with straight lines
     public int distanceFrom(GridCoordinate comparedCoordinate) {
         if(this.getX() != comparedCoordinate.getX() && this.getY() != comparedCoordinate.getY())
             throw new IllegalArgumentException("Coordinates must differ in only one axis");
@@ -76,5 +77,10 @@ public class GridCoordinate {
             return distanceY;
 
         return 0;
+    }
+
+    public int manhattanDistanceFrom(GridCoordinate comparedCoordinate){
+        // distance = abs(ydistance) + abs(xdistance)
+        return Math.abs(this.getX() - comparedCoordinate.getX()) + Math.abs(this.getY() - comparedCoordinate.getY());
     }
 }

@@ -20,7 +20,7 @@ public class SimulationApp extends ApplicationAdapter {
 
 	public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "runconfigurations/";
     public static final long DEFAULT_SEED = 123456789L;
-	public static String CURRENT_RUN_CONFIG = "artShop.json";
+	public static String CURRENT_RUN_CONFIG = "manyRobots.json";
 
 	public static final int MENU_WIDTH_IN_PIXELS = 300;
 	// Size of a single square/tile in the grid
@@ -37,7 +37,7 @@ public class SimulationApp extends ApplicationAdapter {
 	// Variables for simulation loop logic
 	public static final int TICKS_PER_SECOND = 30;
 	public static final long MILLIS_PER_TICK = 1000 / TICKS_PER_SECOND;
-	public static final int FAST_FORWARD_MULTIPLIER = 50;
+	public static final int FAST_FORWARD_MULTIPLIER = 8;
 	public UpdateMode updateMode = UpdateMode.MANUAL;
 	private long millisSinceUpdate = 0L;
 	private long lastUpdateTime = 0L;

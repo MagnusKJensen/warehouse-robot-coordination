@@ -18,6 +18,10 @@ import java.util.ArrayList;
 public abstract class Navigation implements Task{
 
     protected int TICKS_BETWEEN_RETRIES = TimeUtils.secondsToTicks(1);
+    private final int maxRetries;
+    private int remainingRetries;
+
+    static final int UNLIMITED_RETRIES = -1;
 
     protected GridCoordinate destination;
     private Path path;
@@ -28,6 +32,7 @@ public abstract class Navigation implements Task{
 
     private TickTimer retryTimer = new TickTimer(TICKS_BETWEEN_RETRIES);
     private boolean isCompleted = false;
+    private boolean hasFailed = false;
 
     public static Navigation getInstance(RobotController robotController, GridCoordinate destination){
         if(robotController.getPathFinder().accountsForReservations()){
@@ -37,10 +42,24 @@ public abstract class Navigation implements Task{
         }
     }
 
+    public static Navigation getInstance(RobotController robotController, GridCoordinate destination, int maxRetries){
+        if(robotController.getPathFinder().accountsForReservations()){
+            return new ReservationNavigation(robotController, destination, maxRetries);
+        }else{
+            return new StepAsideNavigator(robotController, destination, maxRetries);
+        }
+    }
+
     public Navigation(RobotController robotController, GridCoordinate destination) {
+        this(robotController, destination, UNLIMITED_RETRIES);
+    }
+
+    public Navigation(RobotController robotController, GridCoordinate destination, int maxRetries) {
         this.robotController = robotController;
         this.destination = destination;
         this.robot = robotController.getRobot();
+        this.maxRetries = maxRetries;
+        remainingRetries = maxRetries + 1;
         retryTimer.setRemainingTicks(0);
     }
 
@@ -54,12 +73,16 @@ public abstract class Navigation implements Task{
 
     @Override
     public final void perform() {
-        if(isCompleted())
-            throw new RuntimeException("Can't perform task that is already completed");
+        if(isCompleted() || hasFailed())
+            throw new RuntimeException("Can't perform task that has failed or is already completed");
 
         if(path == null){
+            if(maxRetries != UNLIMITED_RETRIES && remainingRetries == 0)
+                fail();
+
             if(retryTimer.isDone()){
                 retryTimer.reset();
+                remainingRetries--;
 
                 boolean pathFound = planPath();
                 if(pathFound)
@@ -70,6 +93,10 @@ public abstract class Navigation implements Task{
         }else{
             traversePath();
         }
+    }
+
+    private void fail() {
+        hasFailed = true;
     }
 
     protected final boolean destinationReached(){
@@ -127,6 +154,11 @@ public abstract class Navigation implements Task{
     // Return true if path was found
     // and return false if not
     abstract boolean planPath();
+
+    @Override
+    public final boolean hasFailed() {
+        return hasFailed;
+    }
 
     protected final boolean askOccupyingRobotToMove(GridCoordinate dest) {
         Server server = robotController.getServer();

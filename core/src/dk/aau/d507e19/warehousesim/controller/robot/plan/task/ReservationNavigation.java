@@ -23,7 +23,11 @@ public class ReservationNavigation extends Navigation {
     private Server server;
 
     public ReservationNavigation(RobotController robotController, GridCoordinate destination) {
-        super(robotController, destination);
+        this(robotController, destination, UNLIMITED_RETRIES);
+    }
+
+    public ReservationNavigation(RobotController robotController, GridCoordinate destination, int maxRetries) {
+        super(robotController, destination, maxRetries);
         this.robotController = robotController;
         this.pathFinder = robotController.getPathFinder();
         this.robot = robotController.getRobot();
@@ -97,11 +101,6 @@ public class ReservationNavigation extends Navigation {
     @Override
     protected boolean canInterrupt() {
         return !isMoving();
-    }
-
-    @Override
-    public boolean hasFailed() {
-        return false;
     }
 
 }

@@ -5,12 +5,10 @@ import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.BinDelivery;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
-import dk.aau.d507e19.warehousesim.controller.server.order.Order;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocator;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
-import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
 import java.util.*;
@@ -112,19 +110,28 @@ public class OrderManager {
 
         StorageGrid storageGrid = server.getSimulation().getStorageGrid();
 
-        for(int y = 0; y < storageGrid.height; y++){
-            for(int x = 0; x < storageGrid.width; x++){
-                Tile tile = storageGrid.getTile(x,y);
-                if(!(tile instanceof BinTile)) continue;
-                if(server.getReservationManager().isBinReserved(tile.getGridCoordinate())) continue;
-                BinDelivery delivery = generateDelivery((BinTile) tile, productsToPick, order);
-                if(delivery != null) deliveries.add(delivery);
-                if(productsToPick.isEmpty()) break;
+        ArrayList<BinTile> binTiles = storageGrid.getAllBinTiles();
+
+        // Sort by distance to picker
+        binTiles.sort(new Comparator<BinTile>() {
+            @Override
+            public int compare(BinTile o1, BinTile o2) {
+                int distanceFrom1 = o1.getGridCoordinate().manhattanDistanceFrom(order.getPicker().getGridCoordinate());
+                int distanceFrom2 = o2.getGridCoordinate().manhattanDistanceFrom(order.getPicker().getGridCoordinate());
+                return Integer.compare(distanceFrom1, distanceFrom2);
             }
+        });
+
+        for(BinTile tile : binTiles){
+            if(server.getReservationManager().isBinReserved(tile.getGridCoordinate())) continue;
+            BinDelivery delivery = generateDelivery(tile, productsToPick, order);
+            if(delivery != null) deliveries.add(delivery);
             if(productsToPick.isEmpty()) break;
         }
 
-        if(productsToPick.isEmpty()) return deliveries;
+        if(!deliveries.isEmpty()){
+            return deliveries;
+        }
 
         return null;
     }

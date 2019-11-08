@@ -28,4 +28,11 @@ public class GridBounds {
     }
 
 
+    public int getWidth() {
+        return (endX - startX) + 1;
+    }
+
+    public int getHeight() {
+        return (endY - startY) + 1;
+    }
 }

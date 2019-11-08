@@ -85,7 +85,6 @@ public class Robot {
         } else throw new RuntimeException("Robot could not pick up bin at ("
                 + coordinate.getX() + "," + coordinate.getY() + ")");
 
-        currentStatus = Status.CARRYING;
         lastPickUp = coordinate;
     }
 
@@ -96,13 +95,16 @@ public class Robot {
                 batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotAvailable.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
             case BUSY:
-            case TASK_ASSIGNED_MOVE:
                 if(isCarrying())batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotTaskAssignedCarrying.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 else batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotTaskAssigned.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
-            case TASK_ASSIGNED_CARRYING:
-            case CARRYING:
-                batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotTaskAssignedCarrying.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
+            case RELOCATING:
+                if(isCarrying())batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotMovingOutOfWayCarrying.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
+                else batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotMovingOutOfWay.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
+                break;
+            case RELOCATING_BUSY:
+                if(isCarrying())batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotMovingOutOfWayCarrying.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
+                else batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotMovingOutOfWayBusy.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
             default:
                 throw new RuntimeException("Robot status unavailable");
@@ -144,10 +146,11 @@ public class Robot {
     }
 
     public boolean collidesWith(Position collider) {
+        // We have to subtract -0.01 to avoid collisions due to floating point rounding.
         boolean withInXBounds = collider.getX() >= currentPosition.getX()
-                && collider.getX() <= currentPosition.getX() + ROBOT_SIZE - 0.15;
+                && collider.getX() <= currentPosition.getX() + ROBOT_SIZE - 0.01;
         boolean withInYBounds = collider.getY() >= currentPosition.getY()
-                && collider.getY() <= currentPosition.getY() + ROBOT_SIZE -0.15;
+                && collider.getY() <= currentPosition.getY() + ROBOT_SIZE - 0.01;
         return withInXBounds && withInYBounds;
     }
 
@@ -236,4 +239,5 @@ public class Robot {
     public double getIdleTimeInSeconds(){
         return (double)robotController.getIdleTimeTicks() / SimulationApp.TICKS_PER_SECOND;
     }
+
 }

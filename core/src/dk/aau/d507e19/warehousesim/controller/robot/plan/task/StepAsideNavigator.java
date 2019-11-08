@@ -22,7 +22,11 @@ public class StepAsideNavigator extends Navigation{
     private Random rand = new Random(Simulation.RANDOM_SEED);
 
     public StepAsideNavigator(RobotController robotController, GridCoordinate destination) {
-        super(robotController, destination);
+        this(robotController, destination, UNLIMITED_RETRIES);
+    }
+
+    public StepAsideNavigator(RobotController robotController, GridCoordinate destination, int maxRetries) {
+        super(robotController, destination, maxRetries);
         pathFinder = robotController.getPathFinder();
         server = robotController.getServer();
         setTicksBetweenRetries(TimeUtils.secondsToTicks(2.5f));
@@ -38,10 +42,10 @@ public class StepAsideNavigator extends Navigation{
             return false;
         }
 
-
+/*
         if(server.getReservationManager().isReservedIndefinitely(destination)){
             askOccupyingRobotToMove(destination);
-        }
+        }*/
 
         server.getReservationManager().removeReservationsBy(robot);
         newPath = stopAtCollision(newPath);
@@ -63,6 +67,11 @@ public class StepAsideNavigator extends Navigation{
                 // If no collisions are found, then add this step to the path
                 shortenedPathSteps.add(new Step(reservation.getGridCoordinate()));
             }else{
+
+                if(server.getReservationManager().isReservedIndefinitely(reservation.getGridCoordinate())){
+                    askOccupyingRobotToMove(reservation.getGridCoordinate());
+                }
+
                 // If collisions are found the path must stop here
                 if(shortenedPathSteps.size() == 1)
                     return attemptRandomExtension(Path.oneStepPath(shortenedPathSteps.get(0)));
@@ -157,11 +166,7 @@ public class StepAsideNavigator extends Navigation{
 
     @Override
     boolean canInterrupt() {
-        return isMoving();
-    }
-    @Override
-    public boolean hasFailed() {
-        return false;
+        return !isMoving();
     }
 
     public Direction[] randomizeArray(Direction[] array){
