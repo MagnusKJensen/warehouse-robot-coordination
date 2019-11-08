@@ -19,7 +19,7 @@ public class StepAsideNavigator extends Navigation{
 
     private PathFinder pathFinder;
     private Server server;
-    private Random rand = new Random(Simulation.RANDOM_SEED);
+    private Random rand = new Random(Simulation.RANDOM_SEED + robot.getRobotID());
 
     public StepAsideNavigator(RobotController robotController, GridCoordinate destination) {
         this(robotController, destination, UNLIMITED_RETRIES);
@@ -34,6 +34,14 @@ public class StepAsideNavigator extends Navigation{
 
     @Override
     boolean planPath() {
+        int distanceFromDestination = robot.getGridCoordinate().manhattanDistanceFrom(destination);
+        if(!destination.equals(robot.getGridCoordinate())
+                && server.getReservationManager().isReservedIndefinitely(destination)
+                && distanceFromDestination < 3){
+            askOccupyingRobotToMove(destination);
+            return false;
+        }
+
         Path newPath;
         try {
             newPath = pathFinder.calculatePath(robot.getGridCoordinate(), destination);
@@ -41,11 +49,6 @@ public class StepAsideNavigator extends Navigation{
             e.printStackTrace();
             return false;
         }
-
-/*
-        if(server.getReservationManager().isReservedIndefinitely(destination)){
-            askOccupyingRobotToMove(destination);
-        }*/
 
         server.getReservationManager().removeReservationsBy(robot);
         newPath = stopAtCollision(newPath);
@@ -67,10 +70,8 @@ public class StepAsideNavigator extends Navigation{
                 // If no collisions are found, then add this step to the path
                 shortenedPathSteps.add(new Step(reservation.getGridCoordinate()));
             }else{
-
-                if(server.getReservationManager().isReservedIndefinitely(reservation.getGridCoordinate())){
+                if(server.getReservationManager().isReservedIndefinitely(reservation.getGridCoordinate()))
                     askOccupyingRobotToMove(reservation.getGridCoordinate());
-                }
 
                 // If collisions are found the path must stop here
                 if(shortenedPathSteps.size() == 1)
