@@ -36,7 +36,7 @@ public class StatisticsAutomator {
         // runOneConfig(SPEC_FILE_NAME, VERSION_NAME, TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR, PathFinderEnum.DUMMYPATHFINDER);
     }
 
-    private static void runOneConfig(String configFileName, String versionName, TaskAllocatorEnum taskAllocator, PathFinderEnum pathFinder){
+    private static void runOneConfig(String configFileName, String versionName, TaskAllocatorEnum taskAllocator, PathFinderEnum pathFinder) {
         Simulation simulation;
 
         System.out.println("WarehouseConfig: " + configFileName);
@@ -56,7 +56,7 @@ public class StatisticsAutomator {
         }
     }
 
-    private static void runOneConfig(String configFileName, String versionName, TaskAllocatorEnum taskAllocator){
+    private static void runOneConfig(String configFileName, String versionName, TaskAllocatorEnum taskAllocator) {
         Simulation simulation;
 
         System.out.println("WarehouseConfig: " + configFileName);
@@ -77,12 +77,12 @@ public class StatisticsAutomator {
         }
     }
 
-    private static void runOneConfig(String configFileName, String versionName, PathFinderEnum pathFinder){
+    private static void runOneConfig(String configFileName, String versionName, PathFinderEnum pathFinder) {
         Simulation simulation;
 
         System.out.println("WarehouseConfig: " + configFileName);
         System.out.println("________________________________________________________________");
-        for(TaskAllocatorEnum taskAllocator : TaskAllocatorEnum.values()) {
+        for (TaskAllocatorEnum taskAllocator : TaskAllocatorEnum.values()) {
             if (taskAllocator.works() && pathFinder.works()) {
                 System.out.println("TaskAllocator: " + taskAllocator.getName() + ", PathFinder: " + pathFinder.getName());
                 simulation = new Simulation(DEFAULT_RANDOM_SEED, configFileName, pathFinder, taskAllocator);
@@ -98,12 +98,12 @@ public class StatisticsAutomator {
         }
     }
 
-    private static void runOneConfig(String configFileName, String versionName){
+    private static void runOneConfig(String configFileName, String versionName) {
         Simulation simulation;
 
         System.out.println("WarehouseConfig: " + configFileName);
         System.out.println("________________________________________________________________");
-        for(TaskAllocatorEnum taskAllocator : TaskAllocatorEnum.values()) {
+        for (TaskAllocatorEnum taskAllocator : TaskAllocatorEnum.values()) {
             for (PathFinderEnum pathFinder : PathFinderEnum.values()) {
                 if (taskAllocator.works() && pathFinder.works()) {
                     System.out.println("TaskAllocator: " + taskAllocator.getName() + ", PathFinder: " + pathFinder.getName());
@@ -121,21 +121,21 @@ public class StatisticsAutomator {
         }
     }
 
-    private static void runAllConfigurations(String versionName){
+    private static void runAllConfigurations(String versionName) {
         ArrayList<String> runConfigs = getAllRunConfigs();
 
         Simulation simulation;
-        for(String warehouseConfig : runConfigs){
+        for (String warehouseConfig : runConfigs) {
             System.out.println("WarehouseConfig: " + warehouseConfig);
             System.out.println("________________________________________________________________");
-            for(TaskAllocatorEnum taskAllocator : TaskAllocatorEnum.values()){
-                for(PathFinderEnum pathFinder : PathFinderEnum.values()){
-                    if(taskAllocator.works() && pathFinder.works()){
+            for (TaskAllocatorEnum taskAllocator : TaskAllocatorEnum.values()) {
+                for (PathFinderEnum pathFinder : PathFinderEnum.values()) {
+                    if (taskAllocator.works() && pathFinder.works()) {
                         System.out.println("TaskAllocator: " + taskAllocator.getName() + ", PathFinder: " + pathFinder.getName());
                         simulation = new Simulation(DEFAULT_RANDOM_SEED, warehouseConfig, pathFinder, taskAllocator);
                         simulation.getStatisticsManager().setVERSION_NAME(versionName);
-                        while(simulation.getTimeInTicks() <= TICKS_PER_RUN){
-                            if(simulation.getTimeInTicks() % PRINT_EVERY_TICK == 0){
+                        while (simulation.getTimeInTicks() <= TICKS_PER_RUN) {
+                            if (simulation.getTimeInTicks() % PRINT_EVERY_TICK == 0) {
                                 simulation.getStatisticsManager().printStatistics();
                                 System.out.println(simulation.getTimeInTicks());
                             }
@@ -148,7 +148,7 @@ public class StatisticsAutomator {
         }
     }
 
-    private static ArrayList<String> getAllRunConfigs(){
+    private static ArrayList<String> getAllRunConfigs() {
         ArrayList<String> runConfigs = new ArrayList<>();
 
         File runConfigFolder = new File(PATH_TO_RUN_CONFIGS);

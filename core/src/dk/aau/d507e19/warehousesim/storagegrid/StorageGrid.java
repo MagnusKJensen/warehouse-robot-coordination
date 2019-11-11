@@ -73,9 +73,9 @@ public class StorageGrid {
     }
 
     public void render(ShapeRenderer shapeRenderer, SpriteBatch batch){
-        // TODO: 30/09/2019 Adapt so that it only renders tiles within view
-        for(int y = 0;  y < height; y++){
-            for(int x = 0; x < width; x++){
+        GridBounds renderedBounds = simulation.getRenderedBounds();
+        for(int y = renderedBounds.startY;  y <= renderedBounds.endY; y++){
+            for(int x = renderedBounds.startX; x <= renderedBounds.endX; x++){
                 tiles[x][y].render(shapeRenderer, batch);
             }
         }
@@ -83,14 +83,16 @@ public class StorageGrid {
 
 
     public void renderPathOverlay(ArrayList<Reservation> reservations, ShapeRenderer shapeRenderer){
+        GridBounds renderedBounds = simulation.getRenderedBounds();
         for(Reservation reservation : reservations){
             int x = reservation.getGridCoordinate().getX(), y = reservation.getGridCoordinate().getY();
-            if(reservation.getTimeFrame().isWithinTimeFrame(simulation.getTimeInTicks()))
-                tiles[x][y].renderOverlay(shapeRenderer, Tile.overlayColor2);
-            else
-                tiles[x][y].renderOverlay(shapeRenderer);
+            if(renderedBounds.isWithinBounds(reservation.getGridCoordinate())){
+                if(reservation.getTimeFrame().isWithinTimeFrame(simulation.getTimeInTicks()))
+                    tiles[x][y].renderOverlay(shapeRenderer, Tile.overlayColor2);
+                else
+                    tiles[x][y].renderOverlay(shapeRenderer);
+            }
         }
-
     }
 
 
@@ -149,8 +151,9 @@ public class StorageGrid {
     }
 
     public void renderHeatMap(int[][] heatMap, ShapeRenderer shapeRenderer) {
-        for(int x = 0; x < heatMap[0].length; x++){
-            for(int y = 0; y < heatMap.length; y++) {
+        GridBounds renderedBounds = simulation.getRenderedBounds();
+        for(int x = renderedBounds.startX; x <= renderedBounds.endX; x++){
+            for(int y = renderedBounds.startY; y <= renderedBounds.endY; y++) {
                 Color color = HeatMap.heatColor(heatMap[x][y]);
                 tiles[x][y].renderOverlay(shapeRenderer, color);
             }

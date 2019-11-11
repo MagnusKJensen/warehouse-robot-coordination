@@ -9,12 +9,9 @@ import com.google.gson.Gson;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocatorEnum;
 import dk.aau.d507e19.warehousesim.input.CameraMover;
-import dk.aau.d507e19.warehousesim.statistics.StatisticsManager;
 import dk.aau.d507e19.warehousesim.ui.SideMenu;
 
 import java.io.*;
-import java.util.Date;
-import java.util.Random;
 
 public class SimulationApp extends ApplicationAdapter {
 
@@ -76,7 +73,7 @@ public class SimulationApp extends ApplicationAdapter {
 		sideMenu = new SideMenu(menuViewport, this);
 
 		Gdx.input.setInputProcessor(inputMultiplexer);
-		cameraMover = new CameraMover(simulationCamera, simulationViewport);
+		cameraMover = new CameraMover(this, simulationCamera, simulationViewport);
 
 		inputMultiplexer.addProcessor(cameraMover);
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());
@@ -117,6 +114,7 @@ public class SimulationApp extends ApplicationAdapter {
 		simFontCamera.update();
 
 		sideMenu.resize();
+		refreshCamera();
 	}
 
 	@Override
@@ -301,5 +299,9 @@ public class SimulationApp extends ApplicationAdapter {
 
 	public static String getCurrentRunConfig() {
 		return CURRENT_RUN_CONFIG;
+	}
+
+	public void refreshCamera() {
+		simulation.updateRenderedBounds();
 	}
 }

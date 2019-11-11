@@ -1,4 +1,6 @@
-package dk.aau.d507e19.warehousesim;
+package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt;
+import dk.aau.d507e19.warehousesim.RunConfigurator;
+import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
@@ -71,7 +73,6 @@ public class RRTTest {
     @Test
     public void findNearestNeighbourTest(){
         generateTree();
-        rrt.shortestLengthNode = tree;
         Node<GridCoordinate> actual = rrt.findNearestNeighbour(tree,new GridCoordinate(2,3));
         assertEquals(twooneright.getData(),actual.getData());
     }
