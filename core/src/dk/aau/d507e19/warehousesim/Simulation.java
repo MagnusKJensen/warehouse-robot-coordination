@@ -437,8 +437,24 @@ public class Simulation {
     }
 
     public void updateRenderedBounds(){
-        int maxTilesRenderedVertically;
-        int maxTilesRenderedHorizontally;
+        final int padding = 2;
+        int maxTilesRenderedVertically = (int) Math.ceil(gridCamera.viewportHeight * gridCamera.zoom);
+        int maxTilesRenderedHorizontally = (int) Math.ceil(gridCamera.viewportWidth * gridCamera.zoom);
+
+        int tileXOffset = (int) gridCamera.position.x;
+        int tileYOffset = (int) gridCamera.position.y;
+
+        int xLowerBound = Math.max(0, tileXOffset - (maxTilesRenderedHorizontally / 2) - padding);
+        int yLowerBound = Math.max(0, tileYOffset - (maxTilesRenderedVertically / 2) - padding);
+
+        int xUpperBound = Math.min(getGridWidth() - 1, tileXOffset + (maxTilesRenderedHorizontally / 2) + padding);
+        int yUpperBound = Math.min(getGridHeight() - 1, tileYOffset + (maxTilesRenderedVertically / 2) + padding);
+
+        //System.out.println("(" + xLowerBound + ", " + yLowerBound + ")" + " to (" + xUpperBound + "," + yUpperBound +  ")");
+        renderedBounds = new GridBounds(xLowerBound, yLowerBound, xUpperBound, yUpperBound);
     }
 
+    public GridBounds getRenderedBounds() {
+        return renderedBounds;
+    }
 }

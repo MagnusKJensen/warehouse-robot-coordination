@@ -9,12 +9,9 @@ import com.google.gson.Gson;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocatorEnum;
 import dk.aau.d507e19.warehousesim.input.CameraMover;
-import dk.aau.d507e19.warehousesim.statistics.StatisticsManager;
 import dk.aau.d507e19.warehousesim.ui.SideMenu;
 
 import java.io.*;
-import java.util.Date;
-import java.util.Random;
 
 public class SimulationApp extends ApplicationAdapter {
 
@@ -117,6 +114,7 @@ public class SimulationApp extends ApplicationAdapter {
 		simFontCamera.update();
 
 		sideMenu.resize();
+		refreshCamera();
 	}
 
 	@Override
@@ -303,7 +301,7 @@ public class SimulationApp extends ApplicationAdapter {
 		return CURRENT_RUN_CONFIG;
 	}
 
-	public void updateCamera() {
+	public void refreshCamera() {
 		simulation.updateRenderedBounds();
 	}
 }

@@ -4,14 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.robot.Direction;
-
-import java.util.ArrayList;
 
 public class CameraMover implements InputProcessor {
 
@@ -56,7 +51,7 @@ public class CameraMover implements InputProcessor {
     private void moveCamera(float amountX, float amountY){
         camera.position.x += amountX;
         camera.position.y += amountY;
-        simulationApp.updateCamera();
+        simulationApp.refreshCamera();
     }
 
     @Override
@@ -111,7 +106,7 @@ public class CameraMover implements InputProcessor {
     public boolean scrolled(int amount) {
         camera.zoom += CAMERA_ZOOM_SPEED * amount;
         if(camera.zoom < 0.1f) camera.zoom = 0.1f;
-        simulationApp.updateCamera();
+        simulationApp.refreshCamera();
         return true;
     }
 }
