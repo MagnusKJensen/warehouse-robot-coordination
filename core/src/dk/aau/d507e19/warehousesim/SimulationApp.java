@@ -72,7 +72,7 @@ public class SimulationApp extends ApplicationAdapter {
 		// Quick way to generate new json files
 		// createJsonFileFromSpecs("newSpecName.json");
 
-		simulation = new Simulation(DEFAULT_SEED, this, CURRENT_RUN_CONFIG);
+		simulation = new Simulation(DEFAULT_SEED, CURRENT_RUN_CONFIG, this, CURRENT_RUN_CONFIG);
 		sideMenu = new SideMenu(menuViewport, this);
 
 		Gdx.input.setInputProcessor(inputMultiplexer);
@@ -257,7 +257,7 @@ public class SimulationApp extends ApplicationAdapter {
 		inputMultiplexer.removeProcessor(simulation.getInputProcessor());
 		simulation.dispose();
 		pause();
-		simulation = new Simulation(DEFAULT_SEED, this, CURRENT_RUN_CONFIG);
+		simulation = new Simulation(DEFAULT_SEED, CURRENT_RUN_CONFIG, this, CURRENT_RUN_CONFIG);
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());
 
 		sideMenu.resetSideMenu();

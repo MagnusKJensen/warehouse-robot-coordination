@@ -103,8 +103,9 @@ public class Simulation {
         statisticsManager = new StatisticsManager(this);
     }
 
-    public Simulation(long randSeed, SimulationApp simulationApp, String pathToRunConfig){
+    public Simulation(long randSeed, String runConfigName, SimulationApp simulationApp, String pathToRunConfig){
         RANDOM_SEED = randSeed;
+        Simulation.CURRENT_RUN_CONFIG = runConfigName;
         this.simulationApp = simulationApp;
         this.gridCamera = simulationApp.getWorldCamera();
         this.fontCamera = simulationApp.getFontCamera();

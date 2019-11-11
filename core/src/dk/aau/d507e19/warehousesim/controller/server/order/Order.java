@@ -97,4 +97,12 @@ public class Order {
 
         return builder.toString();
     }
+
+    public String getOrderID() {
+        return orderID;
+    }
+
+    public long getTimeSpentOnOrder(){
+        return finishTimeInMS - startTimeInMS;
+    }
 }

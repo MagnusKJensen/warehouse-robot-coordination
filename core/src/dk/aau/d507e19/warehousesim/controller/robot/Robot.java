@@ -82,7 +82,6 @@ public class Robot {
                 + coordinate.getX() + "," + coordinate.getY() + ")");
     }
 
-
     public void render(SpriteBatch batch) {
         switch (currentStatus) {
             case AVAILABLE:
@@ -125,11 +124,9 @@ public class Robot {
         return maxSpeedBinsPerSecond;
     }
 
-
     public Status getCurrentStatus() {
         return currentStatus;
     }
-
 
     public void setCurrentStatus(Status currentStatus) {
         this.currentStatus = currentStatus;
@@ -147,7 +144,6 @@ public class Robot {
                 && collider.getY() <= currentPosition.getY() + ROBOT_SIZE - 0.01;
         return withInXBounds && withInYBounds;
     }
-
 
     public int getRobotID() {
         return robotID;
@@ -230,4 +226,7 @@ public class Robot {
         return (double)robotController.getIdleTimeTicks() / SimulationApp.TICKS_PER_SECOND;
     }
 
+    public long getBinDeliveriesCompleted() {
+        return binDeliveriesCompleted;
+    }
 }

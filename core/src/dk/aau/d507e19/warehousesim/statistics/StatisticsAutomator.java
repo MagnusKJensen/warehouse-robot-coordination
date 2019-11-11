@@ -16,7 +16,7 @@ public class StatisticsAutomator {
     private static final int TICKS_PER_RUN = 2000; // 10.000 is about 55min per run
     private static final int PRINT_EVERY_TICK = 100;
     private static final String VERSION_NAME = "single";
-    private static final String SPEC_FILE_NAME = "massProducts.json";
+    private static final String SPEC_FILE_NAME = "defaultSpecs.json";
     private static final long DEFAULT_RANDOM_SEED = SimulationApp.DEFAULT_SEED;
 
     public static void main(String[] args) {

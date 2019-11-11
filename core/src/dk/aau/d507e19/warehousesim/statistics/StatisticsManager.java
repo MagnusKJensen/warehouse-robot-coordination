@@ -22,7 +22,7 @@ import java.util.Locale;
 public class StatisticsManager {
     // This changes the name of the folder containing the statistics to reflect the version number.
     // Should be changed in the StatisticsAutomater
-    private String VERSION_NAME = "";
+    private String VERSION_NAME = "version";
 
     // For statistics file names
     private final String ORDER_STATS_FILENAME = "orderStats_";
@@ -61,10 +61,11 @@ public class StatisticsManager {
         // .../core/assets/statistics/*runConfig*_*versionName*/*TaskAllocator___PathFinder*/
         String pathToSimulationFolder = createSimulationFolder(runConfigFolder);
 
-        // Write all statistics to files
-        writeOrderStatsToFile(pathToSimulationFolder);
-        writeRobotStatsToFile(pathToSimulationFolder);
-        writeGeneralStatsToFile(pathToSimulationFolder);
+        // .../core/assets/statistics/*runConfig*_*versionName*/*TaskAllocator___PathFinder*/*statsFiles*
+        ExcelWriter excelWriter = new ExcelWriter(simulation, pathToSimulationFolder);
+        excelWriter.writeGeneralStats();
+        excelWriter.writeOrderStats();
+        excelWriter.writeRobotStats();
 
         // Copy file with specs from the run. Only done, if it is not already copied once.
         copySpecsFile(pathToSimulationFolder);
@@ -114,7 +115,7 @@ public class StatisticsManager {
     private void copySpecsFile(String pathToSimulationFolder) {
         String configFileToCopy = Simulation.PATH_TO_RUN_CONFIGS + Simulation.CURRENT_RUN_CONFIG;
 
-        String newPath = pathToSimulationFolder + File.separator + Simulation.CURRENT_RUN_CONFIG;
+        String newPath = pathToSimulationFolder + Simulation.CURRENT_RUN_CONFIG;
 
         try {
             if(!new File(newPath).exists()){
