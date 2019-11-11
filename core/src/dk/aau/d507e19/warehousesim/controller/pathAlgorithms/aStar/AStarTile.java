@@ -32,7 +32,7 @@ public class AStarTile {
         isBlocked = blocked;
     }
 
-    public void setG(int g){
+    public void setG(int g) {
         G = g;
     }
 
