@@ -43,9 +43,6 @@ public class RRTStarExtended extends RRTStar {
     }
 
     public boolean optimalPathOptimise(Node<GridCoordinate> node) {
-        if (node.getData().equals(new GridCoordinate(22, 6)) && destinationNode.getData().equals(new GridCoordinate(22, 10))) {
-            System.out.println();
-        }
         ArrayList<Node<GridCoordinate>> neighbours = trimImprovementsList(findNodesInRadius(node.getData(), 1), node.getData());
         ArrayList<Node<GridCoordinate>> bestNeighbours = new ArrayList<>();
         Node<GridCoordinate> bestNeighbour = null;
