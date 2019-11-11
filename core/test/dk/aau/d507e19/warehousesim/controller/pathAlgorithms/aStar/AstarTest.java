@@ -65,11 +65,86 @@ public class AstarTest {
     @Test
     public void checkNeighborValidity() {
 
+        astar.currentTile = new AStarTile(4,8);
+
+        astar.checkNeighborValidity();
+
+        // Asserts that the size of the list matches the amount of neighbors
+        assertEquals(4, astar.openList.size());
+
+        AStarTile upNeighbor = new AStarTile(4,9);
+        AStarTile downNeighbor = new AStarTile(4,7);
+        AStarTile leftNeighbor = new AStarTile(3,8);
+        AStarTile rightNeighbor = new AStarTile(5,8);
+
+        // Asserts that all the right neighbors are in the list
+        assertTrue(astar.openList.contains(upNeighbor));
+        assertTrue(astar.openList.contains(downNeighbor));
+        assertTrue(astar.openList.contains(leftNeighbor));
+        assertTrue(astar.openList.contains(rightNeighbor));
 
     }
 
     @Test
+    public void checkNeighborValidityBlocked(){
+        astar.currentTile = new AStarTile(0,8);
+
+        AStarTile upNeighbor = new AStarTile(0,9);
+        AStarTile downNeighbor = new AStarTile(0,7);
+        AStarTile leftNeighbor = new AStarTile(-1,8);
+        AStarTile rightNeighbor = new AStarTile(1,8);
+
+        astar.grid[upNeighbor.getCurrentXPosition()][upNeighbor.getCurrentYPosition()].setBlocked(true);
+
+        astar.checkNeighborValidity();
+
+        // Asserts that the size of the list matches the amount of valid neighbors
+        assertEquals(2, astar.openList.size());
+
+        // Asserts that all the right neighbors are in the list
+        assertFalse(astar.openList.contains(upNeighbor));
+        assertTrue(astar.openList.contains(downNeighbor));
+        assertFalse(astar.openList.contains(leftNeighbor));
+        assertTrue(astar.openList.contains(rightNeighbor));
+    }
+
+    @Test
     public void addNeighborTileToOpenList() {
+        GridCoordinate neighbor = new GridCoordinate(4,5);
+        AStarTile asNeighbor;
+        astar.xEndPosition = 8;
+        astar.yEndPosition = 8;
+
+        // To avoid null pointer exception when it sets previous coordinates
+        astar.currentTile = new AStarTile(4,4);
+
+        astar.addNeighborTileToOpenList(neighbor);
+
+        // Asserts that there is now a neighbor in the list
+        assertEquals(1, astar.openList.size());
+
+        // Makes AStarTile objects
+        asNeighbor = astar.openList.get(0);
+
+        // Asserts that this neighbor is the right one
+        assertTrue(astar.openList.contains(asNeighbor));
+
+        // Makes F bigger in the list so that it deletes the old object when the new object has a lower F
+        asNeighbor.setG(500);
+        asNeighbor.calculateF();
+
+        int fBig = astar.openList.get(0).getF();
+
+        astar.addNeighborTileToOpenList(neighbor);
+
+        assertEquals(1, astar.openList.size());
+
+        int fSmall = astar.openList.get(0).getF();
+
+        // Asserts that the same tile with the lowest F is now in the list.
+        assertEquals(1, astar.openList.size());
+        assertTrue(fSmall < fBig);
+
     }
 
     @Test
