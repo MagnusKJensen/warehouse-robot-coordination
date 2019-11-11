@@ -36,6 +36,8 @@ public class AStarTile {
         G = g;
     }
 
+    public void setH(int h) { H = h;}
+
     //Getters
 
     public int getCurrentXPosition() {
@@ -112,5 +114,16 @@ public class AStarTile {
     @Override
     public int hashCode() {
         return Objects.hash(currentXPosition, currentYPosition);
+    }
+
+    public AStarTile copy(){
+        AStarTile ast = new AStarTile(this.getCurrentXPosition(), this.getCurrentYPosition());
+        ast.setPreviousXPosition(this.getPreviousXPosition());
+        ast.setPreviousYPosition(this.getPreviousYPosition);
+        ast.setH(this.getH());
+        ast.setG(this.getG());
+        ast.setBlocked(this.isBlocked);
+
+        return ast;
     }
 }

@@ -6,6 +6,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -35,6 +36,8 @@ public class AstarTest {
         for (int i = 0; i < WarehouseSpecs.wareHouseWidth; i++) {
             for (int j = 0; j < WarehouseSpecs.wareHouseHeight; j++) {
                 testGrid[i][j] = new AStarTile(i, j);
+
+                // Asserts that the actual grid and the test grid are the same for each coordinate.
                 assertEquals(testGrid[i][j], actualGrid[i][j]);
 
             }
@@ -112,6 +115,8 @@ public class AstarTest {
     public void addNeighborTileToOpenList() {
         GridCoordinate neighbor = new GridCoordinate(4,5);
         AStarTile asNeighbor;
+
+        // Needs these to work
         astar.xEndPosition = 8;
         astar.yEndPosition = 8;
 
@@ -129,26 +134,45 @@ public class AstarTest {
         // Asserts that this neighbor is the right one
         assertTrue(astar.openList.contains(asNeighbor));
 
-        // Makes F bigger in the list so that it deletes the old object when the new object has a lower F
-        asNeighbor.setG(500);
-        asNeighbor.calculateF();
+        // Asserts that if the neighbor now has a higher F it is not replacing the old --------------------------------
 
-        int fBig = astar.openList.get(0).getF();
+        int oldF = astar.openList.get(0).getF();
+
+        // Makes F bigger so that it does not delete the old object when the new object has a higher F
+        astar.currentTile.setG(500);
+
+        astar.addNeighborTileToOpenList(neighbor);
+
+        // Asserts that the list still only has one
+        assertEquals(1, astar.openList.size());
+
+        int newF = astar.openList.get(0).getF();
+
+        // Asserts that the same tile with the lowest F is now in the list.
+        assertEquals(oldF, newF);
+
+        // Asserts that if the neighbor now has a lower F it is replacing the old -------------------------------------
+
+        oldF = newF;
+
+        // The same as before, but now the new tile is better.
+        astar.currentTile.setG(-510);
 
         astar.addNeighborTileToOpenList(neighbor);
 
         assertEquals(1, astar.openList.size());
 
-        int fSmall = astar.openList.get(0).getF();
+        newF = astar.openList.get(0).getF();
 
         // Asserts that the same tile with the lowest F is now in the list.
         assertEquals(1, astar.openList.size());
-        assertTrue(fSmall < fBig);
+        assertTrue(newF < oldF);
 
     }
 
     @Test
     public void addTilesToClosedList() {
+
     }
 
     @Test

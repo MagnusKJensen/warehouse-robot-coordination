@@ -126,7 +126,8 @@ public class Astar implements PathFinder {
     public void addNeighborTileToOpenList(GridCoordinate gcNeighbor) {
 
         // Make AstarTile from neighbor.
-        AStarTile aStarNeighbor = grid[gcNeighbor.getX()][gcNeighbor.getY()];
+        AStarTile aStarNeighbor = grid[gcNeighbor.getX()][gcNeighbor.getY()].copy();
+        //AStarTile aStarNeighbor = new AStarTile(gcNeighbor.getX(), gcNeighbor.getY());
 
         // If the neighbor tile is not reserved in the right timeFrame, then proceed.
         if (!(isReservedList.contains(gcNeighbor))) {
