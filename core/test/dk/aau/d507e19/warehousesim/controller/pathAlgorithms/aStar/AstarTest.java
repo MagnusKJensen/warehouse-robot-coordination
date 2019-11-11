@@ -36,7 +36,7 @@ public class AstarTest {
             for (int j = 0; j < WarehouseSpecs.wareHouseHeight; j++) {
                 testGrid[i][j] = new AStarTile(i, j);
                 assertEquals(testGrid[i][j], actualGrid[i][j]);
-                
+
             }
         }
     }
