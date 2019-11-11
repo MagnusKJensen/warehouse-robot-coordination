@@ -24,10 +24,10 @@ public class StatisticsAutomator {
         // runAllConfigurations(VERSION_NAME);
 
         // Run a single configuration with all taskAllocators and PathFinders.
-        runOneConfig(SPEC_FILE_NAME, VERSION_NAME);
+        // runOneConfig(SPEC_FILE_NAME, VERSION_NAME);
 
         // Run a single configuration only with only on taskAllocator, but all pathfinders
-        // runOneConfig(SPEC_FILE_NAME, VERSION_NAME, TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR);
+        runOneConfig(SPEC_FILE_NAME, VERSION_NAME, TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR);
 
         // Run a single configuration only with one pathFinder but all taskAllocators
         // runOneConfig(SPEC_FILE_NAME, VERSION_NAME, PathFinderEnum.DUMMYPATHFINDER);
