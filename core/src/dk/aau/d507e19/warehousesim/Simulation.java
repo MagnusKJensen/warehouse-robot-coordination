@@ -79,7 +79,9 @@ public class Simulation {
     private StatisticsManager statisticsManager;
     private boolean showHeatMap;
 
-    private boolean shouldRenderGridandRobots = true;
+    private boolean shouldRenderGridAndRobots = true;
+
+    private GridBounds renderedBounds;
 
     // Used for fast no graphics simulations
     public Simulation(long randSeed, String runConfigName, PathFinderEnum pathfinder, TaskAllocatorEnum taskAllocator){
@@ -101,6 +103,7 @@ public class Simulation {
 
         simulationStartTime = new Date(System.currentTimeMillis());
         statisticsManager = new StatisticsManager(this);
+        updateRenderedBounds();
     }
 
     public Simulation(long randSeed, SimulationApp simulationApp, String pathToRunConfig){
@@ -253,7 +256,7 @@ public class Simulation {
         shapeRenderer.setProjectionMatrix(gridCamera.combined);
         batch.setProjectionMatrix(gridCamera.combined);
 
-        if(shouldRenderGridandRobots){
+        if(shouldRenderGridAndRobots){
             storageGrid.render(shapeRenderer, batch);
             renderSelectedRobotsPaths();
             renderCtrlSelectedRobotTrees();
@@ -430,6 +433,12 @@ public class Simulation {
     }
 
     public void toggleRenderGrid(){
-        shouldRenderGridandRobots = !shouldRenderGridandRobots;
+        shouldRenderGridAndRobots = !shouldRenderGridAndRobots;
     }
+
+    public void updateRenderedBounds(){
+        int maxTilesRenderedVertically;
+        int maxTilesRenderedHorizontally;
+    }
+
 }

@@ -76,7 +76,7 @@ public class SimulationApp extends ApplicationAdapter {
 		sideMenu = new SideMenu(menuViewport, this);
 
 		Gdx.input.setInputProcessor(inputMultiplexer);
-		cameraMover = new CameraMover(simulationCamera, simulationViewport);
+		cameraMover = new CameraMover(this, simulationCamera, simulationViewport);
 
 		inputMultiplexer.addProcessor(cameraMover);
 		inputMultiplexer.addProcessor(simulation.getInputProcessor());
@@ -301,5 +301,9 @@ public class SimulationApp extends ApplicationAdapter {
 
 	public static String getCurrentRunConfig() {
 		return CURRENT_RUN_CONFIG;
+	}
+
+	public void updateCamera() {
+		simulation.updateRenderedBounds();
 	}
 }

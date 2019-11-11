@@ -8,10 +8,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.robot.Direction;
+
+import java.util.ArrayList;
 
 public class CameraMover implements InputProcessor {
 
+    private final SimulationApp simulationApp;
     private OrthographicCamera camera;
     private ScreenViewport simViewport;
 
@@ -21,9 +25,10 @@ public class CameraMover implements InputProcessor {
     private int lastMouseX, lastMouseY;
 
 
-    public CameraMover(OrthographicCamera camera, ScreenViewport simViewport) {
+    public CameraMover(SimulationApp simulationApp, OrthographicCamera camera, ScreenViewport simViewport) {
         this.camera = camera;
         this.simViewport = simViewport;
+        this.simulationApp = simulationApp;
     }
 
     public void update(){
@@ -45,13 +50,13 @@ public class CameraMover implements InputProcessor {
     }
 
     private void moveCamera(Direction dir, float amount){
-        camera.position.x += dir.xDir * amount;
-        camera.position.y += dir.yDir * amount;
+        moveCamera(dir.xDir * amount, dir.yDir * amount);
     }
 
     private void moveCamera(float amountX, float amountY){
         camera.position.x += amountX;
         camera.position.y += amountY;
+        simulationApp.updateCamera();
     }
 
     @Override
@@ -106,6 +111,7 @@ public class CameraMover implements InputProcessor {
     public boolean scrolled(int amount) {
         camera.zoom += CAMERA_ZOOM_SPEED * amount;
         if(camera.zoom < 0.1f) camera.zoom = 0.1f;
-        return false;
+        simulationApp.updateCamera();
+        return true;
     }
 }
