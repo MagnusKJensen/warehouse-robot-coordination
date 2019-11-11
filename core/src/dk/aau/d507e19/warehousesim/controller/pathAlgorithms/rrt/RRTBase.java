@@ -28,14 +28,12 @@ public abstract class RRTBase {
         reservationManager = robotController.getServer().getReservationManager();
     }
 
-    public Node<GridCoordinate> root, destinationNode,shortestLengthNode,latestNode;
+
+    public Node<GridCoordinate> root, destinationNode,latestNode;
     //Free list of all free points in the grid. populateFreeList() intializes the array with grid coordinates.
     public ArrayList<GridCoordinate> freeNodeList;
-    //blockedNodeList
-    public ArrayList<GridCoordinate> blockedNodeList = new ArrayList<>();
-    protected ArrayList<Step> path = new ArrayList<>();
 
-    GridCoordinate dest;
+    protected ArrayList<Step> path = new ArrayList<>();
     public HashMap<GridCoordinate,Node<GridCoordinate>> allNodesMap = new HashMap<>();
 
     public ArrayList<Step> getPath() {
@@ -47,9 +45,11 @@ public abstract class RRTBase {
         //Generate a new random location using seeded random
         for(int i =0; i < n; i++){
             GridCoordinate randPos = generateRandomPos();
-            shortestLengthNode = tree;
             Node<GridCoordinate> nearest = findNearestNeighbour(tree, randPos);
             Node<GridCoordinate> newNode = generateNewNode(nearest, randPos);
+            if(allNodesMap.containsKey(newNode.getData())){
+                System.out.println();
+            }
             newNode.setParent(nearest);
             allNodesMap.put(newNode.getData(),newNode);
             latestNode = newNode;
@@ -100,16 +100,16 @@ public abstract class RRTBase {
     }
 
     public double cost(Node<GridCoordinate> node){
-        return calculateTravelTime(node);
+        return calculateTravelTime(new Path(makePath(node)));
     }
-    private long calculateTravelTime(Node<GridCoordinate> dest){
+    protected long calculateTravelTime(Path p){
         //generate path from root to dest
         //find out how long it takes according to movement predictor
         //return time that it takes
-        Path p = new Path(makePath(dest));
         ArrayList<Reservation> list = MovementPredictor.calculateReservations(this.robotController.getRobot(),p,0,0);
         return list.get(list.size()-1).getTimeFrame().getStart();
     }
+
     protected ArrayList<Node<GridCoordinate>> trimImprovementsList(ArrayList<Node<GridCoordinate>> list, GridCoordinate dest){
         if(list.isEmpty()){
             return list;
@@ -123,20 +123,17 @@ public abstract class RRTBase {
     }
 
     protected Node<GridCoordinate> generateNewNode(Node<GridCoordinate> nearest, GridCoordinate randPos) {
+        //todo make this more readable
         GridCoordinate originalPos = nearest.getData();
         GridCoordinate pos = nearest.getData();
-        Edge edge = new Edge(pos, randPos);
-
         //right
-        pos = edge.getDistanceBetweenPoints(new GridCoordinate(pos.getX() + 1, pos.getY()), randPos) < edge.getDistanceBetweenPoints(pos, randPos) ? new GridCoordinate(originalPos.getX() + 1, originalPos.getY()) : pos;
+        pos = distance(new GridCoordinate(pos.getX() + 1, pos.getY()), randPos) < distance(pos, randPos) ? new GridCoordinate(originalPos.getX() + 1, originalPos.getY()) : pos;
         //left
-        pos = edge.getDistanceBetweenPoints(new GridCoordinate(pos.getX() - 1, pos.getY()), randPos) < edge.getDistanceBetweenPoints(pos, randPos) ? new GridCoordinate(originalPos.getX() -1, originalPos.getY()) : pos;
+        pos = distance(new GridCoordinate(pos.getX() - 1, pos.getY()), randPos) < distance(pos, randPos) ? new GridCoordinate(originalPos.getX() -1, originalPos.getY()) : pos;
         //up
-        pos = edge.getDistanceBetweenPoints(new GridCoordinate(pos.getX(), pos.getY() + 1), randPos) < edge.getDistanceBetweenPoints(pos, randPos) ? new GridCoordinate(originalPos.getX(), originalPos.getY() +1) : pos;
+        pos = distance(new GridCoordinate(pos.getX(), pos.getY() + 1), randPos) < distance(pos, randPos) ? new GridCoordinate(originalPos.getX(), originalPos.getY() +1) : pos;
         //down
-        pos = edge.getDistanceBetweenPoints(new GridCoordinate(pos.getX(), pos.getY() - 1), randPos) < edge.getDistanceBetweenPoints(pos, randPos) ? new GridCoordinate(originalPos.getX(), originalPos.getY() -1 ) : pos;
-
-
+        pos = distance(new GridCoordinate(pos.getX(), pos.getY() - 1), randPos) < distance(pos, randPos) ? new GridCoordinate(originalPos.getX(), originalPos.getY() -1 ) : pos;
 
         //remove the newly created note from the freeList
         updateFreeList(pos);
@@ -144,14 +141,10 @@ public abstract class RRTBase {
     }
 
     public Node<GridCoordinate> findNearestNeighbour(Node<GridCoordinate> tree, GridCoordinate randPos) {
-        Edge shortestEdge = new Edge(tree.getData(),randPos);
-        //todo change findKNodesInSquare to be more dynamic - set k to 4 and then handle logic in function?
-        for(Node<GridCoordinate> n : findKNodesInSquare(randPos,allNodesMap.size())){
-            Edge newEdge = new Edge(n.getData(),randPos);
-
-            if (newEdge.getDistance() < shortestEdge.getDistance()){
-                shortestEdge = newEdge;
-                shortestLengthNode = n;
+        Node<GridCoordinate> shortest = null;
+        for(Node<GridCoordinate> n : findNodesInSquare(randPos)){
+            if (shortest == null || distance(n.getData(),randPos) < distance(shortest.getData(),randPos)){
+                shortest = n;
             }
         }
          /*
@@ -163,15 +156,14 @@ public abstract class RRTBase {
             }
             findNearestNeighbour(n, randPos);
         } */
-        return shortestLengthNode;
+        return shortest;
     }
 
-    private List<Node<GridCoordinate>> findKNodesInSquare(GridCoordinate randPos, int k){
-        List<Node<GridCoordinate>> listOfNodes =  new ArrayList<>(),foundNodes;
-        //GridCoordinate relativePos = new GridCoordinate(0,0);
+    private ArrayList<Node<GridCoordinate>> findNodesInSquare(GridCoordinate randPos){
+        ArrayList<Node<GridCoordinate>> listOfNodes =  new ArrayList<>(),foundNodes;
         GridCoordinate topLeft = new GridCoordinate(randPos.getX(),randPos.getY());
         GridCoordinate bottomRight = new GridCoordinate(randPos.getX(),randPos.getY());
-        while(listOfNodes.size() < k){
+        while(listOfNodes.isEmpty()){
             //check if new corners are out of grid bounds
             // Create new corners (probably not necessary)
             topLeft = updateTopLeft(topLeft);
@@ -245,6 +237,9 @@ public abstract class RRTBase {
         GridCoordinate randPos;
         do {
             randPos = freeNodeList.get(random.nextInt(freeNodeList.size()));
+            if(!freeNodeList.contains(randPos)){
+                System.out.println();
+            }
         }while(doesNodeExist(randPos));
 
         return randPos;
@@ -312,7 +307,6 @@ public abstract class RRTBase {
         }
     }
     protected ArrayList<Step> generatePathFromEmpty(GridCoordinate start, GridCoordinate destination){
-        dest = destination;
         root = new Node<>(start, null, false);
         //populate the freenodelist
         freeNodeList = populateFreeList();
