@@ -79,7 +79,9 @@ public class Simulation {
     private StatisticsManager statisticsManager;
     private boolean showHeatMap;
 
-    private boolean shouldRenderGridandRobots = true;
+    private boolean shouldRenderGridAndRobots = true;
+
+    private GridBounds renderedBounds;
 
     // Used for fast no graphics simulations
     public Simulation(long randSeed, String runConfigName, PathFinderEnum pathfinder, TaskAllocatorEnum taskAllocator){
@@ -101,6 +103,7 @@ public class Simulation {
 
         simulationStartTime = new Date(System.currentTimeMillis());
         statisticsManager = new StatisticsManager(this);
+        updateRenderedBounds();
     }
 
     public Simulation(long randSeed, SimulationApp simulationApp, String pathToRunConfig){
@@ -253,7 +256,7 @@ public class Simulation {
         shapeRenderer.setProjectionMatrix(gridCamera.combined);
         batch.setProjectionMatrix(gridCamera.combined);
 
-        if(shouldRenderGridandRobots){
+        if(shouldRenderGridAndRobots){
             storageGrid.render(shapeRenderer, batch);
             renderSelectedRobotsPaths();
             renderCtrlSelectedRobotTrees();
@@ -430,6 +433,28 @@ public class Simulation {
     }
 
     public void toggleRenderGrid(){
-        shouldRenderGridandRobots = !shouldRenderGridandRobots;
+        shouldRenderGridAndRobots = !shouldRenderGridAndRobots;
+    }
+
+    public void updateRenderedBounds(){
+        final int padding = 2;
+        int maxTilesRenderedVertically = (int) Math.ceil(gridCamera.viewportHeight * gridCamera.zoom);
+        int maxTilesRenderedHorizontally = (int) Math.ceil(gridCamera.viewportWidth * gridCamera.zoom);
+
+        int tileXOffset = (int) gridCamera.position.x;
+        int tileYOffset = (int) gridCamera.position.y;
+
+        int xLowerBound = Math.max(0, tileXOffset - (maxTilesRenderedHorizontally / 2) - padding);
+        int yLowerBound = Math.max(0, tileYOffset - (maxTilesRenderedVertically / 2) - padding);
+
+        int xUpperBound = Math.min(getGridWidth() - 1, tileXOffset + (maxTilesRenderedHorizontally / 2) + padding);
+        int yUpperBound = Math.min(getGridHeight() - 1, tileYOffset + (maxTilesRenderedVertically / 2) + padding);
+
+        //System.out.println("(" + xLowerBound + ", " + yLowerBound + ")" + " to (" + xUpperBound + "," + yUpperBound +  ")");
+        renderedBounds = new GridBounds(xLowerBound, yLowerBound, xUpperBound, yUpperBound);
+    }
+
+    public GridBounds getRenderedBounds() {
+        return renderedBounds;
     }
 }
