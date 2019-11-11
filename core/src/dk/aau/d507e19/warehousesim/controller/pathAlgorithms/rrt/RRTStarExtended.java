@@ -1,5 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt;
 
+import dk.aau.d507e19.warehousesim.Simulation;
+import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 
@@ -15,6 +17,10 @@ public class RRTStarExtended extends RRTStar {
 
     @Override
     public void attemptOptimise() {
+        if(allNodesMap.size()!= Simulation.getWarehouseSpecs().wareHouseWidth * Simulation.getWarehouseSpecs().wareHouseHeight){
+            //todo handle more elegantly
+            throw new RuntimeException("Can not use rrt*extended optimise if tree is not fully grown");
+        }
         //optimise with distance first
         //then optimise with time
         optimalPathOptimise(destinationNode);
