@@ -1,8 +1,10 @@
 apply plugin: "java"
 
-sourceCompatibility = 1.7
+sourceCompatibility = 11
+
 sourceSets.main.java.srcDirs = [ "src/" ]
 sourceSets.main.resources.srcDirs = ["../core/assets"]
+sourceSets.test.resources.srcDirs = ["../core/testassets"]
 
 project.ext.mainClassName = "dk.aau.d507e19.warehousesim.desktop.DesktopLauncher"
 project.ext.assetsDir = new File("../core/assets")

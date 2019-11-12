@@ -8,6 +8,7 @@ import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import dk.aau.d507e19.warehousesim.controller.server.HeatMap;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
@@ -18,9 +19,6 @@ public class StorageGrid {
     private final Tile[][] tiles;
     public final int width, height;
 
-    private ShapeRenderer shapeRenderer;
-    private SpriteBatch spriteBatch;
-
     private ArrayList<GridCoordinate> pickerPoints = new ArrayList<>();
     private Simulation simulation;
     private ArrayList<Product> allProducts = new ArrayList<>();
@@ -29,12 +27,9 @@ public class StorageGrid {
         this.height = height;
         this.width = width;
         this.tiles = new Tile[width][height];
-        this.shapeRenderer = new ShapeRenderer();
-        this.spriteBatch = new SpriteBatch();
         this.simulation = simulation;
         generatePickerPoints();
         fillGrid();
-
     }
 
     public ArrayList<BinTile> tilesWithProduct(Product prod){
@@ -54,27 +49,17 @@ public class StorageGrid {
     }
 
     private void generatePickerPoints() {
-        int[][] pickers = WarehouseSpecs.pickerPoints;
-
-        // Check to see if all picker points are inside the grid
-        arePickerPointsOutsideGrid(pickers);
-
-        // Go through all picker points and add them, if one is not already present at a given tile.
-        for(int i = 0; i < pickers.length; ++i){
-            GridCoordinate cord = new GridCoordinate(pickers[i][0], pickers[i][1]);
-            if(pickerPoints.contains(cord))
-                throw new RuntimeException("Picker point already present at (" + cord.getX() + "," + cord.getY() +
-                        "). Cannot have two picker points at the same tile");
-            else pickerPoints.add(new GridCoordinate(pickers[i][0], pickers[i][1]));
-        }
+        ArrayList<GridCoordinate> gridCoordinates;
+        gridCoordinates = Simulation.getWarehouseSpecs().pickerPlacementPattern.generatePattern(Simulation.getWarehouseSpecs().numberOfPickers);
+        pickerPoints.addAll(gridCoordinates);
     }
 
     private void arePickerPointsOutsideGrid(int[][] pickers) {
         for(int i = 0; i < pickers.length; ++i){
-            if(pickers[i][0] > WarehouseSpecs.wareHouseWidth - 1 || pickers[i][1] > WarehouseSpecs.wareHouseHeight - 1)
+            if(pickers[i][0] > Simulation.getWarehouseSpecs().wareHouseWidth - 1 || pickers[i][1] > Simulation.getWarehouseSpecs().wareHouseHeight - 1)
                 throw new IllegalArgumentException("Picker point is outside grid at (" + pickers[i][0] + "," + pickers[i][1] + "). " +
-                        "Gridsize (" + WarehouseSpecs.wareHouseWidth + ", " + WarehouseSpecs.wareHouseHeight + ")" +
-                        " counting from 0 to " + (WarehouseSpecs.wareHouseWidth - 1) + ".");
+                        "Gridsize (" + Simulation.getWarehouseSpecs().wareHouseWidth + ", " + Simulation.getWarehouseSpecs().wareHouseHeight + ")" +
+                        " counting from 0 to " + (Simulation.getWarehouseSpecs().wareHouseWidth - 1) + ".");
         }
     }
 
@@ -88,9 +73,9 @@ public class StorageGrid {
     }
 
     public void render(ShapeRenderer shapeRenderer, SpriteBatch batch){
-        // TODO: 30/09/2019 Adapt so that it only renders tiles within view
-        for(int y = 0;  y < height; y++){
-            for(int x = 0; x < width; x++){
+        GridBounds renderedBounds = simulation.getRenderedBounds();
+        for(int y = renderedBounds.startY;  y <= renderedBounds.endY; y++){
+            for(int x = renderedBounds.startX; x <= renderedBounds.endX; x++){
                 tiles[x][y].render(shapeRenderer, batch);
             }
         }
@@ -98,14 +83,16 @@ public class StorageGrid {
 
 
     public void renderPathOverlay(ArrayList<Reservation> reservations, ShapeRenderer shapeRenderer){
+        GridBounds renderedBounds = simulation.getRenderedBounds();
         for(Reservation reservation : reservations){
             int x = reservation.getGridCoordinate().getX(), y = reservation.getGridCoordinate().getY();
-            if(reservation.getTimeFrame().isWithinTimeFrame(simulation.getTimeInTicks()))
-                tiles[x][y].renderOverlay(shapeRenderer, Tile.overlayColor2);
-            else
-                tiles[x][y].renderOverlay(shapeRenderer);
+            if(renderedBounds.isWithinBounds(reservation.getGridCoordinate())){
+                if(reservation.getTimeFrame().isWithinTimeFrame(simulation.getTimeInTicks()))
+                    tiles[x][y].renderOverlay(shapeRenderer, Tile.overlayColor2);
+                else
+                    tiles[x][y].renderOverlay(shapeRenderer);
+            }
         }
-
     }
 
 
@@ -152,4 +139,27 @@ public class StorageGrid {
         }
         return false;
     }
+
+    public ArrayList<BinTile> getAllBinTiles(){
+        ArrayList<BinTile> binTiles = new ArrayList<>();
+        for(int x = 0; x < Simulation.getWarehouseSpecs().wareHouseHeight; ++x){
+            for(int y = 0; y < Simulation.getWarehouseSpecs().wareHouseWidth; ++y){
+                if(getTile(x,y) instanceof BinTile) binTiles.add((BinTile) getTile(x,y));
+            }
+        }
+        return binTiles;
+    }
+
+    public void renderHeatMap(int[][] heatMap, ShapeRenderer shapeRenderer) {
+        GridBounds renderedBounds = simulation.getRenderedBounds();
+        for(int x = renderedBounds.startX; x <= renderedBounds.endX; x++){
+            for(int y = renderedBounds.startY; y <= renderedBounds.endY; y++) {
+                Color color = HeatMap.heatColor(heatMap[x][y]);
+                tiles[x][y].renderOverlay(shapeRenderer, color);
+            }
+        }
+    }
+
+
+
 }

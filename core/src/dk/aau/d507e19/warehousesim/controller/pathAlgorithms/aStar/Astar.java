@@ -1,6 +1,10 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar;
 
 
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.JsonWriter;
+import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
@@ -211,12 +215,6 @@ public class Astar implements PathFinder {
         // Adds the starting tile to closed list.
         addStartTileToClosedList(xStart, yStart);
 
-        // todo add back in. Must also check if current position is the same as target
-        /*GridCoordinate destination = new GridCoordinate(xEndPosition, yEndPosition);
-        GridCoordinate start = new GridCoordinate(xStart, yStart);
-        if (server.getReservationManager().isReservedIndefinitely(destination))
-            throw new DestinationReservedIndefinitelyException(start, destination);*/
-
         // While is true if the currentTile does not have the same x coordinate and the same y coordinate as the end Tile.
         while (!(currentTile.getCurrentXPosition() == xEndPosition && currentTile.getCurrentYPosition() == yEndPosition)) {
             // Add the valid tiles to openList
@@ -302,6 +300,13 @@ public class Astar implements PathFinder {
 
     @Override
     public Path calculatePath(GridCoordinate start, GridCoordinate destination) throws NoPathFoundException {
+        if(start.equals(destination))
+            return Path.oneStepPath(new Step(start));
+
+        // Check if end position is reserved forever
+        if (server.getReservationManager().isReservedIndefinitely(destination))
+            throw new DestinationReservedIndefinitelyException(start, destination);
+
 
         // Clears all lists and objects so that it is clean next time it calculates a path.
         isReservedList.clear();
@@ -316,5 +321,10 @@ public class Astar implements PathFinder {
         // Calculates the optimal A* path
         calculatePath();
         return new Path(Step.fromGridCoordinates(finalPath));
+    }
+
+    @Override
+    public boolean accountsForReservations() {
+        return true;
     }
 }

@@ -20,6 +20,11 @@ public class DummyPathFinder implements PathFinder {
         return new Path(pathList);
     }
 
+    @Override
+    public boolean accountsForReservations() {
+        return false;
+    }
+
     private ArrayList<Step> generateHorizontalLine(int startX, int endX, int y){
         ArrayList<Step> coordinates = new ArrayList<>();
         if(startX > endX){

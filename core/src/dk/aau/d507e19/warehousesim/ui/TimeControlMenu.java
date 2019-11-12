@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import dk.aau.d507e19.warehousesim.GraphicsManager;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.UpdateMode;
-import org.graalvm.compiler.graph.Graph;
+
 
 import java.awt.event.KeyListener;
 import java.util.ArrayList;

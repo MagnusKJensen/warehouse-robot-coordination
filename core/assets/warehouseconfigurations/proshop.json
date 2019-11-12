@@ -1,0 +1,120 @@
+{
+  "wareHouseWidth": 80,
+  "wareHouseHeight": 80,
+  "WAREHOUSE_BOUNDS": {
+    "startX": 0,
+    "startY": 0,
+    "endX": 79,
+    "endY": 79
+  },
+  "binSizeInMeters": 0.5,
+  "productsPerBin": 10,
+  "SKUsPerBin": 9,
+  "SKUs": 20800,
+  "productsInStock": 50000,
+  "skuDistribution": [
+    [
+      20,
+      80
+    ],
+    [
+      80,
+      20
+    ]
+  ],
+  "isRandomProductDistribution": true,
+  "numberOfRobots": 30,
+  "robotTopSpeed": 3.0,
+  "robotAcceleration": 0.8,
+  "robotDeceleration": 2.0,
+  "robotMinimumSpeed": 0.1,
+  "robotPickUpSpeedInSeconds": 3,
+  "robotDeliverToPickInSeconds": 12,
+  "collisionDetectedEnabled": true,
+  "robotPlacementPattern": {
+    "patternType": "STACKED_LINES",
+    "padding": 1,
+    "bounds": {
+      "startX": 0,
+      "startY": 0,
+      "endX": 79,
+      "endY": 79
+    }
+  },
+  "pickerPlacementPattern": {
+    "patternType": "SPIRAL",
+    "padding": 10,
+    "bounds": {
+      "startX": 0,
+      "startY": 0,
+      "endX": 79,
+      "endY": 79
+    }
+  },
+  "numberOfPickers": 5,
+  "pickerPoints": [
+    [
+      0,
+      0
+    ],
+    [
+      2,
+      0
+    ],
+    [
+      4,
+      0
+    ],
+    [
+      6,
+      0
+    ],
+    [
+      8,
+      0
+    ],
+    [
+      10,
+      0
+    ],
+    [
+      12,
+      0
+    ],
+    [
+      14,
+      0
+    ],
+    [
+      16,
+      0
+    ],
+    [
+      18,
+      0
+    ],
+    [
+      20,
+      0
+    ],
+    [
+      22,
+      0
+    ],
+    [
+      24,
+      0
+    ],
+    [
+      26,
+      0
+    ],
+    [
+      28,
+      0
+    ]
+  ],
+  "secondsBetweenOrders": 26,
+  "orderGoal": 50,
+  "productsPerOrder": 4
+}

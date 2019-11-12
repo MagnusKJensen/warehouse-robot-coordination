@@ -1,12 +1,19 @@
 package dk.aau.d507e19.warehousesim.storagegrid;
 
-import dk.aau.d507e19.warehousesim.WarehouseSpecs;
+import dk.aau.d507e19.warehousesim.RunConfigurator;
+import dk.aau.d507e19.warehousesim.Simulation;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 
 public class ProductDistributorTest {
+
+    @BeforeClass
+    public static void init(){
+        RunConfigurator.setDefaultRunConfiguration();
+    }
 
     @Test
     public void isValidDistribution01() {
@@ -30,7 +37,7 @@ public class ProductDistributorTest {
 
         ProductDistributor.setSKUDistribution(distribution);
         int[][] products =  ProductDistributor.calculateProductsPerSKU();
-        assertEquals(products.length, WarehouseSpecs.SKUs);
+        assertEquals(products.length, Simulation.getWarehouseSpecs().SKUs);
     }
 
     @Test
@@ -39,7 +46,7 @@ public class ProductDistributorTest {
 
         ProductDistributor.setSKUDistribution(distribution);
         int[][] products =  ProductDistributor.calculateProductsPerSKU();
-        assertEquals(products.length, WarehouseSpecs.SKUs);
+        assertEquals(products.length, Simulation.getWarehouseSpecs().SKUs);
     }
 
     @Test
@@ -54,7 +61,7 @@ public class ProductDistributorTest {
             numberOfProducts += products[i][1];
         }
 
-        assertEquals(numberOfProducts, WarehouseSpecs.productsInStock);
+        assertEquals(numberOfProducts, Simulation.getWarehouseSpecs().productsInStock);
     }
 
     @Test
@@ -69,6 +76,6 @@ public class ProductDistributorTest {
             numberOfProducts += products[i][1];
         }
 
-        assertEquals(numberOfProducts, WarehouseSpecs.productsInStock);
+        assertEquals(numberOfProducts, Simulation.getWarehouseSpecs().productsInStock);
     }
 }

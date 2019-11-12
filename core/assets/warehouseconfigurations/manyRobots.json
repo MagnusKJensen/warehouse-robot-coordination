@@ -1,0 +1,178 @@
+{
+  "wareHouseWidth": 30,
+  "wareHouseHeight": 30,
+  "WAREHOUSE_BOUNDS": {
+    "startX": 0,
+    "startY": 0,
+    "endX": 9,
+    "endY": 9
+  },
+  "binSizeInMeters": 1,
+  "productsPerBin": 15,
+  "SKUsPerBin": 9,
+  "SKUs": 10,
+  "productsInStock": 500,
+  "skuDistribution": [
+    [
+      100,
+      100
+    ]
+  ],
+  "isRandomProductDistribution": true,
+  "numberOfRobots": 30,
+  "robotTopSpeed": 3.0,
+  "robotAcceleration": 0.8,
+  "robotDeceleration": 2.0,
+  "robotMinimumSpeed": 0.1,
+  "robotPickUpSpeedInSeconds": 3,
+  "robotDeliverToPickInSeconds": 12,
+  "collisionDetectedEnabled": true,
+  "robotPlacementPattern": {
+    "patternType": "STACKED_LINES",
+    "padding": 0,
+    "bounds": {
+      "startX": 0,
+      "startY": 0,
+      "endX": 9,
+      "endY": 9
+    }
+  },
+  "pickerPlacementPattern": {
+    "patternType": "SPIRAL",
+    "padding": 3,
+    "bounds": {
+      "startX": 0,
+      "startY": 0,
+      "endX": 9,
+      "endY": 9
+    },
+    "customPoints": [
+      [
+        1,
+        0
+      ],
+      [
+        2,
+        0
+      ],
+      [
+        4,
+        0
+      ],
+      [
+        6,
+        0
+      ],
+      [
+        8,
+        0
+      ],
+      [
+        10,
+        0
+      ],
+      [
+        12,
+        0
+      ],
+      [
+        14,
+        0
+      ],
+      [
+        16,
+        0
+      ],
+      [
+        18,
+        0
+      ],
+      [
+        20,
+        0
+      ],
+      [
+        22,
+        0
+      ],
+      [
+        24,
+        0
+      ],
+      [
+        26,
+        0
+      ],
+      [
+        28,
+        0
+      ]
+    ]
+  },
+  "numberOfPickers": 5,
+  "pickerPoints": [
+    [
+      0,
+      0
+    ],
+    [
+      2,
+      0
+    ],
+    [
+      4,
+      0
+    ],
+    [
+      6,
+      0
+    ],
+    [
+      8,
+      0
+    ],
+    [
+      10,
+      0
+    ],
+    [
+      12,
+      0
+    ],
+    [
+      14,
+      0
+    ],
+    [
+      16,
+      0
+    ],
+    [
+      18,
+      0
+    ],
+    [
+      20,
+      0
+    ],
+    [
+      22,
+      0
+    ],
+    [
+      24,
+      0
+    ],
+    [
+      26,
+      0
+    ],
+    [
+      28,
+      0
+    ]
+  ],
+  "secondsBetweenOrders": 5,
+  "orderGoal": 30,
+  "productsPerOrder": 4
+}

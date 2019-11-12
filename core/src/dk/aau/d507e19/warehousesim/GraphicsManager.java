@@ -62,6 +62,9 @@ public class GraphicsManager {
         addTexture("Simulation/Robots/robotTaskAssigned.png");
         addTexture("Simulation/Robots/robotAvailable.png");
         addTexture("Simulation/Robots/robotTaskAssignedCarrying.png");
+        addTexture("Simulation/Robots/robotMovingOutOfWay.png");
+        addTexture("Simulation/Robots/robotMovingOutOfWayBusy.png");
+        addTexture("Simulation/Robots/robotMovingOutOfWayCarrying.png");
 
         // Tiles
         addTexture("Simulation/tiles/Bin.png");

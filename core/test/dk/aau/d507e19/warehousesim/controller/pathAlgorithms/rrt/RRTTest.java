@@ -1,4 +1,6 @@
-package dk.aau.d507e19.warehousesim;
+package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt;
+import dk.aau.d507e19.warehousesim.RunConfigurator;
+import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
@@ -11,6 +13,7 @@ import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -33,6 +36,7 @@ public class RRTTest {
     private ArrayList<Reservation> nodesToBeBlocked = new ArrayList<>();
     @Before
     public void initiateServer(){
+        RunConfigurator.setDefaultRunConfiguration();
         when(robotController.getServer()).thenReturn(server);
         when(robotController.getRobot()).thenReturn(robot);
         when(robotController.getServer().getReservationManager()).thenReturn(reservationManager);
@@ -69,7 +73,6 @@ public class RRTTest {
     @Test
     public void findNearestNeighbourTest(){
         generateTree();
-        rrt.shortestLengthNode = tree;
         Node<GridCoordinate> actual = rrt.findNearestNeighbour(tree,new GridCoordinate(2,3));
         assertEquals(twooneright.getData(),actual.getData());
     }
@@ -88,7 +91,7 @@ public class RRTTest {
         rrt = new RRT(robotController);
         //todo find a way to check that tree is actually re-used
         GridCoordinate start = new GridCoordinate(0, 0);
-        GridCoordinate dest1 = new GridCoordinate(6, 8);
+        GridCoordinate dest1 = new GridCoordinate(7, 0);
         GridCoordinate dest2 = new GridCoordinate(12, 7);
         ArrayList<Step> list;
         //generate initial path
@@ -104,8 +107,8 @@ public class RRTTest {
         assertTrue(isValidPath(dest2, start, list));
         Path p3 = new Path(list);
     }
-    @Test
-    public void assignBlockedNodesTest(){
+
+    /*public void assignBlockedNodesTest(){
         generateTree();
         //blockedNodesList
         RobotController robotController = Mockito.mock(RobotController.class);
@@ -129,7 +132,8 @@ public class RRTTest {
         rrt.assignBlockedNodeStatus(nodesToBeBlocked);
         assertFalse(oneleft.getBlockedStatus());
 
-    }
+    }*/
+
     public boolean isValidPath(GridCoordinate start, GridCoordinate destination, ArrayList<Step> path){
         GridCoordinate prev = start;
         assertEquals(path.get(0).getGridCoordinate(), start);
@@ -153,8 +157,8 @@ public class RRTTest {
     }
     @Test
     public void improvePathTest(){
-        when(robotController.getRobot().getAccelerationBinSecond()).thenReturn(WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters);
-        when(robotController.getRobot().getDecelerationBinSecond()).thenReturn(WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters);
+        when(robotController.getRobot().getAccelerationBinSecond()).thenReturn(Simulation.getWarehouseSpecs().robotAcceleration / Simulation.getWarehouseSpecs().binSizeInMeters);
+        when(robotController.getRobot().getDecelerationBinSecond()).thenReturn(Simulation.getWarehouseSpecs().robotDeceleration / Simulation.getWarehouseSpecs().binSizeInMeters);
         rrt = new RRT(robotController);
         Node<GridCoordinate> n0 = new Node<>(new GridCoordinate(0,0),null,false);
         Node<GridCoordinate> n1 = new Node<>(new GridCoordinate(0,1),n0,false);
@@ -198,8 +202,7 @@ public class RRTTest {
         assertEquals(listOfNeighbours, actualNeighbours);
     }
 
-    @Ignore
-    public void rewireTreeFromCollisionTest(){
+    /*public void rewireTreeFromCollisionTest(){
         rrt = new RRT(robotController);
         generateTree();
         Node<GridCoordinate> destNode = twoleft;
@@ -219,8 +222,7 @@ public class RRTTest {
         assertNotEquals(currentPath, updatedPath);
         assertEquals(2, currentPath.size());
         assertEquals(4, updatedPath);
-
-    }
+    }*/
 
 
 

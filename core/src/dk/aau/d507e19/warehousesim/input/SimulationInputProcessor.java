@@ -15,6 +15,7 @@ public class SimulationInputProcessor implements InputProcessor {
 
     private Simulation simulation;
     private boolean ctrlDown = false;
+    private boolean aDown = false;
 
     public SimulationInputProcessor(Simulation simulation) {
         this.simulation = simulation;
@@ -43,8 +44,8 @@ public class SimulationInputProcessor implements InputProcessor {
 
         // Run through all tiles. If one is selected show info in tileMenu
         StorageGrid grid = simulation.getStorageGrid();
-        for(int x = 0; x < WarehouseSpecs.wareHouseWidth; x++){
-            for(int y = 0; y < WarehouseSpecs.wareHouseHeight; ++y){
+        for(int x = 0; x < Simulation.getWarehouseSpecs().wareHouseWidth; x++){
+            for(int y = 0; y < Simulation.getWarehouseSpecs().wareHouseHeight; ++y){
                 if(grid.getTile(x,y).collidesWith(simulation.screenToWorldPosition(screenX, screenY))){
                     simulation.selectTile(grid.getTile(x,y));
                 }
@@ -78,6 +79,11 @@ public class SimulationInputProcessor implements InputProcessor {
         if(Input.Keys.CONTROL_LEFT == keycode){
             ctrlDown = true;
         }
+        if(Input.Keys.A == keycode){
+            aDown = true;
+        }
+
+        if(ctrlDown && aDown) simulation.selectAllRobots();
         return false;
     }
 
@@ -85,6 +91,13 @@ public class SimulationInputProcessor implements InputProcessor {
     public boolean keyUp(int keycode) {
         if(Input.Keys.CONTROL_LEFT == keycode){
             ctrlDown = false;
+        }
+        if(Input.Keys.A == keycode){
+            aDown = false;
+        }
+        if(ctrlDown && keycode == Input.Keys.H) simulation.toggleHeatMap();
+        if(ctrlDown && keycode == Input.Keys.G){
+            simulation.toggleRenderGrid();
         }
         return false;
     }

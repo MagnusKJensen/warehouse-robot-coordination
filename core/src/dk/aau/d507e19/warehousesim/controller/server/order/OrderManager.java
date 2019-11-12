@@ -1,15 +1,14 @@
-package dk.aau.d507e19.warehousesim.controller.server;
+package dk.aau.d507e19.warehousesim.controller.server.order;
 
+import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.BinDelivery;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
-import dk.aau.d507e19.warehousesim.controller.server.order.Order;
-import dk.aau.d507e19.warehousesim.controller.server.order.OrderLine;
+import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocator;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
-import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
 import java.util.*;
@@ -22,9 +21,9 @@ public class OrderManager {
     private ArrayList<Task> tasksQueue = new ArrayList<>();
     private HashMap<Order, ArrayList<BinDelivery>> processingOrdersToTaskMap = new HashMap<>();
 
-    OrderManager(Server server) {
+    public OrderManager(Server server) {
         this.server = server;
-        this.taskAllocator = server.getSimulation().getSimulationApp().getTaskAllocatorSelected().getTaskAllocator(server.getSimulation().getStorageGrid());
+        this.taskAllocator = Simulation.getTaskAllocator().getTaskAllocator(server.getSimulation().getStorageGrid());
     }
 
     public void takeOrder(Order order){
@@ -44,6 +43,7 @@ public class OrderManager {
                 if(isCompleted){
                     order.getPicker().setAvailable();
                     ordersFinished.add(order);
+                    order.setFinishTimeInMS(server.getTimeInMS());
                     ordersToRemove.add(order);
                 }
             }
@@ -72,6 +72,7 @@ public class OrderManager {
             // Divide order into tasks to robots and add to list of available tasks
             ArrayList<BinDelivery> tasksFromOrder = createTasksFromOrder(order);
             if(tasksFromOrder != null){
+                order.setStartTimeInMS(server.getTimeInMS());
                 processingOrdersToTaskMap.put(order, tasksFromOrder);
                 tasksQueue.addAll(tasksFromOrder);
                 // Remove order from queue
@@ -109,19 +110,28 @@ public class OrderManager {
 
         StorageGrid storageGrid = server.getSimulation().getStorageGrid();
 
-        for(int y = 0; y < storageGrid.height; y++){
-            for(int x = 0; x < storageGrid.width; x++){
-                Tile tile = storageGrid.getTile(x,y);
-                if(!(tile instanceof BinTile)) continue;
-                if(server.getReservationManager().isBinReserved(tile.getGridCoordinate())) continue;
-                BinDelivery delivery = generateDelivery((BinTile) tile, productsToPick, order);
-                if(delivery != null) deliveries.add(delivery);
-                if(productsToPick.isEmpty()) break;
+        ArrayList<BinTile> binTiles = storageGrid.getAllBinTiles();
+
+        // Sort by distance to picker
+        binTiles.sort(new Comparator<BinTile>() {
+            @Override
+            public int compare(BinTile o1, BinTile o2) {
+                int distanceFrom1 = o1.getGridCoordinate().manhattanDistanceFrom(order.getPicker().getGridCoordinate());
+                int distanceFrom2 = o2.getGridCoordinate().manhattanDistanceFrom(order.getPicker().getGridCoordinate());
+                return Integer.compare(distanceFrom1, distanceFrom2);
             }
+        });
+
+        for(BinTile tile : binTiles){
+            if(server.getReservationManager().isBinReserved(tile.getGridCoordinate())) continue;
+            BinDelivery delivery = generateDelivery(tile, productsToPick, order);
+            if(delivery != null) deliveries.add(delivery);
             if(productsToPick.isEmpty()) break;
         }
 
-        if(productsToPick.isEmpty()) return deliveries;
+        if(!deliveries.isEmpty()){
+            return deliveries;
+        }
 
         return null;
     }
@@ -168,5 +178,9 @@ public class OrderManager {
             }
         }
         return tasksNotComplete;
+    }
+
+    public ArrayList<Order> getOrdersFinished() {
+        return ordersFinished;
     }
 }
