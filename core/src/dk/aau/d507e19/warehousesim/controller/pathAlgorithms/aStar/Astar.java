@@ -163,8 +163,10 @@ public class Astar implements PathFinder {
             if (tileToDelete != null)
                 openList.remove(tileToDelete);
 
-            // Add neighbor tile to openList
+            // Makes copy original
             grid[aStarNeighbor.getCurrentXPosition()][aStarNeighbor.getCurrentYPosition()] = aStarNeighbor;
+
+            // Add neighbor tile to openList
             openList.add(aStarNeighbor);
         }
 
