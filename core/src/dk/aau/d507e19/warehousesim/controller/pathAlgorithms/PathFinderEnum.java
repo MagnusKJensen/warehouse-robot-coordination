@@ -1,7 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
 
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar.Astar;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStarExtended.AstarExtended;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStarExtended.AstarCorners;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.chp.CHPathfinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTType;
@@ -40,7 +40,7 @@ public enum PathFinderEnum {
             case DUMMYPATHFINDER:
                 return new DummyPathFinder();
             case ASTARCORNERS:
-                return new AstarExtended(server, robotController.getRobot());
+                return new AstarCorners(server, robotController.getRobot());
             case RRTSTAREXTENDED:
                 return new RRTPlanner(RRTType.RRT_STAR_EXTENDED,robotController);
             default:

@@ -11,18 +11,18 @@ import dk.aau.d507e19.warehousesim.exception.NoPathFoundException;
 
 import java.util.ArrayList;
 
+// TODO: virker ikke???
+public class AstarCorners extends Astar {
 
-public class AstarExtended extends Astar {
-
-    public AstarExtended(Server server, Robot robot) {
+    public AstarCorners(Server server, Robot robot) {
         super(server, robot);
     }
 
     @Override
     public void addNeighborTileToOpenList(GridCoordinate gcNeighbor) {
 
-        // Make AstarTile from neighbor.
-        AStarTile aStarNeighbor = grid[gcNeighbor.getX()][gcNeighbor.getY()];
+        // Make AstarTile copy from neighbor.
+        AStarTile aStarNeighbor = grid[gcNeighbor.getX()][gcNeighbor.getY()].copy();
 
         // If the neighbor tile is not reserved in the right timeFrame, then proceed.
         if (!(isReservedList.contains(gcNeighbor))) {
@@ -38,7 +38,7 @@ public class AstarExtended extends Astar {
             aStarNeighbor.calculateH(xEndPosition, yEndPosition);
             aStarNeighbor.calculateG(currentTile.getG());
             aStarNeighbor.calculateF();
-            addCornersToG(gcNeighbor);
+            addCornersToG(aStarNeighbor);
 
             // Checks if neighborTile is already in openList.
             for (AStarTile tile : openList) {
@@ -59,8 +59,8 @@ public class AstarExtended extends Astar {
             if (tileToDelete != null)
                 openList.remove(tileToDelete);
 
-            // Adds corners to G so that the neighbor with the least corners gets picked.
-            //addCornersToG(gcNeighbor);
+            // Makes copy original
+            grid[aStarNeighbor.getCurrentXPosition()][aStarNeighbor.getCurrentYPosition()] = aStarNeighbor;
 
             // Add neighbor tile to openList
             openList.add(aStarNeighbor);
@@ -68,24 +68,14 @@ public class AstarExtended extends Astar {
 
     }
 
-    @Override
-    public void addTilesToClosedList() {
-        // Blocks the current tile in the grid before it is moved to closedList.
-        grid[openList.get(0).getCurrentXPosition()][openList.get(0).getCurrentYPosition()].setBlocked(true);
+    public void addCornersToG(AStarTile neighbor){
 
-        // Adds tile to closedList
-        closedList.add(openList.get(0));
-
-        // Removes the tile from the openList.
-        openList.remove(0);
-    }
-
-    public void addCornersToG(GridCoordinate GCNeighbor){
+        GridCoordinate gcNeighbor = new GridCoordinate(neighbor.getCurrentXPosition(), neighbor.getCurrentYPosition());
 
         // Make new temp path
         ArrayList<GridCoordinate> temp = new ArrayList<>();
         createPathListFromClosedList();
-        temp.add(GCNeighbor);
+        temp.add(gcNeighbor);
 
         // Calculate reservations
         Path path = new Path(Step.fromGridCoordinates(temp));
@@ -93,26 +83,7 @@ public class AstarExtended extends Astar {
         // Get corners
         int corners = path.getStrippedPath().size();
 
-        AStarTile neighbor = grid[GCNeighbor.getX()][GCNeighbor.getY()];
-
         // Adds corners to neighbors G
         neighbor.setG(neighbor.getG() + corners);
-    }
-
-    @Override
-    public Path calculatePath(GridCoordinate start, GridCoordinate destination) throws NoPathFoundException {
-
-        isReservedList.clear();
-        clear();
-
-        xEndPosition = destination.getX();
-        yEndPosition = destination.getY();
-
-        xStart = start.getX();
-        yStart = start.getY();
-
-        // Calculates the optimal A* path
-        calculatePath();
-        return new Path(Step.fromGridCoordinates(finalPath));
     }
 }
