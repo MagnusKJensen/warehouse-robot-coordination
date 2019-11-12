@@ -1,5 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar;
 
+import dk.aau.d507e19.warehousesim.RunConfigurator;
+import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
@@ -22,19 +24,20 @@ public class AstarTest {
 
     @Before
     public void initiate(){
-        when(server.getGridWidth()).thenReturn(WarehouseSpecs.wareHouseWidth);
-        when(server.getGridHeight()).thenReturn(WarehouseSpecs.wareHouseHeight);
+        RunConfigurator.setDefaultRunConfiguration();
+        when(server.getGridWidth()).thenReturn(Simulation.getWarehouseSpecs().wareHouseWidth);
+        when(server.getGridHeight()).thenReturn(Simulation.getWarehouseSpecs().wareHouseHeight);
         astar = new Astar(server, robot);
     }
 
     @Test
     public void fillGrid() {
 
-        AStarTile[][] testGrid = new AStarTile[WarehouseSpecs.wareHouseWidth][WarehouseSpecs.wareHouseHeight];
-        AStarTile[][] actualGrid = astar.fillGrid(WarehouseSpecs.wareHouseWidth, WarehouseSpecs.wareHouseHeight);
+        AStarTile[][] testGrid = new AStarTile[Simulation.getWarehouseSpecs().wareHouseWidth][Simulation.getWarehouseSpecs().wareHouseHeight];
+        AStarTile[][] actualGrid = astar.fillGrid(Simulation.getWarehouseSpecs().wareHouseWidth, Simulation.getWarehouseSpecs().wareHouseHeight);
 
-        for (int i = 0; i < WarehouseSpecs.wareHouseWidth; i++) {
-            for (int j = 0; j < WarehouseSpecs.wareHouseHeight; j++) {
+        for (int i = 0; i < Simulation.getWarehouseSpecs().wareHouseWidth; i++) {
+            for (int j = 0; j < Simulation.getWarehouseSpecs().wareHouseHeight; j++) {
                 testGrid[i][j] = new AStarTile(i, j);
 
                 // Asserts that the actual grid and the test grid are the same for each coordinate.
@@ -172,6 +175,10 @@ public class AstarTest {
 
     @Test
     public void addTilesToClosedList() {
+        AStarTile tile = new AStarTile(0,8);
+
+        astar.openList.add(tile);
+
 
     }
 
