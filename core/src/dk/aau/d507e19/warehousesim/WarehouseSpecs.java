@@ -2,14 +2,14 @@ package dk.aau.d507e19.warehousesim;
 
 public class WarehouseSpecs {
 
-    public static final int wareHouseWidth = 80;
-    public static final int wareHouseHeight = 80;
+    public static final int wareHouseWidth = 30;
+    public static final int wareHouseHeight = 30;
     public static final float binSizeInMeters = 1;
     public static final int productsPerBin = 15;
     public static final int SKUsPerBin = 9;
     public static final int SKUs = 20;
     public static final int productsInStock = 1000;
-    public static final int numberOfRobots = 3;
+    public static final int numberOfRobots = 10;
     public static final float robotTopSpeed = 3f; // Meters/second
     public static final float robotAcceleration = 0.8f; // m/s^2
     public static final float robotDeceleration = 2f; // m/s^2
@@ -23,7 +23,7 @@ public class WarehouseSpecs {
     public static final int[][] pickerPoints = {{0,0}, {2,0}, {4,0}, {6,0}, {8,0}, {10,0}, {12,0}, {14,0}, {16,0}, {18,0}, {20,0}, {22,0}, {24,0},{26,0}, {28,0},{0,2},{0,4},{0,6}, {0,8}, {0,10}, {0,12}};
     public static final int secondsBetweenOrders = 1;
     public static final int orderGoal = 50;
-    public static final boolean collisionDetectedEnabled = false; // TEMP - Should not be enabled until reservationManager done.
+    public static final boolean collisionDetectedEnabled = true; // TEMP - Should not be enabled until reservationManager done.
     public static final int productsPerOrder = 4;
 
 }
