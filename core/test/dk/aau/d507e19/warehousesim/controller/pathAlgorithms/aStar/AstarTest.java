@@ -175,15 +175,22 @@ public class AstarTest {
 
     @Test
     public void addTilesToClosedList() {
-        AStarTile tile = new AStarTile(0,8);
+        AStarTile tile = astar.grid[0][8];
 
         astar.openList.add(tile);
 
+        // Asserts that tile is in openlist and not blocked.
+        assertEquals(1, astar.openList.size());
+        assertTrue(astar.closedList.isEmpty());
+        assertFalse(astar.grid[tile.getCurrentXPosition()][tile.getCurrentYPosition()].isBlocked());
 
-    }
+        astar.addTilesToClosedList();
 
-    @Test
-    public void createTemporaryPath() {
+        // Asserts that tile is now moved and blocked.
+        assertTrue(astar.openList.isEmpty());
+        assertEquals(1, astar.closedList.size());
+        assertTrue(astar.closedList.get(0).isBlocked());
+
     }
 
     @Test
