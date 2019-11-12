@@ -34,21 +34,36 @@ public class StatisticsManager {
 
     // Formatting date and decimals in file names and statistics
     // Has to be ; instead og :, because windows does not accept : in file name - Philip
-    SimpleDateFormat dateFormatter = new SimpleDateFormat("HH;mm;ss'_'dd-MM-yyyy");
-    DecimalFormat decimalFormatter = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
+    private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH;mm;ss'_'dd-MM-yyyy");
+    private DecimalFormat decimalFormatter = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
+    private ExcelWriter excelWriter;
 
     private Simulation simulation;
 
     public StatisticsManager(Simulation simulation) {
         this.simulation = simulation;
-    }
 
-    public void printStatistics(){
         // Apply patterns to the decimal formatter, that is used in the statistics files
         decimalFormatter.applyPattern("###.00");
         decimalFormatter.setRoundingMode(RoundingMode.HALF_UP);
         decimalFormatter.setGroupingUsed(false);
+    }
 
+    public void addSummaries(){
+        createStatisticsFolder();
+
+        String runConfigFolder = createRunConfigFolder();
+
+        String pathToSimulationFolder = createSimulationFolder(runConfigFolder);
+
+        this.excelWriter = new ExcelWriter(simulation, pathToSimulationFolder);
+
+        excelWriter.summarizeRobotStats();
+
+        excelWriter.summarizeOrderStats();
+    }
+
+    public void printStatistics(){
         // Create statistics folder if it does not exist
         // .../core/assets/statistics/
         createStatisticsFolder();
@@ -62,7 +77,7 @@ public class StatisticsManager {
         String pathToSimulationFolder = createSimulationFolder(runConfigFolder);
 
         // .../core/assets/statistics/*runConfig*_*versionName*/*TaskAllocator___PathFinder*/*statsFiles*
-        ExcelWriter excelWriter = new ExcelWriter(simulation, pathToSimulationFolder);
+        this.excelWriter = new ExcelWriter(simulation, pathToSimulationFolder);
         excelWriter.writeGeneralStats();
         excelWriter.writeOrderStats();
         excelWriter.writeRobotStats();
@@ -234,5 +249,44 @@ public class StatisticsManager {
 
     public void setVERSION_NAME(String VERSION_NAME) {
         this.VERSION_NAME = VERSION_NAME;
+    }
+
+    public Robot getRobotWithShortestDistance(){
+        Robot shortestDistanceRobot = null;
+        for(Robot robot : simulation.getAllRobots()){
+            if(shortestDistanceRobot == null){
+                shortestDistanceRobot = robot;
+                continue;
+            }
+            if(shortestDistanceRobot.getDistanceTraveledInMeters() > robot.getDistanceTraveledInMeters())
+                shortestDistanceRobot = robot;
+        }
+
+        return shortestDistanceRobot;
+    }
+
+    public int averageDistanceTraveled(){
+        ArrayList<Robot> robots = simulation.getAllRobots();
+        int numberOfRobots = robots.size();
+        int sum = 0;
+        for(Robot robot : robots){
+            sum += robot.getDistanceTraveledInMeters();
+        }
+
+        return sum / numberOfRobots;
+    }
+
+    public Robot getRobotWithLongestDistance(){
+        Robot longestDistance = null;
+        for(Robot robot : simulation.getAllRobots()){
+            if(longestDistance == null){
+                longestDistance = robot;
+                continue;
+            }
+            if(longestDistance.getDistanceTraveledInMeters() < robot.getDistanceTraveledInMeters())
+                longestDistance = robot;
+        }
+
+        return longestDistance;
     }
 }

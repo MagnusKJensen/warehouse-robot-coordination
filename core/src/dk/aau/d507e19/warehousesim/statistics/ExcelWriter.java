@@ -18,6 +18,7 @@ public class ExcelWriter {
     private static String[] generalStatsHeader = {"", "Measurement"};
     private static String[] orderStatsHeader = {"ID", "Start_time_in_MS", "Finish_time_in_MS", "Process_time_in_MS"};
     private static String[] robotStatsHeader = {"ID", "Deliveries_Completed", "Distance_traveled_in_meters", "IdleTimeInSeconds"};
+    private static String[] robotSummaryHeader = {"", "Measurement", "RobotID"};
     private static String PATH_TO_SIM_FOLDER;
     private static Simulation simulation;
     private DecimalFormat decimalFormatter = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
@@ -283,28 +284,101 @@ public class ExcelWriter {
     }
 
     private void createGeneralRow(String name, String measurement, Row row) {
-        row.createCell(0)
-                .setCellValue(name);
+        row.createCell(0).setCellValue(name);
 
-        row.createCell(1)
-                .setCellValue(measurement);
+        row.createCell(1).setCellValue(measurement);
 
     }
 
     private void createGeneralRow(String name, long measurement, Row row) {
-        row.createCell(0)
-                .setCellValue(name);
+        row.createCell(0).setCellValue(name);
 
-        row.createCell(1)
-                .setCellValue(measurement);
+        row.createCell(1).setCellValue(measurement);
     }
 
     private void createGeneralRow(String name, double measurement, Row row) {
-        row.createCell(0)
-                .setCellValue(name);
+        row.createCell(0).setCellValue(name);
 
-        row.createCell(1)
-                .setCellValue(measurement);
+        row.createCell(1).setCellValue(measurement);
+    }
+
+    public void summarizeOrderStats(){
+        // TODO: 12/11/2019 DO!
+    }
+
+    public void summarizeRobotStats(){
+        String pathToRobotStats = PATH_TO_SIM_FOLDER + ROBOT_STATS_FILENAME;
+        Workbook workbook = fetchWorkbook(pathToRobotStats);
+
+        Sheet sheet = fetchSheet(workbook, "Summary");
+
+        // Create a Font for styling header cells
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerFont.setFontHeightInPoints((short) 14);
+        headerFont.setColor(IndexedColors.BLACK.getIndex());
+
+        // Create a CellStyle with the font
+        CellStyle headerCellStyle = workbook.createCellStyle();
+        headerCellStyle.setFont(headerFont);
+
+        // Create a Row
+        Row headerRow = sheet.createRow(0);
+
+        // Create cells
+        for(int i = 0; i < robotSummaryHeader.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(robotSummaryHeader[i]);
+            cell.setCellStyle(headerCellStyle);
+        }
+
+        ArrayList<Robot> robots = simulation.getAllRobots();
+
+        // Create Other rows and cells with rest of the data data
+        int rowNum = 1;
+        // Add average distance traveled
+        Row row = sheet.createRow(rowNum++);
+        int averageDistanceTraveled = simulation.getStatisticsManager().averageDistanceTraveled();
+        createRobotSummaryRow("Average Distance traveled", averageDistanceTraveled, "", row);
+
+        // Add shortest distance robot
+        row = sheet.createRow(rowNum++);
+        Robot shortestDistanceRobot = simulation.getStatisticsManager().getRobotWithShortestDistance();
+        createRobotSummaryRow("Shortest distance",
+                (int)shortestDistanceRobot.getDistanceTraveledInMeters(),
+                shortestDistanceRobot.getRobotID() + "",
+                row);
+
+        // Add longest distance robot
+        row = sheet.createRow(rowNum++);
+        Robot longestDistanceRobot = simulation.getStatisticsManager().getRobotWithLongestDistance();
+        createRobotSummaryRow("Shortest distance",
+                (int)longestDistanceRobot.getDistanceTraveledInMeters(),
+                longestDistanceRobot.getRobotID() + "",
+                row);
+
+        resizeAllColumnSizes(robotSummaryHeader, sheet);
+        saveWorkbook(workbook, pathToRobotStats + ".xlsx");
+    }
+
+    private void createRobotSummaryRow(String name, int measurement, String robotID, Row row){
+        row.createCell(0).setCellValue(name);
+        row.createCell(1).setCellValue(measurement);
+        row.createCell(2).setCellValue(robotID);
+    }
+
+    private Sheet fetchSheet(Workbook workbook, String sheetName){
+        Sheet sheet;
+        if(workbook.getSheet(sheetName) != null) sheet = workbook.getSheet(sheetName);
+        else sheet = workbook.createSheet(sheetName);
+        return sheet;
+    }
+
+    private void resizeAllColumnSizes(String[] header, Sheet sheet){
+        // Resize all columns to fit the content size
+        for(int i = 0; i < header.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
     }
 }
 
