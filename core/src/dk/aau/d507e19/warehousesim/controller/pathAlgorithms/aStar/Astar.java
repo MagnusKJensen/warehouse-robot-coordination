@@ -163,6 +163,9 @@ public class Astar implements PathFinder {
             if (tileToDelete != null)
                 openList.remove(tileToDelete);
 
+            // Makes copy original
+            grid[aStarNeighbor.getCurrentXPosition()][aStarNeighbor.getCurrentYPosition()] = aStarNeighbor;
+
             // Add neighbor tile to openList
             openList.add(aStarNeighbor);
         }
@@ -178,19 +181,6 @@ public class Astar implements PathFinder {
 
         // Removes the tile from the openList.
         openList.remove(0);
-    }
-
-    public ArrayList<GridCoordinate> createTemporaryPath(AStarTile currentTile, GridCoordinate neighborTile) {
-
-        ArrayList<GridCoordinate> temp = new ArrayList<>();
-
-        // Creates temp path of gridCoordinates
-        createPathListFromClosedList(currentTile, temp);
-
-        // Adds the last gridCoordinate to list.
-        temp.add(neighborTile);
-
-        return temp;
     }
 
     public void createPathListFromClosedList(AStarTile currentTile, ArrayList<GridCoordinate> temp) {
