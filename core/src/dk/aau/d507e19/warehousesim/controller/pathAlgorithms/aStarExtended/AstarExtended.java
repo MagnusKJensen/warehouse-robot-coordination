@@ -84,7 +84,7 @@ public class AstarExtended extends Astar {
 
         // Make new temp path
         ArrayList<GridCoordinate> temp = new ArrayList<>();
-        createPathListFromClosedList(currentTile, temp);
+        createPathListFromClosedList();
         temp.add(GCNeighbor);
 
         // Calculate reservations

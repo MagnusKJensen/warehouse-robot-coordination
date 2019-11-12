@@ -62,12 +62,12 @@ public class Astar implements PathFinder {
         return grid;
     }
 
-    public void addStartTileToClosedList(int xStartPosition, int yStartPosition) {
+    public void addStartTileToClosedList() {
         // Adds startTile to closedList
-        closedList.add(grid[xStartPosition][yStartPosition]);
+        closedList.add(grid[xStart][yStart]);
 
         // Blocks startTile so that it cannot be used anymore
-        grid[xStartPosition][yStartPosition].setBlocked(true);
+        grid[xStart][yStart].setBlocked(true);
 
         // TODO: kan man ikke bare sætte start tile til at være current tile?
         // Sets currentTile to the top tile in closedList (startTile)
@@ -186,17 +186,17 @@ public class Astar implements PathFinder {
         openList.remove(0);
     }
 
-    public void createPathListFromClosedList(AStarTile currentTile, ArrayList<GridCoordinate> temp) {
+    public void createPathListFromClosedList() {
 
         // If the list is bigger than one object, then go through the whole list
         if (closedList.size() > 1) {
             AStarTile prevTempTile = closedList.get(closedList.size() - 2);
-            temp.add(new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition()));
+            finalPath.add(new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition()));
 
             // Find the object which matches the previous tiles coordinates
             for (int i = closedList.size() - 2; i > 0; i--) {
                 if (currentTile.getPreviousXPosition() == prevTempTile.getCurrentXPosition() && currentTile.getGetPreviousYPosition() == prevTempTile.getCurrentYPosition()) {
-                    temp.add(new GridCoordinate(prevTempTile.getCurrentXPosition(), prevTempTile.getCurrentYPosition()));
+                    finalPath.add(new GridCoordinate(prevTempTile.getCurrentXPosition(), prevTempTile.getCurrentYPosition()));
                     currentTile = closedList.get(i);
                 }
                 prevTempTile = closedList.get(i - 1);
@@ -204,16 +204,28 @@ public class Astar implements PathFinder {
         }
 
         // Add the first object to list
-        temp.add(new GridCoordinate(closedList.get(0).getCurrentXPosition(), closedList.get(0).getCurrentYPosition()));
+        finalPath.add(new GridCoordinate(closedList.get(0).getCurrentXPosition(), closedList.get(0).getCurrentYPosition()));
 
         // Reverses list
-        Collections.reverse(temp);
+        Collections.reverse(finalPath);
     }
 
     public void calculatePath() throws NoPathFoundException {
         // Adds the starting tile to closed list.
-        addStartTileToClosedList(xStart, yStart);
+        addStartTileToClosedList();
 
+        // TODO: temp name, new method so that it is easier to test
+        calculatePath2();
+
+        createPathListFromClosedList();
+
+        if (isReserved()) {
+            clear();
+            calculatePath();
+        }
+    }
+
+    public void calculatePath2() throws NoPathFoundException {
         // While is true if the currentTile does not have the same x coordinate and the same y coordinate as the end Tile.
         while (!(currentTile.getCurrentXPosition() == xEndPosition && currentTile.getCurrentYPosition() == yEndPosition)) {
             // Add the valid tiles to openList
@@ -222,13 +234,13 @@ public class Astar implements PathFinder {
             // Small exceptions too see if it is stuck or if end destination is blocked.
             if (openList.size() < 1) {
                 if (closedList.size() > 1) {
-                  //  throw new BlockedEndDestinationException(robot, closedList.size());
+                    //  throw new BlockedEndDestinationException(robot, closedList.size());
                     GridCoordinate startGC = new GridCoordinate(xStart,yStart);
                     GridCoordinate endGC = new GridCoordinate(xEndPosition,yEndPosition);
                     throw new NoPathFoundException(startGC,endGC);
                 }
                 throw new NoValidPathException(new GridCoordinate(xStart,yStart), new GridCoordinate(xEndPosition,yEndPosition),"No valid Neighbor could be found");
-               // throw new NoValidNeighborException(robot);
+                // throw new NoValidNeighborException(robot);
             }
 
             // Sorts openList in ascending order
@@ -239,13 +251,6 @@ public class Astar implements PathFinder {
 
             // CurrentTile is now the top tile in closedList
             currentTile = closedList.get(closedList.size() - 1);
-        }
-
-        createPathListFromClosedList(currentTile, finalPath);
-
-        if (isReserved()) {
-            clear();
-            calculatePath();
         }
     }
 
@@ -319,6 +324,7 @@ public class Astar implements PathFinder {
 
         // Calculates the optimal A* path
         calculatePath();
+
         return new Path(Step.fromGridCoordinates(finalPath));
     }
 
