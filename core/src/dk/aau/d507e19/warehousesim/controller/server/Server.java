@@ -167,6 +167,7 @@ public class Server {
     }
 
 
-
-
+    public int getPriority(Robot firstRobot) {
+        return 100 - firstRobot.getRobotID(); // todo Very important - Cycle priority between robots
+    }
 }

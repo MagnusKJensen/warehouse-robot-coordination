@@ -11,13 +11,12 @@ import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.exception.DestinationReservedIndefinitelyException;
 import dk.aau.d507e19.warehousesim.exception.NoPathFoundException;
-
 import java.util.ArrayList;
 
 public class OneStepWaitingPathFinder implements PathFinder {
 
     private static final long WAITING_INTERVAL_TICKS = TimeUtils.secondsToTicks(0.4f);
-    private static final long MAX_WAIT_TIME_TICKS = TimeUtils.secondsToTicks(10f);
+    private static final long MAX_WAIT_TIME_TICKS = TimeUtils.secondsToTicks(120f);
     private Robot robot;
     private Server server;
 

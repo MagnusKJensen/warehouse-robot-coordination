@@ -223,4 +223,17 @@ public class ReservationManager {
 
         return reservations;
     }
+
+    public Reservation getIndefiniteReservationsAt(GridCoordinate gridCoordinate){
+        int x = gridCoordinate.getX();
+        int y = gridCoordinate.getY();
+        ArrayList<Reservation> reservations = reservationTiles[x][y]
+                .getOverlappingReservations(TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks()));
+
+        for(Reservation res : reservations){
+            if(res.getTimeFrame().getTimeMode() == TimeFrame.TimeMode.UNBOUNDED) return res;
+        }
+
+        throw new IllegalArgumentException("No indefinite reservations at grid coordinate: " + gridCoordinate);
+    }
 }

@@ -6,9 +6,9 @@ public class NextStepBlockedException extends NoPathFoundException {
 
     public final GridCoordinate blockedCoordinate;
 
-    public NextStepBlockedException(GridCoordinate start, GridCoordinate dest) {
+    public NextStepBlockedException(GridCoordinate start, GridCoordinate dest, GridCoordinate blockedCoordinate) {
         super(start, dest, "Cannot plan path because next step is blocked");
-        blockedCoordinate = dest;
+        this.blockedCoordinate = blockedCoordinate;
     }
 
 }

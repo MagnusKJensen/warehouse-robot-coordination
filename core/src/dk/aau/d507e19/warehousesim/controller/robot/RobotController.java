@@ -10,6 +10,7 @@ import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.exception.DoubleReservationException;
 import dk.aau.d507e19.warehousesim.statistics.StatisticsManager;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -151,6 +152,25 @@ public class RobotController {
     }
 
     public boolean requestChainedMove(Robot firstRobot, GridCoordinate...gridCoordinates){
+        if(robot.getCurrentStatus() == Status.RELOCATING)
+            return false; // Already in the process of relocating
+
+        if(robot.getCurrentStatus() != Status.AVAILABLE){
+            // Can't be interrupted by lower priority robots (unless idle)
+            int firstRobotPriority = server.getPriority(firstRobot);
+            int selfPriority = server.getPriority(this.robot);
+            if(firstRobotPriority < selfPriority)
+                return false;
+
+            if(!interruptCurrentTask())
+                return false;
+        }
+
+
+        ArrayList<GridCoordinate> neighbours = this.getRobot().getGridCoordinate().getNeighbours(server.getGridBounds());
+        for(GridCoordinate gridCoordinate : neighbours){
+            // TODO: 13/11/2019 Follow arrow in notes
+        }
 
 
         return false;

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class TimeHeuristic implements Heuristic {
 
-    private static DummyPathFinder dummyPathFinder = new DummyPathFinder();
+    private static DummyPathFinder dummyPathFinder = new DummyPathFinder(null);
 
     @Override
     public double getHeuristic(Path path, GridCoordinate goal, RobotController robotController) {
