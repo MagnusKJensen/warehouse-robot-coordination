@@ -10,13 +10,50 @@ public class Path {
     ArrayList<Step> allSteps = new ArrayList<>();
 
     public Path(ArrayList<Step> pathToTarget) {
-        this.strippedSteps = pathToTarget;
+        this.strippedSteps = collapseWaitingSteps(pathToTarget);
         allSteps.addAll(strippedSteps);
+
         if(pathToTarget.isEmpty())
             throw new IllegalArgumentException("Path must contain at least one coordinate");
         if(!isValidPath())
             throw new IllegalArgumentException("Paths must be continuous");
+
         strippedSteps = generateStrippedPath(allSteps);
+    }
+
+    private ArrayList<Step> collapseWaitingSteps(ArrayList<Step> pathToTarget) {
+        ArrayList<Step> collapsedSteps = new ArrayList<>();
+
+        // Remove first step if immediately followed by waiting step
+        if(pathToTarget.size() > 1 && pathToTarget.get(1).isWaitingStep()) {
+            pathToTarget.remove(0);
+        }
+
+        Step previousStep = pathToTarget.get(0);
+        for(int i = 1; i < pathToTarget.size(); i++){
+            Step currentStep = pathToTarget.get(i);
+            if(previousStep.isWaitingStep() && currentStep.isWaitingStep()){
+                previousStep = combineWaitingSteps(previousStep, currentStep);
+                continue;
+            }else{
+                collapsedSteps.add(previousStep);
+            }
+
+            previousStep = currentStep;
+        }
+
+        // Add last step
+        collapsedSteps.add(previousStep);
+
+        return collapsedSteps;
+    }
+
+    private Step combineWaitingSteps(Step previousStep, Step currentStep) {
+        if(!previousStep.getGridCoordinate().equals(currentStep.getGridCoordinate()))
+            throw new IllegalArgumentException("Cannot combine waiting steps because they do not have the same coordinate");
+
+        return new Step(previousStep.getGridCoordinate(), previousStep.getWaitTimeInTicks() +
+                currentStep.getWaitTimeInTicks());
     }
 
 

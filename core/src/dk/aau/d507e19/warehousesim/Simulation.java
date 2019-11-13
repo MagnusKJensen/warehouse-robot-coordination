@@ -136,6 +136,7 @@ public class Simulation {
         simulationStartTime = new Date(System.currentTimeMillis());
 
         statisticsManager = new StatisticsManager(this);
+        updateRenderedBounds();
     }
 
     private WarehouseSpecs readWarehouseSpecsFromFile(String specFileName) {

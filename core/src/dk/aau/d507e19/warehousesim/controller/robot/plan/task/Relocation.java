@@ -40,7 +40,7 @@ public class Relocation implements Task {
                 } while (!server.getGridBounds().isWithinBounds(destination));
             }
 
-            navigation = Navigation.getInstance(robotController, destination, 1);
+            navigation = Navigation.getInstance(robotController, destination, 3);
 
         }
 

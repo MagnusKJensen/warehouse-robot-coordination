@@ -1,6 +1,6 @@
 {
-  "wareHouseWidth": 30,
-  "wareHouseHeight": 30,
+  "wareHouseWidth": 10,
+  "wareHouseHeight": 10,
   "WAREHOUSE_BOUNDS": {
     "startX": 0,
     "startY": 0,
@@ -19,7 +19,7 @@
     ]
   ],
   "isRandomProductDistribution": true,
-  "numberOfRobots": 30,
+  "numberOfRobots": 99,
   "robotTopSpeed": 3.0,
   "robotAcceleration": 0.8,
   "robotDeceleration": 2.0,

@@ -6,6 +6,7 @@ import dk.aau.d507e19.warehousesim.controller.path.Line;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
+import dk.aau.d507e19.warehousesim.controller.robot.MovementPredictor;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.LineTraversal;
@@ -175,6 +176,22 @@ public abstract class Navigation implements Task{
         }
 
         throw new RuntimeException("No occupying robot; no robot has reserved grid tile :" + dest + " indefinitely");
+    }
+
+    protected void reservePath(Path path, boolean reserveLastTileIndefinitely) {
+        Server server = robotController.getServer();
+        ArrayList<Reservation> reservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
+
+        if (reserveLastTileIndefinitely) { // Replace last reservation with an indefinite one
+            Reservation lastReservation = reservations.get(reservations.size() - 1);
+            TimeFrame indefiniteTimeFrame = TimeFrame.indefiniteTimeFrameFrom(lastReservation.getTimeFrame().getStart());
+            Reservation indefiniteReservation = new Reservation
+                    (lastReservation.getRobot(), lastReservation.getGridCoordinate(), indefiniteTimeFrame);
+            reservations.remove(reservations.size() - 1);
+            reservations.add(indefiniteReservation);
+        }
+
+        server.getReservationManager().reserve(reservations);
     }
 
     private void complete() {

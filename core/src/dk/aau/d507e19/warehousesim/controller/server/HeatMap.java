@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class HeatMap {
 
     public static final Color coldColor = new Color( 51f / 255f, 191f / 255f, 232f / 255f, 0.6f);
-    public static final Color warmColor = new Color( 243f / 255f, 91f / 255f, 33f / 255f, 0.6f);
+    public static final Color warmColor = new Color( 243f / 255f, 91f / 255f, 33f / 255f, 0.8f);
     public static final Color neutralColor = new Color( 255f / 255f, 255f / 255f, 255f / 255f, 0.1f);
 
     static class Neighbour{
@@ -23,7 +23,7 @@ public class HeatMap {
         }
     }
 
-    private static final int heatFactor = 1;
+    private static final int heatFactor = 2;
 
     // Distance at which neighbours will be affected
     private static final int robotHeat = 3 * heatFactor;

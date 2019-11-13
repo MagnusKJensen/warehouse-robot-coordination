@@ -2,18 +2,16 @@ package dk.aau.d507e19.warehousesim.controller.robot.plan.task;
 
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
-import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import dk.aau.d507e19.warehousesim.controller.robot.MovementPredictor;
-import dk.aau.d507e19.warehousesim.controller.robot.Robot;
-import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
+import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.exception.DestinationReservedIndefinitelyException;
 import dk.aau.d507e19.warehousesim.exception.NoPathFoundException;
+import javafx.collections.transformation.SortedList;
 
-import java.util.ArrayList;
+import java.util.*;
 
 public class ReservationNavigation extends Navigation {
 
@@ -21,6 +19,7 @@ public class ReservationNavigation extends Navigation {
     private PathFinder pathFinder;
     private Robot robot;
     private Server server;
+    private int succesiveAttemps = 1;
 
     public ReservationNavigation(RobotController robotController, GridCoordinate destination) {
         this(robotController, destination, UNLIMITED_RETRIES);
@@ -45,16 +44,46 @@ public class ReservationNavigation extends Navigation {
             askOccupyingRobotToMove(e.getDest());
             return false;
         } catch (NoPathFoundException e) {
-            // Path planning failed - Retrying after delay
-            //System.out.println("Path finding failed. Start : " + e.getStart() + " Destination : " + e.getDest()
-            //+ "at time : " + server.getTimeInTicks());
+            handlePotentialBlock();
             return false;
         }
 
         // Remove previously held reservations
         setNewPath(newPath);
         updateReservations(newPath);
+        succesiveAttemps = 1;
         return true;
+    }
+
+    // Asks blocking robots to move
+    private void handlePotentialBlock() {
+        // Ask one more neighbour for each time relocation has failed
+        final int MAX_NEIGHBOURS_TO_ASK = 4;
+        int neighboursToAsk = Math.min(succesiveAttemps, MAX_NEIGHBOURS_TO_ASK);
+
+        int neighbourRadius = 3;
+        ArrayList<Robot> neighbours = getNeighboursByDistance(neighbourRadius);
+        Iterator<Robot> neighbourIterator = neighbours.iterator();
+        while(neighbourIterator.hasNext() && neighboursToAsk > 0){
+            neighbourIterator.next().getRobotController().requestMove();
+            neighboursToAsk--;
+        }
+        succesiveAttemps += 1;
+    }
+
+    private ArrayList<Robot> getNeighboursByDistance(int maxDist) {
+        ArrayList<Robot> nearestRobots = new ArrayList<>(server.getAllRobots());
+
+        nearestRobots.removeIf((r) -> r.equals(this.robot)
+                || r.getApproximateGridCoordinate().manhattanDistanceFrom(this.robot.getGridCoordinate()) > maxDist);
+
+        Collections.sort(nearestRobots, (r1, r2) -> {
+            int r1Distance = r1.getApproximateGridCoordinate().manhattanDistanceFrom(this.robot.getGridCoordinate());
+            int r2Distance = r2.getApproximateGridCoordinate().manhattanDistanceFrom(this.robot.getGridCoordinate());
+            return Integer.compare(r1Distance, r2Distance);
+        });
+
+        return nearestRobots;
     }
 
     private void updateReservations(Path newPath) {
@@ -70,29 +99,13 @@ public class ReservationNavigation extends Navigation {
         }
     }
 
-    private void reservePath(Path path, boolean reserveLastTileIndefinitely) {
-        Server server = robotController.getServer();
-        ArrayList<Reservation> reservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
-
-        if (reserveLastTileIndefinitely) { // Replace last reservation with an indefinite one
-            Reservation lastReservation = reservations.get(reservations.size() - 1);
-            TimeFrame indefiniteTimeFrame = TimeFrame.indefiniteTimeFrameFrom(lastReservation.getTimeFrame().getStart());
-            Reservation indefiniteReservation = new Reservation
-                    (lastReservation.getRobot(), lastReservation.getGridCoordinate(), indefiniteTimeFrame);
-            reservations.remove(reservations.size() - 1);
-            reservations.add(indefiniteReservation);
-        }
-
-        server.getReservationManager().reserve(reservations);
-    }
-
     private void reserveCurrentTileIndefinitely() {
         Server server = robotController.getServer();
         ReservationManager reservationManager = server.getReservationManager();
         reservationManager.reserve(robot, robot.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks()));
     }
 
-    private Reservation createLastTileIndefiniteReservation(ArrayList<Reservation> reservations) {
+    public static Reservation createLastTileIndefiniteReservation(ArrayList<Reservation> reservations) {
         Reservation lastReservation = reservations.get(reservations.size() - 1);
         TimeFrame indefiniteTimeFrame = TimeFrame.indefiniteTimeFrameFrom(lastReservation.getTimeFrame().getStart());
         return new Reservation(lastReservation.getRobot(), lastReservation.getGridCoordinate(), indefiniteTimeFrame);
