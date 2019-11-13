@@ -19,7 +19,7 @@ public class StorageGrid {
     private final Tile[][] tiles;
     public final int width, height;
 
-    private ArrayList<GridCoordinate> pickerPoints = new ArrayList<>();
+    private ArrayList<GridCoordinate> pickerPoints = new ArrayList<>(),chargerPoints = new ArrayList<>(),maintenancePoints = new ArrayList<>();
     private Simulation simulation;
     private ArrayList<Product> allProducts = new ArrayList<>();
 
@@ -29,6 +29,8 @@ public class StorageGrid {
         this.tiles = new Tile[width][height];
         this.simulation = simulation;
         generatePickerPoints();
+        generateChargerPoints();
+        generateMaintenancePoints();
         fillGrid();
     }
 
@@ -50,8 +52,18 @@ public class StorageGrid {
 
     private void generatePickerPoints() {
         ArrayList<GridCoordinate> gridCoordinates;
-        gridCoordinates = Simulation.getWarehouseSpecs().pickerPlacementPattern.generatePattern(Simulation.getWarehouseSpecs().numberOfPickers);
+        gridCoordinates = Simulation.getWarehouseSpecs().pickerPlacementPattern.generatePattern(Simulation.getWarehouseSpecs().numberOfPickers,"picker");
         pickerPoints.addAll(gridCoordinates);
+    }
+    private void generateChargerPoints() {
+        ArrayList<GridCoordinate> gridCoordinates;
+        gridCoordinates = Simulation.getWarehouseSpecs().chargerPlacementPattern.generatePattern(Simulation.getWarehouseSpecs().numberOfChargers,"charger");
+        chargerPoints.addAll(gridCoordinates);
+    }
+    private void generateMaintenancePoints() {
+        ArrayList<GridCoordinate> gridCoordinates;
+        gridCoordinates = Simulation.getWarehouseSpecs().maintenancePlacementPattern.generatePattern(Simulation.getWarehouseSpecs().numberOfMaintenanceTiles,"maintenance");
+        maintenancePoints.addAll(gridCoordinates);
     }
 
     private void arePickerPointsOutsideGrid(int[][] pickers) {
@@ -67,6 +79,8 @@ public class StorageGrid {
         for(int y = 0;  y < height; y++){
             for(int x = 0; x < width; x++){
                 if(isAPickerPoint(x,y)) tiles[x][y] = new PickerTile(x,y);
+                else if(isAChargerPoint(x,y)) tiles[x][y] = new ChargingTile(x,y);
+                else if(isAMaintenancePoint(x,y)) tiles[x][y] = new MaintenanceTile(x,y);
                 else tiles[x][y] = new BinTile(x, y);
             }
         }
@@ -108,7 +122,22 @@ public class StorageGrid {
         }
         return false;
     }
-
+    public boolean isAChargerPoint(int x, int y){
+        for (GridCoordinate charger: chargerPoints) {
+            if(charger.getX() == x && charger.getY() == y){
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean isAMaintenancePoint(int x, int y){
+        for (GridCoordinate maintenance: maintenancePoints) {
+            if(maintenance.getX() == x && maintenance.getY() == y){
+                return true;
+            }
+        }
+        return false;
+    }
     protected void setAllProducts(ArrayList<Product> prods){
         allProducts = prods;
     }
