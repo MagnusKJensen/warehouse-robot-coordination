@@ -157,7 +157,7 @@ public class Simulation {
         // Auto generate robots
         int x = 0, y = 0;
         ArrayList<GridCoordinate> gridCoordinates;
-        gridCoordinates = Simulation.warehouseSpecs.robotPlacementPattern.generatePattern(Simulation.warehouseSpecs.numberOfRobots);
+        gridCoordinates = Simulation.warehouseSpecs.robotPlacementPattern.generatePattern(Simulation.warehouseSpecs.numberOfRobots,"robot");
 
         int id = 0;
         for(GridCoordinate gridCoordinate : gridCoordinates)
