@@ -20,15 +20,14 @@ public class ExcelWriter {
     private static final String[] robotStatsHeader = {"ID", "Deliveries_Completed", "Distance_traveled_in_meters", "IdleTimeInSeconds"};
     private static final String[] robotSummaryHeader = {"", "Measurement", "RobotID"};
     private static final String[] orderSummaryHeader =  {"", "Measurement", "OrderID", "Products"};
+    private static final String[] overviewHeader = {"", "Measurement"};
     private static String PATH_TO_SIM_FOLDER;
-    private static Simulation simulation;
     private DecimalFormat decimalFormatter = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
-    private static final String GENERAL_STATS_FILENAME = "generalStats";
-    private static final String ORDER_STATS_FILENAME = "orderStats";
-    private static final String ROBOT_STATS_FILENAME = "robotStats";
+    private static final String GENERAL_STATS_FILENAME = "generalStats.xlsx";
+    private static final String ORDER_STATS_FILENAME = "orderStats.xlsx";
+    private static final String ROBOT_STATS_FILENAME = "robotStats.xlsx";
 
-    public ExcelWriter(Simulation simulation, String path) {
-        ExcelWriter.simulation = simulation;
+    public ExcelWriter(String path) {
         // Apply patterns to the decimal formatter, that is used in the statistics files
         decimalFormatter.applyPattern("###.00");
         decimalFormatter.setRoundingMode(RoundingMode.HALF_UP);
@@ -37,15 +36,103 @@ public class ExcelWriter {
         PATH_TO_SIM_FOLDER = path;
     }
 
-    public void writeRobotStats(){
+    public void writeOverviewFile(AllSeedsOverview allSeedsOverview){
+        String pathToOverview = PATH_TO_SIM_FOLDER + File.separator + "Overview";
+        Workbook workbook = getOrCreateWorkbook(pathToOverview + ".xlsx");
+
+        // Create a Sheet
+        String sheetName = "Summary";
+        Sheet sheet = getOrCreateSheet(workbook, sheetName);
+
+        createHeaders(workbook, sheet, overviewHeader);
+
+        // Create Other rows and cells with rest of the data data
+        int rowNum = 1;
+        /**
+         * General stats
+         */
+        Row row = sheet.createRow(rowNum++);
+        row.createCell(0).setCellValue("General stats");
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("AvailableProductsLeft Average", allSeedsOverview.getAvailableProductsLeftAverage(), row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("OrdersInQueue Average", allSeedsOverview.getOrdersInQueueAverage(), row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Orders Per Minute average", allSeedsOverview.getOrdersPerMinuteAverage(), row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Ultimate Highest order per minute" , allSeedsOverview.getUltimateHighestOrdersPerMinute(), row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Ultimate Lowest order per minute", allSeedsOverview.getUltimateLowestOrderPerMinute(), row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Orders finished average", allSeedsOverview.getOrdersFinishedAverage(), row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Lowest orders finished", allSeedsOverview.getUltimateLowestOrdersFinished(), row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Most orders finished", allSeedsOverview.getUltimateHighestOrdersFinished(), row);
+        rowNum++;
+        /**
+         * Order stats
+         */
+        row = sheet.createRow(rowNum++);
+        row.createCell(0).setCellValue("Order Stats");
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Average order average", allSeedsOverview.getAverageOrderAverage(), row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Quickest order average", allSeedsOverview.getQuickestOrderAverage(), row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Slowest order average", allSeedsOverview.getSlowestOrderAverage(), row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Ultimate Quickest order", allSeedsOverview.getUltimateQuickestOrder(), row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Ultimate Slowest order", allSeedsOverview.getUltimateSlowestOrder(), row);
+        rowNum++;
+        /**
+         * Robot stats
+         */
+        row = sheet.createRow(rowNum++);
+        row.createCell(0).setCellValue("Robot Stats");
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Average distance traveled average", allSeedsOverview.getAverageDistanceTraveledAverage(), row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Shortest distance traveled average", allSeedsOverview.getShortestDistanceTraveledAverage(), row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Longest distance traveled average", allSeedsOverview.getLongestDistanceTraveledAverage(), row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Average idle time average", allSeedsOverview.getAverageIdleTimeAverage(),row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Least idle time average", allSeedsOverview.getLeastIdleTimeAverage(),row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Most idle time average", allSeedsOverview.getMostIdleTimeAverage(),row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Average deliveries per robot average", allSeedsOverview.getAverageDeliveriesAverage(), row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Fewest deliveries per robot average", allSeedsOverview.getFewestDeliveriesAverage(),row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Most deliveries per robot average", allSeedsOverview.getMostDeliveriesAverage(),row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Ultimate longest distance traveled", allSeedsOverview.getUltimateLongestDistanceTraveled(),row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Ultimate shortest distance traveled", allSeedsOverview.getUltimateShortestDistanceTraveled(), row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Ultimate most deliveries for robot", allSeedsOverview.getUltimateMostDeliveries(), row);
+        row = sheet.createRow(rowNum++);
+        createOverviewRow("Ultimate fewest deliveries for robot", allSeedsOverview.getUltimateFewestDeliveries(), row);
+
+        resizeAllColumnSizes(overviewHeader, sheet);
+
+        String pathToFile = pathToOverview + ".xlsx";
+        saveWorkbook(workbook, pathToFile);
+    }
+
+    public void writeRobotStats(Simulation simulation){
         String pathToRobotStats = PATH_TO_SIM_FOLDER + ROBOT_STATS_FILENAME;
         Workbook workbook = getOrCreateWorkbook(pathToRobotStats);
 
         // Create a Sheet
-        String sheetName ="Tick " + simulation.getTimeInTicks();
+        String sheetName = "Tick " + simulation.getTimeInTicks();
         Sheet sheet = getOrCreateSheet(workbook, sheetName);
 
-        createHeaders(workbook, sheet, generalStatsHeader);
+        createHeaders(workbook, sheet, robotStatsHeader);
 
         // Write robot stats
         ArrayList<Robot> robots = simulation.getAllRobots();
@@ -58,11 +145,11 @@ public class ExcelWriter {
 
         resizeAllColumnSizes(robotStatsHeader, sheet);
 
-        String pathToFile = PATH_TO_SIM_FOLDER + ROBOT_STATS_FILENAME + ".xlsx";
+        String pathToFile = PATH_TO_SIM_FOLDER + ROBOT_STATS_FILENAME;
         saveWorkbook(workbook, pathToFile);
     }
 
-    public void writeOrderStats(){
+    public void writeOrderStats(Simulation simulation){
         String pathToRobotStats = PATH_TO_SIM_FOLDER + ORDER_STATS_FILENAME;
         Workbook workbook = getOrCreateWorkbook(pathToRobotStats);
 
@@ -83,11 +170,11 @@ public class ExcelWriter {
 
         resizeAllColumnSizes(orderStatsHeader, sheet);
 
-        String pathToFile = PATH_TO_SIM_FOLDER + ORDER_STATS_FILENAME + ".xlsx";
+        String pathToFile = PATH_TO_SIM_FOLDER + ORDER_STATS_FILENAME;
         saveWorkbook(workbook, pathToFile);
     }
 
-    private void writeGeneralStatsToSheets(String sheetName){
+    private void writeGeneralStatsToSheets(String sheetName, Simulation simulation){
         String pathToRobotStats = PATH_TO_SIM_FOLDER + GENERAL_STATS_FILENAME;
         Workbook workbook = getOrCreateWorkbook(pathToRobotStats);
 
@@ -127,15 +214,15 @@ public class ExcelWriter {
 
         resizeAllColumnSizes(generalStatsHeader, sheet);
 
-        String pathToFile = PATH_TO_SIM_FOLDER + GENERAL_STATS_FILENAME + ".xlsx";
+        String pathToFile = PATH_TO_SIM_FOLDER + GENERAL_STATS_FILENAME;
         saveWorkbook(workbook, pathToFile);
     }
 
-    public void writeGeneralStats(){
-        writeGeneralStatsToSheets("Tick " + simulation.getTimeInTicks());
+    public void writeGeneralStats(Simulation simulation){
+        writeGeneralStatsToSheets("Tick " + simulation.getTimeInTicks(), simulation);
     }
 
-    public void summarizeOrderStats(){
+    public void summarizeOrderStats(Simulation simulation){
         String pathToOrderStats = PATH_TO_SIM_FOLDER + ORDER_STATS_FILENAME;
         Workbook workbook = getOrCreateWorkbook(pathToOrderStats);
 
@@ -178,14 +265,14 @@ public class ExcelWriter {
 
 
         resizeAllColumnSizes(orderSummaryHeader, sheet);
-        saveWorkbook(workbook, pathToOrderStats + ".xlsx");
+        saveWorkbook(workbook, pathToOrderStats);
     }
 
-    public void summarizeGeneralStats(){
-        writeGeneralStatsToSheets("Summary");
+    public void summarizeGeneralStats(Simulation simulation){
+        writeGeneralStatsToSheets("Summary", simulation);
     }
 
-    public void summarizeRobotStats(){
+    public void summarizeRobotStats(Simulation simulation){
         String pathToRobotStats = PATH_TO_SIM_FOLDER + ROBOT_STATS_FILENAME;
         Workbook workbook = getOrCreateWorkbook(pathToRobotStats);
 
@@ -265,7 +352,7 @@ public class ExcelWriter {
                 row);
 
         resizeAllColumnSizes(robotSummaryHeader, sheet);
-        saveWorkbook(workbook, pathToRobotStats + ".xlsx");
+        saveWorkbook(workbook, pathToRobotStats);
     }
 
     private void createHeaders(Workbook workbook, Sheet sheet, String[] header) {
@@ -302,7 +389,7 @@ public class ExcelWriter {
         row.createCell(2).setCellValue(robotID);
     }
 
-    private Sheet getOrCreateSheet(Workbook workbook, String sheetName){
+    public static Sheet getOrCreateSheet(Workbook workbook, String sheetName){
         Sheet sheet;
         if(workbook.getSheet(sheetName) != null) sheet = workbook.getSheet(sheetName);
         else sheet = workbook.createSheet(sheetName);
@@ -316,9 +403,9 @@ public class ExcelWriter {
         }
     }
 
-    private Workbook getOrCreateWorkbook(String pathToWorkBook) {
+    public static Workbook getOrCreateWorkbook(String pathToWorkBook) {
         Workbook workbook;
-        if(!new File(pathToWorkBook + ".xlsx").exists()){
+        if(!new File(pathToWorkBook).exists()){
             workbook = createExcelDocument(pathToWorkBook);
         } else workbook = openWorkBook(pathToWorkBook);
 
@@ -343,10 +430,10 @@ public class ExcelWriter {
         }
     }
 
-    private Workbook openWorkBook(String pathToWorkBook) {
+    private static Workbook openWorkBook(String pathToWorkBook) {
         InputStream is = null;
         try {
-            is = new FileInputStream(pathToWorkBook + ".xlsx");
+            is = new FileInputStream(pathToWorkBook);
             XSSFWorkbook workbook = new XSSFWorkbook(is);
             return workbook;
         } catch (FileNotFoundException e) {
@@ -358,13 +445,13 @@ public class ExcelWriter {
         return null;
     }
 
-    private Workbook createExcelDocument(String path) {
+    private static Workbook createExcelDocument(String path) {
         Workbook workbook = new XSSFWorkbook();
 
         // Write the output to a file
         FileOutputStream fileOut = null;
         try {
-            String pathToFile = path + ".xlsx";
+            String pathToFile = path;
             fileOut = new FileOutputStream(pathToFile);
             workbook.write(fileOut);
             fileOut.close();
@@ -419,6 +506,16 @@ public class ExcelWriter {
         row.createCell(2).setCellValue(orderID);
         if(products.isEmpty()) row.createCell(3).setCellValue("");
         else row.createCell(3).setCellValue(products.toString());
+    }
+
+    private void createOverviewRow(String name, int measurement, Row row){
+        row.createCell(0).setCellValue(name);
+        row.createCell(1).setCellValue(measurement);
+    }
+
+    private void createOverviewRow(String name, double measurement, Row row){
+        row.createCell(0).setCellValue(name);
+        row.createCell(1).setCellValue(measurement);
     }
 }
 

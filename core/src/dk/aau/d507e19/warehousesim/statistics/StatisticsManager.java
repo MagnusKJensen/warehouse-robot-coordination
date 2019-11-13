@@ -70,20 +70,20 @@ public class StatisticsManager {
     public void addSummaries(){
         String pathToSeedFolder = createFoldersToSeedFolder();
 
-        this.excelWriter = new ExcelWriter(simulation, pathToSeedFolder);
-        excelWriter.summarizeRobotStats();
-        excelWriter.summarizeOrderStats();
-        excelWriter.summarizeGeneralStats();
+        this.excelWriter = new ExcelWriter(pathToSeedFolder);
+        excelWriter.summarizeRobotStats(simulation);
+        excelWriter.summarizeOrderStats(simulation);
+        excelWriter.summarizeGeneralStats(simulation);
     }
 
     public void printStatistics(){
         String pathToSeedFolder = createFoldersToSeedFolder();
 
         // .../core/assets/statistics/*runConfig*_*versionName*/*TaskAllocator___PathFinder*/*statsFiles*
-        this.excelWriter = new ExcelWriter(simulation, pathToSeedFolder);
-        excelWriter.writeGeneralStats();
-        excelWriter.writeOrderStats();
-        excelWriter.writeRobotStats();
+        this.excelWriter = new ExcelWriter(pathToSeedFolder);
+        excelWriter.writeGeneralStats(simulation);
+        excelWriter.writeOrderStats(simulation);
+        excelWriter.writeRobotStats(simulation);
 
         // Copy file with specs from the run. Only done, if it is not already copied once.
         copySpecsFile(pathToSeedFolder);
