@@ -190,7 +190,7 @@ public class AstarTest {
 
         astar.openList.add(tile);
 
-        // Asserts that tile is in openlist and not blocked.
+        // Asserts that tile is in openList and not blocked.
         assertEquals(1, astar.openList.size());
         assertTrue(astar.closedList.isEmpty());
         assertFalse(astar.grid[tile.getCurrentXPosition()][tile.getCurrentYPosition()].isBlocked());
@@ -226,7 +226,7 @@ public class AstarTest {
         // Creates path from the closed list.
         astar.createPathListFromClosedList();
 
-        // Asserts that the finalpath is either smaller or the same size as closed list, it cannot be bigger
+        // Asserts that the finalPath is either smaller or the same size as closed list, it cannot be bigger
         assertTrue(astar.finalPath.size() <= astar.closedList.size());
 
         // Asserts that it has the same start coordinates

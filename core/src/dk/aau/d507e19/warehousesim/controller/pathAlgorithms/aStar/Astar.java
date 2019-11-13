@@ -69,7 +69,6 @@ public class Astar implements PathFinder {
         // Blocks startTile so that it cannot be used anymore
         grid[xStart][yStart].setBlocked(true);
 
-        // TODO: kan man ikke bare sætte start tile til at være current tile?
         // Sets currentTile to the top tile in closedList (startTile)
         currentTile = closedList.get(closedList.size() - 1);
 
@@ -217,7 +216,6 @@ public class Astar implements PathFinder {
         // Adds the starting tile to closed list.
         addStartTileToClosedList();
 
-        // TODO: temp name, new method so that it is easier to test
         calculatePath2();
 
         createPathListFromClosedList();
