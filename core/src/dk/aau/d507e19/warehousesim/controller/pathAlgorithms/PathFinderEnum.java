@@ -38,7 +38,7 @@ public enum PathFinderEnum {
             case RRTSTAR:
                 return new RRTPlanner(RRTType.RRT_STAR, robotController);
             case DUMMYPATHFINDER:
-                return new DummyPathFinder(robotController);
+                return new DummyPathFinder();
             case ASTARCORNERS:
                 return new AstarExtended(server, robotController.getRobot());
             case RRTSTAREXTENDED:

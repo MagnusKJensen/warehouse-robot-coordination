@@ -38,7 +38,9 @@ public abstract class Navigation implements Task{
     private boolean hasFailed = false;
 
     public static Navigation getInstance(RobotController robotController, GridCoordinate destination){
-        if(robotController.getPathFinder().accountsForReservations()){
+        if(robotController.getPathFinder() instanceof PartialPathFinder) {
+            return new SmartNavigation(robotController, destination);
+        }else if(robotController.getPathFinder().accountsForReservations()){
             return new ReservationNavigation(robotController, destination);
         }else{
             return new StepAsideNavigator(robotController, destination);

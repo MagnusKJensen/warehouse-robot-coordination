@@ -13,14 +13,22 @@ public class Path {
         if(pathToTarget.isEmpty())
             throw new IllegalArgumentException("Path must contain at least one coordinate");
         if(!isValidPath(pathToTarget))
-            throw new IllegalArgumentException("Paths must be continuous");
-
+            throw new IllegalArgumentException("Paths must be continuous" + stepsToString(pathToTarget));
         this.strippedSteps = collapseWaitingSteps(pathToTarget);
+
         allSteps.addAll(strippedSteps);
 
 
 
         strippedSteps = generateStrippedPath(allSteps);
+    }
+
+    private String stepsToString(ArrayList<Step> pathToTarget) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for(Step step : pathToTarget){
+            stringBuilder.append(step.toString());
+        }
+        return stringBuilder.toString();
     }
 
     private ArrayList<Step> collapseWaitingSteps(ArrayList<Step> pathToTarget) {

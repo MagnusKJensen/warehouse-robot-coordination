@@ -32,8 +32,9 @@ public class SmartNavigation extends Navigation {
         try {
             newPath = robotController.getPathFinder().calculatePath(start, destination);
         } catch (DestinationReservedIndefinitelyException e) {
-            askOccupyingRobotToMove(e.getDest());
-            return false;
+            //askOccupyingRobotToMove(e.getDest());
+            //return false;
+            return planPartialPath();
         } catch (NoPathFoundException e) {
             return planPartialPath();
         }

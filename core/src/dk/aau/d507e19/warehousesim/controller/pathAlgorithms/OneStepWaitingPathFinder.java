@@ -27,6 +27,10 @@ public class OneStepWaitingPathFinder implements PathFinder {
 
     @Override
     public Path calculatePath(GridCoordinate start, GridCoordinate destination) throws NoPathFoundException {
+        return calculatePath(start, destination, server.getTimeInTicks());
+    }
+
+    public Path calculatePath(GridCoordinate start, GridCoordinate destination, long startTick) throws NoPathFoundException {
         if(!destination.isNeighbourOf(start))
             throw new IllegalArgumentException("Destination coordinate must be immediate neighbour of start coordinate");
 
@@ -44,7 +48,7 @@ public class OneStepWaitingPathFinder implements PathFinder {
             fullPathSteps.add(new Step(destination));
             Path path = new Path(fullPathSteps);
 
-            reservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
+            reservations = MovementPredictor.calculateReservations(robot, path, startTick, 0);
             reservations.add(ReservationNavigation.createLastTileIndefiniteReservation(reservations));
 
             if(server.getReservationManager().hasConflictingReservations(reservations)){

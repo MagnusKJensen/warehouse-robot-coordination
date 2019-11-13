@@ -6,6 +6,6 @@ import dk.aau.d507e19.warehousesim.exception.NextStepBlockedException;
 
 public interface PartialPathFinder extends PathFinder {
 
-    Path findPartialPath(GridCoordinate gridCoordinate, GridCoordinate destination) throws NextStepBlockedException;
+    Path findPartialPath(GridCoordinate start, GridCoordinate destination) throws NextStepBlockedException;
 
 }

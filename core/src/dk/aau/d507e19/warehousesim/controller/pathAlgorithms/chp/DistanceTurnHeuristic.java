@@ -8,7 +8,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 
 public class DistanceTurnHeuristic implements Heuristic{
 
-    private static final DummyPathFinder dummyPathFinder = new DummyPathFinder(null);
+    private static final DummyPathFinder dummyPathFinder = new DummyPathFinder();
 
     public static final double cornerCost = 0.5d;
 
