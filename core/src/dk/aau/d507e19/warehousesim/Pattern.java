@@ -31,21 +31,28 @@ public class Pattern {
         this.customPoints = customPoints;
     }
 
-    public ArrayList<GridCoordinate> generatePattern(int points) {
+    public ArrayList<GridCoordinate> generatePattern(int points, String type) {
         switch (patternType) {
             case SPIRAL:
                 return generateSpiral(points);
             case STACKED_LINES:
                 return generateStackedLines(points);
             case CUSTOM:
-                return customPointsToGridCoordinates();
+                return customPointsToGridCoordinates(type);
         }
         throw new IllegalArgumentException("No pattern generation method exists for the given patternType");
     }
 
-    private ArrayList<GridCoordinate> customPointsToGridCoordinates() {
+    private ArrayList<GridCoordinate> customPointsToGridCoordinates(String type) {
         ArrayList<GridCoordinate> customGridCoordinates = new ArrayList<>();
-        for(int[] i : customPoints)
+        int[][] points;
+        switch (type){
+            case "picker": points = Simulation.getWarehouseSpecs().pickerPoints; break;
+            case "charger": points = Simulation.getWarehouseSpecs().chargerPoints; break;
+            case "maintenance": points = Simulation.getWarehouseSpecs().maintenancePoints; break;
+            default: points = null; throw new RuntimeException("no type: " + type +". Make sure to implement new tile type properly");
+        }
+        for(int[] i : points)
             customGridCoordinates.add(new GridCoordinate(i[0], i[1]));
 
         return customGridCoordinates;
