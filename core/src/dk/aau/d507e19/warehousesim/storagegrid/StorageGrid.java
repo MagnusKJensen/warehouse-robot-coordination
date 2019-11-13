@@ -62,7 +62,7 @@ public class StorageGrid {
     }
     private void generateMaintenancePoints() {
         ArrayList<GridCoordinate> gridCoordinates;
-        gridCoordinates = Simulation.getWarehouseSpecs().maintenancePlacementPattern.generatePattern(Simulation.getWarehouseSpecs().numberOfMaintenanceTiles,"maintenance");
+        gridCoordinates = Simulation.getWarehouseSpecs().maintenancePlacementPattern.generatePattern(Simulation.getWarehouseSpecs().numberOfMaintenance,"maintenance");
         maintenancePoints.addAll(gridCoordinates);
     }
 

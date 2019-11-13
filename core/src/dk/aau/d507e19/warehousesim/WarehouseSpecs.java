@@ -42,6 +42,16 @@ public class WarehouseSpecs {
     public boolean collisionDetectedEnabled = true; // TEMP - Should not be enabled until reservationManager done.
     public Pattern robotPlacementPattern = new Pattern(Pattern.PatternType.STACKED_LINES, 1, WAREHOUSE_BOUNDS);
 
+    /** Charger **/
+    public Pattern chargerPlacementPattern = new Pattern(Pattern.PatternType.SPIRAL, 1, WAREHOUSE_BOUNDS);
+    public int numberOfChargers = 1;
+    public int[][] chargerPoints = {{0,1}};
+
+    /** Maintenance **/
+    public Pattern maintenancePlacementPattern = new Pattern(Pattern.PatternType.SPIRAL, 1, WAREHOUSE_BOUNDS);
+    public int numberOfMaintenance = 1;
+    public int[][] maintenancePoints = {{0,3}};
+
     /** Picker **/
     public Pattern pickerPlacementPattern = new Pattern(Pattern.PatternType.SPIRAL, 1, WAREHOUSE_BOUNDS);
     public int numberOfPickers = 60;
