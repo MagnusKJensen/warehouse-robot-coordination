@@ -1,10 +1,5 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar;
 
-
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.JsonWriter;
-import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
@@ -18,12 +13,9 @@ import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.exception.DestinationReservedIndefinitelyException;
 import dk.aau.d507e19.warehousesim.exception.NoPathFoundException;
 import dk.aau.d507e19.warehousesim.exception.NoValidPathException;
-import dk.aau.d507e19.warehousesim.exception.pathExceptions.BlockedEndDestinationException;
-import dk.aau.d507e19.warehousesim.exception.pathExceptions.NoValidNeighborException;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Optional;
 
 public class Astar implements PathFinder {
 
@@ -273,7 +265,7 @@ public class Astar implements PathFinder {
         Path path = new Path(Step.fromGridCoordinates(finalPath));
 
         if (finalPath.size() < 2) {
-            return i;
+            return false;
         }
 
         // Calculates the path into a list of reservations.
@@ -300,11 +292,13 @@ public class Astar implements PathFinder {
                 i = true;
             }
         }
+
         return i;
     }
 
     @Override
     public Path calculatePath(GridCoordinate start, GridCoordinate destination) throws NoPathFoundException {
+
         if(start.equals(destination))
             return Path.oneStepPath(new Step(start));
 

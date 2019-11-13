@@ -7,9 +7,6 @@ import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar.Astar;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
-import dk.aau.d507e19.warehousesim.exception.NoPathFoundException;
-
-import java.util.ArrayList;
 
 public class AstarCorners extends Astar {
 
