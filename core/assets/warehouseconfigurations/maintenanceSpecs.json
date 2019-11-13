@@ -27,7 +27,7 @@
     ]
   ],
   "isRandomProductDistribution": true,
-  "numberOfRobots": 1,
+  "numberOfRobots": 5,
   "robotTopSpeed": 3.0,
   "robotAcceleration": 0.8,
   "robotDeceleration": 2.0,
