@@ -15,11 +15,11 @@ public class OpenListSorterTest {
     public void compare() {
         AStarTile aStarTileOne = new AStarTile(1, 2);
         aStarTileOne.calculateG(0);
-        aStarTileOne.calculateH(1,1);
+        aStarTileOne.calculateH(1, 1);
         aStarTileOne.calculateF();
         AStarTile aStarTileTwo = new AStarTile(1, 1);
         aStarTileTwo.calculateG(1);
-        aStarTileTwo.calculateH(1,1);
+        aStarTileTwo.calculateH(1, 1);
         aStarTileTwo.calculateF();
 
         ArrayList<AStarTile> testListOfTiles = new ArrayList<>();
@@ -27,6 +27,6 @@ public class OpenListSorterTest {
         testListOfTiles.add(aStarTileTwo);
 
         testListOfTiles.sort(new OpenListSorter());
-   assertEquals(testListOfTiles.get(0), aStarTileOne);
+        assertEquals(testListOfTiles.get(0), aStarTileOne);
     }
 }
