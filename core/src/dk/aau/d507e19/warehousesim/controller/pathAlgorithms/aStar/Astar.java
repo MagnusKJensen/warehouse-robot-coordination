@@ -76,6 +76,7 @@ public class Astar implements PathFinder {
     }
 
     public void checkNeighborValidity() {
+
         //Checks every potential neighbor to currentTile the same way.
         GridCoordinate aboveNeighbor = new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition() + 1);
         GridCoordinate downstairsNeighbor = new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition() - 1);
@@ -188,16 +189,18 @@ public class Astar implements PathFinder {
 
     public void createPathListFromClosedList() {
 
+        AStarTile currentTileClosedList = currentTile.copy();
+
         // If the list is bigger than one object, then go through the whole list
         if (closedList.size() > 1) {
             AStarTile prevTempTile = closedList.get(closedList.size() - 2);
-            finalPath.add(new GridCoordinate(currentTile.getCurrentXPosition(), currentTile.getCurrentYPosition()));
+            finalPath.add(new GridCoordinate(currentTileClosedList.getCurrentXPosition(), currentTileClosedList.getCurrentYPosition()));
 
             // Find the object which matches the previous tiles coordinates
             for (int i = closedList.size() - 2; i > 0; i--) {
-                if (currentTile.getPreviousXPosition() == prevTempTile.getCurrentXPosition() && currentTile.getGetPreviousYPosition() == prevTempTile.getCurrentYPosition()) {
+                if (currentTileClosedList.getPreviousXPosition() == prevTempTile.getCurrentXPosition() && currentTileClosedList.getGetPreviousYPosition() == prevTempTile.getCurrentYPosition()) {
                     finalPath.add(new GridCoordinate(prevTempTile.getCurrentXPosition(), prevTempTile.getCurrentYPosition()));
-                    currentTile = closedList.get(i);
+                    currentTileClosedList = closedList.get(i);
                 }
                 prevTempTile = closedList.get(i - 1);
             }

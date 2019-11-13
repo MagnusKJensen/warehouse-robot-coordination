@@ -11,7 +11,6 @@ import dk.aau.d507e19.warehousesim.exception.NoPathFoundException;
 
 import java.util.ArrayList;
 
-// TODO: virker ikke???
 public class AstarCorners extends Astar {
 
     public AstarCorners(Server server, Robot robot) {
@@ -73,17 +72,18 @@ public class AstarCorners extends Astar {
         GridCoordinate gcNeighbor = new GridCoordinate(neighbor.getCurrentXPosition(), neighbor.getCurrentYPosition());
 
         // Make new temp path
-        ArrayList<GridCoordinate> temp = new ArrayList<>();
         createPathListFromClosedList();
-        temp.add(gcNeighbor);
+        finalPath.add(gcNeighbor);
 
         // Calculate reservations
-        Path path = new Path(Step.fromGridCoordinates(temp));
+        Path path = new Path(Step.fromGridCoordinates(finalPath));
 
         // Get corners
         int corners = path.getStrippedPath().size();
 
         // Adds corners to neighbors G
         neighbor.setG(neighbor.getG() + corners);
+
+        finalPath.clear();
     }
 }

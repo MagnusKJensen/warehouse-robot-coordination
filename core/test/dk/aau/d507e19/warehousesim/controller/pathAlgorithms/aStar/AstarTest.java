@@ -12,6 +12,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
+import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.exception.NoPathFoundException;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -29,12 +30,14 @@ public class AstarTest {
     Astar astar;
     Server server = Mockito.mock(Server.class);
     Robot robot = Mockito.mock(Robot.class);
+    ReservationManager reservationManager = Mockito.mock(ReservationManager.class);
 
     @Before
     public void initiate(){
         RunConfigurator.setDefaultRunConfiguration();
         when(server.getGridWidth()).thenReturn(Simulation.getWarehouseSpecs().wareHouseWidth);
         when(server.getGridHeight()).thenReturn(Simulation.getWarehouseSpecs().wareHouseHeight);
+        when(server.getReservationManager()).thenReturn(reservationManager);
         astar = new Astar(server, robot);
     }
 
@@ -235,7 +238,7 @@ public class AstarTest {
         assertEquals(astar.yEndPosition, astar.finalPath.get(astar.finalPath.size()-1).getY());
     }
 
-    @Ignore
+    @Ignore //TODO: make mockito work for reservationmanager
     public void isReserved() {
         // Sets coordinates
         astar.xStart = 0;
@@ -259,18 +262,33 @@ public class AstarTest {
         // Path from finalpath
         Path path = new Path(Step.fromGridCoordinates(astar.finalPath));
 
+        // Makes a the list of reservations so that it can reserve a tile in the reservation, so that isReserved returns True
         ArrayList<Reservation> listOfReservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
 
-        System.out.println(listOfReservations.size());
 
-        //TODO: hvorfor virker det her ikke???
-        when(astar.reservationManager.isReserved(listOfReservations.get(listOfReservations.size()-1).getGridCoordinate(), listOfReservations.get(listOfReservations.size()-1).getTimeFrame())).thenReturn(true);
+        for (Reservation res: listOfReservations) {
+            if (res.equals(listOfReservations.get(listOfReservations.size()-1))){
+                when(reservationManager.isReserved(res.getGridCoordinate(), res.getTimeFrame())).thenReturn(true);
+            } else {
+                when(reservationManager.isReserved(res.getGridCoordinate(), res.getTimeFrame())).thenReturn(false);
+            }
+        }
 
+        Reservation lastReservation = listOfReservations.get(listOfReservations.size()-1);
+        when(reservationManager.hasConflictingReservations(lastReservation)).thenReturn(false);
+        when(reservationManager.canReserve(lastReservation.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(lastReservation.getTimeFrame().getStart()))).thenReturn(true);
+
+
+
+            // Should be reserved
         try {
-            assertTrue(astar.isReserved());
+            //assertTrue(astar.isReserved());
+            System.out.println(astar.isReserved());
         } catch (NoPathFoundException e) {
             e.printStackTrace();
         }
+
+
     }
 
     @Ignore
@@ -281,7 +299,7 @@ public class AstarTest {
         astar.xEndPosition = 4;
         astar.yEndPosition = 6;
 
-        //TODO: der er noget galt med reservations??
+        //TODO: der er noget galt med reservations?? se isreserved test
         try{
             astar.calculatePath();
         }catch (NoPathFoundException e){
