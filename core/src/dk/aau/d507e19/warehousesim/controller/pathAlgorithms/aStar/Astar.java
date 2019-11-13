@@ -213,7 +213,11 @@ public class Astar implements PathFinder {
         createPathListFromClosedList();
 
         if (isReserved()) {
+
+            // Clear all lists except for isReservedList
             clear();
+
+            // Calculate a new path with the reserved tiles in mind
             calculatePath();
         }
     }
@@ -264,6 +268,7 @@ public class Astar implements PathFinder {
         // Makes the tempPath to steps
         Path path = new Path(Step.fromGridCoordinates(finalPath));
 
+        // Returns false if finalPath is less than two (Standing on its own tile)
         if (finalPath.size() < 2) {
             return false;
         }
