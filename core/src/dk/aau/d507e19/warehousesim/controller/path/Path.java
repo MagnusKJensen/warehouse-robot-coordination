@@ -14,6 +14,7 @@ public class Path {
             throw new IllegalArgumentException("Path must contain at least one coordinate");
         if(!isValidPath(pathToTarget))
             throw new IllegalArgumentException("Paths must be continuous" + stepsToString(pathToTarget));
+
         this.strippedSteps = collapseWaitingSteps(pathToTarget);
 
         allSteps.addAll(strippedSteps);

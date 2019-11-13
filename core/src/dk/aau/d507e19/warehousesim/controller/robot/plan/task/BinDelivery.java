@@ -32,6 +32,7 @@ public class BinDelivery implements Task {
     public void setRobot(Robot robot) {
         this.robotController = robot.getRobotController();
         this.robot = robot;
+        planTasks();
     }
 
     @Override

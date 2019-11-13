@@ -4,6 +4,7 @@ import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.OneStepWaitingPathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.LineTraversal;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.ReservationNavigation;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
@@ -41,7 +42,10 @@ public class OneTileRelocationTask implements Task {
         try {
             path = oneStepPathfinder.calculatePath(robotController.getRobot().getGridCoordinate(), destination, startTime);
             ArrayList<Reservation> reservations;
+
             reservations = MovementPredictor.calculateReservations(robotController.getRobot(), path, startTime, 0);
+            reservations.add(ReservationNavigation.createLastTileIndefiniteReservation(reservations));
+
             server.getReservationManager().removeReservationsBy(robotController.getRobot());
             server.getReservationManager().reserve(reservations);
 
@@ -70,7 +74,7 @@ public class OneTileRelocationTask implements Task {
 
     @Override
     public boolean isCompleted() {
-        return isCompleted();
+        return completed;
     }
 
     @Override

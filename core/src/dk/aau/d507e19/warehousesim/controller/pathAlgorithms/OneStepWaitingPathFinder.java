@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class OneStepWaitingPathFinder implements PathFinder {
 
     private static final long WAITING_INTERVAL_TICKS = TimeUtils.secondsToTicks(0.4f);
-    private static final long MAX_WAIT_TIME_TICKS = TimeUtils.secondsToTicks(120f);
+    private static final long MAX_WAIT_TIME_TICKS = TimeUtils.secondsToTicks(12000f);
     private Robot robot;
     private Server server;
 

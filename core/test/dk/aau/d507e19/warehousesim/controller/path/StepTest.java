@@ -12,12 +12,6 @@ public class StepTest {
         Step step = new Step(0, 0, 0);
     }
 
-    @Test
-    public void invalidContinuationDoubleWaitTest() {
-        Step firstStep = new Step(0, 0, 50);
-        Step secondStep = new Step(0, 0, 50);
-        assertFalse(secondStep.isStepValidContinuationOf(firstStep));
-    }
 
     @Test
     public void invalidContinuationSamePosition() {
@@ -35,12 +29,8 @@ public class StepTest {
 
     @Test
     public void invalidContinuationOfSelfTest() {
-        // Time step
-        Step step = new Step(0, 0, 50);
-        assertFalse(step.isStepValidContinuationOf(step));
-
         // Movement step
-        step = new Step(0, 0);
+        Step step = new Step(0, 0);
         assertFalse(step.isStepValidContinuationOf(step));
     }
 
