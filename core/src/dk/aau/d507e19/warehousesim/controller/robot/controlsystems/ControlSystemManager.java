@@ -15,7 +15,6 @@ public class ControlSystemManager {
     public void checkSystem(){
         for(Sensor s : sensors){
             if(s.getState() == SensorState.FAILURE){
-                //todo should maybe take RobotController
                 s.handleFailure();
             }
         }

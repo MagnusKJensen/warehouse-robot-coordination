@@ -149,4 +149,8 @@ public class RobotController {
         }
         return false;
     }
+
+    public void moveToChargingStation() {
+        //todo implement
+    }
 }

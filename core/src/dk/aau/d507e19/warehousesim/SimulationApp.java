@@ -15,9 +15,9 @@ import java.io.*;
 
 public class SimulationApp extends ApplicationAdapter {
 
-	public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "runconfigurations/";
+	public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations/";
     public static final long DEFAULT_SEED = 123456789L;
-	public static String CURRENT_RUN_CONFIG = "defaultSpecs.json";
+	public static String CURRENT_RUN_CONFIG = "maintenanceSpecs.json";
 
 	public static final int MENU_WIDTH_IN_PIXELS = 300;
 	// Size of a single square/tile in the grid
@@ -67,7 +67,7 @@ public class SimulationApp extends ApplicationAdapter {
 		centerCamera(menuCamera);
 
 		// Quick way to generate new json files
-		// createJsonFileFromSpecs("newSpecName.json");
+		//createJsonFileFromSpecs("maintenanceSpec.json");
 
 		simulation = new Simulation(DEFAULT_SEED, CURRENT_RUN_CONFIG, this, CURRENT_RUN_CONFIG);
 		sideMenu = new SideMenu(menuViewport, this);
