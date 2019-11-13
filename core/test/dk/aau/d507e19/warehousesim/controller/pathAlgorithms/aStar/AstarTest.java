@@ -238,7 +238,7 @@ public class AstarTest {
         assertEquals(astar.yEndPosition, astar.finalPath.get(astar.finalPath.size()-1).getY());
     }
 
-    @Ignore //TODO: make mockito work for reservationmanager
+    @Test //TODO: make mockito work for reservationmanager
     public void isReserved() {
         // Sets coordinates
         astar.xStart = 0;
@@ -276,7 +276,7 @@ public class AstarTest {
 
         Reservation lastReservation = listOfReservations.get(listOfReservations.size()-1);
         when(reservationManager.hasConflictingReservations(lastReservation)).thenReturn(false);
-        when(reservationManager.canReserve(lastReservation.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(lastReservation.getTimeFrame().getStart()))).thenReturn(true);
+        when(!reservationManager.canReserve(lastReservation.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(lastReservation.getTimeFrame().getStart()))).thenReturn(false);
 
 
 

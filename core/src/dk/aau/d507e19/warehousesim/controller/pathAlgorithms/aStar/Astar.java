@@ -283,6 +283,14 @@ public class Astar implements PathFinder {
 
         Reservation lastReservation = listOfReservations.get(listOfReservations.size()-1);
 
+        // Checks if the last reservation is reserved indefinitely, and if it can reserve indefinitely
+        if (reservationManager.hasConflictingReservations(lastReservation) ||
+                !reservationManager.canReserve(lastReservation.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(lastReservation.getTimeFrame().getStart()))) {
+
+            // Throw new exception if a path cannot be found.
+            throw new NoPathFoundException(listOfReservations.get(0).getGridCoordinate(), lastReservation.getGridCoordinate());
+        }
+
         // Goes through every reservation, except for the first, that is always reserved (where the robot is standing)
         for (int j = 1; j < listOfReservations.size(); j++) {
             if (reservationManager.isReserved(listOfReservations.get(j).getGridCoordinate(), listOfReservations.get(j).getTimeFrame())) {
@@ -292,15 +300,7 @@ public class Astar implements PathFinder {
 
                 // i is now true, so that it can calculate a new path.
                 i = true;
-
-                // It also checks if the last reservation is reserved indefinitely, and if it can reserve indefinitely
-            } else if (reservationManager.hasConflictingReservations(lastReservation) ||
-                    !reservationManager.canReserve(lastReservation.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(lastReservation.getTimeFrame().getStart()))) {
-
-                // Throw new exception if a path cannot be found.
-                throw new NoPathFoundException(listOfReservations.get(0).getGridCoordinate(), lastReservation.getGridCoordinate());
             }
-
         }
         return i;
     }
