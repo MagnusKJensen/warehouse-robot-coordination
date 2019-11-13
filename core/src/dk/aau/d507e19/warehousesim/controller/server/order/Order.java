@@ -102,7 +102,11 @@ public class Order {
         return orderID;
     }
 
-    public long getTimeSpentOnOrder(){
+    public long getTimeSpentOnOrderInMS(){
         return finishTimeInMS - startTimeInMS;
+    }
+
+    public double getTimeSpentOnOrderInSec(){
+        return (double)getTimeSpentOnOrderInMS() / 1000;
     }
 }

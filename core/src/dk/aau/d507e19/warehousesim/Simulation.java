@@ -459,4 +459,8 @@ public class Simulation {
     public GridBounds getRenderedBounds() {
         return renderedBounds;
     }
+
+    public static long getRandomSeed() {
+        return RANDOM_SEED;
+    }
 }
