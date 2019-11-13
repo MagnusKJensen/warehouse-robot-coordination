@@ -50,7 +50,7 @@ public class OneStepWaitingPathFinderTest {
 
     @Test
     public void calculatePath() throws NoPathFoundException {
-        GridCoordinate start = new GridCoordinate(5,5);
+        /*GridCoordinate start = new GridCoordinate(5,5);
         GridCoordinate destination = new GridCoordinate(5,6);
         long expectedWaitTime = 150;
 
@@ -58,9 +58,7 @@ public class OneStepWaitingPathFinderTest {
                 new Reservation(robot2, destination, new TimeFrame(simTimeInTicks, simTimeInTicks + expectedWaitTime)));
 
         Path path = new OneStepWaitingPathFinder(robot1, server).calculatePath(start, destination);
-        for(Step step : path.getFullPath()){
-            System.out.println(step);
-        }
+       */
 
     }
 }

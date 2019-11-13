@@ -4,6 +4,7 @@ import dk.aau.d507e19.warehousesim.TickTimer;
 import dk.aau.d507e19.warehousesim.TimeUtils;
 import dk.aau.d507e19.warehousesim.controller.path.Line;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PartialPathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.MovementPredictor;
@@ -11,6 +12,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.LineTraversal;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
+import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 
@@ -44,7 +46,9 @@ public abstract class Navigation implements Task{
     }
 
     public static Navigation getInstance(RobotController robotController, GridCoordinate destination, int maxRetries){
-        if(robotController.getPathFinder().accountsForReservations()){
+        if(robotController.getPathFinder() instanceof PartialPathFinder){
+            return new SmartNavigation(robotController, destination);
+        } else if(robotController.getPathFinder().accountsForReservations()){
             return new ReservationNavigation(robotController, destination, maxRetries);
         }else{
             return new StepAsideNavigator(robotController, destination, maxRetries);
@@ -221,6 +225,25 @@ public abstract class Navigation implements Task{
     @Override
     public final void setRobot(Robot robot) {
         this.robot = robot;
+    }
+
+    protected void updateReservations(Path newPath) {
+        // Remove old reservations
+        robotController.getServer().getReservationManager().removeReservationsBy(robot);
+
+        // Add reservations from new path
+        if(robotController.getPathFinder().accountsForReservations()){
+            if (newPath.getFullPath().size() > 1)
+                reservePath(newPath, true);
+            else
+                reserveCurrentTileIndefinitely();
+        }
+    }
+
+    private void reserveCurrentTileIndefinitely() {
+        Server server = robotController.getServer();
+        ReservationManager reservationManager = server.getReservationManager();
+        reservationManager.reserve(robot, robot.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks()));
     }
 
 }

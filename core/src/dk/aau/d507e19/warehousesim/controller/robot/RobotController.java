@@ -149,4 +149,10 @@ public class RobotController {
         }
         return false;
     }
+
+    public boolean requestChainedMove(Robot firstRobot, GridCoordinate...gridCoordinates){
+
+
+        return false;
+    }
 }

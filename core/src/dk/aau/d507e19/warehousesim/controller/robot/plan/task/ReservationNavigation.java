@@ -86,24 +86,6 @@ public class ReservationNavigation extends Navigation {
         return nearestRobots;
     }
 
-    private void updateReservations(Path newPath) {
-        // Remove old reservations
-        server.getReservationManager().removeReservationsBy(robot);
-
-        // Add reservations from new path
-        if(pathFinder.accountsForReservations()){
-            if (newPath.getFullPath().size() > 1)
-                reservePath(newPath, true);
-            else
-                reserveCurrentTileIndefinitely();
-        }
-    }
-
-    private void reserveCurrentTileIndefinitely() {
-        Server server = robotController.getServer();
-        ReservationManager reservationManager = server.getReservationManager();
-        reservationManager.reserve(robot, robot.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks()));
-    }
 
     public static Reservation createLastTileIndefiniteReservation(ArrayList<Reservation> reservations) {
         Reservation lastReservation = reservations.get(reservations.size() - 1);

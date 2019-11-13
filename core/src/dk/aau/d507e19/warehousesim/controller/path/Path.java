@@ -10,13 +10,15 @@ public class Path {
     ArrayList<Step> allSteps = new ArrayList<>();
 
     public Path(ArrayList<Step> pathToTarget) {
+        if(pathToTarget.isEmpty())
+            throw new IllegalArgumentException("Path must contain at least one coordinate");
+        if(!isValidPath(pathToTarget))
+            throw new IllegalArgumentException("Paths must be continuous");
+
         this.strippedSteps = collapseWaitingSteps(pathToTarget);
         allSteps.addAll(strippedSteps);
 
-        if(pathToTarget.isEmpty())
-            throw new IllegalArgumentException("Path must contain at least one coordinate");
-        if(!isValidPath())
-            throw new IllegalArgumentException("Paths must be continuous");
+
 
         strippedSteps = generateStrippedPath(allSteps);
     }
@@ -98,12 +100,12 @@ public class Path {
         return new Path(steps);
     }
 
-    public boolean isValidPath(){
+    public static boolean isValidPath(ArrayList<Step> steps){
         Step currentStep;
-        Step previousStep = allSteps.get(0);
+        Step previousStep = steps.get(0);
 
-        for (int i = 1; i < allSteps.size(); i++) {
-            currentStep = allSteps.get(i);
+        for (int i = 1; i < steps.size(); i++) {
+            currentStep = steps.get(i);
 
             if(!currentStep.isStepValidContinuationOf(previousStep))
                 return false;
