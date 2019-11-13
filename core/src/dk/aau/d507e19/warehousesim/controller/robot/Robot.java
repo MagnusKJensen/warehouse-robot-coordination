@@ -99,6 +99,9 @@ public class Robot {
                 if(isCarrying())batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotMovingOutOfWayCarrying.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 else batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotMovingOutOfWayBusy.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
+            case CHARGING:
+                batch.draw(GraphicsManager.getTexture("Simulation/tiles/chargingStation_Battery.png"),currentPosition.getX(),currentPosition.getY(),Tile.TILE_SIZE, Tile.TILE_SIZE);
+                break;
             default:
                 throw new RuntimeException("Robot status unavailable");
         }

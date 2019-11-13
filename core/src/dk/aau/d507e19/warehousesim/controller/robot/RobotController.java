@@ -4,6 +4,7 @@ import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
+import dk.aau.d507e19.warehousesim.controller.robot.controlsystems.ControlSystemManager;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.*;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
@@ -17,6 +18,7 @@ public class RobotController {
     private Server server;
     private PathFinder pathFinder;
     private Robot robot;
+    private ControlSystemManager controlSystemManager;
     private long idleTimeTicks = 0;
 
     private LinkedList<Task> tasks = new LinkedList<>();
@@ -27,6 +29,7 @@ public class RobotController {
         this.robot = robot;
         this.pathFinder = pathFinderEnum.getPathFinder(server, this);
         this.random = new Random(Simulation.RANDOM_SEED);
+        this.controlSystemManager = new ControlSystemManager(this);
         reserveCurrentSpot();
     }
 
@@ -56,7 +59,7 @@ public class RobotController {
             idleTimeTicks++;
             return;
         }
-
+        controlSystemManager.checkSystem();
         Task currentTask = tasks.peekFirst();
         currentTask.perform();
 
@@ -65,6 +68,7 @@ public class RobotController {
 
         removeCompletedTasks();
         removeFailedTasks();
+
 
         updateStatus();
     }
@@ -100,6 +104,8 @@ public class RobotController {
            if(tasks.size() > 1) robot.setCurrentStatus(Status.RELOCATING_BUSY);
            else robot.setCurrentStatus(Status.RELOCATING);
        }
+       else if(tasks.get(0) instanceof Charging) robot.setCurrentStatus(Status.CHARGING);
+       else if(tasks.get(0) instanceof Maintenance) robot.setCurrentStatus(Status.MAINTENANCE);
        else robot.setCurrentStatus(Status.BUSY);
     }
 
@@ -150,7 +156,20 @@ public class RobotController {
         return false;
     }
 
-    public void moveToChargingStation() {
-        //todo implement
+    public ControlSystemManager getControlSystemManager() {
+        return controlSystemManager;
+    }
+    public boolean isCharging(){
+        if(robot.getCurrentStatus().equals(Status.CHARGING)){
+            if(tasks.get(0) instanceof Charging){
+                if(((Charging) tasks.get(0)).getChargingTile() == (null)){
+                    return false;
+                }
+                if(((Charging) tasks.get(0)).getChargingTile().getGridCoordinate().equals(robot.getApproximateGridCoordinate())){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

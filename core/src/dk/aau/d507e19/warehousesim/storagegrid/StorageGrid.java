@@ -189,6 +189,11 @@ public class StorageGrid {
         }
     }
 
+    public ArrayList<GridCoordinate> getChargerPoints() {
+        return chargerPoints;
+    }
 
-
+    public ArrayList<GridCoordinate> getMaintenancePoints() {
+        return maintenancePoints;
+    }
 }

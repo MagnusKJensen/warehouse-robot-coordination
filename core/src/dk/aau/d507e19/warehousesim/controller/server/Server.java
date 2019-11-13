@@ -6,10 +6,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.Status;
 import dk.aau.d507e19.warehousesim.controller.server.order.OrderGenerator;
 import dk.aau.d507e19.warehousesim.controller.server.order.OrderManager;
-import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
-import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
-import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
-import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
+import dk.aau.d507e19.warehousesim.storagegrid.*;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
 
@@ -26,7 +23,7 @@ public class Server {
 
     private ArrayList<Product> productsAvailable = new ArrayList<>();
 
-    private ArrayList<GridCoordinate> pickerPoints;
+    private ArrayList<GridCoordinate> pickerPoints,chargerPoints,maintenancePoints;
 
     public Server(Simulation simulation, StorageGrid grid) {
         this.simulation = simulation;
@@ -36,6 +33,8 @@ public class Server {
         this.productsAvailable = grid.getAllProducts();
 
         pickerPoints = grid.getPickerPoints();
+        chargerPoints = grid.getChargerPoints();
+        maintenancePoints = grid.getMaintenancePoints();
 
         generateProductMap(grid);
     }
@@ -137,6 +136,36 @@ public class Server {
         }
 
         return availablePickers;
+    }
+    public ArrayList<ChargingTile> getAvailableChargers() {
+        ArrayList<ChargingTile> availableChargers = new ArrayList<>();
+        for(GridCoordinate charger : chargerPoints){
+            ChargingTile tile = (ChargingTile) simulation.getStorageGrid().getTile(charger.getX(), charger.getY());
+            if(!tile.isReserved()){
+                availableChargers.add(tile);
+            }
+        }
+
+        return availableChargers;
+    }
+    public ArrayList<MaintenanceTile> getAvailableMaintenance() {
+        ArrayList<MaintenanceTile> availableMaintenance = new ArrayList<>();
+        for(GridCoordinate maintenance : maintenancePoints){
+            MaintenanceTile tile = (MaintenanceTile) simulation.getStorageGrid().getTile(maintenance.getX(), maintenance.getY());
+            if(!tile.isReserved()){
+                availableMaintenance.add(tile);
+            }
+        }
+
+        return availableMaintenance;
+    }
+
+    public ArrayList<GridCoordinate> getChargerPoints() {
+        return chargerPoints;
+    }
+
+    public ArrayList<GridCoordinate> getMaintenancePoints() {
+        return maintenancePoints;
     }
 
     public int getProductSKUsRemaining() {
