@@ -49,7 +49,7 @@ public class ReservationTile {
         for (Reservation existingReservation : reservations) {
             if (existingReservation.getTimeFrame().overlaps(newReservation.getTimeFrame())
                     && !existingReservation.getRobot().equals(newReservation.getRobot())){
-                throw new DoubleReservationException(existingReservation, newReservation);
+                //throw new DoubleReservationException(existingReservation, newReservation);
             }
         }
 
@@ -57,7 +57,6 @@ public class ReservationTile {
     }
 
     public void removeReservation(Reservation reservation) {
-        // TODO: 16/10/2019 add achecks
         reservations.remove(reservation);
     }
 

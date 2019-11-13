@@ -1,11 +1,11 @@
 package dk.aau.d507e19.warehousesim.controller.server;
 
 import dk.aau.d507e19.warehousesim.Simulation;
-import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.Status;
 import dk.aau.d507e19.warehousesim.controller.server.order.OrderGenerator;
+import dk.aau.d507e19.warehousesim.controller.server.order.OrderManager;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
 import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
@@ -23,7 +23,6 @@ public class Server {
     private HashMap<SKU, ArrayList<BinTile>> productMap = new HashMap<>();
     private OrderManager orderManager;
     private OrderGenerator orderGenerator;
-    private Random random = new Random(SimulationApp.RANDOM_SEED);
 
     private ArrayList<Product> productsAvailable = new ArrayList<>();
 
@@ -63,7 +62,7 @@ public class Server {
         return simulation.getGridWidth();
     }
 
-    public long getTimeInSeconds() {
+    public long getTimeInMS() {
         return simulation.getSimulatedTimeInMS();
     }
 
@@ -98,9 +97,10 @@ public class Server {
         return productsAvailable;
     }
 
-    public void updateNew(){
+    public void update(){
         orderGenerator.update();
         orderManager.update();
+        reservationManager.removeOutdatedReservations();
     }
 
     public ArrayList<GridCoordinate> getPickerPoints() {
@@ -157,16 +157,16 @@ public class Server {
         return amountLeft;
     }
 
-    public GridCoordinate getNewPosition() {
-        int x = random.nextInt(getGridBounds().endX - 1);
-        int y = random.nextInt(4) + 1; // todo more intelligent move request
-
-        GridCoordinate gridCoordinate = new GridCoordinate(x, y);
-        if(reservationManager.isReserved(gridCoordinate, TimeFrame.indefiniteTimeFrameFrom(getTimeInTicks())))
-            return getNewPosition();
-
-        return gridCoordinate;
+    public GridCoordinate getOptimalIdleRobotPosition() {
+        GridCoordinate optimalCoord = HeatMap.getLeastCrowdedCoordinate(this);
+        return optimalCoord;
     }
+
+    public int[][] getHeatMap(){
+        return HeatMap.getHeatMap(this);
+    }
+
+
 
 
 }

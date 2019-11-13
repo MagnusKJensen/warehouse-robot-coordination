@@ -10,8 +10,13 @@ import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Locale;
 
 public class Robot {
     private Simulation simulation;
@@ -21,18 +26,19 @@ public class Robot {
     private Bin bin = null;
     private int robotID;
     private RobotController robotController;
-
-    // TODO: 15/10/2019 is a temporary solution until it becomes part of the task itself.
-    private GridCoordinate lastPickUp;
+    private long binDeliveriesCompleted = 0;
+    private int distanceTraveled = 0;
 
     /**
      * Robot STATS
      */
     // Speed
-    private final float maxSpeedBinsPerSecond = WarehouseSpecs.robotTopSpeed / WarehouseSpecs.binSizeInMeters;
-    private final float accelerationBinSecond = WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters;
-    private final float decelerationBinSecond = WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters;
-    private final float minSpeedBinsPerSecond = WarehouseSpecs.robotMinimumSpeed / WarehouseSpecs.binSizeInMeters;
+    private final float maxSpeedBinsPerSecond = Simulation.getWarehouseSpecs().robotTopSpeed / Simulation.getWarehouseSpecs().binSizeInMeters;
+    private final float accelerationBinSecond = Simulation.getWarehouseSpecs().robotAcceleration / Simulation.getWarehouseSpecs().binSizeInMeters;
+    private final float decelerationBinSecond = Simulation.getWarehouseSpecs().robotDeceleration / Simulation.getWarehouseSpecs().binSizeInMeters;
+    private final float minSpeedBinsPerSecond = Simulation.getWarehouseSpecs().robotMinimumSpeed / Simulation.getWarehouseSpecs().binSizeInMeters;
+
+    private final float breakingDistanceMaxSpeedBins = decelerationBinSecond / maxSpeedBinsPerSecond;
 
     private final float ROBOT_SIZE = Tile.TILE_SIZE;
 
@@ -43,7 +49,7 @@ public class Robot {
         currentStatus = Status.AVAILABLE;
 
         // Initialize controller for this robot
-        this.robotController = new RobotController(simulation.getServer(), this, simulation.getSimulationApp().getPathFinderSelected());
+        this.robotController = new RobotController(simulation.getServer(), this, Simulation.getPathFinder());
     }
 
     public void update() {
@@ -58,28 +64,23 @@ public class Robot {
     }
 
     public void putDownBin(){
-        GridCoordinate coordinate = getGridCoordinate();
+        GridCoordinate coordinate = getApproximateGridCoordinate();
         Tile tile = simulation.getStorageGrid().getTile(coordinate.getX(), coordinate.getY());
         if (tile instanceof BinTile && !((BinTile) tile).hasBin()) {
             ((BinTile) tile).addBin(bin);
             bin = null;
         } else throw new RuntimeException("Robot could not put back bin at ("
                 + coordinate.getX() + "," + coordinate.getY() + ")");
-
     }
 
     public void pickUpBin() {
-        GridCoordinate coordinate = getGridCoordinate();
+        GridCoordinate coordinate = getApproximateGridCoordinate();
         Tile tile = simulation.getStorageGrid().getTile(coordinate.getX(), coordinate.getY());
         if (tile instanceof BinTile && ((BinTile) tile).hasBin()) {
             bin = ((BinTile) tile).releaseBin();
         } else throw new RuntimeException("Robot could not pick up bin at ("
                 + coordinate.getX() + "," + coordinate.getY() + ")");
-
-        currentStatus = Status.CARRYING;
-        lastPickUp = coordinate;
     }
-
 
     public void render(SpriteBatch batch) {
         switch (currentStatus) {
@@ -87,13 +88,16 @@ public class Robot {
                 batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotAvailable.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
             case BUSY:
-            case TASK_ASSIGNED_MOVE:
                 if(isCarrying())batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotTaskAssignedCarrying.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 else batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotTaskAssigned.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
-            case TASK_ASSIGNED_CARRYING:
-            case CARRYING:
-                batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotTaskAssignedCarrying.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
+            case RELOCATING:
+                if(isCarrying())batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotMovingOutOfWayCarrying.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
+                else batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotMovingOutOfWay.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
+                break;
+            case RELOCATING_BUSY:
+                if(isCarrying())batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotMovingOutOfWayCarrying.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
+                else batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotMovingOutOfWayBusy.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
             default:
                 throw new RuntimeException("Robot status unavailable");
@@ -102,22 +106,6 @@ public class Robot {
 
     public Position getCurrentPosition() {
         return currentPosition;
-    }
-
-    public void decelerate() {
-        if (currentSpeed > 0) {
-            currentSpeed -= decelerationBinSecond / (float) SimulationApp.TICKS_PER_SECOND;
-            if (currentSpeed < minSpeedBinsPerSecond)
-                currentSpeed = minSpeedBinsPerSecond;
-        }
-    }
-
-    public void accelerate() {
-        if (currentSpeed < maxSpeedBinsPerSecond) {
-            currentSpeed += accelerationBinSecond / (float) SimulationApp.TICKS_PER_SECOND;
-            if (currentSpeed > maxSpeedBinsPerSecond)
-                currentSpeed = maxSpeedBinsPerSecond;
-        }
     }
 
     public float getAccelerationBinSecond() {
@@ -136,19 +124,9 @@ public class Robot {
         return maxSpeedBinsPerSecond;
     }
 
-    public void move(float deltaX, float deltaY) {
-        currentPosition.setX(currentPosition.getX() + deltaX);
-        currentPosition.setY(currentPosition.getY() + deltaY);
-    }
-
-    public float getMinimumSpeed() {
-        return WarehouseSpecs.robotMinimumSpeed;
-    }
-
     public Status getCurrentStatus() {
         return currentStatus;
     }
-
 
     public void setCurrentStatus(Status currentStatus) {
         this.currentStatus = currentStatus;
@@ -159,13 +137,13 @@ public class Robot {
     }
 
     public boolean collidesWith(Position collider) {
+        // We have to subtract -0.01 to avoid collisions due to floating point rounding.
         boolean withInXBounds = collider.getX() >= currentPosition.getX()
-                && collider.getX() <= currentPosition.getX() + ROBOT_SIZE - 0.15;
+                && collider.getX() <= currentPosition.getX() + ROBOT_SIZE - 0.01;
         boolean withInYBounds = collider.getY() >= currentPosition.getY()
-                && collider.getY() <= currentPosition.getY() + ROBOT_SIZE -0.15;
+                && collider.getY() <= currentPosition.getY() + ROBOT_SIZE - 0.01;
         return withInXBounds && withInYBounds;
     }
-
 
     public int getRobotID() {
         return robotID;
@@ -187,17 +165,13 @@ public class Robot {
         return new GridCoordinate(Math.round(currentPosition.getX()), Math.round(currentPosition.getY()));
     }
 
-    public GridCoordinate getLastPickUp() {
-        return lastPickUp;
-    }
-
     public boolean isCarrying(){
         return bin != null;
     }
 
-    public void setPosition(Position positionAfter) {
-        this.currentPosition = positionAfter;
-        // TODO: 15/10/2019 Check legality
+    public void updatePosition(Position newPosition, float newSpeed){
+        currentPosition = newPosition;
+        currentSpeed = newSpeed;
     }
 
     public int getSize() {
@@ -210,5 +184,49 @@ public class Robot {
 
     public RobotController getRobotController() {
         return robotController;
+    }
+
+    public String getStatsAsCSV(){
+        StringBuilder builder = new StringBuilder();
+        // Robot ID
+        builder.append(robotID).append(',');
+
+        // Deliveries completed
+        builder.append(binDeliveriesCompleted).append(',');
+
+        DecimalFormat df = new DecimalFormat("#,000");
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        df.setGroupingUsed(false);
+        // Distance traveled in meters
+        builder.append(df.format(getDistanceTraveledInMeters())).append(',');
+
+        // Idle time
+        DecimalFormat df2 = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
+        df2.setRoundingMode(RoundingMode.HALF_UP);
+        df2.setGroupingUsed(false);
+        df2.applyPattern("###.00");
+        builder.append(df2.format(getIdleTimeInSeconds()));
+
+        return builder.toString();
+    }
+
+    public void incrementDeliveriesCompleted(){
+        binDeliveriesCompleted++;
+    }
+
+    public void addToDistanceTraveled(int extraDistance){
+        distanceTraveled += extraDistance;
+    }
+
+    public double getDistanceTraveledInMeters(){
+        return distanceTraveled * Simulation.getWarehouseSpecs().binSizeInMeters;
+    }
+
+    public double getIdleTimeInSeconds(){
+        return (double)robotController.getIdleTimeTicks() / SimulationApp.TICKS_PER_SECOND;
+    }
+
+    public long getBinDeliveriesCompleted() {
+        return binDeliveriesCompleted;
     }
 }

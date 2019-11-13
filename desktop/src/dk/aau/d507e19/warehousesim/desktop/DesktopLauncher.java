@@ -9,7 +9,7 @@ public class DesktopLauncher {
 	public int screenWidth = 1440, screenHeight = 900;
 
 	public static void main (String[] arg) {
-		DesktopLauncher  desktopLauncher = new DesktopLauncher();
+		DesktopLauncher desktopLauncher = new DesktopLauncher();
 		desktopLauncher.startSimulation();
 	}
 

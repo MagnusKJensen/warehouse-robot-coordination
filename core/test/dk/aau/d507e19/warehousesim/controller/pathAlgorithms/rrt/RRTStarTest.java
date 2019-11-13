@@ -1,8 +1,7 @@
-package dk.aau.d507e19.warehousesim;
+package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt;
+import dk.aau.d507e19.warehousesim.RunConfigurator;
+import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRT;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTStar;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
@@ -10,7 +9,6 @@ import dk.aau.d507e19.warehousesim.controller.server.Server;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
@@ -25,43 +23,39 @@ public class RRTStarTest {
 
     @Before
     public void initiateRobotController(){
-        when(robot.getAccelerationBinSecond()).thenReturn(WarehouseSpecs.robotAcceleration / WarehouseSpecs.binSizeInMeters);
-        when(robot.getDecelerationBinSecond()).thenReturn(WarehouseSpecs.robotDeceleration / WarehouseSpecs.binSizeInMeters);
+        RunConfigurator.setDefaultRunConfiguration();
+        when(robot.getAccelerationBinSecond()).thenReturn(Simulation.getWarehouseSpecs().robotAcceleration / Simulation.getWarehouseSpecs().binSizeInMeters);
+        when(robot.getDecelerationBinSecond()).thenReturn(Simulation.getWarehouseSpecs().robotDeceleration / Simulation.getWarehouseSpecs().binSizeInMeters);
         when(robotController.getRobot()).thenReturn(robot);
         when(robotController.getServer()).thenReturn(server);
     }
 
-    @Ignore
+    @Test
     public void generatePathTest(){
         RRTStar rrtStar = new RRTStar(robotController);
         RRT rrt = new RRT(robotController);
         GridCoordinate start = new GridCoordinate(0, 0);
-        GridCoordinate dest1 = new GridCoordinate(10, 10);
+        GridCoordinate dest1 = new GridCoordinate(11, 7);
         GridCoordinate dest2 = new GridCoordinate(2, 3);
-        ArrayList<Step> rrtList,rrtStarList;
+        ArrayList<Step> rrtStarList;
         //generate both paths
-        rrtList = rrt.generateRRTPath(start,dest1);
         rrtStarList = rrtStar.generatePath(start,dest1);
-        System.out.println(rrtList.size() + " : " + rrtStarList.size());
-        //can fail if somehow random == optimized (low chance)
-        assertNotEquals(rrtList,rrtStarList);
         RRTTest test = new RRTTest();
         assertTrue(test.isValidPath(start,dest1,rrtStarList));
         rrtStarList = rrtStar.generatePath(dest1,dest2);
         assertTrue(test.isValidPath(dest1,dest2,rrtStarList));
         rrtStarList = rrtStar.generatePath(dest2,start);
         assertTrue(test.isValidPath(dest2,start,rrtStarList));
-
-        /*for (Step gc: rrtList){
+/*
+        for (Step gc: rrtList){
             System.out.println(gc.getGridCoordinate());
         }
         for (Step gc: rrtStarList){
             System.out.println(gc.getGridCoordinate());
-        }*/
-
-
+        }
+*/
     }
-    @Ignore
+    @Test
     public void generatePathFromEmptyTest(){
         RRTStar rrtStar = new RRTStar(robotController);
         GridCoordinate start = new GridCoordinate(0, 0);
@@ -140,6 +134,29 @@ public class RRTStarTest {
         ArrayList<Node<GridCoordinate>> foundTurns = rrtStar.findTurns(path);
         assertFalse(foundTurns.contains(n0));
         assertEquals(turnNodes,rrtStar.findTurns(path));
+    }
+
+
+    //very expensive test @ignore as default
+    @Ignore
+    public void testRootReachable(){
+        RRTStar rrtStar = new RRTStar(robotController);
+        GridCoordinate start = new GridCoordinate(0, 0);
+        GridCoordinate dest1 = new GridCoordinate(29, 15);
+        GridCoordinate dest2 = new GridCoordinate(15, 4);
+        rrtStar.generatePath(start,dest1);
+        canReachRoot(start,rrtStar);
+        rrtStar.generatePath(dest1,dest2);
+        canReachRoot(dest1,rrtStar);
+        rrtStar.generatePath(dest2,start);
+        canReachRoot(dest2,rrtStar);
+    }
+    public void canReachRoot(GridCoordinate root, RRTStar rrtStar){
+        ArrayList<GridCoordinate> coords = new ArrayList<>(rrtStar.allNodesMap.keySet());
+        System.out.println("checking for " + coords.size() + " nodes");
+        for(GridCoordinate coord : coords){
+            assertSame(rrtStar.allNodesMap.get(root),rrtStar.allNodesMap.get(coord).getRoot());
+        }
     }
 
 }

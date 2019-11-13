@@ -201,4 +201,26 @@ public class ReservationManager {
 
         return conflictingReservations;
     }
+
+    public ArrayList<Reservation> getAllReservations(){
+        ArrayList<Reservation> reservations = new ArrayList<>();
+
+        for(Robot robot : server.getAllRobots()){
+            reservations.addAll(getReservationsBy(robot));
+        }
+
+        return reservations;
+    }
+
+    public ArrayList<Reservation> removeOutdatedReservations(){
+        ArrayList<Reservation> reservations = getAllReservations();
+        long currentTime = server.getTimeInTicks();
+
+        for (Reservation res : reservations) {
+            if (res.getTimeFrame().isOutdated(currentTime))
+                removeReservation(res);
+        }
+
+        return reservations;
+    }
 }

@@ -1,12 +1,12 @@
 package dk.aau.d507e19.warehousesim.controller.robot.plan.task;
 
+import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.TimeUtils;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 import dk.aau.d507e19.warehousesim.controller.server.order.Order;
-import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
 import java.util.ArrayList;
@@ -17,6 +17,7 @@ public class BinDelivery implements Task {
     private Robot robot;
     private GridCoordinate binCoords;
     private ArrayList<Product> productsToPick;
+    private int distanceForDelivery = 0;
 
     private ArrayList<Task> subTasks = new ArrayList<>();
     private boolean completed = false;
@@ -43,16 +44,16 @@ public class BinDelivery implements Task {
 
     private void planTasks() {
         // Pickup
-        subTasks.add(new Navigation(robotController, binCoords));
-        subTasks.add(new TimedAction(() -> robot.pickUpBin(), TimeUtils.secondsToTicks(WarehouseSpecs.robotPickUpSpeedInSeconds)));
+        subTasks.add(Navigation.getInstance(robotController, binCoords));
+        subTasks.add(new TimedAction(() -> robot.pickUpBin(), TimeUtils.secondsToTicks(Simulation.getWarehouseSpecs().robotPickUpSpeedInSeconds)));
 
         // Delivery
-        subTasks.add(new Navigation(robotController, order.getPicker().getGridCoordinate()));
-        subTasks.add(new TimedAction(() -> robot.deliverBinToPicker(order.getPicker().getGridCoordinate(), productsToPick), TimeUtils.secondsToTicks(WarehouseSpecs.robotPickUpSpeedInSeconds)));
+        subTasks.add(Navigation.getInstance(robotController, order.getPicker().getGridCoordinate()));
+        subTasks.add(new TimedAction(() -> robot.deliverBinToPicker(order.getPicker().getGridCoordinate(), productsToPick), TimeUtils.secondsToTicks(Simulation.getWarehouseSpecs().robotDeliverToPickInSeconds)));
 
         // Bin return
-        subTasks.add(new Navigation(robotController, binCoords));
-        subTasks.add(new TimedAction(() -> robot.putDownBin(), TimeUtils.secondsToTicks(WarehouseSpecs.robotPickUpSpeedInSeconds)));
+        subTasks.add(Navigation.getInstance(robotController, binCoords));
+        subTasks.add(new TimedAction(() -> robot.putDownBin(), TimeUtils.secondsToTicks(Simulation.getWarehouseSpecs().robotPickUpSpeedInSeconds)));
 
         isPlanned = true;
     }
@@ -79,6 +80,8 @@ public class BinDelivery implements Task {
     private void complete() {
         completed = true;
         robotController.getServer().getReservationManager().removeBinReservation(binCoords);
+        robotController.getRobot().incrementDeliveriesCompleted();
+        robotController.getRobot().addToDistanceTraveled(distanceForDelivery);
     }
 
     @Override

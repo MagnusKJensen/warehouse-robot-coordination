@@ -14,14 +14,15 @@ import dk.aau.d507e19.warehousesim.exception.PathFindingTimedOutException;
 import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.PriorityQueue;
 
 public class CHPathfinder implements PathFinder {
 
-
     private static final long MAXIMUM_WAIT_TIME = TimeUtils.secondsToTicks(10);
     private static final long MAXIMUM_ITERATIONS = 1000;
+    private static final long MIN_TIME_BETWEEN_NODES = TimeUtils.secondsToTicks(0.9f);
     private final RobotController robotController;
     private final Server server;
 
@@ -29,6 +30,7 @@ public class CHPathfinder implements PathFinder {
     private GCostCalculator gCostCalculator;
     private CHNodeFactory nodeFactory;
     private GridBounds gridBounds;
+
 
     private static final long STANDARD_WAIT_TIME_IN_TICKS = 30L;
 
@@ -54,6 +56,7 @@ public class CHPathfinder implements PathFinder {
             throw new DestinationReservedIndefinitelyException(start, destination);
 
         PriorityQueue<CHNode> openList = new PriorityQueue<>();
+        PriorityQueue<CHNode> closedList = new PriorityQueue<>();
 
         openList.add(nodeFactory.createInitialNode(start, destination));
 
@@ -65,24 +68,30 @@ public class CHPathfinder implements PathFinder {
             ArrayList<CHNode> successors = getValidSuccessors(bestCandidate, destination);
 
             //Check if destination is reached
-            for (CHNode successor : successors)
+            for (CHNode successor : successors) {
                 if (successor.getGridCoordinate().equals(destination)) {
-
                     /* // efficiency stats
                     System.out.print("Iterations to calculate path : " + iterationCount);
                     int manhattanDistance = Math.abs(start.getX() - destination.getX()) + Math.abs(start.getY() - destination.getY());
                     System.out.println(" || Manhattan distance : " + manhattanDistance + " || Path length : " + successor.getPath().getFullPath().size());*/
                     return successor.getPath();
                 }
+            }
 
             openList.addAll(successors);
 
             iterationCount++;
-            if(iterationCount > MAXIMUM_ITERATIONS)
+            if (iterationCount > MAXIMUM_ITERATIONS)
                 throw new PathFindingTimedOutException(start, destination, iterationCount);
+
         }
 
         throw new NoValidPathException(start, destination, "Pathfinder max wait time per tile : " + MAXIMUM_WAIT_TIME);
+    }
+
+    @Override
+    public boolean accountsForReservations() {
+        return true;
     }
 
     private ArrayList<CHNode> getValidSuccessors(CHNode parent, GridCoordinate target) {

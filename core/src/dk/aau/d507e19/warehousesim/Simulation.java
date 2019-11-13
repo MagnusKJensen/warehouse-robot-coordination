@@ -1,30 +1,45 @@
 package dk.aau.d507e19.warehousesim;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.google.gson.Gson;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTBase;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTPlanner;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
+import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocatorEnum;
 import dk.aau.d507e19.warehousesim.exception.CollisionException;
 import dk.aau.d507e19.warehousesim.goal.Goal;
 import dk.aau.d507e19.warehousesim.goal.OrderGoal;
 import dk.aau.d507e19.warehousesim.input.SimulationInputProcessor;
+import dk.aau.d507e19.warehousesim.statistics.StatisticsManager;
 import dk.aau.d507e19.warehousesim.storagegrid.*;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
+
+import static dk.aau.d507e19.warehousesim.storagegrid.Tile.TILE_SIZE;
 
 public class Simulation {
+
+    public static long RANDOM_SEED;
+
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
     private BitmapFont font;
@@ -53,11 +68,54 @@ public class Simulation {
 
     private long tickStopperGoal;
 
-    public Simulation(SimulationApp simulationApp){
+    public static String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations/";
+    public static String CURRENT_RUN_CONFIG;
+    private static WarehouseSpecs warehouseSpecs;
+    private static PathFinderEnum pathFinder;
+    private static TaskAllocatorEnum taskAllocator;
+
+    private Date simulationStartTime;
+
+    private StatisticsManager statisticsManager;
+    private boolean showHeatMap;
+
+    private boolean shouldRenderGridAndRobots = true;
+
+    private GridBounds renderedBounds;
+
+    // Used for fast no graphics simulations
+    public Simulation(long randSeed, String runConfigName, PathFinderEnum pathfinder, TaskAllocatorEnum taskAllocator){
+        RANDOM_SEED = randSeed;
+        Simulation.warehouseSpecs = readWarehouseSpecsFromFile(runConfigName);
+        Simulation.CURRENT_RUN_CONFIG = runConfigName;
+        Simulation.pathFinder = pathfinder;
+        Simulation.taskAllocator = taskAllocator;
+
+        storageGrid = new StorageGrid(Simulation.getWarehouseSpecs().wareHouseWidth, Simulation.getWarehouseSpecs().wareHouseHeight, this);
+        if(Simulation.getWarehouseSpecs().isRandomProductDistribution) ProductDistributor.distributeProductsRandomly(storageGrid);
+        else ProductDistributor.distributeProducts(storageGrid);
+
+        server = new Server(this, storageGrid);
+
+        goal = new OrderGoal(Simulation.warehouseSpecs.orderGoal, this);
+
+        initRobots();
+
+        simulationStartTime = new Date(System.currentTimeMillis());
+        statisticsManager = new StatisticsManager(this);
+    }
+
+    public Simulation(long randSeed, String runConfigName, SimulationApp simulationApp, String pathToRunConfig){
+        RANDOM_SEED = randSeed;
+        Simulation.CURRENT_RUN_CONFIG = runConfigName;
         this.simulationApp = simulationApp;
         this.gridCamera = simulationApp.getWorldCamera();
         this.fontCamera = simulationApp.getFontCamera();
         this.gridViewport = simulationApp.getWorldViewport();
+
+        Simulation.warehouseSpecs = readWarehouseSpecsFromFile(pathToRunConfig);
+        Simulation.pathFinder = simulationApp.getPathFinderSelected();
+        Simulation.taskAllocator = simulationApp.getTaskAllocatorSelected();
 
         inputProcessor = new SimulationInputProcessor(this);
 
@@ -65,31 +123,45 @@ public class Simulation {
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
 
-        storageGrid = new StorageGrid(WarehouseSpecs.wareHouseWidth, WarehouseSpecs.wareHouseHeight, this);
-        if(WarehouseSpecs.isRandomProductDistribution) ProductDistributor.distributeProductsRandomly(storageGrid);
+        storageGrid = new StorageGrid(Simulation.getWarehouseSpecs().wareHouseWidth, Simulation.getWarehouseSpecs().wareHouseHeight, this);
+        if(Simulation.getWarehouseSpecs().isRandomProductDistribution) ProductDistributor.distributeProductsRandomly(storageGrid);
         else ProductDistributor.distributeProducts(storageGrid);
 
         server = new Server(this, storageGrid);
 
-        goal = new OrderGoal(WarehouseSpecs.orderGoal, this);
+        goal = new OrderGoal(Simulation.warehouseSpecs.orderGoal, this);
 
         initRobots();
+
+        simulationStartTime = new Date(System.currentTimeMillis());
+
+        statisticsManager = new StatisticsManager(this);
+
+        updateRenderedBounds();
+    }
+
+    private WarehouseSpecs readWarehouseSpecsFromFile(String specFileName) {
+        File runConfigFile = new File(PATH_TO_RUN_CONFIGS + File.separator + specFileName);
+        Gson gson = new Gson();
+        try(BufferedReader reader = new BufferedReader(new FileReader(runConfigFile.getPath()))){
+            WarehouseSpecs specs = gson.fromJson(reader, WarehouseSpecs.class);
+            return specs;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     private void initRobots() {
         // Auto generate robots
         int x = 0, y = 0;
-        for (int i = 0; i < WarehouseSpecs.numberOfRobots; i++){
+        ArrayList<GridCoordinate> gridCoordinates;
+        gridCoordinates = Simulation.warehouseSpecs.robotPlacementPattern.generatePattern(Simulation.warehouseSpecs.numberOfRobots);
 
-            robots.add(new Robot(new Position(x, y), i, this));
-            x+=2;
-
-            if(x > 25){
-                x = 0;
-                y += 2;
-            }
-
-        }
+        int id = 0;
+        for(GridCoordinate gridCoordinate : gridCoordinates)
+            robots.add(new Robot(gridCoordinate.toPosition(), id++, this));
     }
 
     public void update(){
@@ -97,12 +169,13 @@ public class Simulation {
         for(Robot robot : robots){
             robot.update();
         }
-        server.updateNew();
+        server.update();
         goal.update();
-        if(WarehouseSpecs.collisionDetectedEnabled){
+        if(Simulation.warehouseSpecs.collisionDetectedEnabled){
             checkForCollisions();
         }
         updateSideMenuScrollPanes();
+
 
         if(tickStopperGoal == tickCount) simulationApp.pause();
     }
@@ -160,6 +233,7 @@ public class Simulation {
         }else{
             ctrlSelectedRobots.add(robot);
         }
+
     }
     public void selectRobot(Robot robot) {
         if(selectedRobots.contains(robot)){
@@ -174,14 +248,24 @@ public class Simulation {
         }
     }
 
+    public void selectAllRobots(){
+        // If all robots are selected already
+        if(selectedRobots.containsAll(robots)) selectedRobots.clear();
+        else selectedRobots.addAll(robots);
+    }
+
     public void render(OrthographicCamera gridCamera, OrthographicCamera fontCamera){
         shapeRenderer.setProjectionMatrix(gridCamera.combined);
         batch.setProjectionMatrix(gridCamera.combined);
 
-        storageGrid.render(shapeRenderer, batch);
-        renderSelectedRobotsPaths();
-        renderCtrlSelectedRobotTrees();
-        renderRobots();
+        if(shouldRenderGridAndRobots){
+            storageGrid.render(shapeRenderer, batch);
+            renderSelectedRobotsPaths();
+            renderCtrlSelectedRobotTrees();
+            if(showHeatMap) storageGrid.renderHeatMap(server.getHeatMap(), shapeRenderer);
+            renderRobots();
+        }
+
         renderTickCountAndRealTime(gridCamera, fontCamera);
     }
 
@@ -195,8 +279,19 @@ public class Simulation {
                 if(!listOfNodes.isEmpty()){
                     storageGrid.renderTreeOverlay(listOfNodes, shapeRenderer,planner.getPlanner().getPath());
                 }
+                drawTransparentRectangle(robot);
             }
         }
+    }
+
+    private void drawTransparentRectangle(Robot robot) {
+        Gdx.gl.glEnable(GL30.GL_BLEND);
+        shapeRenderer.setColor(189f/255f, 109f/255f, 227f/255f, 0.7f);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.rect(robot.getCurrentPosition().getX(), robot.getCurrentPosition().getY(), TILE_SIZE, TILE_SIZE);
+        shapeRenderer.end();
+        Gdx.gl.glDisable(GL30.GL_BLEND);
+
     }
 
     private void renderSelectedRobotsPaths() {
@@ -264,11 +359,11 @@ public class Simulation {
     }
 
     public int getGridHeight() {
-        return WarehouseSpecs.wareHouseHeight;
+        return Simulation.warehouseSpecs.wareHouseHeight;
     }
 
     public int getGridWidth() {
-        return WarehouseSpecs.wareHouseWidth;
+        return Simulation.warehouseSpecs.wareHouseWidth;
     }
 
     public Server getServer() {
@@ -301,5 +396,67 @@ public class Simulation {
 
     public void setTickStopperGoal(long tickStopperGoal) {
         this.tickStopperGoal = tickStopperGoal;
+    }
+
+    public static WarehouseSpecs getWarehouseSpecs() {
+        return warehouseSpecs;
+    }
+
+    public static void setWarehouseSpecs(WarehouseSpecs warehouseSpecs) {
+        Simulation.warehouseSpecs = warehouseSpecs;
+    }
+
+    public static PathFinderEnum getPathFinder() {
+        return pathFinder;
+    }
+
+    public static void setPathFinder(PathFinderEnum pathFinder) {
+        Simulation.pathFinder = pathFinder;
+    }
+
+    public static TaskAllocatorEnum getTaskAllocator() {
+        return taskAllocator;
+    }
+
+    public static void setTaskAllocator(TaskAllocatorEnum taskAllocatorEnum) {
+        Simulation.taskAllocator = taskAllocatorEnum;
+    }
+
+    public Date getSimulationStartTime() {
+        return simulationStartTime;
+    }
+
+    public StatisticsManager getStatisticsManager() {
+        return statisticsManager;
+    }
+
+    public void toggleHeatMap() {
+        showHeatMap = !showHeatMap;
+    }
+
+    public void toggleRenderGrid(){
+        shouldRenderGridAndRobots = !shouldRenderGridAndRobots;
+    }
+
+    public void updateRenderedBounds(){
+        final int padding = 2;
+        int maxTilesRenderedVertically = (int) Math.ceil(gridCamera.viewportHeight * gridCamera.zoom);
+        int maxTilesRenderedHorizontally = (int) Math.ceil(gridCamera.viewportWidth * gridCamera.zoom);
+
+        int tileXOffset = (int) gridCamera.position.x;
+        int tileYOffset = (int) gridCamera.position.y;
+
+        int xLowerBound = Math.max(0, tileXOffset - (maxTilesRenderedHorizontally / 2) - padding);
+        int yLowerBound = Math.max(0, tileYOffset - (maxTilesRenderedVertically / 2) - padding);
+
+        int xUpperBound = Math.min(getGridWidth() - 1, tileXOffset + (maxTilesRenderedHorizontally / 2) + padding);
+        int yUpperBound = Math.min(getGridHeight() - 1, tileYOffset + (maxTilesRenderedVertically / 2) + padding);
+
+        //System.out.println("(" + xLowerBound + ", " + yLowerBound + ")" + " to (" + xUpperBound + "," + yUpperBound +  ")");
+        renderedBounds = new GridBounds(xLowerBound, yLowerBound, xUpperBound, yUpperBound);
+    }
+
+    public GridBounds getRenderedBounds() {
+        return renderedBounds;
     }
 }

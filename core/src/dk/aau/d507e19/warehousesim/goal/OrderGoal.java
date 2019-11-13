@@ -42,4 +42,12 @@ public class OrderGoal implements Goal {
             finishTime = simulation.getSimulatedTimeInMS();
         }
     }
+
+    @Override
+    public String getStatsAsCSV() {
+        if(done){
+            double finishTimeInSeconds = (double)finishTime / 1000;
+            return "OrderGoal of " + orderGoal + " Reached after " + finishTimeInSeconds + " seconds";
+        } else return "OrderGoal of " + orderGoal + " not yet reached.";
+    }
 }

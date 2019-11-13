@@ -5,4 +5,5 @@ public interface Goal {
     long goalReachedAtTime();
     String toString();
     void update();
+    String getStatsAsCSV();
 }
