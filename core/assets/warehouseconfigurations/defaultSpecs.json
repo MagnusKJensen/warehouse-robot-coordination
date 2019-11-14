@@ -180,7 +180,7 @@
       0
     ]
   ],
-  "secondsBetweenOrders": 9,
+  "secondsBetweenOrders": 5,
   "orderGoal": 50,
   "productsPerOrder": 4
 }

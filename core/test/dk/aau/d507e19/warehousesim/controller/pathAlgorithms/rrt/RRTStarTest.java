@@ -1,17 +1,14 @@
-package dk.aau.d507e19.warehousesim;
+package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt;
+import dk.aau.d507e19.warehousesim.RunConfigurator;
+import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRT;
-import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRTStar;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;

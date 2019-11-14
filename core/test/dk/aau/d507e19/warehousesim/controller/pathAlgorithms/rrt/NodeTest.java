@@ -1,5 +1,6 @@
-package dk.aau.d507e19.warehousesim;
+package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt;
 
+import dk.aau.d507e19.warehousesim.RunConfigurator;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.Node;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt.RRT;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;

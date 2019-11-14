@@ -1,5 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.rrt;
 
+import dk.aau.d507e19.warehousesim.Simulation;
+import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 
@@ -15,6 +17,10 @@ public class RRTStarExtended extends RRTStar {
 
     @Override
     public void attemptOptimise() {
+        if(allNodesMap.size()!= Simulation.getWarehouseSpecs().wareHouseWidth * Simulation.getWarehouseSpecs().wareHouseHeight){
+            //todo handle more elegantly
+            throw new RuntimeException("Can not use rrt*extended optimise if tree is not fully grown");
+        }
         //optimise with distance first
         //then optimise with time
         optimalPathOptimise(destinationNode);
@@ -37,9 +43,6 @@ public class RRTStarExtended extends RRTStar {
     }
 
     public boolean optimalPathOptimise(Node<GridCoordinate> node) {
-        if (node.getData().equals(new GridCoordinate(22, 6)) && destinationNode.getData().equals(new GridCoordinate(22, 10))) {
-            System.out.println();
-        }
         ArrayList<Node<GridCoordinate>> neighbours = trimImprovementsList(findNodesInRadius(node.getData(), 1), node.getData());
         ArrayList<Node<GridCoordinate>> bestNeighbours = new ArrayList<>();
         Node<GridCoordinate> bestNeighbour = null;

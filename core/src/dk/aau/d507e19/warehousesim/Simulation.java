@@ -103,11 +103,11 @@ public class Simulation {
 
         simulationStartTime = new Date(System.currentTimeMillis());
         statisticsManager = new StatisticsManager(this);
-        updateRenderedBounds();
     }
 
-    public Simulation(long randSeed, SimulationApp simulationApp, String pathToRunConfig){
+    public Simulation(long randSeed, String runConfigName, SimulationApp simulationApp, String pathToRunConfig){
         RANDOM_SEED = randSeed;
+        Simulation.CURRENT_RUN_CONFIG = runConfigName;
         this.simulationApp = simulationApp;
         this.gridCamera = simulationApp.getWorldCamera();
         this.fontCamera = simulationApp.getFontCamera();
@@ -136,6 +136,7 @@ public class Simulation {
         simulationStartTime = new Date(System.currentTimeMillis());
 
         statisticsManager = new StatisticsManager(this);
+
         updateRenderedBounds();
     }
 
@@ -457,5 +458,9 @@ public class Simulation {
 
     public GridBounds getRenderedBounds() {
         return renderedBounds;
+    }
+
+    public static long getRandomSeed() {
+        return RANDOM_SEED;
     }
 }

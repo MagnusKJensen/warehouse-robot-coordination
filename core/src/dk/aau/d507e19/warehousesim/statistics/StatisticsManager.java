@@ -1,7 +1,6 @@
 package dk.aau.d507e19.warehousesim.statistics;
 
 import dk.aau.d507e19.warehousesim.Simulation;
-import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.server.order.Order;
 
@@ -12,7 +11,6 @@ import java.io.IOException;
 import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.Time;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -22,7 +20,7 @@ import java.util.Locale;
 public class StatisticsManager {
     // This changes the name of the folder containing the statistics to reflect the version number.
     // Should be changed in the StatisticsAutomater
-    private String VERSION_NAME = "";
+    private String VERSION_NAME = "version";
 
     // For statistics file names
     private final String ORDER_STATS_FILENAME = "orderStats_";
@@ -34,21 +32,22 @@ public class StatisticsManager {
 
     // Formatting date and decimals in file names and statistics
     // Has to be ; instead og :, because windows does not accept : in file name - Philip
-    SimpleDateFormat dateFormatter = new SimpleDateFormat("HH;mm;ss'_'dd-MM-yyyy");
-    DecimalFormat decimalFormatter = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
+    private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH;mm;ss'_'dd-MM-yyyy");
+    private DecimalFormat decimalFormatter = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
+    private ExcelWriter excelWriter;
 
     private Simulation simulation;
 
     public StatisticsManager(Simulation simulation) {
         this.simulation = simulation;
-    }
 
-    public void printStatistics(){
         // Apply patterns to the decimal formatter, that is used in the statistics files
         decimalFormatter.applyPattern("###.00");
         decimalFormatter.setRoundingMode(RoundingMode.HALF_UP);
         decimalFormatter.setGroupingUsed(false);
+    }
 
+    private String createFoldersToSeedFolder(){
         // Create statistics folder if it does not exist
         // .../core/assets/statistics/
         createStatisticsFolder();
@@ -58,16 +57,54 @@ public class StatisticsManager {
         String runConfigFolder = createRunConfigFolder();
 
         // Create folder for this specific simulation run
-        // .../core/assets/statistics/*runConfig*_*versionName*/*TaskAllocator___PathFinder*/
+        // .../core/assets/statistics/*runConfig*_*versionName*/Seed_*seed*/*TaskAllocator___PathFinder*/
         String pathToSimulationFolder = createSimulationFolder(runConfigFolder);
 
-        // Write all statistics to files
-        writeOrderStatsToFile(pathToSimulationFolder);
-        writeRobotStatsToFile(pathToSimulationFolder);
-        writeGeneralStatsToFile(pathToSimulationFolder);
+        // Create folder for current seed used
+        // .../core/assets/statistics/*runConfig*_*versionName*/Seed_*seed*/
+        String seedFolder = createSeedFolder(pathToSimulationFolder);
+
+        return seedFolder;
+    }
+
+    public void addSummaries(){
+        String pathToSeedFolder = createFoldersToSeedFolder();
+
+        this.excelWriter = new ExcelWriter(pathToSeedFolder);
+        excelWriter.summarizeRobotStats(simulation);
+        excelWriter.summarizeOrderStats(simulation);
+        excelWriter.summarizeGeneralStats(simulation);
+    }
+
+    public void printStatistics(){
+        String pathToSeedFolder = createFoldersToSeedFolder();
+
+        // .../core/assets/statistics/*runConfig*_*versionName*/*TaskAllocator___PathFinder*/*statsFiles*
+        this.excelWriter = new ExcelWriter(pathToSeedFolder);
+        excelWriter.writeGeneralStats(simulation);
+        excelWriter.writeOrderStats(simulation);
+        excelWriter.writeRobotStats(simulation);
 
         // Copy file with specs from the run. Only done, if it is not already copied once.
-        copySpecsFile(pathToSimulationFolder);
+        copySpecsFile(pathToSeedFolder);
+    }
+
+    private String createSeedFolder(String simulationFolder) {
+        // Add folder for this specific random seed
+        String seedFolderName = "seed"+ "_" + Simulation.RANDOM_SEED;
+
+        String pathToSeedFolder = simulationFolder + seedFolderName + File.separator;
+
+        File newDirectory = new File(pathToSeedFolder);
+        if(newDirectory.exists()) return pathToSeedFolder;
+        else {
+            boolean folderCreated = newDirectory.mkdir();
+            if(!folderCreated) {
+                throw new IllegalArgumentException("Could not create folder " + newDirectory);
+            }
+            return pathToSeedFolder;
+        }
+
     }
 
     private String createSimulationFolder(String runConfigFolder) {
@@ -114,7 +151,7 @@ public class StatisticsManager {
     private void copySpecsFile(String pathToSimulationFolder) {
         String configFileToCopy = Simulation.PATH_TO_RUN_CONFIGS + Simulation.CURRENT_RUN_CONFIG;
 
-        String newPath = pathToSimulationFolder + File.separator + Simulation.CURRENT_RUN_CONFIG;
+        String newPath = pathToSimulationFolder + Simulation.CURRENT_RUN_CONFIG;
 
         try {
             if(!new File(newPath).exists()){
@@ -233,5 +270,161 @@ public class StatisticsManager {
 
     public void setVERSION_NAME(String VERSION_NAME) {
         this.VERSION_NAME = VERSION_NAME;
+    }
+
+    public Robot getRobotWithShortestDistance(){
+        Robot shortestDistanceRobot = null;
+        for(Robot robot : simulation.getAllRobots()){
+            if(shortestDistanceRobot == null){
+                shortestDistanceRobot = robot;
+                continue;
+            }
+            if(shortestDistanceRobot.getDistanceTraveledInMeters() > robot.getDistanceTraveledInMeters())
+                shortestDistanceRobot = robot;
+        }
+
+        return shortestDistanceRobot;
+    }
+
+    public int averageDistanceTraveled(){
+        ArrayList<Robot> robots = simulation.getAllRobots();
+        int numberOfRobots = robots.size();
+        int sum = 0;
+        for(Robot robot : robots){
+            sum += robot.getDistanceTraveledInMeters();
+        }
+
+        return sum / numberOfRobots;
+    }
+
+    public Robot getRobotWithLongestDistance(){
+        Robot longestDistance = null;
+        for(Robot robot : simulation.getAllRobots()){
+            if(longestDistance == null){
+                longestDistance = robot;
+                continue;
+            }
+            if(longestDistance.getDistanceTraveledInMeters() < robot.getDistanceTraveledInMeters())
+                longestDistance = robot;
+        }
+
+        return longestDistance;
+    }
+
+    public Robot getRobotWithLeastIdleTime(){
+        Robot shortestIdle = null;
+        for(Robot robot : simulation.getAllRobots()){
+            if(shortestIdle == null){
+                shortestIdle = robot;
+                continue;
+            }
+            if(shortestIdle.getIdleTimeInSeconds() > robot.getIdleTimeInSeconds())
+                shortestIdle = robot;
+        }
+
+        return shortestIdle;
+    }
+
+    public Robot getRobotWithLongestIdleTime(){
+        Robot longestIdle = null;
+        for(Robot robot : simulation.getAllRobots()){
+            if(longestIdle == null){
+                longestIdle = robot;
+                continue;
+            }
+            if(longestIdle.getIdleTimeInSeconds() < robot.getIdleTimeInSeconds())
+                longestIdle = robot;
+        }
+
+        return longestIdle;
+    }
+
+    public double getRobotAverageIdleTime(){
+        ArrayList<Robot> robots = simulation.getAllRobots();
+        int numberOfRobots = robots.size();
+        double sum = 0;
+        for(Robot robot : robots){
+            sum += robot.getIdleTimeInSeconds();
+        }
+
+        return sum / numberOfRobots;
+    }
+
+    public Robot getRobotFewestDeliveries(){
+        Robot fewestDeliveries = null;
+        for(Robot robot : simulation.getAllRobots()){
+            if(fewestDeliveries == null){
+                fewestDeliveries = robot;
+                continue;
+            }
+            if(fewestDeliveries.getBinDeliveriesCompleted() > robot.getBinDeliveriesCompleted())
+                fewestDeliveries = robot;
+        }
+
+        return fewestDeliveries;
+    }
+
+    public Robot getRobotMostDeliveries(){
+        Robot mostDeliveries = null;
+        for(Robot robot : simulation.getAllRobots()){
+            if(mostDeliveries == null){
+                mostDeliveries = robot;
+                continue;
+            }
+            if(mostDeliveries.getBinDeliveriesCompleted() < robot.getBinDeliveriesCompleted())
+                mostDeliveries = robot;
+        }
+
+        return mostDeliveries;
+    }
+
+    public int getRobotAverageDeliveries(){
+        ArrayList<Robot> robots = simulation.getAllRobots();
+        int numberOfRobots = robots.size();
+        int sum = 0;
+        for(Robot robot : robots){
+            sum += robot.getBinDeliveriesCompleted();
+        }
+
+        return sum / numberOfRobots;
+    }
+
+    public Order getQuickestOrder(){
+        ArrayList<Order> orders = simulation.getServer().getOrderManager().getOrdersFinished();
+        if(orders.isEmpty()) return null;
+
+        Order quickestOrder = null;
+        for(Order order : orders){
+            if(quickestOrder == null) quickestOrder = order;
+            if(quickestOrder.getTimeSpentOnOrderInMS() > order.getTimeSpentOnOrderInMS()) quickestOrder = order;
+        }
+
+        return quickestOrder;
+    }
+
+    public Order getSlowestOrder(){
+        ArrayList<Order> orders = simulation.getServer().getOrderManager().getOrdersFinished();
+        if(orders.isEmpty()) return null;
+
+        Order slowestOrder = null;
+        for(Order order : orders){
+            if(slowestOrder == null) slowestOrder = order;
+            if(slowestOrder.getTimeSpentOnOrderInMS() < order.getTimeSpentOnOrderInMS()) slowestOrder = order;
+        }
+
+        return slowestOrder;
+    }
+
+    public double getAverageOrderProcessingTime(){
+        ArrayList<Order> orders = simulation.getServer().getOrderManager().getOrdersFinished();
+        int ordersFinished = orders.size();
+
+        // avoid division by zero
+        if(ordersFinished == 0) return 0;
+        double sum = 0;
+        for(Order order : orders){
+            sum += order.getTimeSpentOnOrderInSec();
+        }
+        return sum / ordersFinished;
     }
 }
