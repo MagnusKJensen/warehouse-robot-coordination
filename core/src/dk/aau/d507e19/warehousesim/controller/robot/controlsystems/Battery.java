@@ -20,6 +20,10 @@ public class Battery extends Sensor  {
         return batteryDry;
     }
 
+    public double getBatteryLevel() {
+        return batteryLevel;
+    }
+
     public Battery(SensorState state, RobotController robotController) {
         super(state, robotController);
         setBatteryLevel();

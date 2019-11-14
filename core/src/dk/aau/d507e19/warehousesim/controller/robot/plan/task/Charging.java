@@ -8,6 +8,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.controlsystems.SensorState;
 import dk.aau.d507e19.warehousesim.storagegrid.ChargingTile;
 
 public class Charging implements Task {
+    final private int moveThreshhold = 5;
     private GridCoordinate destination;
     private RobotController robotController;
     private boolean completed,failed;
@@ -76,6 +77,9 @@ public class Charging implements Task {
 
     @Override
     public boolean interrupt() {
+        //todo re-implement this when new collision avoidance is updated
+        //if(this.robotController.getControlSystemManager().getBattery().getBatteryLevel()> moveThreshhold && !this.robotController.isCharging())
+        //    return true;
         return false;
     }
 }
