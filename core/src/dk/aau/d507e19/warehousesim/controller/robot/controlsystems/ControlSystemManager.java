@@ -19,6 +19,7 @@ public class ControlSystemManager {
     }
 
     public void checkSystem(){
+        //todo @bau consider making the checks happen less frequently in here instead in the sensors
         for(Sensor s : sensors){
             s.update();
             if(s.getState() == SensorState.FAILURE){

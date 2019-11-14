@@ -9,16 +9,16 @@ import java.util.Random;
 
 public class MechanicalSensor extends Sensor {
     final private int failureCheckFrequency = 30; //checks for error every 30 ticks. if this is 1 then we check every tick
-    final private int failureBoundary = 100; // chance for failure is 1/errorBoundary ie. high number = low chance, low number = high chance
+    final private int failureBoundary = 1000; // chance for failure is 1/errorBoundary ie. high number = low chance, low number = high chance
     final private int failureNumber = 3; //if we random this number then there is a failure
-    final private long maintenanceTimeInTicks = 20000;
+    final private long maintenanceTimeInTicks = 10000;
     private long maintenanceStartTick = -1;
     private boolean createdTask=false;
 
     private Random random;
     public MechanicalSensor(SensorState state, RobotController robotController) {
         super(state, robotController);
-        this.random = new Random(Simulation.RANDOM_SEED);
+        this.random = new Random(Simulation.RANDOM_SEED + robotController.getRobot().getRobotID());
     }
 
     @Override
@@ -32,7 +32,7 @@ public class MechanicalSensor extends Sensor {
     }
     private void checkForFailure(){
         //avoid checking at tick 0?
-        if(this.robotController.getServer().getTimeInTicks() % failureCheckFrequency == 0){
+        if(this.robotController.getServer().getTimeInTicks() % failureCheckFrequency == 0 && !this.robotController.isCharging()){
             if(failureNumber == random.nextInt(failureBoundary)){
                 this.setState(SensorState.FAILURE);
             }
@@ -57,7 +57,7 @@ public class MechanicalSensor extends Sensor {
         //this means that we might hold a bin while this is happening, making that task take WAY too long
         //for now we're just going to wait, but ideally another robot will come and pick up the bin/order from us before we are allowed to move
         if(!this.robotController.getRobot().getCurrentStatus().equals(Status.MAINTENANCE) && !createdTask){
-            this.robotController.assignTask(new Maintenance());
+            this.robotController.assignTask(new Maintenance(this.robotController));
             createdTask = true;
         }
     }

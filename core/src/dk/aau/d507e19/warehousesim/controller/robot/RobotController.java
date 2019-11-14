@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
+import com.sun.tools.javac.Main;
 import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
@@ -28,9 +29,13 @@ public class RobotController {
         this.server = server;
         this.robot = robot;
         this.pathFinder = pathFinderEnum.getPathFinder(server, this);
-        this.random = new Random(Simulation.RANDOM_SEED);
+        this.random = new Random(Simulation.RANDOM_SEED+ robot.getRobotID());
         this.controlSystemManager = new ControlSystemManager(this);
         reserveCurrentSpot();
+    }
+
+    public Random getRandom() {
+        return random;
     }
 
     private void reserveCurrentSpot() {
@@ -162,10 +167,24 @@ public class RobotController {
     public boolean isCharging(){
         if(robot.getCurrentStatus().equals(Status.CHARGING)){
             if(tasks.get(0) instanceof Charging){
-                if(((Charging) tasks.get(0)).getChargingTile() == (null)){
+                if(((Charging) tasks.get(0)).getChargingTile() == null){
                     return false;
                 }
                 if(((Charging) tasks.get(0)).getChargingTile().getGridCoordinate().equals(robot.getApproximateGridCoordinate())){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isUnderMaintenance() {
+        if(robot.getCurrentStatus().equals(Status.MAINTENANCE)){
+            if(tasks.get(0) instanceof Maintenance){
+                if(((Maintenance) tasks.get(0)).getMaintenanceTile() == null ){
+                    return false;
+                }
+                if(((Maintenance) tasks.get(0)).getMaintenanceTile().getGridCoordinate().equals(robot.getApproximateGridCoordinate())){
                     return true;
                 }
             }

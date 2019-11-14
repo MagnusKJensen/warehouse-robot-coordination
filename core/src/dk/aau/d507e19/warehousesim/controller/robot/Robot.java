@@ -104,9 +104,13 @@ public class Robot {
                     batch.draw(GraphicsManager.getTexture("Simulation/Robots/chargingRobot.png"),currentPosition.getX(),currentPosition.getY(),Tile.TILE_SIZE, Tile.TILE_SIZE);
                 }else{
                     batch.draw(GraphicsManager.getTexture("Simulation/Robots/chargingRobot_RED.png"),currentPosition.getX(),currentPosition.getY(),Tile.TILE_SIZE, Tile.TILE_SIZE);
-                }
-
-                break;
+                }break;
+            case MAINTENANCE:
+                if(robotController.isUnderMaintenance()){
+                    batch.draw(GraphicsManager.getTexture("Simulation/Robots/repairRobot.png"),currentPosition.getX(),currentPosition.getY(),Tile.TILE_SIZE, Tile.TILE_SIZE);
+                }else{
+                    batch.draw(GraphicsManager.getTexture("Simulation/Robots/repairRobot_RED.png"),currentPosition.getX(),currentPosition.getY(),Tile.TILE_SIZE, Tile.TILE_SIZE);
+                }break;
             default:
                 throw new RuntimeException("Robot status unavailable");
         }
