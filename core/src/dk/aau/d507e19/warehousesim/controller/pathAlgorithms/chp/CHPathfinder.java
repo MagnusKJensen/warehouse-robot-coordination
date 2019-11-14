@@ -7,6 +7,7 @@ import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PartialPathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.ReservationNavigation;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
@@ -26,6 +27,7 @@ public class CHPathfinder implements PartialPathFinder {
 
     private static final long MAXIMUM_WAIT_TIME = TimeUtils.secondsToTicks(10);
     private static final long MAXIMUM_ITERATIONS = 1000;
+    private static final long PARTIAL_PATH_MAX_ITERATIONS = 300;
     private static final long MIN_TIME_BETWEEN_NODES = TimeUtils.secondsToTicks(0.9f);
     private final RobotController robotController;
     private final Server server;
@@ -160,11 +162,11 @@ public class CHPathfinder implements PartialPathFinder {
         while (!openList.isEmpty()) {
             CHNode bestOpenListNode = openList.poll();
 
-            // Check if this node
+            // Check if this node is better than the currently best known node
             if (bestOpenListNode.getFCost() <= bestNodeSoFar.getFCost()
-                    && bestOpenListNode.getHCost() < bestNodeSoFar.getHCost()){
-                // todo only exchange if can reserve indefinitely
-                bestNodeSoFar = bestOpenListNode;
+                    && bestOpenListNode.getHCost() < bestNodeSoFar.getHCost()) {
+                if (canReservePath(bestOpenListNode.getPath()))
+                    bestNodeSoFar = bestOpenListNode;
             }
 
             ArrayList<CHNode> successors = getValidSuccessors(bestOpenListNode, destination);
@@ -176,7 +178,7 @@ public class CHPathfinder implements PartialPathFinder {
             openList.addAll(successors);
 
             iterationCount++;
-            if (iterationCount > MAXIMUM_ITERATIONS)
+            if (iterationCount > PARTIAL_PATH_MAX_ITERATIONS)
                 break;
         }
 
@@ -187,10 +189,10 @@ public class CHPathfinder implements PartialPathFinder {
             ReservationManager resManager = server.getReservationManager();
 
             // Check to see if any of the neighbours (in the direction of the destination) are blocking the robot
-            for(Direction direction : directionsTowardDestination){
+            for (Direction direction : directionsTowardDestination) {
                 GridCoordinate neighbourCoordinate = initialNode.getGridCoordinate().plus(direction);
                 boolean isNeighbourReservedForever = resManager.isReservedIndefinitely(neighbourCoordinate);
-                if(isNeighbourReservedForever)
+                if (isNeighbourReservedForever)
                     throw new NextStepBlockedException(start, destination, neighbourCoordinate);
             }
         }
@@ -198,16 +200,22 @@ public class CHPathfinder implements PartialPathFinder {
         return bestNodeSoFar.getPath();
     }
 
+    private boolean canReservePath(Path path) {
+        ArrayList<Reservation> reservations = MovementPredictor.calculateReservations(robotController.getRobot(), path, server.getTimeInTicks(), 0);
+        reservations.add(ReservationNavigation.createLastTileIndefiniteReservation(reservations));
+        return !server.getReservationManager().hasConflictingReservations(reservations);
+    }
+
     private ArrayList<Direction> getDirectionsOf(GridCoordinate start, GridCoordinate destination) {
         ArrayList<Direction> directions = new ArrayList<>();
 
-        if(start.getX() - destination.getX() < 0){
+        if (start.getX() - destination.getX() < 0) {
             directions.add(Direction.EAST);
-        }else if(start.getY() - destination.getY() < 0){
+        } else if (start.getY() - destination.getY() < 0) {
             directions.add(Direction.NORTH);
-        }else if(start.getX() - destination.getX() > 0){
+        } else if (start.getX() - destination.getX() > 0) {
             directions.add(Direction.WEST);
-        }else if(start.getY() - destination.getY() > 0){
+        } else if (start.getY() - destination.getY() > 0) {
             directions.add(Direction.SOUTH);
         }
 

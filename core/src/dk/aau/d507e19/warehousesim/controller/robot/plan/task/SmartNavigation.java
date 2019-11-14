@@ -30,29 +30,15 @@ public class SmartNavigation extends Navigation {
         Path newPath;
 
         try {
-            newPath = robotController.getPathFinder().calculatePath(start, destination);
-        } catch (NoPathFoundException e) {
-            return planPartialPath();
+            newPath = partialPathFinder.findPartialPath(start, destination);
+        } catch (NextStepBlockedException e) {
+            return planOneStepForwardPath(e.blockedCoordinate);
         }
 
         // Remove previously held reservations
         setNewPath(newPath);
         updateReservations(newPath);
         return true;
-    }
-
-    private boolean planPartialPath() {
-        Path partialPath;
-
-        try {
-            partialPath = partialPathFinder.findPartialPath(robot.getGridCoordinate(), destination);
-        } catch (NextStepBlockedException e) {
-            return planOneStepForwardPath(e.blockedCoordinate);
-        }
-
-        setNewPath(partialPath);
-        updateReservations(partialPath);
-        return false;
     }
 
     private boolean planOneStepForwardPath(GridCoordinate blockedCoordinate) {
