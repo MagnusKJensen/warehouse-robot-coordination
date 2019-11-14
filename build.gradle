@@ -73,8 +73,7 @@ project(":core") {
         // https://mvnrepository.com/artifact/org.mockito/mockito-core
         testCompile group: 'org.mockito', name: 'mockito-core', version: '2.1.0'
 
-        // https://mvnrepository.com/artifact/org.powermock/powermock-mockito-release-full
-        testCompile group: 'org.powermock', name: 'powermock-mockito-release-full', version: '1.5.4', ext: 'pom'
+
 
     }
 

@@ -282,8 +282,12 @@ public class Astar implements PathFinder {
         if (reservationManager.hasConflictingReservations(lastReservation) ||
                 !reservationManager.canReserve(lastReservation.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(lastReservation.getTimeFrame().getStart()))) {
 
-            // Throw new exception if a path cannot be found.
-            throw new NoPathFoundException(listOfReservations.get(0).getGridCoordinate(), lastReservation.getGridCoordinate());
+
+            // Make new end positions and calculate again
+            xEndPosition = listOfReservations.get(listOfReservations.size()-2).getGridCoordinate().getX();
+            yEndPosition = listOfReservations.get(listOfReservations.size()-2).getGridCoordinate().getY();
+
+            i = true;
         }
 
         // Goes through every reservation, except for the first, that is always reserved (where the robot is standing)
