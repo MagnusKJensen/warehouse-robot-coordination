@@ -63,7 +63,7 @@ public class Battery extends Sensor  {
         //assign the task, but let other tasks finish first
         //only do this if we're not already charging
         if(!this.robotController.getRobot().getCurrentStatus().equals(Status.CHARGING) && !createdTask){
-            this.robotController.assignTask(new Charging(this.robotController.getServer(),this.robotController));
+            this.robotController.assignTask(new Charging(this.robotController));
             createdTask=true;
         }
     }

@@ -4,21 +4,17 @@ import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 import dk.aau.d507e19.warehousesim.controller.robot.Status;
-import dk.aau.d507e19.warehousesim.controller.robot.controlsystems.Battery;
 import dk.aau.d507e19.warehousesim.controller.robot.controlsystems.SensorState;
-import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.storagegrid.ChargingTile;
 
 public class Charging implements Task {
     private GridCoordinate destination;
-    private Server server;
     private RobotController robotController;
     private boolean completed,failed;
     private Navigation navigation;
     private ChargingTile chargingTile;
 
-    public Charging(Server server, RobotController robotController) {
-        this.server = server;
+    public Charging(RobotController robotController) {
         this.robotController = robotController;
     }
 
@@ -56,7 +52,7 @@ public class Charging implements Task {
         this.failed =true;
     }
     public ChargingTile findAvailableCharger(){
-        for(ChargingTile charger : server.getAvailableChargers()){
+        for(ChargingTile charger : robotController.getServer().getAvailableChargers()){
             //if we find one the navigate to it?
             return charger;
         }
