@@ -28,6 +28,7 @@ public class Robot {
     private RobotController robotController;
     private long binDeliveriesCompleted = 0;
     private int distanceTraveled = 0;
+    boolean b = false; //used to control out of battery animation
 
     /**
      * Robot STATS
@@ -110,6 +111,12 @@ public class Robot {
                     batch.draw(GraphicsManager.getTexture("Simulation/Robots/repairRobot.png"),currentPosition.getX(),currentPosition.getY(),Tile.TILE_SIZE, Tile.TILE_SIZE);
                 }else{
                     batch.draw(GraphicsManager.getTexture("Simulation/Robots/repairRobot_RED.png"),currentPosition.getX(),currentPosition.getY(),Tile.TILE_SIZE, Tile.TILE_SIZE);
+                }break;
+            case NOPOWER:
+                if(robotController.getAnimationFlag()){
+                    batch.draw(GraphicsManager.getTexture("Simulation/Robots/whiteRobot.png"),currentPosition.getX(),currentPosition.getY(),Tile.TILE_SIZE, Tile.TILE_SIZE);
+                }else{
+                    batch.draw(GraphicsManager.getTexture("Simulation/Robots/whiteRobot_X.png"),currentPosition.getX(),currentPosition.getY(),Tile.TILE_SIZE, Tile.TILE_SIZE);
                 }break;
             default:
                 throw new RuntimeException("Robot status unavailable");
