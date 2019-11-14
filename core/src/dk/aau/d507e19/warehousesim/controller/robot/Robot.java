@@ -100,7 +100,12 @@ public class Robot {
                 else batch.draw(GraphicsManager.getTexture("Simulation/Robots/robotMovingOutOfWayBusy.png"), currentPosition.getX(), currentPosition.getY(), Tile.TILE_SIZE, Tile.TILE_SIZE);
                 break;
             case CHARGING:
-                batch.draw(GraphicsManager.getTexture("Simulation/tiles/chargingStation_Battery.png"),currentPosition.getX(),currentPosition.getY(),Tile.TILE_SIZE, Tile.TILE_SIZE);
+                if(robotController.isCharging()){
+                    batch.draw(GraphicsManager.getTexture("Simulation/Robots/chargingRobot.png"),currentPosition.getX(),currentPosition.getY(),Tile.TILE_SIZE, Tile.TILE_SIZE);
+                }else{
+                    batch.draw(GraphicsManager.getTexture("Simulation/Robots/chargingRobot_RED.png"),currentPosition.getX(),currentPosition.getY(),Tile.TILE_SIZE, Tile.TILE_SIZE);
+                }
+
                 break;
             default:
                 throw new RuntimeException("Robot status unavailable");
