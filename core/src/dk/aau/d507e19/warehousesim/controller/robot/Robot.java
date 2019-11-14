@@ -114,9 +114,9 @@ public class Robot {
                 }break;
             case NOPOWER:
                 if(robotController.getAnimationFlag()){
-                    batch.draw(GraphicsManager.getTexture("Simulation/Robots/whiteRobot.png"),currentPosition.getX(),currentPosition.getY(),Tile.TILE_SIZE, Tile.TILE_SIZE);
+                    batch.draw(GraphicsManager.getTexture("Simulation/Robots/greyBatteryRobot.png"),currentPosition.getX(),currentPosition.getY(),Tile.TILE_SIZE, Tile.TILE_SIZE);
                 }else{
-                    batch.draw(GraphicsManager.getTexture("Simulation/Robots/whiteRobot_X.png"),currentPosition.getX(),currentPosition.getY(),Tile.TILE_SIZE, Tile.TILE_SIZE);
+                    batch.draw(GraphicsManager.getTexture("Simulation/Robots/greyBatteryRobot_X.png"),currentPosition.getX(),currentPosition.getY(),Tile.TILE_SIZE, Tile.TILE_SIZE);
                 }break;
             default:
                 throw new RuntimeException("Robot status unavailable");

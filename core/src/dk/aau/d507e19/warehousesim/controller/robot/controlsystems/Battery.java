@@ -7,7 +7,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Charging;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.OutOfBattery;
 
 public class Battery extends Sensor  {
-    private double batteryLevel = 100;
+    private double batteryLevel = 0;
     //todo @bau move to WarehouseSpecs?
     final private double chargeThreshold = 20.1;
     final private double drainPerSecond = 100.0/72000.0; //run out after 20hrs of usage
