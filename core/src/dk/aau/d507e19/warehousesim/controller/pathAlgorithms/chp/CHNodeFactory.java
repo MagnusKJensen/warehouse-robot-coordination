@@ -38,7 +38,8 @@ public class CHNodeFactory {
     public CHNode createInitialNode(GridCoordinate gridCoordinate, GridCoordinate target){
         Path initialPath = createInitialPath(gridCoordinate);
         double hCost = heuristic.getHeuristic(initialPath, target, robotController);
-        return new CHNode(gridCoordinate, initialPath, 0, hCost);
+        double gCost = gCostCalculator.getGCost(initialPath, robotController);
+        return new CHNode(gridCoordinate, initialPath, gCost, hCost);
     }
 
     private static Path createInitialPath(GridCoordinate gridCoordinate){

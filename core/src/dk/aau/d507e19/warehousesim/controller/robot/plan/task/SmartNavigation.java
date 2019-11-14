@@ -33,10 +33,6 @@ public class SmartNavigation extends Navigation {
 
         try {
              newPath = robotController.getPathFinder().calculatePath(start, destination);
-        } catch (DestinationReservedIndefinitelyException e) {
-            //askOccupyingRobotToMove(e.getDest());
-            //return false;
-            return planPartialPath();
         } catch (NoPathFoundException e) {
             return planPartialPath();
         }
@@ -63,11 +59,6 @@ public class SmartNavigation extends Navigation {
 
     private boolean planOneStepForwardPath(GridCoordinate blockedCoordinate) {
         ReservationManager reservationManager = robotController.getServer().getReservationManager();
-
-        //todo TEMP
-       // if(!reservationManager.isReservedIndefinitely(blockedCoordinate))
-         //   return false;
-
         Robot blockingRobot = reservationManager.getIndefiniteReservationsAt(blockedCoordinate).getRobot();
 
         if(blockingRobot.getRobotController().requestChainedMove(robot, blockedCoordinate)){

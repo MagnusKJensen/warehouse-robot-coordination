@@ -8,6 +8,7 @@ import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PartialPathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
+import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.exception.DestinationReservedIndefinitelyException;
@@ -59,16 +60,13 @@ public class CHPathfinder implements PartialPathFinder {
             throw new DestinationReservedIndefinitelyException(start, destination);
 
         PriorityQueue<CHNode> openList = new PriorityQueue<>();
-        PriorityQueue<CHNode> closedList = new PriorityQueue<>();
-
         openList.add(nodeFactory.createInitialNode(start, destination));
 
         int iterationCount = 0;
-
         while (!openList.isEmpty()) {
-            CHNode bestCandidate = openList.poll();
+            CHNode bestOpenListNode = openList.poll();
 
-            ArrayList<CHNode> successors = getValidSuccessors(bestCandidate, destination);
+            ArrayList<CHNode> successors = getValidSuccessors(bestOpenListNode, destination);
 
             //Check if destination is reached
             for (CHNode successor : successors) {
@@ -86,7 +84,6 @@ public class CHPathfinder implements PartialPathFinder {
             iterationCount++;
             if (iterationCount > MAXIMUM_ITERATIONS)
                 throw new PathFindingTimedOutException(start, destination, iterationCount);
-
         }
 
         throw new NoValidPathException(start, destination, "Pathfinder max wait time per tile : " + MAXIMUM_WAIT_TIME);
@@ -151,8 +148,68 @@ public class CHPathfinder implements PartialPathFinder {
 
     @Override
     public Path findPartialPath(GridCoordinate start, GridCoordinate destination) throws NextStepBlockedException {
-        DummyPathFinder dummyPathFinder = new DummyPathFinder();
-        Path path = dummyPathFinder.calculatePath(start, destination);
-        throw new NextStepBlockedException(start, destination, path.getFullPath().get(1).getGridCoordinate());
+        PriorityQueue<CHNode> openList = new PriorityQueue<>();
+        final CHNode initialNode = nodeFactory.createInitialNode(start, destination);
+        openList.add(initialNode);
+
+        // The default best partial path is the starting node
+        CHNode bestNodeSoFar = initialNode;
+
+
+        int iterationCount = 0;
+        while (!openList.isEmpty()) {
+            CHNode bestOpenListNode = openList.poll();
+
+            // Check if this node
+            if (bestOpenListNode.getFCost() <= bestNodeSoFar.getFCost()
+                    && bestOpenListNode.getHCost() < bestNodeSoFar.getHCost()){
+                bestNodeSoFar = bestOpenListNode;
+            }
+
+            ArrayList<CHNode> successors = getValidSuccessors(bestOpenListNode, destination);
+
+            //Check if destination is reached
+            for (CHNode successor : successors)
+                if (successor.getGridCoordinate().equals(destination)) return successor.getPath();
+
+            openList.addAll(successors);
+
+            iterationCount++;
+            if (iterationCount > MAXIMUM_ITERATIONS)
+                break;
+        }
+
+        // If the best partial path consists only of the initial node,
+        // the robot must be blocked by at least one neighbouring robot
+        if (initialNode.equals(bestNodeSoFar)) {
+            ArrayList<Direction> directionsTowardDestination = getDirectionsOf(initialNode.getGridCoordinate(), destination);
+            ReservationManager resManager = server.getReservationManager();
+
+            // Check to see if any of the neighbours (in the direction of the destination) are blocking the robot
+            for(Direction direction : directionsTowardDestination){
+                GridCoordinate neighbourCoordinate = initialNode.getGridCoordinate().plus(direction);
+                boolean isNeighbourReservedForever = resManager.isReservedIndefinitely(neighbourCoordinate);
+                if(isNeighbourReservedForever)
+                    throw new NextStepBlockedException(start, destination, neighbourCoordinate);
+            }
+        }
+
+        return bestNodeSoFar.getPath();
+    }
+
+    private ArrayList<Direction> getDirectionsOf(GridCoordinate start, GridCoordinate destination) {
+        ArrayList<Direction> directions = new ArrayList<>();
+
+        if(start.getX() - destination.getX() < 0){
+            directions.add(Direction.EAST);
+        }else if(start.getY() - destination.getY() < 0){
+            directions.add(Direction.NORTH);
+        }else if(start.getX() - destination.getX() > 0){
+            directions.add(Direction.WEST);
+        }else if(start.getY() - destination.getY() > 0){
+            directions.add(Direction.SOUTH);
+        }
+
+        return directions;
     }
 }

@@ -12,7 +12,7 @@ public class DistanceTurnGCost implements GCostCalculator {
     public double getGCost(Path path, RobotController robotController) {
         double gCost = 0d;
         gCost += path.getFullPath().size();
-        gCost += (path.getLines().size() - 1) * DistanceTurnHeuristic.cornerCost;
+        gCost += Math.max((path.getLines().size() - 1), 0) * DistanceTurnHeuristic.stoppingCost;
         gCost += calculateWaitPenalty(path);
         return gCost;
     }
