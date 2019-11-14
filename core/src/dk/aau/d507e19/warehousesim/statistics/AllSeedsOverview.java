@@ -28,11 +28,11 @@ public class AllSeedsOverview {
         return ultimateHighestOrdersFinished;
     }
 
-    public void addAvailableProductsAverage(Double d){
+    public void addAvailableProductsAverage(double d){
         availableProductsLeftAverages.add(d);
     }
 
-    public void addOrdersInQueueAverage(Double d){
+    public void addOrdersInQueueAverage(double d){
         ordersInQueueAverages.add(d);
     }
 
@@ -49,7 +49,7 @@ public class AllSeedsOverview {
         return getAverageValue(finishedOrdersAverages);
     }
 
-    public void addOrdersPerMinuteAverage(Double d){
+    public void addOrdersPerMinuteAverage(double d){
         if(ultimateLowestOrderPerMinute == -1) ultimateLowestOrderPerMinute = d;
         if(ultimateHighestOrdersPerMinute == -1) ultimateHighestOrdersPerMinute = d;
         if(ultimateLowestOrderPerMinute > d) ultimateLowestOrderPerMinute = d;
@@ -197,7 +197,7 @@ public class AllSeedsOverview {
         return getAverageValue(averageIdleTimeAverages);
     }
 
-    public void addAverageIdleTimeAverage(Double d){
+    public void addAverageIdleTimeAverage(double d){
         averageIdleTimeAverages.add(d);
     }
 

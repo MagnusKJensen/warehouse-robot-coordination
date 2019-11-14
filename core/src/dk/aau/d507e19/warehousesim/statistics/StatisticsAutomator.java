@@ -23,7 +23,7 @@ public class StatisticsAutomator {
     private static final int PRINT_EVERY_TICK = 2500;
     private static final String VERSION_NAME = "bigVersion";
     private static final String SPEC_FILE_NAME = "defaultSpecs.json";
-    private static final int numberOfSeeds = 10;
+    private static final int numberOfSeeds = 5;
     private static long[] SEEDS = new long[numberOfSeeds];
     private static Random random = new Random(SimulationApp.DEFAULT_SEED);
     public static final String PATH_TO_RUN_CONFIGS_RESULTS = System.getProperty("user.dir") + File.separator + "statistics" + File.separator + SPEC_FILE_NAME + "_" + VERSION_NAME + File.separator;
@@ -45,11 +45,10 @@ public class StatisticsAutomator {
         ));
 
         // Run a single config with the specified taskAllocators and pathfinders
-        runConfig(SPEC_FILE_NAME, VERSION_NAME, taskAllocators, pathFinders, SEEDS);
+        //runConfig(SPEC_FILE_NAME, VERSION_NAME, taskAllocators, pathFinders, SEEDS);
 
         // Run with all configurations inside the .../core/assets/warehouseconfigurations/ folder
-        // Run with one seed by exchanging 'SEEDS' for SEEDS[0]
-        // runAllConfigurations(VERSION_NAME, taskAllocators, pathFinders, SEEDS);
+        runAllConfigurations(VERSION_NAME, taskAllocators, pathFinders, SEEDS);
     }
 
     private static void runConfig(String configFileName, String versionName, ArrayList<TaskAllocatorEnum> taskAllocators, ArrayList<PathFinderEnum> pathFinders, long ...seeds){
