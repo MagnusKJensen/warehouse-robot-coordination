@@ -78,4 +78,9 @@ public class Relocation implements Task {
     public boolean interrupt() {
         return false;
     }
+
+    @Override
+    public boolean canInterrupt() {
+        return false;
+    }
 }

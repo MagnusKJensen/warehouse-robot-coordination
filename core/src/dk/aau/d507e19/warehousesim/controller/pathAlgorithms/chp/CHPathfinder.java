@@ -163,6 +163,7 @@ public class CHPathfinder implements PartialPathFinder {
             // Check if this node
             if (bestOpenListNode.getFCost() <= bestNodeSoFar.getFCost()
                     && bestOpenListNode.getHCost() < bestNodeSoFar.getHCost()){
+                // todo only exchange if can reserve indefinitely
                 bestNodeSoFar = bestOpenListNode;
             }
 

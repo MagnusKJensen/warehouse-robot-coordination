@@ -229,5 +229,4 @@ public class Robot {
     public double getIdleTimeInSeconds(){
         return (double)robotController.getIdleTimeTicks() / SimulationApp.TICKS_PER_SECOND;
     }
-
 }

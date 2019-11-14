@@ -6,8 +6,8 @@ import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PartialPathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.ChainMover;
 import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
-import dk.aau.d507e19.warehousesim.exception.DestinationReservedIndefinitelyException;
 import dk.aau.d507e19.warehousesim.exception.NextStepBlockedException;
 import dk.aau.d507e19.warehousesim.exception.NoPathFoundException;
 
@@ -18,7 +18,7 @@ public class SmartNavigation extends Navigation {
 
     public SmartNavigation(RobotController robotController, GridCoordinate destination) {
         super(robotController, destination);
-        if(!(robotController.getPathFinder() instanceof PartialPathFinder))
+        if (!(robotController.getPathFinder() instanceof PartialPathFinder))
             throw new IllegalArgumentException("Robot must have a partial pathfinder to use the SmartNavigation task");
         this.partialPathFinder = (PartialPathFinder) robotController.getPathFinder();
         this.oneStepPathFinder = new OneStepWaitingPathFinder(robotController.getRobot(), robotController.getServer());
@@ -29,10 +29,8 @@ public class SmartNavigation extends Navigation {
         GridCoordinate start = robot.getGridCoordinate();
         Path newPath;
 
-        if(robot.getRobotID() != 0)return false;
-
         try {
-             newPath = robotController.getPathFinder().calculatePath(start, destination);
+            newPath = robotController.getPathFinder().calculatePath(start, destination);
         } catch (NoPathFoundException e) {
             return planPartialPath();
         }
@@ -46,7 +44,7 @@ public class SmartNavigation extends Navigation {
     private boolean planPartialPath() {
         Path partialPath;
 
-        try{
+        try {
             partialPath = partialPathFinder.findPartialPath(robot.getGridCoordinate(), destination);
         } catch (NextStepBlockedException e) {
             return planOneStepForwardPath(e.blockedCoordinate);
@@ -61,7 +59,12 @@ public class SmartNavigation extends Navigation {
         ReservationManager reservationManager = robotController.getServer().getReservationManager();
         Robot blockingRobot = reservationManager.getIndefiniteReservationsAt(blockedCoordinate).getRobot();
 
-        if(blockingRobot.getRobotController().requestChainedMove(robot, blockedCoordinate)){
+        // If the blocking robot is not interruptable, cancel path planning
+        if (!blockingRobot.getRobotController().canInterrupt(this.robot))
+            return false;
+
+        ChainMover chainMover = new ChainMover(this.robot, blockingRobot, this.robot.getRobotController().getServer());
+        if (chainMover.attemptChainMove()) {
             try {
                 Path newPath = oneStepPathFinder.calculatePath(robot.getGridCoordinate(), blockedCoordinate);
                 setNewPath(newPath);
@@ -71,11 +74,12 @@ public class SmartNavigation extends Navigation {
             }
             return true;
         }
+
         return false;
     }
 
     @Override
-    boolean canInterrupt() {
+    public boolean canInterrupt() {
         return !isMoving();
     }
 }

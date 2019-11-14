@@ -213,8 +213,6 @@ public abstract class Navigation implements Task{
         return false;
     }
 
-    abstract boolean canInterrupt();
-
     boolean isMoving() {
         return path != null;
     }
