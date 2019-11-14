@@ -15,10 +15,8 @@ public class MechanicalSensor extends Sensor {
     private long maintenanceStartTick = -1;
     private boolean createdTask=false;
 
-    private Random random;
     public MechanicalSensor(SensorState state, RobotController robotController) {
         super(state, robotController);
-        this.random = new Random(Simulation.RANDOM_SEED + robotController.getRobot().getRobotID());
     }
 
     @Override

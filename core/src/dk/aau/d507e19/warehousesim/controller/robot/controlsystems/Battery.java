@@ -7,7 +7,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Charging;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.OutOfBattery;
 
 public class Battery extends Sensor  {
-    private double batteryLevel = 0;
+    private double batteryLevel;
     //todo @bau move to WarehouseSpecs?
     final private double chargeThreshold = 20.1;
     final private double drainPerSecond = 100.0/72000.0; //run out after 20hrs of usage
@@ -21,10 +21,21 @@ public class Battery extends Sensor  {
     }
 
     public Battery(SensorState state, RobotController robotController) {
-        //todo @bau should batteries be able to initialize with dynamic battery levels?
         super(state, robotController);
+        setBatteryLevel();
     }
 
+    private void setBatteryLevel(){
+        switch (random.nextInt(10-5)+5){
+            case 5: batteryLevel = 50; break;
+            case 6: batteryLevel = 60; break;
+            case 7: batteryLevel = 70; break;
+            case 8: batteryLevel = 80; break;
+            case 9: batteryLevel = 90; break;
+            case 10: batteryLevel =100; break;
+            default: batteryLevel = 40; break;
+        }
+    }
     @Override
     public void update() {
         switch (this.getState()){
