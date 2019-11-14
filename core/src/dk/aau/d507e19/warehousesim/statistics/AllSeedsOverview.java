@@ -4,9 +4,13 @@ import java.util.ArrayList;
 
 public class AllSeedsOverview {
     private int seedsVisited = 0;
-    /**
-     * General stats
-     */
+
+    public void incrementSeedsVisited(){
+        seedsVisited++;
+    }
+    /** * * * * * * * * * * * * * * * * * * * * * *
+     *              General stats                 *
+     ** * * * * * * * * * * * * * * * * * * * * * */
     private ArrayList<Double> availableProductsLeftAverages = new ArrayList<>();
     private ArrayList<Double> ordersInQueueAverages = new ArrayList<>();
     private ArrayList<Double> ordersPerMinuteAverages = new ArrayList<>();
@@ -15,34 +19,6 @@ public class AllSeedsOverview {
     private ArrayList<Double> finishedOrdersAverages = new ArrayList<>();
     private double ultimateLowestOrdersFinished = -1;
     private double ultimateHighestOrdersFinished = -1;
-
-    /**
-     * Order stats
-     */
-    private double quickestOrderAverage;
-    private double slowestOrderAverage;
-    private double averageOrderAverage;
-    private double ultimateQuickestOrder = -1;
-    private double ultimateSlowestOrder = -1;
-
-    /**
-     * Robot stats
-     */
-    private double averageDistanceTraveledAverage;
-    private double shortestDistanceTraveledAverage;
-    private double longestDistanceTraveledAverage;
-    private double averageIdleTimeAverage;
-    private double leastIdleTimeAverage;
-    private double mostIdleTimeAverage;
-    private double averageDeliveriesAverage;
-    private double fewestDeliveriesAverage;
-    private double mostDeliveriesAverage;
-    private double ultimateMostIdleTime;
-    private double ultimateLeastIdleTime;
-    private int ultimateLongestDistanceTraveled = -1;
-    private int ultimateShortestDistanceTraveled = -1;
-    private int ultimateMostDeliveries = -1;
-    private int ultimateFewestDeliveries = -1;
 
     public double getUltimateLowestOrdersFinished() {
         return ultimateLowestOrdersFinished;
@@ -70,11 +46,7 @@ public class AllSeedsOverview {
     }
 
     public double getOrdersFinishedAverage(){
-        double sum = 0;
-        for(Double d : finishedOrdersAverages){
-            sum += d;
-        }
-        return sum / seedsVisited;
+        return getAverageValue(finishedOrdersAverages);
     }
 
     public void addOrdersPerMinuteAverage(Double d){
@@ -87,31 +59,176 @@ public class AllSeedsOverview {
     }
 
     public double getOrdersPerMinuteAverage(){
-        double sum = 0;
-        for(Double d : ordersPerMinuteAverages){
-            sum += d;
-        }
-        return sum / seedsVisited;
+        return getAverageValue(ordersPerMinuteAverages);
     }
 
     public double getAvailableProductsLeftAverage(){
-        double sum = 0;
-        for(Double d : availableProductsLeftAverages){
-            sum += d;
-        }
-        return sum / seedsVisited;
+        return getAverageValue(availableProductsLeftAverages);
     }
 
     public double getOrdersInQueueAverage(){
-        double sum = 0;
-        for(Double d : ordersInQueueAverages){
-            sum += d;
-        }
-        return sum / seedsVisited;
+        return getAverageValue(ordersInQueueAverages);
     }
 
-    public void incrementSeedsVisited(){
-        seedsVisited++;
+    /** * * * * * * * * * * * * * * * * * * * * * *
+     *              Order stats                   *
+     ** * * * * * * * * * * * * * * * * * * * * * */
+    private ArrayList<Double> quickestOrders = new ArrayList<>();
+    private ArrayList<Double> slowestOrders = new ArrayList<>();
+    private ArrayList<Double> averageOrders = new ArrayList<>();
+    private double ultimateQuickestOrder = -1;
+    private double ultimateSlowestOrder = -1;
+
+    public void addAverageOrder(double d){
+        averageOrders.add(d);
+    }
+
+    public double getAverageOrderAverage(){
+        return getAverageValue(averageOrders);
+    }
+
+    public void addQuickestOrder(double d){
+        if(ultimateQuickestOrder == -1) ultimateQuickestOrder = d;
+        if(ultimateSlowestOrder == -1) ultimateSlowestOrder = d;
+        if(ultimateQuickestOrder > d) ultimateQuickestOrder = d;
+        if(ultimateSlowestOrder < d) ultimateSlowestOrder = d;
+
+        quickestOrders.add(d);
+    }
+
+    public double getSlowestOrderAverage(){
+        return getAverageValue(slowestOrders);
+    }
+
+    public double getQuickestOrderAverage(){
+        return getAverageValue(quickestOrders);
+    }
+
+    public void addSlowestOrder(double d){
+        if(ultimateQuickestOrder == -1) ultimateQuickestOrder = d;
+        if(ultimateSlowestOrder == -1) ultimateSlowestOrder = d;
+        if(ultimateQuickestOrder > d) ultimateQuickestOrder = d;
+        if(ultimateSlowestOrder < d) ultimateSlowestOrder = d;
+
+        slowestOrders.add(d);
+    }
+
+
+    /** * * * * * * * * * * * * * * * * * * * * * *
+     *              Robot stats                   *
+     ** * * * * * * * * * * * * * * * * * * * * * */
+    private ArrayList<Double> averageDistanceTraveledAverages = new ArrayList<>();
+    private ArrayList<Double> shortestDistanceTraveled = new ArrayList<>();
+    private ArrayList<Double> longestDistanceTraveledAverages = new ArrayList<>();
+    private ArrayList<Double> averageIdleTimeAverages = new ArrayList<>();
+    private ArrayList<Double> leastIdleTimeAverages = new ArrayList<>();
+    private ArrayList<Double> mostIdleTimeAverages = new ArrayList<>();
+    private ArrayList<Double> averageDeliveriesAverages = new ArrayList<>();
+    private ArrayList<Integer> fewestDeliveries = new ArrayList<>();
+    private ArrayList<Integer> mostDeliveries = new ArrayList<>();
+    private double ultimateMostIdleTime = -1;
+    private double ultimateLeastIdleTime = -1;
+    private double ultimateLongestDistanceTraveled = -1;
+    private double ultimateShortestDistanceTraveled = -1;
+    private int ultimateMostDeliveries = -1;
+    private int ultimateFewestDeliveries = -1;
+
+    public double getMostDeliveriesAverage(){
+        return getAverageValueInt(mostDeliveries);
+    }
+
+    public void addMostDeliveries(int i){
+        if(ultimateFewestDeliveries == -1) ultimateFewestDeliveries = i;
+        if(ultimateMostDeliveries == -1) ultimateFewestDeliveries = i;
+        if(ultimateFewestDeliveries > i) ultimateFewestDeliveries = i;
+        if(ultimateMostDeliveries < i) ultimateMostDeliveries = i;
+
+        mostDeliveries.add(i);
+    }
+
+    public double getFewestDeliveriesAverage(){
+        return getAverageValueInt(fewestDeliveries);
+    }
+
+    public void addFewestDeliveries(int i){
+        if(ultimateFewestDeliveries == -1) ultimateFewestDeliveries = i;
+        if(ultimateMostDeliveries == -1) ultimateFewestDeliveries = i;
+        if(ultimateFewestDeliveries > i) ultimateFewestDeliveries = i;
+        if(ultimateMostDeliveries < i) ultimateMostDeliveries = i;
+
+        fewestDeliveries.add(i);
+    }
+
+    public double getAverageDeliveriesAverage(){
+        return getAverageValue(averageDeliveriesAverages);
+    }
+
+    public void addAverageDeliveriesAverage(double d){
+        averageDeliveriesAverages.add(d);
+    }
+
+    public double getMostIdleTimeAverage(){
+        return getAverageValue(mostIdleTimeAverages);
+    }
+
+    public void addMostIdleTime(double d){
+        if(ultimateMostIdleTime == -1) ultimateMostIdleTime = d;
+        if(ultimateLeastIdleTime == -1) ultimateLeastIdleTime = d;
+        if(ultimateMostIdleTime < d) ultimateMostIdleTime = d;
+        if(ultimateLeastIdleTime > d) ultimateLeastIdleTime = d;
+
+        mostIdleTimeAverages.add(d);
+    }
+
+    public void addLeastIdleTime(double d){
+        if(ultimateMostIdleTime == -1) ultimateMostIdleTime = d;
+        if(ultimateLeastIdleTime == -1) ultimateLeastIdleTime = d;
+        if(ultimateMostIdleTime < d) ultimateMostIdleTime = d;
+        if(ultimateLeastIdleTime > d) ultimateLeastIdleTime = d;
+
+        leastIdleTimeAverages.add(d);
+    }
+
+    public double getLeastIdleTimeAverage(){
+        return getAverageValue(leastIdleTimeAverages);
+    }
+
+    public double getAverageIdleTimeAverage(){
+        return getAverageValue(averageIdleTimeAverages);
+    }
+
+    public void addAverageIdleTimeAverage(Double d){
+        averageIdleTimeAverages.add(d);
+    }
+
+    public double getLongestDistanceTraveledAverage(){
+        return getAverageValue(longestDistanceTraveledAverages);
+    }
+
+    public void addLongestDistanceTraveled(double d){
+        if(ultimateLongestDistanceTraveled == -1) ultimateLongestDistanceTraveled = d;
+        if(ultimateShortestDistanceTraveled == -1) ultimateShortestDistanceTraveled = d;
+        if(ultimateLongestDistanceTraveled < d) ultimateLongestDistanceTraveled = d;
+        if(ultimateShortestDistanceTraveled > d) ultimateShortestDistanceTraveled = d;
+
+        longestDistanceTraveledAverages.add(d);
+    }
+
+    public double getShortestDistanceTraveledAverage(){
+        return this.getAverageValue(shortestDistanceTraveled);
+    }
+
+    public void addShortestDistanceTraveled(double d){
+        if(ultimateLongestDistanceTraveled == -1) ultimateLongestDistanceTraveled = d;
+        if(ultimateShortestDistanceTraveled == -1) ultimateShortestDistanceTraveled = d;
+        if(ultimateLongestDistanceTraveled < d) ultimateLongestDistanceTraveled = d;
+        if(ultimateShortestDistanceTraveled > d) ultimateShortestDistanceTraveled = d;
+
+        shortestDistanceTraveled.add(d);
+    }
+
+    public void addAverageDistanceTraveled(double d){
+        averageDistanceTraveledAverages.add(d);
     }
 
     public double getUltimateLowestOrderPerMinute() {
@@ -123,163 +240,56 @@ public class AllSeedsOverview {
         return ultimateHighestOrdersPerMinute;
     }
 
-    public double getQuickestOrderAverage() {
-        return quickestOrderAverage;
-    }
-
-    public void setQuickestOrderAverage(double quickestOrderAverage) {
-        this.quickestOrderAverage = quickestOrderAverage;
-    }
-
-    public double getSlowestOrderAverage() {
-        return slowestOrderAverage;
-    }
-
-    public void setSlowestOrderAverage(double slowestOrderAverage) {
-        this.slowestOrderAverage = slowestOrderAverage;
-    }
-
-    public double getAverageOrderAverage() {
-        return averageOrderAverage;
-    }
-
-    public void setAverageOrderAverage(double averageOrderAverage) {
-        this.averageOrderAverage = averageOrderAverage;
-    }
-
     public double getUltimateQuickestOrder() {
         return ultimateQuickestOrder;
-    }
-
-    public void setUltimateQuickestOrder(double ultimateQuickestOrder) {
-        this.ultimateQuickestOrder = ultimateQuickestOrder;
     }
 
     public double getUltimateSlowestOrder() {
         return ultimateSlowestOrder;
     }
 
-    public void setUltimateSlowestOrder(double ultimateSlowestOrder) {
-        this.ultimateSlowestOrder = ultimateSlowestOrder;
-    }
-
     public double getAverageDistanceTraveledAverage() {
-        return averageDistanceTraveledAverage;
-    }
-
-    public void setAverageDistanceTraveledAverage(double averageDistanceTraveledAverage) {
-        this.averageDistanceTraveledAverage = averageDistanceTraveledAverage;
-    }
-
-    public double getShortestDistanceTraveledAverage() {
-        return shortestDistanceTraveledAverage;
-    }
-
-    public void setShortestDistanceTraveledAverage(double shortestDistanceTraveledAverage) {
-        this.shortestDistanceTraveledAverage = shortestDistanceTraveledAverage;
-    }
-
-    public double getLongestDistanceTraveledAverage() {
-        return longestDistanceTraveledAverage;
-    }
-
-    public void setLongestDistanceTraveledAverage(double longestDistanceTraveledAverage) {
-        this.longestDistanceTraveledAverage = longestDistanceTraveledAverage;
-    }
-
-    public double getLeastIdleTimeAverage() {
-        return leastIdleTimeAverage;
-    }
-
-    public void setLeastIdleTimeAverage(double leastIdleTimeAverage) {
-        this.leastIdleTimeAverage = leastIdleTimeAverage;
-    }
-
-    public double getMostIdleTimeAverage() {
-        return mostIdleTimeAverage;
-    }
-
-    public void setMostIdleTimeAverage(double mostIdleTimeAverage) {
-        this.mostIdleTimeAverage = mostIdleTimeAverage;
-    }
-
-    public double getAverageIdleTimeAverage() {
-        return averageIdleTimeAverage;
-    }
-
-    public void setAverageIdleTimeAverage(double averageIdleTimeAverage) {
-        this.averageIdleTimeAverage = averageIdleTimeAverage;
-    }
-
-    public double getFewestDeliveriesAverage() {
-        return fewestDeliveriesAverage;
-    }
-
-    public void setFewestDeliveriesAverage(double fewestDeliveriesAverage) {
-        this.fewestDeliveriesAverage = fewestDeliveriesAverage;
-    }
-
-    public double getMostDeliveriesAverage() {
-        return mostDeliveriesAverage;
-    }
-
-    public void setMostDeliveriesAverage(double mostDeliveriesAverage) {
-        this.mostDeliveriesAverage = mostDeliveriesAverage;
-    }
-
-    public double getAverageDeliveriesAverage() {
-        return averageDeliveriesAverage;
-    }
-
-    public void setAverageDeliveriesAverage(double averageDeliveriesAverage) {
-        this.averageDeliveriesAverage = averageDeliveriesAverage;
+        return getAverageValue(averageDistanceTraveledAverages);
     }
 
     public double getUltimateMostIdleTime() {
         return ultimateMostIdleTime;
     }
 
-    public void setUltimateMostIdleTime(double ultimateMostIdleTime) {
-        this.ultimateMostIdleTime = ultimateMostIdleTime;
-    }
-
     public double getUltimateLeastIdleTime() {
         return ultimateLeastIdleTime;
     }
 
-    public void setUltimateLeastIdleTime(double ultimateLeastIdleTime) {
-        this.ultimateLeastIdleTime = ultimateLeastIdleTime;
-    }
 
-    public int getUltimateLongestDistanceTraveled() {
+    public double getUltimateLongestDistanceTraveled() {
         return ultimateLongestDistanceTraveled;
     }
 
-    public void setUltimateLongestDistanceTraveled(int ultimateLongestDistanceTraveled) {
-        this.ultimateLongestDistanceTraveled = ultimateLongestDistanceTraveled;
-    }
-
-    public int getUltimateShortestDistanceTraveled() {
+    public double getUltimateShortestDistanceTraveled() {
         return ultimateShortestDistanceTraveled;
-    }
-
-    public void setUltimateShortestDistanceTraveled(int ultimateShortestDistanceTraveled) {
-        this.ultimateShortestDistanceTraveled = ultimateShortestDistanceTraveled;
     }
 
     public int getUltimateMostDeliveries() {
         return ultimateMostDeliveries;
     }
 
-    public void setUltimateMostDeliveries(int ultimateMostDeliveries) {
-        this.ultimateMostDeliveries = ultimateMostDeliveries;
-    }
-
     public int getUltimateFewestDeliveries() {
         return ultimateFewestDeliveries;
     }
 
-    public void setUltimateFewestDeliveries(int ultimateFewestDeliveries) {
-        this.ultimateFewestDeliveries = ultimateFewestDeliveries;
+    private double getAverageValueInt(ArrayList<Integer> list){
+        double sum = 0;
+        for(Integer i : list){
+            sum += i;
+        }
+        return sum / seedsVisited;
+    }
+
+    private double getAverageValue(ArrayList<Double> list){
+        double sum = 0;
+        for(Double d : list){
+            sum += d;
+        }
+        return sum / seedsVisited;
     }
 }

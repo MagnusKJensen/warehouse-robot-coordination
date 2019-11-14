@@ -20,10 +20,10 @@ import java.util.Random;
 public class StatisticsAutomator {
     public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations";
     private static final int TICKS_PER_RUN = 10000; // 10.000 is about 55min of "real time"
-    private static final int PRINT_EVERY_TICK = 500;
-    private static final String VERSION_NAME = "versionX";
+    private static final int PRINT_EVERY_TICK = 2500;
+    private static final String VERSION_NAME = "bigVersion";
     private static final String SPEC_FILE_NAME = "defaultSpecs.json";
-    private static final int numberOfSeeds = 2;
+    private static final int numberOfSeeds = 10;
     private static long[] SEEDS = new long[numberOfSeeds];
     private static Random random = new Random(SimulationApp.DEFAULT_SEED);
     public static final String PATH_TO_RUN_CONFIGS_RESULTS = System.getProperty("user.dir") + File.separator + "statistics" + File.separator + SPEC_FILE_NAME + "_" + VERSION_NAME + File.separator;
@@ -39,7 +39,9 @@ public class StatisticsAutomator {
 
         // Path finders to use
         ArrayList<PathFinderEnum> pathFinders = new ArrayList<>(Arrays.asList(
-                PathFinderEnum.DUMMYPATHFINDER
+                PathFinderEnum.DUMMYPATHFINDER,
+                PathFinderEnum.CHPATHFINDER,
+                PathFinderEnum.ASTAR
         ));
 
         // Run a single config with the specified taskAllocators and pathfinders
@@ -135,18 +137,9 @@ public class StatisticsAutomator {
                     }
                 }
             }
-
+            String fileName = configFolder.getName();
             ExcelWriter excelWriter = new ExcelWriter(configFolder.getPath());
-            excelWriter.writeOverviewFile(overview);
-                // Add generalStats_Summary to Summary_generalStats
-                    // Get workbook
-                    // Get sheet summary
-                    // For each lin
-            // Add orderStats_Summary to Summary_orderStats
-            // Add robotStats_Summary to Summary_robotStats
-
-            // Create Summary excel file with data
-
+            excelWriter.writeOverviewFile(overview, fileName);
         }
     }
 
@@ -154,33 +147,124 @@ public class StatisticsAutomator {
         Workbook workbook = ExcelWriter.getOrCreateWorkbook(statFile.getPath());
         Sheet sheet = ExcelWriter.getOrCreateSheet(workbook,"Summary");
 
-        // Add available Products
-        Row row = sheet.getRow(2);
-        double availableProductsLeft = row.getCell(1).getNumericCellValue();
-        overview.addAvailableProductsAverage(availableProductsLeft);
-
-        // Orders in queue
-        row = sheet.getRow(3);
-        double ordersInQueue = row.getCell(1).getNumericCellValue();
-        overview.addOrdersInQueueAverage(ordersInQueue);
-
-        // Orders finished
-        row = sheet.getRow(4);
-        double ordersFinished = row.getCell(1).getNumericCellValue();
-        overview.addFinishedOrdersAverage(ordersFinished);
-
-        // Orders per minute
-        row = sheet.getRow(5);
-        double ordersPerMinute = row.getCell(1).getNumericCellValue();
-        overview.addOrdersPerMinuteAverage(ordersPerMinute);
-
-        //
+        int rowNum = 1;
+        Row row;
+        // Continue as long as the row exists / is not null.
+        do {
+            row = sheet.getRow(rowNum);
+            switch (row.getCell(0).getStringCellValue()) {
+                case "availableProductsLeft":
+                    double availableProductsLeft = row.getCell(1).getNumericCellValue();
+                    overview.addAvailableProductsAverage(availableProductsLeft);
+                    break;
+                case "ordersInQueue":
+                    double ordersInQueue = row.getCell(1).getNumericCellValue();
+                    overview.addOrdersInQueueAverage(ordersInQueue);
+                    break;
+                case "ordersFinished":
+                    double ordersFinished = row.getCell(1).getNumericCellValue();
+                    overview.addFinishedOrdersAverage(ordersFinished);
+                    break;
+                case "OrdersPerMinute":
+                    double ordersPerMinute = row.getCell(1).getNumericCellValue();
+                    overview.addOrdersPerMinuteAverage(ordersPerMinute);
+                    break;
+                // These metrics are ignored
+                case "OrderGoal":
+                case "CurrentTick":
+                case "TasksInQueue":
+                    break;
+                default:
+                    throw new IllegalArgumentException("'" + row.getCell(0).getStringCellValue() + "' not found in file ' "
+                            + statFile.getPath() + "'");
+            }
+            rowNum++;
+        } while (sheet.getRow(rowNum) != null);
     }
 
     private static void getRobotStatsFromFile(File statFile, AllSeedsOverview overview) {
+        Workbook workbook = ExcelWriter.getOrCreateWorkbook(statFile.getPath());
+        Sheet sheet = ExcelWriter.getOrCreateSheet(workbook, "Summary");
+
+        int rowNum = 1;
+        Row row;
+        // Continue as long as the row exists / is not null.
+        do {
+            row = sheet.getRow(rowNum);
+            switch (row.getCell(0).getStringCellValue()) {
+                case "Average Distance traveled":
+                    double averageDistanceTraveled = row.getCell(1).getNumericCellValue();
+                    overview.addAverageDistanceTraveled(averageDistanceTraveled);
+                    break;
+                case "Shortest distance":
+                    double shortestDistanceTraveled = row.getCell(1).getNumericCellValue();
+                    overview.addShortestDistanceTraveled(shortestDistanceTraveled);
+                    break;
+                case "Longest distance":
+                    double longestDistance = row.getCell(1).getNumericCellValue();
+                    overview.addLongestDistanceTraveled(longestDistance);
+                    break;
+                case "Least idle":
+                    double leastIdle = row.getCell(1).getNumericCellValue();
+                    overview.addLeastIdleTime(leastIdle);
+                    break;
+                case "Most idle":
+                    double mostIdle = row.getCell(1).getNumericCellValue();
+                    overview.addMostIdleTime(mostIdle);
+                    break;
+                case "Average idle time":
+                    double averageIdle = row.getCell(1).getNumericCellValue();
+                    overview.addAverageIdleTimeAverage(averageIdle);
+                    break;
+                case "Fewest deliveries":
+                    double fewestDeliveries = row.getCell(1).getNumericCellValue();
+                    overview.addFewestDeliveries((int)fewestDeliveries);
+                    break;
+                case "Most deliveries":
+                    double mostDeliveries = row.getCell(1).getNumericCellValue();
+                    overview.addMostDeliveries((int)mostDeliveries);
+                    break;
+                case "Average deliveries":
+                    double averageDeliveries = row.getCell(1).getNumericCellValue();
+                    overview.addAverageDeliveriesAverage(averageDeliveries);
+                    break;
+                // These metrics are ignored
+                default:
+                    throw new IllegalArgumentException("'" + row.getCell(0).getStringCellValue() + "' not found in file ' "
+                            + statFile.getPath() + "'");
+            }
+            rowNum++;
+        } while (sheet.getRow(rowNum) != null);
     }
 
     private static void getOrderStatsFromFile(File statFile, AllSeedsOverview overview) {
+        Workbook workbook = ExcelWriter.getOrCreateWorkbook(statFile.getPath());
+        Sheet sheet = ExcelWriter.getOrCreateSheet(workbook, "Summary");
+
+        int rowNum = 1;
+        Row row;
+        // Continue as long as the row exists / is not null.
+        do {
+            row = sheet.getRow(rowNum);
+            switch (row.getCell(0).getStringCellValue()) {
+                case "Quickest order":
+                    double quickestOrder = row.getCell(1).getNumericCellValue();
+                    overview.addQuickestOrder(quickestOrder);
+                    break;
+                case "Slowest order":
+                    double slowestOrder = row.getCell(1).getNumericCellValue();
+                    overview.addSlowestOrder(slowestOrder);
+                    break;
+                case "Average order time":
+                    double averageOrderTime = row.getCell(1).getNumericCellValue();
+                    overview.addAverageOrder(averageOrderTime);
+                    break;
+                default:
+                    throw new IllegalArgumentException("'" + row.getCell(0).getStringCellValue() + "' not found in file ' "
+                            + statFile.getPath() + "'");
+            }
+            rowNum++;
+        } while (sheet.getRow(rowNum) != null);
     }
 
     private static File[] getSubFolders(File file) {

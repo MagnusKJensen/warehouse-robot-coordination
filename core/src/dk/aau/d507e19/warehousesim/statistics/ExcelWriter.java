@@ -36,8 +36,8 @@ public class ExcelWriter {
         PATH_TO_SIM_FOLDER = path;
     }
 
-    public void writeOverviewFile(AllSeedsOverview allSeedsOverview){
-        String pathToOverview = PATH_TO_SIM_FOLDER + File.separator + "Overview";
+    public void writeOverviewFile(AllSeedsOverview allSeedsOverview, String fileName){
+        String pathToOverview = PATH_TO_SIM_FOLDER + File.separator + "Overview_" + fileName;
         Workbook workbook = getOrCreateWorkbook(pathToOverview + ".xlsx");
 
         // Create a Sheet
@@ -204,7 +204,7 @@ public class ExcelWriter {
             long msSinceStart = simulation.getSimulatedTimeInMS();
             ordersPerMinute = simulation.getOrdersProcessed() / ((double) msSinceStart / 1000 / 60);
         }
-        createGeneralRow("OrderPerMinute", ordersPerMinute, row);
+        createGeneralRow("OrdersPerMinute", ordersPerMinute, row);
 
         row = sheet.createRow(rowNum++);
         createGeneralRow("TasksInQueue", simulation.getServer().getOrderManager().tasksInQueue(), row);
@@ -291,7 +291,7 @@ public class ExcelWriter {
         row = sheet.createRow(rowNum++);
         Robot shortestDistanceRobot = simulation.getStatisticsManager().getRobotWithShortestDistance();
         createRobotSummaryRow("Shortest distance",
-                (int)shortestDistanceRobot.getDistanceTraveledInMeters(),
+                shortestDistanceRobot.getDistanceTraveledInMeters(),
                 shortestDistanceRobot.getRobotID() + "",
                 row);
 
@@ -299,7 +299,7 @@ public class ExcelWriter {
         row = sheet.createRow(rowNum++);
         Robot longestDistanceRobot = simulation.getStatisticsManager().getRobotWithLongestDistance();
         createRobotSummaryRow("Longest distance",
-                (int)longestDistanceRobot.getDistanceTraveledInMeters(),
+                longestDistanceRobot.getDistanceTraveledInMeters(),
                 longestDistanceRobot.getRobotID() + "",
                 row);
 
