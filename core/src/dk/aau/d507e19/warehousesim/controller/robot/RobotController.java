@@ -21,6 +21,7 @@ public class RobotController {
     private Robot robot;
     private ControlSystemManager controlSystemManager;
     private long idleTimeTicks = 0;
+    private boolean animationFlag = false;
 
     private LinkedList<Task> tasks = new LinkedList<>();
     private Random random;
@@ -32,6 +33,10 @@ public class RobotController {
         this.random = new Random(Simulation.RANDOM_SEED+ robot.getRobotID());
         this.controlSystemManager = new ControlSystemManager(this);
         reserveCurrentSpot();
+    }
+
+    public boolean getAnimationFlag() {
+        return animationFlag;
     }
 
     public Random getRandom() {
@@ -60,6 +65,7 @@ public class RobotController {
     }
 
     public void update() {
+        if(getServer().getTimeInTicks()%30 == 0) animationFlag = !animationFlag;
         if(tasks.isEmpty()){
             idleTimeTicks++;
             return;
