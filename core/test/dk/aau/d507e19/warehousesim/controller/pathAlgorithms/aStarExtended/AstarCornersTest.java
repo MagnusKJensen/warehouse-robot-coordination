@@ -33,10 +33,6 @@ public class AstarCornersTest {
     }
 
     @Test
-    public void addNeighborTileToOpenList() {
-    }
-
-    @Test
     public void addCornersToG() {
         // Sets coordinates
         astarCorners.xStart = 0;

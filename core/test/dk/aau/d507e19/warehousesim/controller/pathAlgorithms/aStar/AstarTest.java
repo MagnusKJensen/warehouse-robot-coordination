@@ -241,7 +241,7 @@ public class AstarTest {
         assertEquals(astar.yEndPosition, astar.finalPath.get(astar.finalPath.size()-1).getY());
     }
 
-    @Ignore//TODO: make mockito work for reservationmanager
+    @Ignore//Doesnt work b/c TimeFrame is static
     public void isReserved() {
         // Sets coordinates
         astar.xStart = 0;
@@ -293,7 +293,7 @@ public class AstarTest {
 
     }
 
-    @Ignore
+    @Ignore //Doesnt work b/c TimeFrame is static
     public void calculatePath() {
         // Sets coordinates
         astar.xStart = 0;
@@ -301,7 +301,6 @@ public class AstarTest {
         astar.xEndPosition = 4;
         astar.yEndPosition = 6;
 
-        //TODO: der er noget galt med reservations?? se isreserved test
         try{
             astar.calculatePath();
         }catch (NoPathFoundException e){
