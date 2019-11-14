@@ -20,10 +20,13 @@ public class ControlSystemManager {
 
     public void checkSystem(){
         //todo @bau consider making the checks happen less frequently in here instead in the sensors
-        for(Sensor s : sensors){
-            s.update();
-            if(s.getState() == SensorState.FAILURE){
-                s.handleFailure();
+        //if battery is dry then we dont do anything
+        if(!this.getBattery().isBatteryDry()){
+         for(Sensor s : sensors){
+                s.update();
+                if(s.getState() == SensorState.FAILURE){
+                    s.handleFailure();
+                }
             }
         }
     }
