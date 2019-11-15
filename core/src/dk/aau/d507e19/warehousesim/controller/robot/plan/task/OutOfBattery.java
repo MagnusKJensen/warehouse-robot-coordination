@@ -6,22 +6,17 @@ import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 
 public class OutOfBattery implements Task {
     RobotController robotController;
-    Navigation navigation;
-    GridCoordinate destination;
+    EmergencyStop emergencyStop;
 
     public OutOfBattery(RobotController robotController) {
         this.robotController = robotController;
+        this.emergencyStop = new EmergencyStop(this.robotController);
     }
 
     @Override
     public void perform() {
-        if(navigation == null){
-            //todo prevent teleporting make this better
-            destination = this.robotController.getRobot().getApproximateGridCoordinate();
-            navigation = Navigation.getInstance(this.robotController,destination);
-        }
-        if(!navigation.isCompleted()){
-            navigation.perform();
+        if(!emergencyStop.isCompleted()){
+            emergencyStop.perform();
         }
         //need to finish navigation to the tile we're headed towards
     }
