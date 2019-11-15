@@ -29,6 +29,7 @@ public class Robot {
     private long binDeliveriesCompleted = 0;
     private int distanceTraveled = 0;
     boolean b = false; //used to control out of battery animation
+    private Direction direction = Direction.NORTH; //default to north, will update as soon as robot moves
 
     /**
      * Robot STATS
@@ -203,6 +204,14 @@ public class Robot {
 
     public RobotController getRobotController() {
         return robotController;
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
     }
 
     public String getStatsAsCSV(){
