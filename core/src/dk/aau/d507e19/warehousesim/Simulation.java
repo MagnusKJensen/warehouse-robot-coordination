@@ -212,6 +212,11 @@ public class Simulation {
 
             simulationApp.getSideMenu().getBinContentScrollPanes().updateBinContent(prods, tile.getPosX(), tile.getPosY());
         }
+        if(selectedTile instanceof PickerTile){
+            PickerTile tile = (PickerTile) selectedTile;
+
+            simulationApp.getSideMenu().getBinContentScrollPanes().updatePickerContent(tile.getHoldingProducts(), tile.getPosX(), tile.getPosY());
+        }
     }
 
     public void selectTile(Tile tile){

@@ -41,7 +41,7 @@ public class OrderManager {
                 }
 
                 if(isCompleted){
-                    order.getPicker().setAvailable();
+                    order.getPicker().finishOrder();
                     ordersFinished.add(order);
                     order.setFinishTimeInMS(server.getTimeInMS());
                     ordersToRemove.add(order);
@@ -83,7 +83,7 @@ public class OrderManager {
             // If order could not be divided into tasks, it is not assigned to a picker
             // And not put into the processing ArrayList
             else {
-                availablePickers.get(0).setAvailable();
+                availablePickers.get(0).finishOrder();
                 order.removePicker();
             }
             maxOrderAssignPerTick--;
