@@ -204,7 +204,7 @@ public class Astar implements PathFinder {
         Collections.reverse(finalPath);
     }
 
-    public void calculatePath() throws NoPathFoundException {
+    public void calculatePath() {
         // Adds the starting tile to closed list.
         addStartTileToClosedList();
 
@@ -222,12 +222,13 @@ public class Astar implements PathFinder {
         }
     }
 
-    public void calculatePath2() throws NoPathFoundException {
+    public void calculatePath2() {
         // While is true if the currentTile does not have the same x coordinate and the same y coordinate as the end Tile.
         while (!(currentTile.getCurrentXPosition() == xEndPosition && currentTile.getCurrentYPosition() == yEndPosition)) {
             // Add the valid tiles to openList
             checkNeighborValidity();
 
+            /*
             // Small exceptions too see if it is stuck or if end destination is blocked.
             if (openList.size() < 1) {
                 if (closedList.size() > 1) {
@@ -238,7 +239,7 @@ public class Astar implements PathFinder {
                 }
                 throw new NoValidPathException(new GridCoordinate(xStart,yStart), new GridCoordinate(xEndPosition,yEndPosition),"No valid Neighbor could be found");
                 // throw new NoValidNeighborException(robot);
-            }
+            }*/
 
             // Sorts openList in ascending order
             openList.sort(new OpenListSorter());
@@ -261,7 +262,7 @@ public class Astar implements PathFinder {
         currentTile = null;
     }
 
-    public boolean isReserved() throws NoPathFoundException {
+    public boolean isReserved() {
 
         boolean i = false;
 
@@ -306,14 +307,14 @@ public class Astar implements PathFinder {
     }
 
     @Override
-    public Path calculatePath(GridCoordinate start, GridCoordinate destination) throws NoPathFoundException {
+    public Path calculatePath(GridCoordinate start, GridCoordinate destination)  {
 
         if(start.equals(destination))
             return Path.oneStepPath(new Step(start));
 
         // Check if end position is reserved forever
-        if (server.getReservationManager().isReservedIndefinitely(destination))
-            throw new DestinationReservedIndefinitelyException(start, destination);
+        /*if (server.getReservationManager().isReservedIndefinitely(destination))
+            throw new DestinationReservedIndefinitelyException(start, destination);*/
 
 
         // Clears all lists and objects so that it is clean next time it calculates a path.
