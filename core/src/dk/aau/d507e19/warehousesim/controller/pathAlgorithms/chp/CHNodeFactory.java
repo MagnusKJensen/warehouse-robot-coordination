@@ -13,7 +13,6 @@ public class CHNodeFactory {
     private Heuristic heuristic;
     private GCostCalculator gCostCalculator;
     private RobotController robotController;
-    private static final DummyPathFinder dummyPathFinder = new DummyPathFinder();
 
     public CHNodeFactory(Heuristic heuristic, GCostCalculator gCostCalculator, RobotController robotController) {
         this.heuristic = heuristic;
@@ -39,7 +38,8 @@ public class CHNodeFactory {
     public CHNode createInitialNode(GridCoordinate gridCoordinate, GridCoordinate target){
         Path initialPath = createInitialPath(gridCoordinate);
         double hCost = heuristic.getHeuristic(initialPath, target, robotController);
-        return new CHNode(gridCoordinate, initialPath, 0, hCost);
+        double gCost = gCostCalculator.getGCost(initialPath, robotController);
+        return new CHNode(gridCoordinate, initialPath, gCost, hCost);
     }
 
     private static Path createInitialPath(GridCoordinate gridCoordinate){
@@ -83,10 +83,6 @@ public class CHNodeFactory {
         return new Path(extendedSteps);
     }
 
-    // todo temporary
-    private static Path simplePath(GridCoordinate start, GridCoordinate end){
-        return dummyPathFinder.calculatePath(start, end);
-    }
 
 
 

@@ -1,7 +1,9 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
 import dk.aau.d507e19.warehousesim.Position;
+import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class GridCoordinate {
@@ -82,5 +84,34 @@ public class GridCoordinate {
     public int manhattanDistanceFrom(GridCoordinate comparedCoordinate){
         // distance = abs(ydistance) + abs(xdistance)
         return Math.abs(this.getX() - comparedCoordinate.getX()) + Math.abs(this.getY() - comparedCoordinate.getY());
+    }
+
+    public ArrayList<GridCoordinate> getNeighbours(GridBounds bounds){
+        ArrayList<GridCoordinate> neighbours = new ArrayList<>();
+        for(Direction dir : Direction.values()){
+            GridCoordinate neighbour = new GridCoordinate(this.getX() + dir.xDir, this.getY() + dir.yDir);
+            if(bounds.isWithinBounds(neighbour)) neighbours.add(neighbour);
+        }
+        return neighbours;
+    }
+
+    public GridCoordinate plus(Direction direction) {
+        return new GridCoordinate(this.getX() + direction.getxDir(), this.getY() + direction.getyDir());
+    }
+
+    public static ArrayList<Direction> getDirectionsOf(GridCoordinate start, GridCoordinate destination) {
+        ArrayList<Direction> directions = new ArrayList<>();
+
+        if (start.getX() - destination.getX() < 0) {
+            directions.add(Direction.EAST);
+        } else if (start.getY() - destination.getY() < 0) {
+            directions.add(Direction.NORTH);
+        } else if (start.getX() - destination.getX() > 0) {
+            directions.add(Direction.WEST);
+        } else if (start.getY() - destination.getY() > 0) {
+            directions.add(Direction.SOUTH);
+        }
+
+        return directions;
     }
 }

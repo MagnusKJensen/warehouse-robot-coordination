@@ -9,13 +9,13 @@ import com.google.gson.Gson;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocatorEnum;
 import dk.aau.d507e19.warehousesim.input.CameraMover;
+import dk.aau.d507e19.warehousesim.statistics.StatisticsAutomator;
 import dk.aau.d507e19.warehousesim.ui.SideMenu;
 
 import java.io.*;
 
 public class SimulationApp extends ApplicationAdapter {
 
-	public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations/";
     public static final long DEFAULT_SEED = 123456789L;
 	public static String CURRENT_RUN_CONFIG = "maintenanceSpecs.json";
 
@@ -67,7 +67,7 @@ public class SimulationApp extends ApplicationAdapter {
 		centerCamera(menuCamera);
 
 		// Quick way to generate new json files
-		//createJsonFileFromSpecs("maintenanceSpec.json");
+		// createJsonFileFromSpecs("newSpecName.json");
 
 		simulation = new Simulation(DEFAULT_SEED, CURRENT_RUN_CONFIG, this, CURRENT_RUN_CONFIG);
 		sideMenu = new SideMenu(menuViewport, this);
@@ -81,7 +81,7 @@ public class SimulationApp extends ApplicationAdapter {
 	}
 
 	private void createJsonFileFromSpecs(String newSpecName){
-		File newSpecFile = new File(PATH_TO_RUN_CONFIGS + File.separator + newSpecName);
+		File newSpecFile = new File(StatisticsAutomator.PATH_TO_RUN_CONFIGS + File.separator + newSpecName);
 		Gson gson = new Gson();
 		try(BufferedWriter writer = new BufferedWriter(new FileWriter(newSpecFile.getPath()))){
 			String jsonString = gson.toJson(new WarehouseSpecs());

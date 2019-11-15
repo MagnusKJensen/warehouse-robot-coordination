@@ -3,12 +3,17 @@ package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.chp;
 import dk.aau.d507e19.warehousesim.TimeUtils;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PartialPathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.ReservationNavigation;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
+import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.exception.DestinationReservedIndefinitelyException;
+import dk.aau.d507e19.warehousesim.exception.NextStepBlockedException;
 import dk.aau.d507e19.warehousesim.exception.NoValidPathException;
 import dk.aau.d507e19.warehousesim.exception.PathFindingTimedOutException;
 import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
@@ -18,10 +23,11 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.PriorityQueue;
 
-public class CHPathfinder implements PathFinder {
+public class CHPathfinder implements PartialPathFinder {
 
     private static final long MAXIMUM_WAIT_TIME = TimeUtils.secondsToTicks(10);
     private static final long MAXIMUM_ITERATIONS = 1000;
+    private static final long PARTIAL_PATH_MAX_ITERATIONS = 300;
     private static final long MIN_TIME_BETWEEN_NODES = TimeUtils.secondsToTicks(0.9f);
     private final RobotController robotController;
     private final Server server;
@@ -45,48 +51,6 @@ public class CHPathfinder implements PathFinder {
         this.robotController = robotController;
         this.server = robotController.getServer();
         this.nodeFactory = new CHNodeFactory(heuristic, gCostCalculator, robotController);
-    }
-
-    @Override
-    public Path calculatePath(GridCoordinate start, GridCoordinate destination) throws PathFindingTimedOutException, NoValidPathException, DestinationReservedIndefinitelyException {
-        if (start.equals(destination))
-            return Path.oneStepPath(new Step(start));
-
-        if (server.getReservationManager().isReservedIndefinitely(destination))
-            throw new DestinationReservedIndefinitelyException(start, destination);
-
-        PriorityQueue<CHNode> openList = new PriorityQueue<>();
-        PriorityQueue<CHNode> closedList = new PriorityQueue<>();
-
-        openList.add(nodeFactory.createInitialNode(start, destination));
-
-        int iterationCount = 0;
-
-        while (!openList.isEmpty()) {
-            CHNode bestCandidate = openList.poll();
-
-            ArrayList<CHNode> successors = getValidSuccessors(bestCandidate, destination);
-
-            //Check if destination is reached
-            for (CHNode successor : successors) {
-                if (successor.getGridCoordinate().equals(destination)) {
-                    /* // efficiency stats
-                    System.out.print("Iterations to calculate path : " + iterationCount);
-                    int manhattanDistance = Math.abs(start.getX() - destination.getX()) + Math.abs(start.getY() - destination.getY());
-                    System.out.println(" || Manhattan distance : " + manhattanDistance + " || Path length : " + successor.getPath().getFullPath().size());*/
-                    return successor.getPath();
-                }
-            }
-
-            openList.addAll(successors);
-
-            iterationCount++;
-            if (iterationCount > MAXIMUM_ITERATIONS)
-                throw new PathFindingTimedOutException(start, destination, iterationCount);
-
-        }
-
-        throw new NoValidPathException(start, destination, "Pathfinder max wait time per tile : " + MAXIMUM_WAIT_TIME);
     }
 
     @Override
@@ -146,4 +110,50 @@ public class CHPathfinder implements PathFinder {
         return neighbours;
     }
 
+    @Override
+    public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
+        PriorityQueue<CHNode> openList = new PriorityQueue<>();
+        final CHNode initialNode = nodeFactory.createInitialNode(start, destination);
+        openList.add(initialNode);
+
+        // The default best partial path is the starting node
+        CHNode bestNodeSoFar = initialNode;
+
+        int iterationCount = 0;
+        while (!openList.isEmpty()) {
+            CHNode bestOpenListNode = openList.poll();
+
+            // Check if this node is better than the currently best known node
+            if (bestOpenListNode.getFCost() <= bestNodeSoFar.getFCost()
+                    && bestOpenListNode.getHCost() < bestNodeSoFar.getHCost()) {
+                if (canReservePath(bestOpenListNode.getPath()))
+                    bestNodeSoFar = bestOpenListNode;
+            }
+
+            ArrayList<CHNode> successors = getValidSuccessors(bestOpenListNode, destination);
+
+            //Check if destination is reached
+            for (CHNode successor : successors)
+                if (successor.getGridCoordinate().equals(destination)) return successor.getPath();
+
+            openList.addAll(successors);
+
+            iterationCount++;
+            if (iterationCount > PARTIAL_PATH_MAX_ITERATIONS)
+                break;
+        }
+
+        // If the best partial path consists only of the initial node,
+        // the robot must be blocked by at least one neighbouring robot
+        if (initialNode.equals(bestNodeSoFar))
+            return Path.oneStepPath(new Step(bestNodeSoFar.getGridCoordinate()));
+
+        return bestNodeSoFar.getPath();
+    }
+
+    private boolean canReservePath(Path path) {
+        ArrayList<Reservation> reservations = MovementPredictor.calculateReservations(robotController.getRobot(), path, server.getTimeInTicks(), 0);
+        reservations.add(ReservationNavigation.createLastTileIndefiniteReservation(reservations));
+        return !server.getReservationManager().hasConflictingReservations(reservations);
+    }
 }

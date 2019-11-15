@@ -14,4 +14,5 @@ public interface Task {
 
     boolean interrupt();
 
+    boolean canInterrupt();
 }
