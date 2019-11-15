@@ -77,14 +77,19 @@ public class Charging implements Task {
 
     @Override
     public boolean interrupt() {
-        //todo re-implement this when new collision avoidance is updated
-        //if(this.robotController.getControlSystemManager().getBattery().getBatteryLevel()> moveThreshhold && !this.robotController.isCharging())
-        //    return true;
+        return canInterrupt();
+    }
+    private boolean isMoving(){
+        System.out.println(robotController.getRobot().getCurrentSpeed());
+        if(robotController.getRobot().getCurrentSpeed()!=0)
+            return true;
         return false;
     }
-
     @Override
     public boolean canInterrupt() {
+        if(this.robotController.getControlSystemManager().getBattery().getBatteryLevel()> moveThreshhold && !this.robotController.isCharging() &&!isMoving())
+            return true;
+
         return false;
     }
 }
