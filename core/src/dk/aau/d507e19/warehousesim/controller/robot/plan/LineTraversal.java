@@ -29,6 +29,7 @@ public class LineTraversal implements Task {
         robot.updatePosition(speedCalculator.getPositionAfter(ticksSinceStart),
                 speedCalculator.getSpeedAfter(ticksSinceStart));
         ticksSinceStart++;
+        robot.setDirection(line.getDirection());
 
         if(ticksSinceStart >= speedCalculator.getTotalTimeInTicks())
             doneTraversing = true;
