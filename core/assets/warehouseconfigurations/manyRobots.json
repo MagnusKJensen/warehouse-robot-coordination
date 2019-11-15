@@ -1,6 +1,6 @@
 {
-  "wareHouseWidth": 30,
-  "wareHouseHeight": 30,
+  "wareHouseWidth": 10,
+  "wareHouseHeight": 10,
   "WAREHOUSE_BOUNDS": {
     "startX": 0,
     "startY": 0,
@@ -10,7 +10,7 @@
   "binSizeInMeters": 1,
   "productsPerBin": 15,
   "SKUsPerBin": 9,
-  "SKUs": 10,
+  "SKUs": 50,
   "productsInStock": 500,
   "skuDistribution": [
     [
@@ -19,7 +19,7 @@
     ]
   ],
   "isRandomProductDistribution": true,
-  "numberOfRobots": 30,
+  "numberOfRobots": 99,
   "robotTopSpeed": 3.0,
   "robotAcceleration": 0.8,
   "robotDeceleration": 2.0,
@@ -172,7 +172,7 @@
       0
     ]
   ],
-  "secondsBetweenOrders": 5,
+  "secondsBetweenOrders": 12,
   "orderGoal": 30,
   "productsPerOrder": 4
 }

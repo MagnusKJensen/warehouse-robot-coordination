@@ -10,8 +10,8 @@
   "binSizeInMeters": 0.5,
   "productsPerBin": 15,
   "SKUsPerBin": 9,
-  "SKUs": 1000,
-  "productsInStock": 1000,
+  "SKUs": 10000,
+  "productsInStock": 10000,
   "skuDistribution": [
     [
       100,

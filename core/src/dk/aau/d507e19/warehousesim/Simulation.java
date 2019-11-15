@@ -86,8 +86,9 @@ public class Simulation {
     // Used for fast no graphics simulations
     public Simulation(long randSeed, String runConfigName, PathFinderEnum pathfinder, TaskAllocatorEnum taskAllocator){
         RANDOM_SEED = randSeed;
-        Simulation.warehouseSpecs = readWarehouseSpecsFromFile(runConfigName);
         Simulation.CURRENT_RUN_CONFIG = runConfigName;
+
+        Simulation.warehouseSpecs = readWarehouseSpecsFromFile(runConfigName);
         Simulation.pathFinder = pathfinder;
         Simulation.taskAllocator = taskAllocator;
 
@@ -134,7 +135,6 @@ public class Simulation {
         initRobots();
 
         simulationStartTime = new Date(System.currentTimeMillis());
-
         statisticsManager = new StatisticsManager(this);
 
         updateRenderedBounds();

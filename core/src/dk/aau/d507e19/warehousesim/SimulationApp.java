@@ -120,20 +120,19 @@ public class SimulationApp extends ApplicationAdapter {
 	@Override
 	// Called repeatedly by the libgdx framework
 	public void render () {
-		if(updateMode == UpdateMode.NO_GRAPHICS){
-		} else {
-			cameraMover.update();
-			int updatesSinceLastRender = 0;
-			while(shouldUpdateSimulation() && updatesSinceLastRender < MAX_UPDATES_PER_FRAME){
-				simulation.update();
-				updatesSinceLastRender++;
-			}
+		if(updateMode == UpdateMode.NO_GRAPHICS) return;
 
-			updateMenu();
-			clearScreen();
-			renderMenu();
-			renderSimulation();
+		cameraMover.update();
+		int updatesSinceLastRender = 0;
+		while(shouldUpdateSimulation() && updatesSinceLastRender < MAX_UPDATES_PER_FRAME){
+			simulation.update();
+			updatesSinceLastRender++;
 		}
+
+		updateMenu();
+		clearScreen();
+		renderMenu();
+		renderSimulation();
 	}
 
 	// Determines whether it is time to update to simulation
