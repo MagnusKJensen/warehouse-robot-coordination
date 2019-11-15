@@ -54,6 +54,11 @@ public class LineTraversal implements Task {
         return false;
     }
 
+    @Override
+    public boolean canInterrupt() {
+        return false;
+    }
+
     public int getDistance() {
         return distance;
     }

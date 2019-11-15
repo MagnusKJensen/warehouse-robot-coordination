@@ -64,7 +64,7 @@ public class RobotController {
         currentTask.perform();
 
         if(currentTask.hasFailed() && currentTask instanceof BinDelivery)
-            throw new RuntimeException("Bindelivery failed");
+            throw new RuntimeException("Bin delivery failed");
 
         removeCompletedTasks();
         removeFailedTasks();
@@ -153,28 +153,19 @@ public class RobotController {
         return false;
     }
 
-    public boolean requestChainedMove(Robot firstRobot, GridCoordinate...unavailableCoordinates){
-        if(robot.getCurrentStatus() == Status.RELOCATING)
-            return false; // Already in the process of relocating
-
-        if(robot.getCurrentStatus() != Status.AVAILABLE){
-            // Can't be interrupted by lower priority robots (unless idle)
-            int firstRobotPriority = server.getPriority(firstRobot);
-            int selfPriority = server.getPriority(this.robot);
-            if(firstRobotPriority < selfPriority)
-                return false;
-
-            if(!interruptCurrentTask())
-                return false;
-        }
-
-        return attemptChainMove(firstRobot, unavailableCoordinates);
+    // Immediately
+    public void moveOneStepTo(GridCoordinate neighbour) {
+        OneTileRelocationTask relocationTask = new OneTileRelocationTask(this, neighbour);
+        assignImmediateTask(relocationTask);
+        updateStatus();
     }
 
-    private boolean attemptChainMove(Robot firstRobot, GridCoordinate ... unavailableCoordinates) {
+    public boolean requestStepAside(Robot authorityRobot) {
+        if(!canInterrupt(authorityRobot))
+            return false;
+
         // Find neighbours that are not unavailable
         ArrayList<GridCoordinate> availableNeighbours = this.getRobot().getGridCoordinate().getNeighbours(server.getGridBounds());
-        availableNeighbours.removeIf((n) -> contains(unavailableCoordinates, n));
 
         // Find any free spaces and try to move there if possible
         for(GridCoordinate neighbour : availableNeighbours){
@@ -185,44 +176,24 @@ public class RobotController {
             return true;
         }
 
-        // unavailable coordinates extended to include this robots coordinate
-        GridCoordinate[] extendedUnavailableCoordinates = extend(unavailableCoordinates, this.robot.getGridCoordinate());
-
-        // If no free spaces are available (recursively) ask the surrounding robots to move
-        for(GridCoordinate neighbour : availableNeighbours){
-            if(server.getReservationManager().isReservedIndefinitely(neighbour)){
-                Robot blockingRobbot = server.getReservationManager().getIndefiniteReservationsAt(neighbour).getRobot();
-                boolean chainMoveSucces = blockingRobbot.getRobotController().requestChainedMove(firstRobot, extendedUnavailableCoordinates);
-                if(chainMoveSucces){
-                    moveOneStepTo(neighbour);
-                    return true;
-                }
-            }
-        }
-
-        // No free neighbour tiles and no neighbour robots could relocate
+        // No free neighbour tiles
         return false;
     }
 
-    private GridCoordinate[] extend(GridCoordinate[] originalArray, GridCoordinate addition) {
-        GridCoordinate[] extendedArray = Arrays.copyOf(originalArray, originalArray.length + 1);
-        extendedArray[extendedArray.length - 1] = addition;
-        return extendedArray;
-    }
+    public boolean canInterrupt(Robot authorityRobot) {
+        if(robot.getCurrentStatus() == Status.RELOCATING || robot.getCurrentStatus() == Status.RELOCATING_BUSY)
+            return false; // Already in the process of relocating
 
-    private void moveOneStepTo(GridCoordinate neighbour) {
-        OneTileRelocationTask relocationTask = new OneTileRelocationTask(this, neighbour);
-        assignImmediateTask(relocationTask);
-        updateStatus();
-    }
+        if(robot.getCurrentStatus() != Status.AVAILABLE){
+            // Can't be interrupted by lower priority robots (unless idle)
+            int askingPriority = server.getPriority(authorityRobot);
+            int selfPriority = server.getPriority(this.robot);
+            if(askingPriority < selfPriority)
+                return false;
 
-    private boolean contains(GridCoordinate[] unavailableCoordinates, GridCoordinate neighbour){
-        for(GridCoordinate coord : unavailableCoordinates){
-            if(coord.equals(neighbour)) return true;
+            return tasks.getFirst().canInterrupt();
         }
 
-        return false;
+        return true;
     }
-
-
 }

@@ -149,7 +149,7 @@ public class StatisticsManager {
     }
 
     private void copySpecsFile(String pathToSimulationFolder) {
-        String configFileToCopy = Simulation.PATH_TO_RUN_CONFIGS + Simulation.CURRENT_RUN_CONFIG;
+        String configFileToCopy = StatisticsAutomator.PATH_TO_RUN_CONFIGS + File.separator + Simulation.CURRENT_RUN_CONFIG;
 
         String newPath = pathToSimulationFolder + Simulation.CURRENT_RUN_CONFIG;
 

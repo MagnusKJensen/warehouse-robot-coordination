@@ -9,13 +9,13 @@ import com.google.gson.Gson;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocatorEnum;
 import dk.aau.d507e19.warehousesim.input.CameraMover;
+import dk.aau.d507e19.warehousesim.statistics.StatisticsAutomator;
 import dk.aau.d507e19.warehousesim.ui.SideMenu;
 
 import java.io.*;
 
 public class SimulationApp extends ApplicationAdapter {
 
-	public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "runconfigurations/";
     public static final long DEFAULT_SEED = 123456789L;
 	public static String CURRENT_RUN_CONFIG = "manyRobots.json";
 
@@ -82,7 +82,7 @@ public class SimulationApp extends ApplicationAdapter {
 	}
 
 	private void createJsonFileFromSpecs(String newSpecName){
-		File newSpecFile = new File(PATH_TO_RUN_CONFIGS + File.separator + newSpecName);
+		File newSpecFile = new File(StatisticsAutomator.PATH_TO_RUN_CONFIGS + File.separator + newSpecName);
 		Gson gson = new Gson();
 		try(BufferedWriter writer = new BufferedWriter(new FileWriter(newSpecFile.getPath()))){
 			String jsonString = gson.toJson(new WarehouseSpecs());

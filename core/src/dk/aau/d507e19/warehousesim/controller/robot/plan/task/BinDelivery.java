@@ -40,7 +40,15 @@ public class BinDelivery implements Task {
         if (!subTasks.isEmpty()) {
            return subTasks.get(0).interrupt();
         }
-        return false;
+        return true;
+    }
+
+    @Override
+    public boolean canInterrupt() {
+        if (!subTasks.isEmpty()) {
+            return subTasks.get(0).canInterrupt();
+        }
+        return true;
     }
 
     private void planTasks() {

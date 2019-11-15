@@ -92,7 +92,7 @@ public class ReservationNavigation extends Navigation {
     }
 
     @Override
-    protected boolean canInterrupt() {
+    public boolean canInterrupt() {
         return !isMoving();
     }
 

@@ -31,18 +31,21 @@ public class StatisticsAutomator {
         // Task allocators to use
         ArrayList<TaskAllocatorEnum> taskAllocators = new ArrayList<>(Arrays.asList(
                 TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR
+                //TaskAllocatorEnum.NAIVE_SHORTEST_DISTANCE_TASK_ALLOCATOR
         ));
 
         // Path finders to use
         ArrayList<PathFinderEnum> pathFinders = new ArrayList<>(Arrays.asList(
-                PathFinderEnum.DUMMYPATHFINDER
+                PathFinderEnum.DUMMYPATHFINDER//,
+                //PathFinderEnum.CHPATHFINDER,
+                //PathFinderEnum.ASTAR
         ));
 
         // Run a single config with the specified taskAllocators and pathfinders
         runConfig(SPEC_FILE_NAME, VERSION_NAME, taskAllocators, pathFinders, SEEDS);
 
         // Run with all configurations inside the .../core/assets/warehouseconfigurations/ folder
-        // runAllConfigurations(VERSION_NAME, taskAllocators, pathFinders, SEEDS);
+        //runAllConfigurations(VERSION_NAME, taskAllocators, pathFinders, SEEDS);
     }
 
     private static void runConfig(String configFileName, String versionName, ArrayList<TaskAllocatorEnum> taskAllocators, ArrayList<PathFinderEnum> pathFinders, long ...seeds){

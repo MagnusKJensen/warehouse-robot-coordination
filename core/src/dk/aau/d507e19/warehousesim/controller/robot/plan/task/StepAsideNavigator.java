@@ -150,7 +150,7 @@ public class StepAsideNavigator extends Navigation{
     }
 
     @Override
-    boolean canInterrupt() {
+    public boolean canInterrupt() {
         return !isMoving();
     }
 

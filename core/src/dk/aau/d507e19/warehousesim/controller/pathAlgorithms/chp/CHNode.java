@@ -5,6 +5,7 @@ import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 class CHNode implements Comparable<CHNode>{
 
@@ -56,5 +57,23 @@ class CHNode implements Comparable<CHNode>{
 
     public GridCoordinate getGridCoordinate() {
         return this.coords;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CHNode chNode = (CHNode) o;
+        return Double.compare(chNode.hCost, hCost) == 0 &&
+                Double.compare(chNode.fCost, fCost) == 0 &&
+                Double.compare(chNode.gCost, gCost) == 0 &&
+                Objects.equals(coords, chNode.coords) &&
+                Objects.equals(parentNode, chNode.parentNode) &&
+                Objects.equals(path, chNode.path);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(coords, hCost, fCost, gCost, parentNode, path);
     }
 }

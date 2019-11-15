@@ -94,4 +94,8 @@ public class GridCoordinate {
         }
         return neighbours;
     }
+
+    public GridCoordinate plus(Direction direction) {
+        return new GridCoordinate(this.getX() + direction.getxDir(), this.getY() + direction.getyDir());
+    }
 }
