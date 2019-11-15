@@ -229,17 +229,8 @@ public class Astar implements PathFinder {
             checkNeighborValidity();
 
 
-            // Small exceptions too see if it is stuck or if end destination is blocked.
+            // Small exceptions too see if it is stuck. Then it just returns
             if (openList.size() < 1) {
-                if (closedList.size() > 1) {
-                    //  throw new BlockedEndDestinationException(robot, closedList.size());
-                    GridCoordinate startGC = new GridCoordinate(xStart,yStart);
-                    GridCoordinate endGC = new GridCoordinate(xEndPosition,yEndPosition);
-                    //throw new NoPathFoundException(startGC,endGC);
-                }
-                //throw new NoValidPathException(new GridCoordinate(xStart,yStart), new GridCoordinate(xEndPosition,yEndPosition),"No valid Neighbor could be found");
-                // throw new NoValidNeighborException(robot);
-
                 return;
             }
 
@@ -313,11 +304,6 @@ public class Astar implements PathFinder {
 
         if(start.equals(destination))
             return Path.oneStepPath(new Step(start));
-
-        // Check if end position is reserved forever
-        /*if (server.getReservationManager().isReservedIndefinitely(destination))
-            throw new DestinationReservedIndefinitelyException(start, destination);*/
-
 
         // Clears all lists and objects so that it is clean next time it calculates a path.
         isReservedList.clear();
