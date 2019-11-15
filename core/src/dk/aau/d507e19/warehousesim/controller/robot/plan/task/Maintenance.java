@@ -74,6 +74,11 @@ public class Maintenance implements Task {
         return false;
     }
 
+    @Override
+    public boolean canInterrupt() {
+        return false;
+    }
+
     public MaintenanceTile findAvailableMaintenance(){
         for(MaintenanceTile maintenanceTile : robotController.getServer().getAvailableMaintenance()){
             //if we find one the navigate to it

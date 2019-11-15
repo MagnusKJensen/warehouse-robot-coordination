@@ -45,4 +45,9 @@ public class OutOfBattery implements Task {
     public boolean interrupt() {
         return false;
     }
+
+    @Override
+    public boolean canInterrupt() {
+        return false;
+    }
 }

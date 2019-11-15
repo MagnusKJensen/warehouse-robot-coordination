@@ -82,4 +82,9 @@ public class Charging implements Task {
         //    return true;
         return false;
     }
+
+    @Override
+    public boolean canInterrupt() {
+        return false;
+    }
 }
