@@ -64,7 +64,7 @@ public class RobotController {
         currentTask.perform();
 
         if(currentTask.hasFailed() && currentTask instanceof BinDelivery)
-            throw new RuntimeException("Bindelivery failed");
+            throw new RuntimeException("Bin delivery failed");
 
         removeCompletedTasks();
         removeFailedTasks();
