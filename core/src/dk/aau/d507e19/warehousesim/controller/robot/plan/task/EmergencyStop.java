@@ -8,6 +8,8 @@ import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 public class EmergencyStop implements Task {
     RobotController robotController;
     GridCoordinate destination;
+    Navigation navigation;
+    boolean finished = false;
 
 
     public EmergencyStop(RobotController robotController) {
@@ -19,6 +21,12 @@ public class EmergencyStop implements Task {
     public void perform() {
         if(destination==null){
             destination = calcDestination(this.robotController.getRobot());
+            navigation = Navigation.getInstance(this.robotController,destination);
+        }
+        if(!navigation.isCompleted()){
+            navigation.perform();
+        }else{
+            complete();
         }
     }
     private GridCoordinate calcDestination(Robot robot){
@@ -31,7 +39,8 @@ public class EmergencyStop implements Task {
         //v = curr speed, a = acceleration/deceleration
         double distanceTravelled = Math.pow(currentSpeed,2)/deceleration;
         //need to round this up - if we add 0.5 its always rounded up correctly
-        int rounded = (int)Math.round(distanceTravelled+0.5);
+        int rounded  = (int)Math.ceil(distanceTravelled);
+
         switch (direction){
             case NORTH:
                 return new GridCoordinate(currentPosition.getX(),currentPosition.getY()+rounded);
@@ -48,7 +57,10 @@ public class EmergencyStop implements Task {
 
     @Override
     public boolean isCompleted() {
-        return false;
+        return finished;
+    }
+    private void complete(){
+        finished = true;
     }
 
     @Override
