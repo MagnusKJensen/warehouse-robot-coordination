@@ -3,12 +3,15 @@ package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.chp;
 import dk.aau.d507e19.warehousesim.TimeUtils;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PartialPathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.exception.DestinationReservedIndefinitelyException;
+import dk.aau.d507e19.warehousesim.exception.NextStepBlockedException;
 import dk.aau.d507e19.warehousesim.exception.NoValidPathException;
 import dk.aau.d507e19.warehousesim.exception.PathFindingTimedOutException;
 import dk.aau.d507e19.warehousesim.storagegrid.GridBounds;
@@ -18,7 +21,7 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.PriorityQueue;
 
-public class CHPathfinder implements PathFinder {
+public class CHPathfinder implements PartialPathFinder {
 
     private static final long MAXIMUM_WAIT_TIME = TimeUtils.secondsToTicks(10);
     private static final long MAXIMUM_ITERATIONS = 1000;
@@ -146,4 +149,10 @@ public class CHPathfinder implements PathFinder {
         return neighbours;
     }
 
+    @Override
+    public Path findPartialPath(GridCoordinate start, GridCoordinate destination) throws NextStepBlockedException {
+        DummyPathFinder dummyPathFinder = new DummyPathFinder();
+        Path path = dummyPathFinder.calculatePath(start, destination);
+        throw new NextStepBlockedException(start, destination, path.getFullPath().get(1).getGridCoordinate());
+    }
 }

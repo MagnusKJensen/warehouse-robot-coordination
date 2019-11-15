@@ -104,6 +104,7 @@ public class Simulation {
 
         simulationStartTime = new Date(System.currentTimeMillis());
         statisticsManager = new StatisticsManager(this);
+        updateRenderedBounds();
     }
 
     public Simulation(long randSeed, String runConfigName, SimulationApp simulationApp, String pathToRunConfig){
@@ -136,7 +137,6 @@ public class Simulation {
 
         simulationStartTime = new Date(System.currentTimeMillis());
         statisticsManager = new StatisticsManager(this);
-
         updateRenderedBounds();
     }
 

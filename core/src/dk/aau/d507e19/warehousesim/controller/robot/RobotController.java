@@ -5,11 +5,14 @@ import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.*;
+import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.exception.DoubleReservationException;
 import dk.aau.d507e19.warehousesim.statistics.StatisticsManager;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -96,7 +99,7 @@ public class RobotController {
     public void updateStatus() {
        if(tasks.isEmpty()) robot.setCurrentStatus(Status.AVAILABLE);
        else if(tasks.get(0) instanceof BinDelivery) robot.setCurrentStatus(Status.BUSY);
-       else if(tasks.get(0) instanceof Relocation){
+       else if(tasks.get(0) instanceof Relocation || tasks.get(0) instanceof OneTileRelocationTask){
            if(tasks.size() > 1) robot.setCurrentStatus(Status.RELOCATING_BUSY);
            else robot.setCurrentStatus(Status.RELOCATING);
        }
@@ -149,4 +152,77 @@ public class RobotController {
         }
         return false;
     }
+
+    public boolean requestChainedMove(Robot firstRobot, GridCoordinate...unavailableCoordinates){
+        if(robot.getCurrentStatus() == Status.RELOCATING)
+            return false; // Already in the process of relocating
+
+        if(robot.getCurrentStatus() != Status.AVAILABLE){
+            // Can't be interrupted by lower priority robots (unless idle)
+            int firstRobotPriority = server.getPriority(firstRobot);
+            int selfPriority = server.getPriority(this.robot);
+            if(firstRobotPriority < selfPriority)
+                return false;
+
+            if(!interruptCurrentTask())
+                return false;
+        }
+
+        return attemptChainMove(firstRobot, unavailableCoordinates);
+    }
+
+    private boolean attemptChainMove(Robot firstRobot, GridCoordinate ... unavailableCoordinates) {
+        // Find neighbours that are not unavailable
+        ArrayList<GridCoordinate> availableNeighbours = this.getRobot().getGridCoordinate().getNeighbours(server.getGridBounds());
+        availableNeighbours.removeIf((n) -> contains(unavailableCoordinates, n));
+
+        // Find any free spaces and try to move there if possible
+        for(GridCoordinate neighbour : availableNeighbours){
+            Reservation reservation = new Reservation(robot, neighbour, TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks()));
+            if(server.getReservationManager().hasConflictingReservations(reservation))
+                continue;
+            moveOneStepTo(neighbour);
+            return true;
+        }
+
+        // unavailable coordinates extended to include this robots coordinate
+        GridCoordinate[] extendedUnavailableCoordinates = extend(unavailableCoordinates, this.robot.getGridCoordinate());
+
+        // If no free spaces are available (recursively) ask the surrounding robots to move
+        for(GridCoordinate neighbour : availableNeighbours){
+            if(server.getReservationManager().isReservedIndefinitely(neighbour)){
+                Robot blockingRobbot = server.getReservationManager().getIndefiniteReservationsAt(neighbour).getRobot();
+                boolean chainMoveSucces = blockingRobbot.getRobotController().requestChainedMove(firstRobot, extendedUnavailableCoordinates);
+                if(chainMoveSucces){
+                    moveOneStepTo(neighbour);
+                    return true;
+                }
+            }
+        }
+
+        // No free neighbour tiles and no neighbour robots could relocate
+        return false;
+    }
+
+    private GridCoordinate[] extend(GridCoordinate[] originalArray, GridCoordinate addition) {
+        GridCoordinate[] extendedArray = Arrays.copyOf(originalArray, originalArray.length + 1);
+        extendedArray[extendedArray.length - 1] = addition;
+        return extendedArray;
+    }
+
+    private void moveOneStepTo(GridCoordinate neighbour) {
+        OneTileRelocationTask relocationTask = new OneTileRelocationTask(this, neighbour);
+        assignImmediateTask(relocationTask);
+        updateStatus();
+    }
+
+    private boolean contains(GridCoordinate[] unavailableCoordinates, GridCoordinate neighbour){
+        for(GridCoordinate coord : unavailableCoordinates){
+            if(coord.equals(neighbour)) return true;
+        }
+
+        return false;
+    }
+
+
 }

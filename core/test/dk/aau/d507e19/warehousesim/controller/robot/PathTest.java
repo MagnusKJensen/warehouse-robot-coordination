@@ -81,8 +81,8 @@ public class PathTest {
         Path path = new Path(allCoordinates);
     }
 
-    @Test (expected = IllegalArgumentException.class)
-    public void repeatedWaitStepInvalidPathTest() {
+    @Test
+    public void repeatedWaitStepValidPathTest() {
         ArrayList<Step> allCoordinates = new ArrayList<>();
         allCoordinates.add(new Step(1, 1));
         allCoordinates.add(new Step(2, 1));
