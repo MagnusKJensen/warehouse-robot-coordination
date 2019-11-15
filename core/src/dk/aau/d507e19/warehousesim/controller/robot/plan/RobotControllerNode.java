@@ -36,9 +36,8 @@ public class RobotControllerNode {
     }
 
     private void checkIfExhausted() {
-        for(RobotControllerNode child : children){
+        for(RobotControllerNode child : children)
             if(!child.isExhausted()) return;
-        }
 
         setExhausted(true);
         if(hasParent()) parent.checkIfExhausted();

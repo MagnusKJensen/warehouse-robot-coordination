@@ -173,4 +173,8 @@ public class Path {
     public Step getLastStep() {
         return allSteps.get(allSteps.size() - 1);
     }
+
+    public boolean isOneStepPath() {
+        return getFullPath().size() == 1;
+    }
 }

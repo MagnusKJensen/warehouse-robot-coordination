@@ -54,44 +54,6 @@ public class CHPathfinder implements PartialPathFinder {
     }
 
     @Override
-    public Path calculatePath(GridCoordinate start, GridCoordinate destination) throws PathFindingTimedOutException, NoValidPathException, DestinationReservedIndefinitelyException {
-        if (start.equals(destination))
-            return Path.oneStepPath(new Step(start));
-
-        if (server.getReservationManager().isReservedIndefinitely(destination))
-            throw new DestinationReservedIndefinitelyException(start, destination);
-
-        PriorityQueue<CHNode> openList = new PriorityQueue<>();
-        openList.add(nodeFactory.createInitialNode(start, destination));
-
-        int iterationCount = 0;
-        while (!openList.isEmpty()) {
-            CHNode bestOpenListNode = openList.poll();
-
-            ArrayList<CHNode> successors = getValidSuccessors(bestOpenListNode, destination);
-
-            //Check if destination is reached
-            for (CHNode successor : successors) {
-                if (successor.getGridCoordinate().equals(destination)) {
-                    /* // efficiency stats
-                    System.out.print("Iterations to calculate path : " + iterationCount);
-                    int manhattanDistance = Math.abs(start.getX() - destination.getX()) + Math.abs(start.getY() - destination.getY());
-                    System.out.println(" || Manhattan distance : " + manhattanDistance + " || Path length : " + successor.getPath().getFullPath().size());*/
-                    return successor.getPath();
-                }
-            }
-
-            openList.addAll(successors);
-
-            iterationCount++;
-            if (iterationCount > MAXIMUM_ITERATIONS)
-                throw new PathFindingTimedOutException(start, destination, iterationCount);
-        }
-
-        throw new NoValidPathException(start, destination, "Pathfinder max wait time per tile : " + MAXIMUM_WAIT_TIME);
-    }
-
-    @Override
     public boolean accountsForReservations() {
         return true;
     }
@@ -149,14 +111,13 @@ public class CHPathfinder implements PartialPathFinder {
     }
 
     @Override
-    public Path findPartialPath(GridCoordinate start, GridCoordinate destination) throws NextStepBlockedException {
+    public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
         PriorityQueue<CHNode> openList = new PriorityQueue<>();
         final CHNode initialNode = nodeFactory.createInitialNode(start, destination);
         openList.add(initialNode);
 
         // The default best partial path is the starting node
         CHNode bestNodeSoFar = initialNode;
-
 
         int iterationCount = 0;
         while (!openList.isEmpty()) {
@@ -184,18 +145,8 @@ public class CHPathfinder implements PartialPathFinder {
 
         // If the best partial path consists only of the initial node,
         // the robot must be blocked by at least one neighbouring robot
-        if (initialNode.equals(bestNodeSoFar)) {
-            ArrayList<Direction> directionsTowardDestination = getDirectionsOf(initialNode.getGridCoordinate(), destination);
-            ReservationManager resManager = server.getReservationManager();
-
-            // Check to see if any of the neighbours (in the direction of the destination) are blocking the robot
-            for (Direction direction : directionsTowardDestination) {
-                GridCoordinate neighbourCoordinate = initialNode.getGridCoordinate().plus(direction);
-                boolean isNeighbourReservedForever = resManager.isReservedIndefinitely(neighbourCoordinate);
-                if (isNeighbourReservedForever)
-                    throw new NextStepBlockedException(start, destination, neighbourCoordinate);
-            }
-        }
+        if (initialNode.equals(bestNodeSoFar))
+            return Path.oneStepPath(new Step(bestNodeSoFar.getGridCoordinate()));
 
         return bestNodeSoFar.getPath();
     }
@@ -204,21 +155,5 @@ public class CHPathfinder implements PartialPathFinder {
         ArrayList<Reservation> reservations = MovementPredictor.calculateReservations(robotController.getRobot(), path, server.getTimeInTicks(), 0);
         reservations.add(ReservationNavigation.createLastTileIndefiniteReservation(reservations));
         return !server.getReservationManager().hasConflictingReservations(reservations);
-    }
-
-    private ArrayList<Direction> getDirectionsOf(GridCoordinate start, GridCoordinate destination) {
-        ArrayList<Direction> directions = new ArrayList<>();
-
-        if (start.getX() - destination.getX() < 0) {
-            directions.add(Direction.EAST);
-        } else if (start.getY() - destination.getY() < 0) {
-            directions.add(Direction.NORTH);
-        } else if (start.getX() - destination.getX() > 0) {
-            directions.add(Direction.WEST);
-        } else if (start.getY() - destination.getY() > 0) {
-            directions.add(Direction.SOUTH);
-        }
-
-        return directions;
     }
 }

@@ -98,4 +98,20 @@ public class GridCoordinate {
     public GridCoordinate plus(Direction direction) {
         return new GridCoordinate(this.getX() + direction.getxDir(), this.getY() + direction.getyDir());
     }
+
+    public static ArrayList<Direction> getDirectionsOf(GridCoordinate start, GridCoordinate destination) {
+        ArrayList<Direction> directions = new ArrayList<>();
+
+        if (start.getX() - destination.getX() < 0) {
+            directions.add(Direction.EAST);
+        } else if (start.getY() - destination.getY() < 0) {
+            directions.add(Direction.NORTH);
+        } else if (start.getX() - destination.getX() > 0) {
+            directions.add(Direction.WEST);
+        } else if (start.getY() - destination.getY() > 0) {
+            directions.add(Direction.SOUTH);
+        }
+
+        return directions;
+    }
 }
