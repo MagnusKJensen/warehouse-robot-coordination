@@ -9,7 +9,9 @@ import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocator
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
+import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
+import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
 
 import java.util.*;
 
@@ -83,7 +85,7 @@ public class OrderManager {
             // If order could not be divided into tasks, it is not assigned to a picker
             // And not put into the processing ArrayList
             else {
-                availablePickers.get(0).finishOrder();
+                availablePickers.get(0).removeOrder();
                 order.removePicker();
             }
             maxOrderAssignPerTick--;
@@ -129,7 +131,7 @@ public class OrderManager {
             if(productsToPick.isEmpty()) break;
         }
 
-        if(!deliveries.isEmpty()){
+        if(!deliveries.isEmpty() && productsToPick.isEmpty()){
             return deliveries;
         }
 
@@ -154,12 +156,24 @@ public class OrderManager {
         ArrayList<BinDelivery> deliveries = divideOrderIntoDeliveries(order);
         if(deliveries != null){
             for(BinDelivery delivery : deliveries){
+                if(!areProductsPresent(delivery)) {
+                    throw new RuntimeException("Products not present in bin" + delivery.toString());
+                }
                 server.getReservationManager().reserveBinTile(delivery.getBinCoords());
             }
 
             return deliveries;
         }
         return null;
+    }
+
+    private boolean areProductsPresent(BinDelivery binDelivery){
+        for(Product product : binDelivery.getProductsToPick()){
+            BinTile tile = (BinTile)server.getSimulation().getStorageGrid().getTile(binDelivery.getBinCoords().getX(), binDelivery.getBinCoords().getY());
+            if(!tile.getBin().getProducts().contains(product)) return false;
+        }
+
+        return true;
     }
 
     public int ordersInQueue(){

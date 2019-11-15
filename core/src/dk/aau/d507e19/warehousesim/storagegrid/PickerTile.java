@@ -49,9 +49,13 @@ public class PickerTile extends Tile {
     public void finishOrder(){
         // Check that all picker is holding all the correct orders
         for(Product product : currentOrder.getAllProductsInOrder()){
-            if(!holdingProducts.contains(product)) throw new CouldNotFinishOrderException(currentOrder.getAllProductsInOrder(), holdingProducts);
+            if(!holdingProducts.contains(product)) throw new CouldNotFinishOrderException(currentOrder, currentOrder.getAllProductsInOrder(), holdingProducts);
         }
         holdingProducts.clear();
+        currentOrder = null;
+    }
+
+    public void removeOrder(){
         currentOrder = null;
     }
 

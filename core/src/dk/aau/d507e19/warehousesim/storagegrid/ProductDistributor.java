@@ -56,18 +56,19 @@ public class ProductDistributor {
             tile.addBin(new Bin());
         }
 
-        int tries = 0;
+        int attempts = 0;
+        int MAX_ATTEMPTS = 100000;
         // While some tiles are not full, and more products need to be added
         while(!nonFullTiles.isEmpty() && !allProducts.isEmpty()){
             int nextTile = random.nextInt(nonFullTiles.size());
 
-            tries++;
+            attempts++;
             // If the bin already has the SKU or has room for more SKUs
             if(nonFullTiles.get(nextTile).getBin().hasSKU(allProducts.get(0).getSKU())
                     || nonFullTiles.get(nextTile).getBin().hasRoomForMoreSKUs()) {
                 nonFullTiles.get(nextTile).getBin().addProduct(allProducts.get(0));
                 allProducts.remove(0);
-                tries = 0;
+                attempts = 0;
             }
 
             // If the bin is now full, remove it from the nonFullTiles.
@@ -76,7 +77,7 @@ public class ProductDistributor {
             }
 
 
-            if(tries > 1000) throw new IllegalArgumentException("Could not distribute products after " + tries +  " tries. Not enough room." +
+            if(attempts > MAX_ATTEMPTS) throw new IllegalArgumentException("Could not distribute products after " + attempts +  " attempts. Not enough room." +
                     " Still need " + allProducts.size() +  " product(s) to fit in " + nonFullTiles.size() + " bins");
         }
 
