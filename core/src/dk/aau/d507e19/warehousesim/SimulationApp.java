@@ -17,7 +17,7 @@ import java.io.*;
 public class SimulationApp extends ApplicationAdapter {
 
     public static final long DEFAULT_SEED = 123456789L;
-	public static String CURRENT_RUN_CONFIG = "manyRobots.json";
+	public static String CURRENT_RUN_CONFIG = "defaultSpecs.json";
 
 	public static final int MENU_WIDTH_IN_PIXELS = 300;
 
@@ -121,20 +121,19 @@ public class SimulationApp extends ApplicationAdapter {
 	@Override
 	// Called repeatedly by the libgdx framework
 	public void render () {
-		if(updateMode == UpdateMode.NO_GRAPHICS){
-		} else {
-			cameraMover.update();
-			int updatesSinceLastRender = 0;
-			while(shouldUpdateSimulation() && updatesSinceLastRender < MAX_UPDATES_PER_FRAME){
-				simulation.update();
-				updatesSinceLastRender++;
-			}
+		if(updateMode == UpdateMode.NO_GRAPHICS) return;
 
-			updateMenu();
-			clearScreen();
-			renderMenu();
-			renderSimulation();
+		cameraMover.update();
+		int updatesSinceLastRender = 0;
+		while(shouldUpdateSimulation() && updatesSinceLastRender < MAX_UPDATES_PER_FRAME){
+			simulation.update();
+			updatesSinceLastRender++;
 		}
+
+		updateMenu();
+		clearScreen();
+		renderMenu();
+		renderSimulation();
 	}
 
 	// Determines whether it is time to update to simulation

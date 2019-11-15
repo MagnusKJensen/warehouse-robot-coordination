@@ -2,12 +2,10 @@ package dk.aau.d507e19.warehousesim.statistics;
 
 import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.SimulationApp;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocatorEnum;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -19,36 +17,40 @@ import java.util.Random;
 
 public class StatisticsAutomator {
     public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations";
-    private static final int TICKS_PER_RUN = 10000; // 10.000 is about 55min of "real time"
-    private static final int PRINT_EVERY_TICK = 2500;
+    private static final int TICKS_PER_RUN = 5000; // 10.000 is about 55min of "real time"
+    private static final int PRINT_EVERY_TICK = 250;
     private static final String VERSION_NAME = "bigVersion";
     private static final String SPEC_FILE_NAME = "manyRobots.json";
-    private static final int numberOfSeeds = 5;
+    private static final int numberOfSeeds = 3;
     private static long[] SEEDS = new long[numberOfSeeds];
     private static Random random = new Random(SimulationApp.DEFAULT_SEED);
-    public static final String PATH_TO_RUN_CONFIGS_RESULTS = System.getProperty("user.dir") + File.separator + "statistics" + File.separator + SPEC_FILE_NAME + "_" + VERSION_NAME + File.separator;
 
     public static void main(String[] args) {
         generateSeeds();
 
         // Task allocators to use
         ArrayList<TaskAllocatorEnum> taskAllocators = new ArrayList<>(Arrays.asList(
-                TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR
-                //TaskAllocatorEnum.NAIVE_SHORTEST_DISTANCE_TASK_ALLOCATOR
+                TaskAllocatorEnum.NAIVE_SHORTEST_DISTANCE_TASK_ALLOCATOR
         ));
 
         // Path finders to use
         ArrayList<PathFinderEnum> pathFinders = new ArrayList<>(Arrays.asList(
-                PathFinderEnum.DUMMYPATHFINDER//,
-                //PathFinderEnum.CHPATHFINDER,
-                //PathFinderEnum.ASTAR
+                PathFinderEnum.CHPATHFINDER
         ));
 
         // Run a single config with the specified taskAllocators and pathfinders
-        runConfig(SPEC_FILE_NAME, VERSION_NAME, taskAllocators, pathFinders, SEEDS);
+        // runConfig(SPEC_FILE_NAME, VERSION_NAME, taskAllocators, pathFinders, SEEDS);
 
         // Run with all configurations inside the .../core/assets/warehouseconfigurations/ folder
-        //runAllConfigurations(VERSION_NAME, taskAllocators, pathFinders, SEEDS);
+        runAllConfigurations(VERSION_NAME, taskAllocators, pathFinders, SEEDS);
+    }
+
+    private static void runAllConfigurations(String versionName, ArrayList<TaskAllocatorEnum> taskAllocators, ArrayList<PathFinderEnum> pathFinders, long ...seeds) {
+        ArrayList<String> runConfigs = getAllRunConfigs();
+
+        for (String warehouseConfig : runConfigs) {
+            runConfig(warehouseConfig, versionName, taskAllocators, pathFinders, seeds);
+        }
     }
 
     private static void runConfig(String configFileName, String versionName, ArrayList<TaskAllocatorEnum> taskAllocators, ArrayList<PathFinderEnum> pathFinders, long ...seeds){
@@ -75,44 +77,13 @@ public class StatisticsAutomator {
                 }
             }
         }
-        generateSeedAverages();
+        generateSeedAverages(configFileName, versionName);
     }
 
-    private static void runAllConfigurations(String versionName, ArrayList<TaskAllocatorEnum> taskAllocators, ArrayList<PathFinderEnum> pathFinders, long ...seeds) {
-        ArrayList<String> runConfigs = getAllRunConfigs();
-
-        Simulation simulation;
-        for (String warehouseConfig : runConfigs) {
-            System.out.println("WarehouseConfig: " + warehouseConfig);
-            System.out.println("________________________________________________________________");
-            for (TaskAllocatorEnum taskAllocator : taskAllocators) {
-                for (PathFinderEnum pathFinder : pathFinders) {
-                    if (taskAllocator.works() && pathFinder.works()) {
-                        for(long seed : seeds){
-                            System.out.println("TaskAllocator: " + taskAllocator.getName() + ", PathFinder: " + pathFinder.getName() + ", Seed: " + seed);
-                            simulation = new Simulation(seed, warehouseConfig, pathFinder, taskAllocator);
-                            simulation.getStatisticsManager().setVERSION_NAME(versionName);
-                            while (simulation.getTimeInTicks() < TICKS_PER_RUN) {
-                                if (simulation.getTimeInTicks() % PRINT_EVERY_TICK == 0) {
-                                    simulation.getStatisticsManager().printStatistics();
-                                    System.out.println(simulation.getTimeInTicks());
-                                }
-                                simulation.update();
-                            }
-                            simulation.getStatisticsManager().addSummaries();
-                        }
-                    }
-                }
-            }
-            System.out.println("\n");
-        }
-        generateSeedAverages();
-    }
-
-    private static void generateSeedAverages(){
+    private static void generateSeedAverages(String configFileName, String versionName){
         double availableProductsLeftAverage;
 
-        File file = new File(PATH_TO_RUN_CONFIGS_RESULTS);
+        File file = new File(System.getProperty("user.dir") + File.separator + "statistics" + File.separator + configFileName + "_" + versionName + File.separator);
         File[] configurationFolders = getSubFolders(file);
 
         // For each taskAllocator/PathFinder combination

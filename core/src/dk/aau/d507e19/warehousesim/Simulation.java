@@ -64,11 +64,13 @@ public class Simulation {
     private SimulationInputProcessor inputProcessor;
 
     private long ordersProcessed = 0;
+    private ProductDistributor productDistributor;
 
     private Goal goal;
 
     private long tickStopperGoal;
 
+    public static String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations/";
     public static String CURRENT_RUN_CONFIG;
     private static WarehouseSpecs warehouseSpecs;
     private static PathFinderEnum pathFinder;
@@ -86,20 +88,20 @@ public class Simulation {
     // Used for fast no graphics simulations
     public Simulation(long randSeed, String runConfigName, PathFinderEnum pathfinder, TaskAllocatorEnum taskAllocator){
         RANDOM_SEED = randSeed;
-        Simulation.warehouseSpecs = readWarehouseSpecsFromFile(runConfigName);
         Simulation.CURRENT_RUN_CONFIG = runConfigName;
+        Simulation.warehouseSpecs = readWarehouseSpecsFromFile(runConfigName);
         Simulation.pathFinder = pathfinder;
         Simulation.taskAllocator = taskAllocator;
 
         storageGrid = new StorageGrid(Simulation.getWarehouseSpecs().wareHouseWidth, Simulation.getWarehouseSpecs().wareHouseHeight, this);
-        if(Simulation.getWarehouseSpecs().isRandomProductDistribution) ProductDistributor.distributeProductsRandomly(storageGrid);
-        else ProductDistributor.distributeProducts(storageGrid);
+        this.productDistributor = new ProductDistributor(Simulation.getWarehouseSpecs());
+        if(Simulation.getWarehouseSpecs().isRandomProductDistribution) productDistributor.distributeProductsRandomly(storageGrid);
+        else productDistributor.distributeProducts(storageGrid);
 
         server = new Server(this, storageGrid);
         goal = new OrderGoal(Simulation.warehouseSpecs.orderGoal, this);
 
         initRobots();
-
         simulationStartTime = new Date(System.currentTimeMillis());
         statisticsManager = new StatisticsManager(this);
     }
@@ -124,8 +126,9 @@ public class Simulation {
         shapeRenderer = new ShapeRenderer();
 
         storageGrid = new StorageGrid(Simulation.getWarehouseSpecs().wareHouseWidth, Simulation.getWarehouseSpecs().wareHouseHeight, this);
-        if(Simulation.getWarehouseSpecs().isRandomProductDistribution) ProductDistributor.distributeProductsRandomly(storageGrid);
-        else ProductDistributor.distributeProducts(storageGrid);
+        this.productDistributor = new ProductDistributor(Simulation.getWarehouseSpecs());
+        if(Simulation.getWarehouseSpecs().isRandomProductDistribution) productDistributor.distributeProductsRandomly(storageGrid);
+        else productDistributor.distributeProducts(storageGrid);
 
         server = new Server(this, storageGrid);
         goal = new OrderGoal(Simulation.warehouseSpecs.orderGoal, this);
@@ -173,7 +176,6 @@ public class Simulation {
             checkForCollisions();
         }
         updateSideMenuScrollPanes();
-
 
         if(tickStopperGoal == tickCount) simulationApp.pause();
     }

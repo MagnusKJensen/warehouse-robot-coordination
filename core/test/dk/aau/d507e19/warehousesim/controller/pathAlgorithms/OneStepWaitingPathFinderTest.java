@@ -12,7 +12,6 @@ import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.exception.NoPathFoundException;
-import javafx.beans.binding.When;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
