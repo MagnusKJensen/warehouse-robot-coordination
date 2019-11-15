@@ -228,18 +228,20 @@ public class Astar implements PathFinder {
             // Add the valid tiles to openList
             checkNeighborValidity();
 
-            /*
+
             // Small exceptions too see if it is stuck or if end destination is blocked.
             if (openList.size() < 1) {
                 if (closedList.size() > 1) {
                     //  throw new BlockedEndDestinationException(robot, closedList.size());
                     GridCoordinate startGC = new GridCoordinate(xStart,yStart);
                     GridCoordinate endGC = new GridCoordinate(xEndPosition,yEndPosition);
-                    throw new NoPathFoundException(startGC,endGC);
+                    //throw new NoPathFoundException(startGC,endGC);
                 }
-                throw new NoValidPathException(new GridCoordinate(xStart,yStart), new GridCoordinate(xEndPosition,yEndPosition),"No valid Neighbor could be found");
+                //throw new NoValidPathException(new GridCoordinate(xStart,yStart), new GridCoordinate(xEndPosition,yEndPosition),"No valid Neighbor could be found");
                 // throw new NoValidNeighborException(robot);
-            }*/
+
+                return;
+            }
 
             // Sorts openList in ascending order
             openList.sort(new OpenListSorter());
