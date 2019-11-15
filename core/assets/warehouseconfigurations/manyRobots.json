@@ -19,7 +19,7 @@
     ]
   ],
   "isRandomProductDistribution": true,
-  "numberOfRobots": 99,
+  "numberOfRobots": 30,
   "robotTopSpeed": 3.0,
   "robotAcceleration": 0.8,
   "robotDeceleration": 2.0,
@@ -28,8 +28,8 @@
   "robotDeliverToPickInSeconds": 12,
   "collisionDetectedEnabled": true,
   "robotPlacementPattern": {
-    "patternType": "STACKED_LINES",
-    "padding": 0,
+    "patternType": "SPIRAL",
+    "padding": 2,
     "bounds": {
       "startX": 0,
       "startY": 0,
