@@ -37,8 +37,7 @@ public class EmergencyStop implements Task {
         Direction direction = robot.getDirection();
         //formula to find stopping dis: v^2 /2a src(https://physics.stackexchange.com/questions/3818/stopping-distance-frictionless)
         //v = curr speed, a = acceleration/deceleration
-        double distanceTravelled = Math.pow(currentSpeed,2)/deceleration;
-        //need to round this up - if we add 0.5 its always rounded up correctly
+        double distanceTravelled = Math.pow(currentSpeed,2)/(2*deceleration);
         int rounded  = (int)Math.ceil(distanceTravelled);
 
         switch (direction){
