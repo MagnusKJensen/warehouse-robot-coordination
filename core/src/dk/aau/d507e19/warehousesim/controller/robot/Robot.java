@@ -59,6 +59,8 @@ public class Robot {
         for(Product product : productsToPick){
             bin.getProducts().remove(product);
         }
+        PickerTile picker = (PickerTile) simulation.getStorageGrid().getTile(pickerCoords.getX(), pickerCoords.getY());
+        picker.acceptProducts(productsToPick);
         simulation.incrementOrderProcessedCount();
     }
 

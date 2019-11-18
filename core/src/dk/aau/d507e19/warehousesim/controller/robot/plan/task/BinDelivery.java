@@ -110,4 +110,28 @@ public class BinDelivery implements Task {
     public Order getOrder() {
         return order;
     }
+
+    @Override
+    public String toString() {
+        return "BinDelivery{" +
+                "order=" + order +
+                ", robotController=" + robotController +
+                ", robot=" + robot +
+                ", binCoords=" + binCoords +
+                ", productsToPick=" + productsToPick +
+                ", distanceForDelivery=" + distanceForDelivery +
+                ", subTasks=" + subTasks +
+                ", completed=" + completed +
+                ", isPlanned=" + isPlanned +
+                '}';
+    }
+
+    public String toStringPretty(){
+        return "BinDelivery{" +
+                "productsToPick=" + binCoords + ", productsToPick=" + productsToPick + "}";
+    }
+
+    public ArrayList<Product> getProductsToPick() {
+        return productsToPick;
+    }
 }

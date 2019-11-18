@@ -19,6 +19,10 @@ public class ProductDistributor {
     }
 
     public void distributeProducts(StorageGrid grid){
+        if(warehouseSpecs.productsPerBin * warehouseSpecs.wareHouseHeight * warehouseSpecs.wareHouseWidth
+                < warehouseSpecs.productsInStock) throw new IllegalArgumentException("Too many products for the grid. Please lower productsInStock to be below" +
+                "number of binTile * productsPerBin");
+
         int[][] SKUs = calculateProductsPerSKU(warehouseSpecs.SKUs, warehouseSpecs.productsInStock, warehouseSpecs.skuDistribution);
 
         ArrayList<Product> allProducts = generateProducts(SKUs);
@@ -29,14 +33,20 @@ public class ProductDistributor {
     }
 
     public void distributeProductsRandomly(StorageGrid grid){
+        if(warehouseSpecs.SKUs * warehouseSpecs.wareHouseHeight * warehouseSpecs.wareHouseWidth
+                < warehouseSpecs.productsInStock) throw new IllegalArgumentException("The products may not fit in the grid. Please lower productsInStock to be below" +
+                "number of binTile * SKUsPerBin");
+
         int[][] SKUs = calculateProductsPerSKU(warehouseSpecs.SKUs, warehouseSpecs.productsInStock, warehouseSpecs.skuDistribution);
 
         ArrayList<Product> allProducts = generateProducts(SKUs);
 
+        // Sanity check
+        assert(allProducts.size() == warehouseSpecs.productsInStock);
+
         grid.setAllProducts(allProducts);
 
         distributeRandomly(new ArrayList<>(allProducts), grid);
-
     }
 
     private void distributeRandomly(ArrayList<Product> allProducts, StorageGrid grid) {
@@ -46,21 +56,29 @@ public class ProductDistributor {
             tile.addBin(new Bin());
         }
 
+        int attempts = 0;
+        int MAX_ATTEMPTS = 100000;
         // While some tiles are not full, and more products need to be added
         while(!nonFullTiles.isEmpty() && !allProducts.isEmpty()){
             int nextTile = random.nextInt(nonFullTiles.size());
 
+            attempts++;
             // If the bin already has the SKU or has room for more SKUs
             if(nonFullTiles.get(nextTile).getBin().hasSKU(allProducts.get(0).getSKU())
                     || nonFullTiles.get(nextTile).getBin().hasRoomForMoreSKUs()) {
                 nonFullTiles.get(nextTile).getBin().addProduct(allProducts.get(0));
                 allProducts.remove(0);
+                attempts = 0;
             }
 
             // If the bin is now full, remove it from the nonFullTiles.
             if(nonFullTiles.get(nextTile).getBin().isFull()){
                 nonFullTiles.remove(nextTile);
             }
+
+
+            if(attempts > MAX_ATTEMPTS) throw new IllegalArgumentException("Could not distribute products after " + attempts +  " attempts. Not enough room." +
+                    " Still need " + allProducts.size() +  " product(s) to fit in " + nonFullTiles.size() + " bins");
         }
 
         if(nonFullTiles.isEmpty() && !allProducts.isEmpty()) throw new IllegalArgumentException("Could not distribute products. Not enough room.");
