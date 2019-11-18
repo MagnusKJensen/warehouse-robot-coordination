@@ -93,6 +93,8 @@ public class SpeedCalculator {
             return robot.getMaxSpeedBinsPerSecond();
         } else if (phase == Phase.DECELERATION_PHASE) {
             float timeSpentDecelerating = timeInSeconds - accelerationDuration - maxSpeedDuration;
+            if(achievableSpeed - (robot.getDecelerationBinSecond() * timeSpentDecelerating) < 0)
+                return 0;
             return achievableSpeed - (robot.getDecelerationBinSecond() * timeSpentDecelerating);
         } else { // Phase == Finished or Phase == Pausing
             return 0;
