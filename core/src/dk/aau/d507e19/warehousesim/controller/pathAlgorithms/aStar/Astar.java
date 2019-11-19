@@ -33,6 +33,7 @@ public class Astar implements PartialPathFinder {
     public ArrayList<GridCoordinate> isReservedList = new ArrayList<>();
 
     public AStarTile currentTile;
+    public AStarTile bestTile;
     public final ReservationManager reservationManager;
     public Server server;
     public Robot robot;
@@ -230,17 +231,8 @@ public class Astar implements PartialPathFinder {
             checkNeighborValidity();
 
 
-            // Small exceptions too see if it is stuck or if end destination is blocked.
+            // Small exceptions too see if it is stuck. Then it just returns
             if (openList.size() < 1) {
-                if (closedList.size() > 1) {
-                    //  throw new BlockedEndDestinationException(robot, closedList.size());
-                    GridCoordinate startGC = new GridCoordinate(xStart,yStart);
-                    GridCoordinate endGC = new GridCoordinate(xEndPosition,yEndPosition);
-                    //throw new NoPathFoundException(startGC,endGC);
-                }
-                //throw new NoValidPathException(new GridCoordinate(xStart,yStart), new GridCoordinate(xEndPosition,yEndPosition),"No valid Neighbor could be found");
-                // throw new NoValidNeighborException(robot);
-
                 return;
             }
 
@@ -286,10 +278,20 @@ public class Astar implements PartialPathFinder {
         if (reservationManager.hasConflictingReservations(lastReservation) ||
                 !reservationManager.canReserve(lastReservation.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(lastReservation.getTimeFrame().getStart()))) {
 
+            bestTile.calculateH(xEndPosition, yEndPosition);
+            bestTile.calculateG(currentTile.getG());
+            bestTile.calculateF();
 
             // Make new end positions and calculate again
             xEndPosition = listOfReservations.get(listOfReservations.size()-2).getGridCoordinate().getX();
             yEndPosition = listOfReservations.get(listOfReservations.size()-2).getGridCoordinate().getY();
+
+            AStarTile newEndTile = grid[xEndPosition][yEndPosition];
+
+            if (bestTile.getF() < newEndTile.getF()){
+                xEndPosition = bestTile.getCurrentXPosition();
+                yEndPosition = bestTile.getCurrentYPosition();
+            }
 
             i = true;
         }
@@ -315,11 +317,6 @@ public class Astar implements PartialPathFinder {
         if(start.equals(destination))
             return Path.oneStepPath(new Step(start));
 
-        // Check if end position is reserved forever
-        /*if (server.getReservationManager().isReservedIndefinitely(destination))
-            throw new DestinationReservedIndefinitelyException(start, destination);*/
-
-
         // Clears all lists and objects so that it is clean next time it calculates a path.
         isReservedList.clear();
         clear();
@@ -329,6 +326,8 @@ public class Astar implements PartialPathFinder {
 
         xStart = start.getX();
         yStart = start.getY();
+
+        bestTile = grid[xStart][yStart];
 
         // Calculates the optimal A* path
         calculatePath();
