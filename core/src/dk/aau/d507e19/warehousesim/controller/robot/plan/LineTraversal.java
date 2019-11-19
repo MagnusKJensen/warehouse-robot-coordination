@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.robot.plan;
 
+import dk.aau.d507e19.warehousesim.Position;
 import dk.aau.d507e19.warehousesim.controller.path.Line;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
@@ -20,6 +21,10 @@ public class LineTraversal implements Task {
         this.speedCalculator = new SpeedCalculator(robot, line);
         this.distance = line.getLength();
     }
+    public LineTraversal(Robot robot, Position start, GridCoordinate end, float length){
+        setRobot(robot);
+        this.speedCalculator = new SpeedCalculator(robot,start,end,length);
+    }
 
     @Override
     public void perform() {
@@ -30,7 +35,7 @@ public class LineTraversal implements Task {
         robot.updatePosition(speedCalculator.getPositionAfter(ticksSinceStart),
                 speedCalculator.getSpeedAfter(ticksSinceStart));
 
-        robot.setDirection(line.getDirection());
+        robot.setDirection(speedCalculator.getDirection());
 
         if(ticksSinceStart >= speedCalculator.getTotalTimeInTicks())
             doneTraversing = true;
@@ -64,5 +69,9 @@ public class LineTraversal implements Task {
 
     public int getDistance() {
         return distance;
+    }
+
+    public SpeedCalculator getSpeedCalculator() {
+        return speedCalculator;
     }
 }

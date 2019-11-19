@@ -185,6 +185,21 @@ public class Robot {
         return new GridCoordinate(Math.round(currentPosition.getX()), Math.round(currentPosition.getY()));
     }
 
+    /**
+     * Gets the Grid Coordinate we're currently moving towards(if moving at all)
+     * For instance, if current pos is (1.2 , 2) this function will return (2,2)
+     * Uses the current direction of the robot to achieve this
+     */
+
+    public GridCoordinate getNextGridCoordinate(){
+        switch(this.getDirection()){
+            case NORTH: return new GridCoordinate((int)this.getCurrentPosition().getX(),(int)Math.ceil(this.getCurrentPosition().getY()));
+            case SOUTH: return new GridCoordinate ((int)this.getCurrentPosition().getX(), (int)Math.floor(this.getCurrentPosition().getY()));
+            case WEST: return new GridCoordinate ((int)Math.floor(this.getCurrentPosition().getX()), (int)this.getCurrentPosition().getY());
+            case EAST: return new GridCoordinate ((int)Math.ceil(this.getCurrentPosition().getX()),(int)this.getCurrentPosition().getY());
+            default: return this.getGridCoordinate();
+        }
+    }
     public boolean isCarrying(){
         return bin != null;
     }

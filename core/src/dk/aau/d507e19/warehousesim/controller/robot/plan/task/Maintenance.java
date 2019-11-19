@@ -13,12 +13,15 @@ public class Maintenance implements Task {
     private GridCoordinate destination;
     private Server server;
     private RobotController robotController;
-    private boolean completed,failed;
+    private boolean completed, failed;
     private Navigation navigation;
     private MaintenanceTile maintenanceTile;
+    private EmergencyStop emergencyStop;
 
     public Maintenance(RobotController robotController) {
         this.robotController = robotController;
+        this.emergencyStop = new EmergencyStop(this.robotController);
+
     }
 
     public MaintenanceTile getMaintenanceTile() {
@@ -27,34 +30,42 @@ public class Maintenance implements Task {
 
     @Override
     public void perform() {
-        if(navigation==null){
-            maintenanceTile = findAvailableMaintenance();
-            if(maintenanceTile != null){
-                destination = maintenanceTile.getGridCoordinate();
-                navigation = Navigation.getInstance(robotController,destination);
-                maintenanceTile.setReserved(true);
-            }else return;
-        }
-        if(!navigation.isCompleted()){
-            navigation.perform();
-        }
-        if (navigation.isCompleted()){
-            if(robotController.getControlSystemManager().getMechanicalSensor().getState().equals(SensorState.NOMINAL)){
-                complete();
+        //todo @bau add ability to hand current task over to another robot
+        if (emergencyStop.isCompleted()) {
+            if (navigation == null) {
+                maintenanceTile = findAvailableMaintenance();
+                if (maintenanceTile != null) {
+                    destination = maintenanceTile.getGridCoordinate();
+                    navigation = Navigation.getInstance(robotController, destination);
+                    maintenanceTile.setReserved(true);
+                } else return;
             }
-            if (navigation.hasFailed())
-                fail();
+            if (!navigation.isCompleted()) {
+                navigation.perform();
+            }
+            if (navigation.isCompleted()) {
+                if (robotController.getControlSystemManager().getMechanicalSensor().getState().equals(SensorState.NOMINAL)) {
+                    complete();
+                }
+                if (navigation.hasFailed())
+                    fail();
+            }
+        //if emergency stop is not completed we perform it
+        } else {
+            emergencyStop.perform();
         }
     }
 
-    public void complete(){
+    public void complete() {
         this.completed = true;
         this.robotController.getRobot().setCurrentStatus(Status.AVAILABLE);
         maintenanceTile.setReserved(false);
     }
-    public void fail(){
+
+    public void fail() {
         this.failed = true;
     }
+
     @Override
     public boolean isCompleted() {
         return completed;
@@ -69,6 +80,7 @@ public class Maintenance implements Task {
     public void setRobot(Robot robot) {
         this.robotController = robot.getRobotController();
     }
+
     @Override
     public boolean interrupt() {
         return false;
@@ -79,8 +91,8 @@ public class Maintenance implements Task {
         return false;
     }
 
-    public MaintenanceTile findAvailableMaintenance(){
-        for(MaintenanceTile maintenanceTile : robotController.getServer().getAvailableMaintenance()){
+    public MaintenanceTile findAvailableMaintenance() {
+        for (MaintenanceTile maintenanceTile : robotController.getServer().getAvailableMaintenance()) {
             //if we find one the navigate to it
             return maintenanceTile;
         }
