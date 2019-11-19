@@ -15,6 +15,7 @@ public class EmergencyStop implements Task {
     boolean finished = false;
     LineTraversal lineTraversal;
     ReservationManager reservationManager;
+    private float distanceToBrake,distanceToDrive;
 
 
     public EmergencyStop(RobotController robotController) {
@@ -27,7 +28,7 @@ public class EmergencyStop implements Task {
     public void perform() {
         if(destination==null){
             destination = calcDestination(calcDistance(this.robotController.getRobot()));
-            lineTraversal = new LineTraversal(this.robotController.getRobot(),this.robotController.getRobot().getCurrentPosition(),destination,calcDistance(this.robotController.getRobot()));
+            lineTraversal = new LineTraversal(this.robotController.getRobot(),this.robotController.getRobot().getCurrentPosition(),destination,distanceToDrive);
             //make sure that other robots know that we're about to stop at destination.
             //todo @bau make emergencyStop reserve the tiles it drives
             //make indefinite reservation for the emergency stop tile from current time
@@ -73,25 +74,47 @@ public class EmergencyStop implements Task {
         float deceleration = robot.getDecelerationBinSecond();
         //formula to find stopping dis: v^2 /2a src(https://physics.stackexchange.com/questions/3818/stopping-distance-frictionless)
         //v = curr speed, a = acceleration/deceleration
-        return (float) (Math.pow(currentSpeed,2)/(2*deceleration));
+        distanceToBrake = (float) (Math.pow(currentSpeed,2)/(2*deceleration));
+        return distanceToBrake;
     }
     private GridCoordinate calcDestination(float distanceTravelled){
-        GridCoordinate currentPosition = this.robotController.getRobot().getNextGridCoordinate();
+        GridCoordinate destination;
+        GridCoordinate currentAdjustedPosition = this.robotController.getRobot().getNextGridCoordinate();
         Direction direction = this.robotController.getRobot().getDirection();
 
-        if(this.robotController.getRobot().getCurrentSpeed()==0)
-            return this.robotController.getRobot().getNextGridCoordinate();
+        if(this.robotController.getRobot().getCurrentSpeed()==0){
+            destination = robotController.getRobot().getNextGridCoordinate();
+            switch (direction){
+                case NORTH:
+                    distanceToDrive = destination.getY()-this.robotController.getRobot().getCurrentPosition().getY();
+                    break;
+                case SOUTH:
+                    distanceToDrive = this.robotController.getRobot().getCurrentPosition().getY() - destination.getY();
+                    break;
+                case EAST:
+                    distanceToDrive = destination.getX()-this.robotController.getRobot().getCurrentPosition().getX();
+                    break;
+                case WEST:
+                    distanceToDrive = this.robotController.getRobot().getCurrentPosition().getX()- destination.getX();
+                    break;
+            }
+            return destination;
+        }
 
         int rounded  = (int)Math.ceil(distanceTravelled);
         switch (direction){
             case NORTH:
-                return new GridCoordinate(currentPosition.getX(),currentPosition.getY()+rounded);
+                distanceToDrive = currentAdjustedPosition.getY()+rounded - this.robotController.getRobot().getCurrentPosition().getY();
+                return new GridCoordinate(currentAdjustedPosition.getX(),currentAdjustedPosition.getY()+rounded);
             case SOUTH:
-                return new GridCoordinate(currentPosition.getX(),currentPosition.getY()-rounded);
+                distanceToDrive = currentAdjustedPosition.getY()-rounded - this.robotController.getRobot().getCurrentPosition().getY();
+                return new GridCoordinate(currentAdjustedPosition.getX(),currentAdjustedPosition.getY()-rounded);
             case EAST:
-                return new GridCoordinate(currentPosition.getX()+rounded,currentPosition.getY());
+                distanceToDrive = currentAdjustedPosition.getX()+rounded - this.robotController.getRobot().getCurrentPosition().getX();
+                return new GridCoordinate(currentAdjustedPosition.getX()+rounded,currentAdjustedPosition.getY());
             case WEST:
-                return new GridCoordinate(currentPosition.getX()-rounded,currentPosition.getY());
+                distanceToDrive = currentAdjustedPosition.getX()-rounded - this.robotController.getRobot().getCurrentPosition().getX();
+                return new GridCoordinate(currentAdjustedPosition.getX()-rounded,currentAdjustedPosition.getY());
         }
         return null;
     }
