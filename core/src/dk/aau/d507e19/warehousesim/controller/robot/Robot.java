@@ -234,8 +234,9 @@ public class Robot {
         return binDeliveriesCompleted;
     }
 
-    public void renderPriority(SpriteBatch batch, OrthographicCamera worldCamera) {
-        Vector3 screenPosition = worldCamera.unproject(new Vector3(currentPosition.getX(), currentPosition.getY(), 0));
+    public void renderPriority(SpriteBatch batch, OrthographicCamera worldCamera, OrthographicCamera fontCamera) {
+        Vector3 screenPosition = worldCamera.project(new Vector3(currentPosition.getX(), currentPosition.getY(), 0));
+        screenPosition = fontCamera.unproject(new Vector3(screenPosition.x, -screenPosition.y, screenPosition.z));
         GraphicsManager.getFont().draw(batch, robotController.getTicksSinceOrderAssigned() + "",
                 screenPosition.x, screenPosition.y);
     }

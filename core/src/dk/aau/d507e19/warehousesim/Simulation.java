@@ -318,7 +318,7 @@ public class Simulation {
     private void renderRobotPriority(){
         batch.begin();
         for(Robot robot : robots)
-            robot.renderPriority(batch, gridCamera);
+            robot.renderPriority(batch, gridCamera, fontCamera);
         batch.end();
     }
 
