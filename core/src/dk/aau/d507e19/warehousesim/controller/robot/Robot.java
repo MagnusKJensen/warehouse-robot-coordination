@@ -187,7 +187,7 @@ public class Robot {
 
     /**
      * Gets the Grid Coordinate we're currently moving towards(if moving at all)
-     * For instance, if current pos is (1.2 , 2) this function will return (2,2)
+     * For instance, if current pos is (1.2 , 2) this function will return (2,2) or (1,2) depending on current direction
      * Uses the current direction of the robot to achieve this
      */
 
