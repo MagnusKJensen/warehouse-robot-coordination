@@ -12,7 +12,7 @@ public class Battery extends Sensor  {
     final private double chargeThreshold = 20.1;
     final private double drainPerSecond = 100.0/72000.0; //run out after 20hrs of usage
     final private double drainPerTick = drainPerSecond/SimulationApp.TICKS_PER_SECOND;
-    final private int drainFactor = 200;
+    final private int drainFactor = 100;
     private boolean createdTask = false;
     private boolean batteryDry = false;
 
