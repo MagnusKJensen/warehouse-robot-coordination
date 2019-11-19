@@ -146,7 +146,7 @@ public class CHPathfinder implements PartialPathFinder {
         // If the best partial path consists only of the initial node,
         // the robot must be blocked by at least one neighbouring robot
         if (initialNode.equals(bestNodeSoFar))
-            return Path.oneStepPath(new Step(bestNodeSoFar.getGridCoordinate()));
+            return Path.oneStepPath(new Step(initialNode.getGridCoordinate()));
 
         return bestNodeSoFar.getPath();
     }

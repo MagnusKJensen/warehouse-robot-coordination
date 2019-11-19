@@ -60,7 +60,7 @@ public class ChainMover {
                 if (visitedRobots.contains(blockingRobot.getRobotController()))
                     continue;
 
-                // If this robot is not interruptable added it to the visited list and continue
+                // If this robot is not interruptible added it to the visited list and continue
                 if (!blockingRobot.getRobotController().canInterrupt(askingRobot)) {
                     visitedRobots.add(blockingRobot.getRobotController());
                     continue;
@@ -70,7 +70,6 @@ public class ChainMover {
                 addedNeighbours++;
                 leaf.addChild(new RobotControllerNode(blockingRobot.getRobotController(), leaf));
                 visitedRobots.add(blockingRobot.getRobotController());
-
             }
         }
 

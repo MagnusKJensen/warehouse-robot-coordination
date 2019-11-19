@@ -315,9 +315,17 @@ public class Simulation {
         batch.end();
     }
 
+    private void renderRobotPriority(){
+        batch.begin();
+        for(Robot robot : robots)
+            robot.renderPriority(batch, gridCamera);
+        batch.end();
+    }
+
     private void renderTickCountAndRealTime(OrthographicCamera gridCamera, OrthographicCamera fontCamera){
         Vector3 textPos = new Vector3(15 ,15 , 0);
         batch.setProjectionMatrix(fontCamera.combined);
+        renderRobotPriority();
         batch.begin();
         font.setColor(Color.WHITE);
 

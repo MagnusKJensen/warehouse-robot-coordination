@@ -15,7 +15,6 @@ import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 
 public class Server {
     private Simulation simulation;
@@ -167,7 +166,16 @@ public class Server {
     }
 
 
-    public int getPriority(Robot robot) {
-        return 100 - robot.getRobotID(); // todo Very important - Cycle priority between robots
+    public Robot getHighestPriority(Robot r1, Robot r2) {
+        if(r1.getRobotController().hasOrderAssigned()){
+            if(!r2.getRobotController().hasOrderAssigned())
+                return r1;
+
+            if(r1.getRobotController().getTicksSinceOrderAssigned() >= r2.getRobotController().getTicksSinceOrderAssigned())
+                return r1;
+            else
+                return r2;
+        }
+        return r1;
     }
 }

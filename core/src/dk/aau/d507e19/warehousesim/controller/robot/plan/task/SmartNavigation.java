@@ -9,7 +9,6 @@ import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.ChainMover;
 import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
-import dk.aau.d507e19.warehousesim.exception.NextStepBlockedException;
 import dk.aau.d507e19.warehousesim.exception.NoPathFoundException;
 
 import java.util.ArrayList;
@@ -19,22 +18,35 @@ public class SmartNavigation extends Navigation {
     private PartialPathFinder partialPathFinder;
     private OneStepWaitingPathFinder oneStepPathFinder;
 
-    public SmartNavigation(RobotController robotController, GridCoordinate destination) {
-        super(robotController, destination);
+    public SmartNavigation(RobotController robotController, GridCoordinate destination, int maxRetries) {
+        super(robotController, destination, maxRetries);
         if (!(robotController.getPathFinder() instanceof PartialPathFinder))
             throw new IllegalArgumentException("Robot must have a partial pathfinder to use the SmartNavigation task");
         this.partialPathFinder = (PartialPathFinder) robotController.getPathFinder();
         this.oneStepPathFinder = new OneStepWaitingPathFinder(robotController.getRobot(), robotController.getServer());
     }
 
+    public SmartNavigation(RobotController robotController, GridCoordinate destination){
+        this(robotController, destination, UNLIMITED_RETRIES);
+    }
+
     @Override
     boolean planPath() {
+        ReservationManager reservationManager = robotController.getServer().getReservationManager();
         GridCoordinate start = robot.getGridCoordinate();
         Path newPath;
 
         newPath = partialPathFinder.calculatePath(start, destination);
         // Check to see if any of the neighbours (in the direction of the destination) are blocking the robot
-        if (newPath.isOneStepPath()){
+        if (newPath.isOneStepPath() && !start.equals(destination)){
+
+            // If not adjacent to the destination and the destination is reserved indefinitely
+            if(!destination.isNeighbourOf(robotController.getRobot().getGridCoordinate())
+                    && reservationManager.isReservedIndefinitely(destination)){
+                Robot occupyingRobot = reservationManager.getIndefiniteReservationsAt(destination).getRobot();
+                occupyingRobot.getRobotController().requestMove();
+            }
+
             ReservationManager resManager = robotController.getServer().getReservationManager();
             ArrayList<Direction> directionsTowardDestination = GridCoordinate.getDirectionsOf(start, destination);
 

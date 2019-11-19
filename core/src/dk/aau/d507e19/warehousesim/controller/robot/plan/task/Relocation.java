@@ -41,7 +41,6 @@ public class Relocation implements Task {
             }
 
             navigation = Navigation.getInstance(robotController, destination, 3);
-
         }
 
         navigation.perform();

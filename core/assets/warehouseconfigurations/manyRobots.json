@@ -11,7 +11,7 @@
   "productsPerBin": 15,
   "SKUsPerBin": 15,
   "SKUs": 50,
-  "productsInStock": 1052,
+  "productsInStock": 1000,
   "skuDistribution": [
     [
       100,
@@ -29,7 +29,7 @@
   "collisionDetectedEnabled": true,
   "robotPlacementPattern": {
     "patternType": "SPIRAL",
-    "padding": 2,
+    "padding": 0,
     "bounds": {
       "startX": 0,
       "startY": 0,

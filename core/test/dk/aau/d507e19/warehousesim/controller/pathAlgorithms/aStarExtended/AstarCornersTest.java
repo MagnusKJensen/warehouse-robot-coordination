@@ -25,7 +25,7 @@ public class AstarCornersTest {
     Robot robot = Mockito.mock(Robot.class);
 
     @Before
-    public void initiate(){
+    public void initiate() {
         RunConfigurator.setDefaultRunConfiguration();
         when(server.getGridWidth()).thenReturn(Simulation.getWarehouseSpecs().wareHouseWidth);
         when(server.getGridHeight()).thenReturn(Simulation.getWarehouseSpecs().wareHouseHeight);
@@ -44,11 +44,8 @@ public class AstarCornersTest {
         astarCorners.addStartTileToClosedList();
 
         // Try catch when calculating path, should not throw
-        try {
-            astarCorners.calculatePath2();
-        } catch (NoPathFoundException e) {
-            e.printStackTrace();
-        }
+        astarCorners.calculatePath2();
+
 
         AStarTile neighbor = astarCorners.grid[5][6];
 
