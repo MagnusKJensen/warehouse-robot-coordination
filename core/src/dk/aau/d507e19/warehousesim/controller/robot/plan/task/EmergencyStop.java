@@ -26,6 +26,11 @@ public class EmergencyStop implements Task {
 
     @Override
     public void perform() {
+        if(!robotController.isMoving()){
+            complete();
+            return;
+        }
+
         if(destination==null){
             destination = calcDestination(calcDistance(this.robotController.getRobot()));
             lineTraversal = new LineTraversal(this.robotController.getRobot(),this.robotController.getRobot().getCurrentPosition(),destination,distanceToDrive);

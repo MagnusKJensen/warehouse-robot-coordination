@@ -22,7 +22,7 @@ public class Robot {
     private Simulation simulation;
     private Position currentPosition;
     private Status currentStatus;
-    private float currentSpeed;
+    private float currentSpeed = 0f;
     private Bin bin = null;
     private int robotID;
     private RobotController robotController;

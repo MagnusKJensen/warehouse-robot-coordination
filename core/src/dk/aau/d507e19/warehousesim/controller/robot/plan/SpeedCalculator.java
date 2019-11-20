@@ -50,6 +50,9 @@ public class SpeedCalculator {
         calculateConstants();
     }
     public SpeedCalculator(Robot robot, Position start, GridCoordinate end, float length){
+        if(start.isSameAs(end))
+            throw new RuntimeException("Start must be different from end");
+
         this.robot = robot;
         this.start = start;
         this.length = length;
@@ -76,7 +79,7 @@ public class SpeedCalculator {
     }
 
     private float calculateAchievableSpeed() {
-        float ToUOverA = 2*initialSpeed/2;
+        float ToUOverA = 2*initialSpeed/robot.getAccelerationBinSecond();
         float etOverA = 1/robot.getAccelerationBinSecond();
         float etOverD = 1/robot.getDecelerationBinSecond();
         float uIAndenOverA = (float) Math.pow(initialSpeed,2)/robot.getAccelerationBinSecond();
@@ -126,9 +129,7 @@ public class SpeedCalculator {
         } else if (phase == Phase.MAX_SPEED_PHASE) {
             return robot.getMaxSpeedBinsPerSecond();
         } else if (phase == Phase.DECELERATION_PHASE) {
-            float timeSpentDecelerating = timeInSeconds - accelerationDuration - maxSpeedDuration;
-            if(achievableSpeed - (robot.getDecelerationBinSecond() * timeSpentDecelerating) < 0)
-                return 0;
+            float timeSpentDecelerating = timeInSeconds - pauseDuration - accelerationDuration - maxSpeedDuration;
             return achievableSpeed - (robot.getDecelerationBinSecond() * timeSpentDecelerating);
         } else { // Phase == Finished or Phase == Pausing
             return 0;

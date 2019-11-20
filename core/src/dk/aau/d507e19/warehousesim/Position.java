@@ -30,7 +30,7 @@ public class    Position {
     }
 
     public boolean isSameAs(GridCoordinate gridCoordinate) {
-        final float delta = 0.01f;
+        final float delta = 0.0001f;
         return (Math.abs(gridCoordinate.getX() - x) < delta
                 && Math.abs(gridCoordinate.getY() - y) < delta);
     }

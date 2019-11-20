@@ -243,4 +243,9 @@ public class RobotController {
 
         return true;
     }
+
+    public boolean isMoving() {
+        float maxDelta = 0.00001f;
+        return !(robot.getCurrentSpeed() < maxDelta && robot.getCurrentSpeed() > -maxDelta);
+    }
 }
