@@ -8,9 +8,9 @@
     "endY": 9
   },
   "binSizeInMeters": 1,
-  "productsPerBin": 15,
+  "productsPerBin": 25,
   "SKUsPerBin": 15,
-  "SKUs": 50,
+  "SKUs": 40,
   "productsInStock": 1000,
   "skuDistribution": [
     [
