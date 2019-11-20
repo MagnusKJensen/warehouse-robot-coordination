@@ -76,7 +76,15 @@ public class SpeedCalculator {
     }
 
     private float calculateAchievableSpeed() {
-        float achievableSpeed =
+        float ToUOverA = 2*initialSpeed/2;
+        float etOverA = 1/robot.getAccelerationBinSecond();
+        float etOverD = 1/robot.getDecelerationBinSecond();
+        float uIAndenOverA = (float) Math.pow(initialSpeed,2)/robot.getAccelerationBinSecond();
+
+        float achievableSpeed = (float) ((ToUOverA) + Math.sqrt(-Math.pow(ToUOverA,2) - 4 *(etOverA+etOverD)*(uIAndenOverA-2*length))/
+                (2*(etOverA + etOverD)));
+
+        float achievableSpeed1 =
                 (float) Math.sqrt((2 * robot.getAccelerationBinSecond() * robot.getDecelerationBinSecond() * length)
                         / (robot.getAccelerationBinSecond() + robot.getDecelerationBinSecond()));
         if (achievableSpeed>= robot.getMaxSpeedBinsPerSecond()) {
