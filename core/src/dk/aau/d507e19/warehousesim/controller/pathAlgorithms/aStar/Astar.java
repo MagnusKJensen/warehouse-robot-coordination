@@ -276,6 +276,7 @@ public class Astar implements PartialPathFinder {
                 !reservationManager.canReserve(lastReservation.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(lastReservation.getTimeFrame().getStart()))) {
 
             // Calculate the start tiles values.
+
             startTile.calculateH(xEndPosition, yEndPosition);
             startTile.calculateG(currentTile.getG());
             startTile.calculateF();
