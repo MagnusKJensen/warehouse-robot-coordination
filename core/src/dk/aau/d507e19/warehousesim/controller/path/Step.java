@@ -43,9 +43,9 @@ public class Step {
         if(previousStep == null) return true;
 
         if(this.stepType == StepType.WAITING_STEP){
-            boolean isPreviousStepMovementStep = previousStep.stepType == StepType.MOVEMENT_STEP;
+            //boolean isPreviousStepMovementStep = previousStep.stepType == StepType.MOVEMENT_STEP;
             boolean hasSameCoords = this.gridCoordinate.equals(previousStep.gridCoordinate);
-            return isPreviousStepMovementStep && hasSameCoords;
+            return hasSameCoords;
         }else{
             return this.gridCoordinate.isNeighbourOf(previousStep.gridCoordinate);
         }

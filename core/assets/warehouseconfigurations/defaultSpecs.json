@@ -11,7 +11,7 @@
   "productsPerBin": 15,
   "SKUsPerBin": 9,
   "SKUs": 20,
-  "productsInStock": 2000,
+  "productsInStock": 767,
   "skuDistribution": [
     [
       20.5,
@@ -27,7 +27,7 @@
     ]
   ],
   "isRandomProductDistribution": true,
-  "numberOfRobots": 15,
+  "numberOfRobots": 20,
   "robotTopSpeed": 3.0,
   "robotAcceleration": 0.8,
   "robotDeceleration": 2.0,
@@ -180,7 +180,7 @@
       0
     ]
   ],
-  "secondsBetweenOrders": 9,
+  "secondsBetweenOrders": 5,
   "orderGoal": 50,
   "productsPerOrder": 4
 }

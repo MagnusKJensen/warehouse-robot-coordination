@@ -55,8 +55,8 @@ public class Pattern {
         ArrayList<GridCoordinate> gridCoordinates = new ArrayList<>();
 
         int stepsToSkip = 0;
-        for (int y = bounds.startY; y < bounds.endY; y+= (padding + 1)) {
-            for (int x = bounds.startX; x < bounds.endX; x++) {
+        for (int y = bounds.startY; y <= bounds.endY; y+= (padding + 1)) {
+            for (int x = bounds.startX; x <= bounds.endX; x++) {
                 if(stepsToSkip == 0){
                     points--;
                     stepsToSkip = padding; // Reset steps to skip

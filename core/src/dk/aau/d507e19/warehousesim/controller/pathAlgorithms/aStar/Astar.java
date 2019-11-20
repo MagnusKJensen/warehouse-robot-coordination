@@ -1,6 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar;
 
 import dk.aau.d507e19.warehousesim.controller.path.Step;
+import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PartialPathFinder;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
@@ -14,7 +15,7 @@ import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Astar implements PathFinder {
+public class Astar implements PartialPathFinder {
 
     public AStarTile[][] grid;
     public int xEndPosition;

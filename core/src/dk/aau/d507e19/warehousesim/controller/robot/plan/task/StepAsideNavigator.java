@@ -53,9 +53,15 @@ public class StepAsideNavigator extends Navigation{
         server.getReservationManager().removeReservationsBy(robot);
         newPath = stopAtCollision(newPath);
         setNewPath(newPath);
-        reservePath(newPath, true);
 
-        return false;
+        if(newPath.getFullPath().size() == 1){
+            reserveCurrentTileIndefinitely();
+            return true;
+        }else{
+            reservePath(newPath, true);
+        }
+
+        return true;
     }
 
     private Path stopAtCollision(Path newPath) {
@@ -131,28 +137,6 @@ public class StepAsideNavigator extends Navigation{
         return shortenedPath;
     }
 
-    private void reservePath(Path path, boolean reserveLastTileIndefinitely) {
-        Server server = robotController.getServer();
-
-        if(path.getFullPath().size() == 1){
-            reserveCurrentTileIndefinitely();
-            return;
-        }
-
-        ArrayList<Reservation> reservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
-
-        if (reserveLastTileIndefinitely) { // Replace last reservation with an indefinite one
-            Reservation lastReservation = reservations.get(reservations.size() - 1);
-            TimeFrame indefiniteTimeFrame = TimeFrame.indefiniteTimeFrameFrom(lastReservation.getTimeFrame().getStart());
-            Reservation indefiniteReservation = new Reservation
-                    (lastReservation.getRobot(), lastReservation.getGridCoordinate(), indefiniteTimeFrame);
-            reservations.remove(reservations.size() - 1);
-            reservations.add(indefiniteReservation);
-        }
-
-        server.getReservationManager().reserve(reservations);
-    }
-
     private void reserveCurrentTileIndefinitely() {
         Server server = robotController.getServer();
         ReservationManager reservationManager = server.getReservationManager();
@@ -166,7 +150,7 @@ public class StepAsideNavigator extends Navigation{
     }
 
     @Override
-    boolean canInterrupt() {
+    public boolean canInterrupt() {
         return !isMoving();
     }
 

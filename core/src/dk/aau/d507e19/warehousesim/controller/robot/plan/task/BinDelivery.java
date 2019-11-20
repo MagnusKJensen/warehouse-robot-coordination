@@ -32,6 +32,7 @@ public class BinDelivery implements Task {
     public void setRobot(Robot robot) {
         this.robotController = robot.getRobotController();
         this.robot = robot;
+        planTasks();
     }
 
     @Override
@@ -39,7 +40,15 @@ public class BinDelivery implements Task {
         if (!subTasks.isEmpty()) {
            return subTasks.get(0).interrupt();
         }
-        return false;
+        return true;
+    }
+
+    @Override
+    public boolean canInterrupt() {
+        if (!subTasks.isEmpty()) {
+            return subTasks.get(0).canInterrupt();
+        }
+        return true;
     }
 
     private void planTasks() {
@@ -100,5 +109,29 @@ public class BinDelivery implements Task {
 
     public Order getOrder() {
         return order;
+    }
+
+    @Override
+    public String toString() {
+        return "BinDelivery{" +
+                "order=" + order +
+                ", robotController=" + robotController +
+                ", robot=" + robot +
+                ", binCoords=" + binCoords +
+                ", productsToPick=" + productsToPick +
+                ", distanceForDelivery=" + distanceForDelivery +
+                ", subTasks=" + subTasks +
+                ", completed=" + completed +
+                ", isPlanned=" + isPlanned +
+                '}';
+    }
+
+    public String toStringPretty(){
+        return "BinDelivery{" +
+                "productsToPick=" + binCoords + ", productsToPick=" + productsToPick + "}";
+    }
+
+    public ArrayList<Product> getProductsToPick() {
+        return productsToPick;
     }
 }

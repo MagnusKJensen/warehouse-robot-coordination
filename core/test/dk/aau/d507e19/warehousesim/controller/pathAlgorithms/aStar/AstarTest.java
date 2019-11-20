@@ -20,8 +20,6 @@ import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 
-
-
 import java.sql.Time;
 import java.util.ArrayList;
 
@@ -36,7 +34,7 @@ public class AstarTest {
     ReservationManager reservationManager = Mockito.mock(ReservationManager.class);
 
     @Before
-    public void initiate(){
+    public void initiate() {
         RunConfigurator.setDefaultRunConfiguration();
         when(server.getGridWidth()).thenReturn(Simulation.getWarehouseSpecs().wareHouseWidth);
         when(server.getGridHeight()).thenReturn(Simulation.getWarehouseSpecs().wareHouseHeight);
@@ -77,7 +75,7 @@ public class AstarTest {
         assertTrue(astar.grid[astar.xStart][astar.yStart].isBlocked());
 
         // Asserts that the top tile is now the current tile.
-        assertEquals(astar.currentTile, astar.closedList.get(astar.closedList.size()-1));
+        assertEquals(astar.currentTile, astar.closedList.get(astar.closedList.size() - 1));
 
 
     }
@@ -85,17 +83,17 @@ public class AstarTest {
     @Test
     public void checkNeighborValidity() {
 
-        astar.currentTile = new AStarTile(4,8);
+        astar.currentTile = new AStarTile(4, 8);
 
         astar.checkNeighborValidity();
 
         // Asserts that the size of the list matches the amount of neighbors
         assertEquals(4, astar.openList.size());
 
-        AStarTile upNeighbor = new AStarTile(4,9);
-        AStarTile downNeighbor = new AStarTile(4,7);
-        AStarTile leftNeighbor = new AStarTile(3,8);
-        AStarTile rightNeighbor = new AStarTile(5,8);
+        AStarTile upNeighbor = new AStarTile(4, 9);
+        AStarTile downNeighbor = new AStarTile(4, 7);
+        AStarTile leftNeighbor = new AStarTile(3, 8);
+        AStarTile rightNeighbor = new AStarTile(5, 8);
 
         // Asserts that all the right neighbors are in the list
         assertTrue(astar.openList.contains(upNeighbor));
@@ -106,13 +104,13 @@ public class AstarTest {
     }
 
     @Test
-    public void checkNeighborValidityBlocked(){
-        astar.currentTile = new AStarTile(0,8);
+    public void checkNeighborValidityBlocked() {
+        astar.currentTile = new AStarTile(0, 8);
 
-        AStarTile upNeighbor = new AStarTile(0,9);
-        AStarTile downNeighbor = new AStarTile(0,7);
-        AStarTile leftNeighbor = new AStarTile(-1,8);
-        AStarTile rightNeighbor = new AStarTile(1,8);
+        AStarTile upNeighbor = new AStarTile(0, 9);
+        AStarTile downNeighbor = new AStarTile(0, 7);
+        AStarTile leftNeighbor = new AStarTile(-1, 8);
+        AStarTile rightNeighbor = new AStarTile(1, 8);
 
         astar.grid[upNeighbor.getCurrentXPosition()][upNeighbor.getCurrentYPosition()].setBlocked(true);
 
@@ -130,7 +128,7 @@ public class AstarTest {
 
     @Test
     public void addNeighborTileToOpenList() {
-        GridCoordinate neighbor = new GridCoordinate(4,5);
+        GridCoordinate neighbor = new GridCoordinate(4, 5);
         AStarTile asNeighbor;
 
         // Needs these to work
@@ -138,7 +136,7 @@ public class AstarTest {
         astar.yEndPosition = 8;
 
         // To avoid null pointer exception when it sets previous coordinates
-        astar.currentTile = new AStarTile(4,4);
+        astar.currentTile = new AStarTile(4, 4);
 
         astar.addNeighborTileToOpenList(neighbor);
 
@@ -220,11 +218,8 @@ public class AstarTest {
         astar.addStartTileToClosedList();
 
         // Try catch when calculating path, should not throw
-        try {
-            astar.calculatePath2();
-        } catch (NoPathFoundException e) {
-            e.printStackTrace();
-        }
+        astar.calculatePath2();
+
 
         // Creates path from the closed list.
         astar.createPathListFromClosedList();
@@ -237,8 +232,8 @@ public class AstarTest {
         assertEquals(astar.yStart, astar.finalPath.get(0).getY());
 
         // Asserts that it has the same end coordinates
-        assertEquals(astar.xEndPosition, astar.finalPath.get(astar.finalPath.size()-1).getX());
-        assertEquals(astar.yEndPosition, astar.finalPath.get(astar.finalPath.size()-1).getY());
+        assertEquals(astar.xEndPosition, astar.finalPath.get(astar.finalPath.size() - 1).getX());
+        assertEquals(astar.yEndPosition, astar.finalPath.get(astar.finalPath.size() - 1).getY());
     }
 
     @Ignore//Doesnt work b/c TimeFrame is static
@@ -253,11 +248,8 @@ public class AstarTest {
         astar.addStartTileToClosedList();
 
         // Try catch when calculating path, should not throw
-        try {
-            astar.calculatePath2();
-        } catch (NoPathFoundException e) {
-            e.printStackTrace();
-        }
+        astar.calculatePath2();
+
 
         // Creates path from the closed list.
         astar.createPathListFromClosedList();
@@ -269,26 +261,21 @@ public class AstarTest {
         ArrayList<Reservation> listOfReservations = MovementPredictor.calculateReservations(robot, path, server.getTimeInTicks(), 0);
 
 
-        for (Reservation res: listOfReservations) {
-            if (res.equals(listOfReservations.get(listOfReservations.size()-1))){
+        for (Reservation res : listOfReservations) {
+            if (res.equals(listOfReservations.get(listOfReservations.size() - 1))) {
                 when(reservationManager.isReserved(res.getGridCoordinate(), res.getTimeFrame())).thenReturn(true);
             } else {
                 when(reservationManager.isReserved(res.getGridCoordinate(), res.getTimeFrame())).thenReturn(false);
             }
         }
 
-        Reservation lastReservation = listOfReservations.get(listOfReservations.size()-1);
+        Reservation lastReservation = listOfReservations.get(listOfReservations.size() - 1);
         when(reservationManager.hasConflictingReservations(lastReservation)).thenReturn(false);
         when(reservationManager.canReserve(lastReservation.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(lastReservation.getTimeFrame().getStart()))).thenReturn(false);
 
 
-            // Should be reserved
-        try {
-            //assertTrue(astar.isReserved());
-            System.out.println(astar.isReserved());
-        } catch (NoPathFoundException e) {
-            e.printStackTrace();
-        }
+        //assertTrue(astar.isReserved());
+        System.out.println(astar.isReserved());
 
 
     }
@@ -301,13 +288,9 @@ public class AstarTest {
         astar.xEndPosition = 4;
         astar.yEndPosition = 6;
 
-        try{
-            astar.calculatePath();
-        }catch (NoPathFoundException e){
-            e.printStackTrace();
-        }
+        astar.calculatePath();
 
-        for (GridCoordinate gc: astar.finalPath) {
+        for (GridCoordinate gc : astar.finalPath) {
             System.out.println(gc.toString());
         }
 
@@ -316,7 +299,6 @@ public class AstarTest {
 
     @Test
     public void calculatePath2Exception() {
-
         astar.xStart = 0;
         astar.yStart = 1;
         astar.xEndPosition = 4;
@@ -329,13 +311,7 @@ public class AstarTest {
 
         astar.addStartTileToClosedList();
 
-        try {
-            astar.calculatePath2();
-            // Makes it catch the exception correctly
-            fail();
-        } catch (NoPathFoundException e) {
-            e.printStackTrace();
-        }
+        astar.calculatePath2();
     }
 
     @Test
@@ -345,7 +321,7 @@ public class AstarTest {
         astar.closedList.add(astar.grid[3][3]);
         astar.closedList.get(0).setBlocked(true);
         astar.openList.add(astar.grid[4][5]);
-        astar.finalPath.add(new GridCoordinate(2,2));
+        astar.finalPath.add(new GridCoordinate(2, 2));
         astar.currentTile = astar.grid[6][2];
 
         astar.clear();

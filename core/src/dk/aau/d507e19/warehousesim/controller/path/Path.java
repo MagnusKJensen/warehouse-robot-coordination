@@ -10,13 +10,61 @@ public class Path {
     ArrayList<Step> allSteps = new ArrayList<>();
 
     public Path(ArrayList<Step> pathToTarget) {
-        this.strippedSteps = pathToTarget;
-        allSteps.addAll(strippedSteps);
         if(pathToTarget.isEmpty())
             throw new IllegalArgumentException("Path must contain at least one coordinate");
-        if(!isValidPath())
-            throw new IllegalArgumentException("Paths must be continuous");
+        if(!isValidPath(pathToTarget))
+            throw new IllegalArgumentException("Paths must be continuous" + stepsToString(pathToTarget));
+
+        this.strippedSteps = collapseWaitingSteps(pathToTarget);
+
+        allSteps.addAll(strippedSteps);
+
+
+
         strippedSteps = generateStrippedPath(allSteps);
+    }
+
+    private String stepsToString(ArrayList<Step> pathToTarget) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for(Step step : pathToTarget){
+            stringBuilder.append(step.toString());
+        }
+        return stringBuilder.toString();
+    }
+
+    private ArrayList<Step> collapseWaitingSteps(ArrayList<Step> pathToTarget) {
+        ArrayList<Step> collapsedSteps = new ArrayList<>();
+
+        // Remove first step if immediately followed by waiting step
+        if(pathToTarget.size() > 1 && pathToTarget.get(1).isWaitingStep()) {
+            pathToTarget.remove(0);
+        }
+
+        Step previousStep = pathToTarget.get(0);
+        for(int i = 1; i < pathToTarget.size(); i++){
+            Step currentStep = pathToTarget.get(i);
+            if(previousStep.isWaitingStep() && currentStep.isWaitingStep()){
+                previousStep = combineWaitingSteps(previousStep, currentStep);
+                continue;
+            }else{
+                collapsedSteps.add(previousStep);
+            }
+
+            previousStep = currentStep;
+        }
+
+        // Add last step
+        collapsedSteps.add(previousStep);
+
+        return collapsedSteps;
+    }
+
+    private Step combineWaitingSteps(Step previousStep, Step currentStep) {
+        if(!previousStep.getGridCoordinate().equals(currentStep.getGridCoordinate()))
+            throw new IllegalArgumentException("Cannot combine waiting steps because they do not have the same coordinate");
+
+        return new Step(previousStep.getGridCoordinate(), previousStep.getWaitTimeInTicks() +
+                currentStep.getWaitTimeInTicks());
     }
 
 
@@ -61,12 +109,12 @@ public class Path {
         return new Path(steps);
     }
 
-    public boolean isValidPath(){
+    public static boolean isValidPath(ArrayList<Step> steps){
         Step currentStep;
-        Step previousStep = allSteps.get(0);
+        Step previousStep = steps.get(0);
 
-        for (int i = 1; i < allSteps.size(); i++) {
-            currentStep = allSteps.get(i);
+        for (int i = 1; i < steps.size(); i++) {
+            currentStep = steps.get(i);
 
             if(!currentStep.isStepValidContinuationOf(previousStep))
                 return false;
@@ -124,5 +172,9 @@ public class Path {
 
     public Step getLastStep() {
         return allSteps.get(allSteps.size() - 1);
+    }
+
+    public boolean isOneStepPath() {
+        return getFullPath().size() == 1;
     }
 }

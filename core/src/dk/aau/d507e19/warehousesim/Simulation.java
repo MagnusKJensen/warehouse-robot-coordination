@@ -21,6 +21,7 @@ import dk.aau.d507e19.warehousesim.exception.CollisionException;
 import dk.aau.d507e19.warehousesim.goal.Goal;
 import dk.aau.d507e19.warehousesim.goal.OrderGoal;
 import dk.aau.d507e19.warehousesim.input.SimulationInputProcessor;
+import dk.aau.d507e19.warehousesim.statistics.StatisticsAutomator;
 import dk.aau.d507e19.warehousesim.statistics.StatisticsManager;
 import dk.aau.d507e19.warehousesim.storagegrid.*;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
@@ -63,6 +64,7 @@ public class Simulation {
     private SimulationInputProcessor inputProcessor;
 
     private long ordersProcessed = 0;
+    private ProductDistributor productDistributor;
 
     private Goal goal;
 
@@ -86,36 +88,36 @@ public class Simulation {
     // Used for fast no graphics simulations
     public Simulation(long randSeed, String runConfigName, PathFinderEnum pathfinder, TaskAllocatorEnum taskAllocator){
         RANDOM_SEED = randSeed;
-        Simulation.warehouseSpecs = readWarehouseSpecsFromFile(runConfigName);
         Simulation.CURRENT_RUN_CONFIG = runConfigName;
+        Simulation.warehouseSpecs = readWarehouseSpecsFromFile(runConfigName);
         Simulation.pathFinder = pathfinder;
         Simulation.taskAllocator = taskAllocator;
 
         storageGrid = new StorageGrid(Simulation.getWarehouseSpecs().wareHouseWidth, Simulation.getWarehouseSpecs().wareHouseHeight, this);
-        if(Simulation.getWarehouseSpecs().isRandomProductDistribution) ProductDistributor.distributeProductsRandomly(storageGrid);
-        else ProductDistributor.distributeProducts(storageGrid);
+        this.productDistributor = new ProductDistributor(Simulation.getWarehouseSpecs());
+        if(Simulation.getWarehouseSpecs().isRandomProductDistribution) productDistributor.distributeProductsRandomly(storageGrid);
+        else productDistributor.distributeProducts(storageGrid);
 
         server = new Server(this, storageGrid);
-
         goal = new OrderGoal(Simulation.warehouseSpecs.orderGoal, this);
 
         initRobots();
-
         simulationStartTime = new Date(System.currentTimeMillis());
         statisticsManager = new StatisticsManager(this);
     }
 
     public Simulation(long randSeed, String runConfigName, SimulationApp simulationApp, String pathToRunConfig){
         RANDOM_SEED = randSeed;
+
         Simulation.CURRENT_RUN_CONFIG = runConfigName;
+        Simulation.warehouseSpecs = readWarehouseSpecsFromFile(pathToRunConfig);
+        Simulation.pathFinder = simulationApp.getPathFinderSelected();
+        Simulation.taskAllocator = simulationApp.getTaskAllocatorSelected();
+
         this.simulationApp = simulationApp;
         this.gridCamera = simulationApp.getWorldCamera();
         this.fontCamera = simulationApp.getFontCamera();
         this.gridViewport = simulationApp.getWorldViewport();
-
-        Simulation.warehouseSpecs = readWarehouseSpecsFromFile(pathToRunConfig);
-        Simulation.pathFinder = simulationApp.getPathFinderSelected();
-        Simulation.taskAllocator = simulationApp.getTaskAllocatorSelected();
 
         inputProcessor = new SimulationInputProcessor(this);
 
@@ -124,24 +126,23 @@ public class Simulation {
         shapeRenderer = new ShapeRenderer();
 
         storageGrid = new StorageGrid(Simulation.getWarehouseSpecs().wareHouseWidth, Simulation.getWarehouseSpecs().wareHouseHeight, this);
-        if(Simulation.getWarehouseSpecs().isRandomProductDistribution) ProductDistributor.distributeProductsRandomly(storageGrid);
-        else ProductDistributor.distributeProducts(storageGrid);
+        this.productDistributor = new ProductDistributor(Simulation.getWarehouseSpecs());
+        if(Simulation.getWarehouseSpecs().isRandomProductDistribution) productDistributor.distributeProductsRandomly(storageGrid);
+        else productDistributor.distributeProducts(storageGrid);
 
         server = new Server(this, storageGrid);
-
         goal = new OrderGoal(Simulation.warehouseSpecs.orderGoal, this);
 
         initRobots();
 
         simulationStartTime = new Date(System.currentTimeMillis());
-
         statisticsManager = new StatisticsManager(this);
 
         updateRenderedBounds();
     }
 
     private WarehouseSpecs readWarehouseSpecsFromFile(String specFileName) {
-        File runConfigFile = new File(PATH_TO_RUN_CONFIGS + File.separator + specFileName);
+        File runConfigFile = new File(StatisticsAutomator.PATH_TO_RUN_CONFIGS + File.separator + specFileName);
         Gson gson = new Gson();
         try(BufferedReader reader = new BufferedReader(new FileReader(runConfigFile.getPath()))){
             WarehouseSpecs specs = gson.fromJson(reader, WarehouseSpecs.class);
@@ -175,7 +176,6 @@ public class Simulation {
             checkForCollisions();
         }
         updateSideMenuScrollPanes();
-
 
         if(tickStopperGoal == tickCount) simulationApp.pause();
     }
@@ -211,6 +211,11 @@ public class Simulation {
             else prods = tile.getBin().getProducts();
 
             simulationApp.getSideMenu().getBinContentScrollPanes().updateBinContent(prods, tile.getPosX(), tile.getPosY());
+        }
+        if(selectedTile instanceof PickerTile){
+            PickerTile tile = (PickerTile) selectedTile;
+
+            simulationApp.getSideMenu().getBinContentScrollPanes().updatePickerContent(tile.getHoldingProducts(), tile.getPosX(), tile.getPosY());
         }
     }
 
@@ -310,9 +315,17 @@ public class Simulation {
         batch.end();
     }
 
+    private void renderRobotPriority(){
+        batch.begin();
+        for(Robot robot : robots)
+            robot.renderPriority(batch, gridCamera);
+        batch.end();
+    }
+
     private void renderTickCountAndRealTime(OrthographicCamera gridCamera, OrthographicCamera fontCamera){
         Vector3 textPos = new Vector3(15 ,15 , 0);
         batch.setProjectionMatrix(fontCamera.combined);
+        renderRobotPriority();
         batch.begin();
         font.setColor(Color.WHITE);
 
@@ -458,5 +471,9 @@ public class Simulation {
 
     public GridBounds getRenderedBounds() {
         return renderedBounds;
+    }
+
+    public static long getRandomSeed() {
+        return RANDOM_SEED;
     }
 }

@@ -1,13 +1,20 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms;
 
 import dk.aau.d507e19.warehousesim.controller.path.Step;
+import dk.aau.d507e19.warehousesim.controller.robot.Direction;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
+import dk.aau.d507e19.warehousesim.controller.robot.MovementPredictor;
+import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
+import dk.aau.d507e19.warehousesim.controller.server.Reservation;
+import dk.aau.d507e19.warehousesim.exception.NextStepBlockedException;
 
 import java.util.ArrayList;
 import java.util.Optional;
 
 public class DummyPathFinder implements PathFinder {
+
+    private RobotController robotController;
 
     @Override
     public Path calculatePath(GridCoordinate start, GridCoordinate destination) {
@@ -16,9 +23,10 @@ public class DummyPathFinder implements PathFinder {
         pathList.addAll(generateHorizontalLine(start.getX(), destination.getX(), start.getY()));
         pathList.remove(pathList.size() - 1);
         pathList.addAll(generateVerticalLine(start.getY(), destination.getY(), destination.getX()));
-
+        
         return new Path(pathList);
     }
+
 
     @Override
     public boolean accountsForReservations() {
@@ -54,4 +62,10 @@ public class DummyPathFinder implements PathFinder {
 
         return coordinates;
     }
+
+
+
+
+
+
 }
