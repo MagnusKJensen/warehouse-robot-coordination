@@ -84,6 +84,7 @@ public class Simulation {
     private boolean shouldRenderGridAndRobots = true;
 
     private GridBounds renderedBounds;
+    private boolean shouldRenderPriority = false;
 
     // Used for fast no graphics simulations
     public Simulation(long randSeed, String runConfigName, PathFinderEnum pathfinder, TaskAllocatorEnum taskAllocator){
@@ -317,6 +318,8 @@ public class Simulation {
     }
 
     private void renderRobotPriority(){
+        if(!shouldRenderPriority) return;
+
         batch.begin();
         for(Robot robot : robots)
             robot.renderPriority(batch, gridCamera, fontCamera);
@@ -476,5 +479,9 @@ public class Simulation {
 
     public static long getRandomSeed() {
         return RANDOM_SEED;
+    }
+
+    public void toggleRenderPriority() {
+        shouldRenderPriority = !shouldRenderPriority;
     }
 }
