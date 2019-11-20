@@ -288,7 +288,7 @@ public class Astar implements PartialPathFinder {
             AStarTile newEndTile = grid[xEndPosition][yEndPosition];
 
             // If the startTile is better than the new endTile then let the robot stand on its own tile.
-            // Or if the end tiles F value is higher than the Manhattan distance.
+            // Or if the end tiles F value is higher than the Manhattan distance, so that it does not take a detour.
             if (startTile.getF() < newEndTile.getF() || newEndTile.getF() > startTile.getH()){
                 xEndPosition = startTile.getCurrentXPosition();
                 yEndPosition = startTile.getCurrentYPosition();
