@@ -184,7 +184,8 @@ public class Simulation {
         for (Robot robot1 : robots){
             for(Robot robot2 : robots){
                 if(robot1.getRobotID() != robot2.getRobotID()){
-                    if(robot1.collidesWith(robot2.getCurrentPosition())) throw new CollisionException(robot1, robot2, server.getTimeInTicks());
+                    if(robot1.collidesWith(robot2.getCurrentPosition()))
+                        throw new CollisionException(robot1, robot2, server.getTimeInTicks());
                 }
             }
         }
@@ -276,7 +277,7 @@ public class Simulation {
 
     public void renderCtrlSelectedRobotTrees() {
         for(Robot robot : ctrlSelectedRobots){
-            //only do if robot path algo is RRT variant
+            //only do if robot path algorithm is RRT variant
             if(robot.getRobotController().getPathFinder() instanceof RRTPlanner){
                 RRTPlanner planner = (RRTPlanner) robot.getRobotController().getPathFinder();
                 ArrayList<Node<GridCoordinate>> listOfNodes = new ArrayList<>(planner.getPlanner().allNodesMap.values());

@@ -1,7 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
 import dk.aau.d507e19.warehousesim.Simulation;
-import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.*;
@@ -9,10 +8,8 @@ import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.exception.DoubleReservationException;
-import dk.aau.d507e19.warehousesim.statistics.StatisticsManager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -46,8 +43,17 @@ public class RobotController {
 
     public boolean assignTask(Task task){
         tasks.add(task);
+        task.setRobot(this.getRobot());
+
+        if(task instanceof BinDelivery)
+            ((BinDelivery) task).addOnCompleteAction(this::resetTimeSinceAssignment);
+
         updateStatus();
         return true;
+    }
+
+    private void resetTimeSinceAssignment() {
+        this.ticksSinceOrderAssigned = 0;
     }
 
     public boolean assignImmediateTask(Task task){

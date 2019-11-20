@@ -98,7 +98,6 @@ public class OrderManager {
                 Optional<Robot> optimalRobot = taskAllocator.findOptimalRobot(server.getAllRobots(), task);
                 if(optimalRobot.isPresent()){
                     if(optimalRobot.get().getRobotController().assignTask(task)){
-                        task.setRobot(optimalRobot.get());
                         taskIterator.remove();
                     }
                 }

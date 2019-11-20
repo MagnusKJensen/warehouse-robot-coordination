@@ -1,6 +1,9 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
@@ -235,8 +238,10 @@ public class Robot {
     }
 
     public void renderPriority(SpriteBatch batch, OrthographicCamera worldCamera, OrthographicCamera fontCamera) {
-        Vector3 screenPosition = worldCamera.project(new Vector3(currentPosition.getX(), currentPosition.getY(), 0));
-        screenPosition = fontCamera.unproject(new Vector3(screenPosition.x, -screenPosition.y, screenPosition.z));
+        float offset = (robotController.getRobot().getSize()) / 2f;
+        Vector3 screenPosition = worldCamera.project(new Vector3(currentPosition.getX() + offset, currentPosition.getY() + offset, 0));
+        screenPosition = fontCamera.unproject(new Vector3(screenPosition.x, Gdx.graphics.getHeight() - screenPosition.y, screenPosition.z));
+        GraphicsManager.getFont().setColor(Color.WHITE);
         GraphicsManager.getFont().draw(batch, robotController.getTicksSinceOrderAssigned() + "",
                 screenPosition.x, screenPosition.y);
     }
