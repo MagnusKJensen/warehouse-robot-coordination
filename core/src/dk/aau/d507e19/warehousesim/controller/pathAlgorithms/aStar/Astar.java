@@ -11,9 +11,6 @@ import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.ReservationManager;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
-import dk.aau.d507e19.warehousesim.exception.DestinationReservedIndefinitelyException;
-import dk.aau.d507e19.warehousesim.exception.NoPathFoundException;
-import dk.aau.d507e19.warehousesim.exception.NoValidPathException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +30,7 @@ public class Astar implements PartialPathFinder {
     public ArrayList<GridCoordinate> isReservedList = new ArrayList<>();
 
     public AStarTile currentTile;
-    public AStarTile bestTile;
+    public AStarTile startTile;
     public final ReservationManager reservationManager;
     public Server server;
     public Robot robot;
@@ -278,9 +275,11 @@ public class Astar implements PartialPathFinder {
         if (reservationManager.hasConflictingReservations(lastReservation) ||
                 !reservationManager.canReserve(lastReservation.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(lastReservation.getTimeFrame().getStart()))) {
 
-            bestTile.calculateH(xEndPosition, yEndPosition);
-            bestTile.calculateG(currentTile.getG());
-            bestTile.calculateF();
+            // Calculate the start tiles values.
+
+            startTile.calculateH(xEndPosition, yEndPosition);
+            startTile.calculateG(currentTile.getG());
+            startTile.calculateF();
 
             // Make new end positions and calculate again
             xEndPosition = listOfReservations.get(listOfReservations.size()-2).getGridCoordinate().getX();
@@ -288,9 +287,10 @@ public class Astar implements PartialPathFinder {
 
             AStarTile newEndTile = grid[xEndPosition][yEndPosition];
 
-            if (bestTile.getF() < newEndTile.getF()){
-                xEndPosition = bestTile.getCurrentXPosition();
-                yEndPosition = bestTile.getCurrentYPosition();
+            // If the startTile is better than the new endTile then let the robot stand on its own tile.
+            if (startTile.getF() < newEndTile.getF()){
+                xEndPosition = startTile.getCurrentXPosition();
+                yEndPosition = startTile.getCurrentYPosition();
             }
 
             i = true;
@@ -327,7 +327,7 @@ public class Astar implements PartialPathFinder {
         xStart = start.getX();
         yStart = start.getY();
 
-        bestTile = grid[xStart][yStart];
+        startTile = grid[xStart][yStart];
 
         // Calculates the optimal A* path
         calculatePath();
