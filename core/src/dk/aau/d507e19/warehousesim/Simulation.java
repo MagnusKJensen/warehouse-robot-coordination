@@ -179,11 +179,12 @@ public class Simulation {
     }
 
     private void checkForCollisions() {
-        for (Robot robot1 : robots){
-            for(Robot robot2 : robots){
-                if(robot1.getRobotID() != robot2.getRobotID()){
-                    if(robot1.collidesWith(robot2.getCurrentPosition())) throw new CollisionException(robot1, robot2, server.getTimeInTicks());
-                }
+        for(int i = 0; i < robots.size(); i++){
+            Robot robot1 = robots.get(i);
+            for(int j = i + 1; j < robots.size(); j++){
+                Robot robot2 = robots.get(j);
+                if(robot1.collidesWith(robot2))
+                    throw new CollisionException(robot1, robot2, server.getTimeInTicks());
             }
         }
     }

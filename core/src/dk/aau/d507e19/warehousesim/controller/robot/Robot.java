@@ -168,6 +168,17 @@ public class Robot {
         return withInXBounds && withInYBounds;
     }
 
+    public boolean collidesWith(Robot robot) {
+        float collidingX = robot.getCurrentPosition().getX();
+        float collidingY = robot.getCurrentPosition().getY();
+
+        boolean withInXBounds = this.getCurrentPosition().getX() - ROBOT_SIZE < collidingX
+                && this.getCurrentPosition().getX() + ROBOT_SIZE > collidingX;
+        boolean withInYBounds = this.getCurrentPosition().getY() - ROBOT_SIZE < collidingY
+                && this.getCurrentPosition().getY() + ROBOT_SIZE > collidingY;
+        return withInXBounds && withInYBounds;
+    }
+
     public int getRobotID() {
         return robotID;
     }
