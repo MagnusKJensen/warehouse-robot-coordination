@@ -76,6 +76,8 @@ public class RobotController {
         Task currentTask = tasks.peekFirst();
         currentTask.perform();
 
+        if(robot.getRobotID() == 18) System.out.println(robot.getCurrentSpeed());
+
         if(currentTask.hasFailed() && currentTask instanceof BinDelivery)
             throw new RuntimeException("Bin delivery failed");
 
@@ -253,6 +255,7 @@ public class RobotController {
     public boolean requestEmergencyStop() {
         if(robot.getCurrentStatus() == Status.EMERGENCY || robot.getCurrentStatus() == Status.MAINTENANCE)
             return false;
+        tasks.clear(); // todo TEMP
         assignImmediateTask(new EmergencyStop(this));
         return true;
     }

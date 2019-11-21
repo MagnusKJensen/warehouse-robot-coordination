@@ -104,6 +104,10 @@ public class OrderManager {
         }
     }
 
+    public void reAddTask(Task task){
+        tasksQueue.add(0, task);
+    }
+
     private ArrayList<BinDelivery> divideOrderIntoDeliveries(Order order) {
         ArrayList<BinDelivery> deliveries = new ArrayList<>();
         ArrayList<Product> productsToPick = order.getAllProductsInOrder();

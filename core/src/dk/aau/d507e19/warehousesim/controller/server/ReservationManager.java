@@ -191,6 +191,15 @@ public class ReservationManager {
         return reservedBinTiles;
     }
 
+    public ArrayList<Reservation> getConflictingReservations(ArrayList<Reservation> reservations) {
+        ArrayList<Reservation> conflictingReservations = new ArrayList<>();
+
+        for(Reservation res : reservations)
+            conflictingReservations.addAll(getConflictingReservations(res));
+
+        return conflictingReservations;
+    }
+
     public ArrayList<Reservation> getConflictingReservations(Reservation newReservation) {
         int x = newReservation.getGridCoordinate().getX();
         int y = newReservation.getGridCoordinate().getY();

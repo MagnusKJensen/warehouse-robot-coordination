@@ -56,16 +56,16 @@ public class EmergencyStop implements Task {
         Reservation lastTileReservation = ReservationNavigation.createLastTileIndefiniteReservation(reservations);
         reservations.add(lastTileReservation);
 
-        if(reservationManager.hasConflictingReservations(lastTileReservation)){
+        if(reservationManager.hasConflictingReservations(reservations)){
             //force all the other robots to replan their routes
-            forceReplan(lastTileReservation,reservationManager.getConflictingReservations(lastTileReservation));
+            forceReplan(reservationManager.getConflictingReservations(reservations));
             reservationManager.reserve(lastTileReservation);
         }else{
             reservationManager.reserve(lastTileReservation);
         }
     }
 
-    private void forceReplan(Reservation reservation, ArrayList<Reservation> conflictingReservations) {
+    private void forceReplan(ArrayList<Reservation> conflictingReservations) {
         for(Reservation r : conflictingReservations){
             r.getRobot().getRobotController().requestEmergencyStop();
         }
@@ -94,7 +94,7 @@ public class EmergencyStop implements Task {
         GridCoordinate currentAdjustedPosition = this.robotController.getRobot().getNextGridCoordinate();
         Direction direction = this.robotController.getRobot().getDirection();
 
-        if(this.robotController.getRobot().getCurrentSpeed()==0){
+        if(distanceTravelled <= currentAdjustedPosition.distanceFrom(robotController.getRobot().getCurrentPosition())){
             destination = robotController.getRobot().getNextGridCoordinate();
             switch (direction){
                 case NORTH:

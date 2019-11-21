@@ -291,7 +291,7 @@ public class SpeedCalculator {
             case NORTH:
                 return gridCoordinate.getY() <= destination.getY() && gridCoordinate.getY() >= start.getY();
             case WEST:
-                return gridCoordinate.getX() >= destination.getY() && gridCoordinate.getY() <= start.getX();
+                return gridCoordinate.getX() >= destination.getX() && gridCoordinate.getX() <= start.getX();
             case SOUTH:
                 return gridCoordinate.getY() >= destination.getY() && gridCoordinate.getY() <= start.getY();
             case EAST:
