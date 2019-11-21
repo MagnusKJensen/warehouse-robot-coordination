@@ -53,13 +53,15 @@ public class EmergencyStop implements Task {
         robotController.getServer().getReservationManager().reserve(reservations);
 
         //make indefinite reservation for the emergency stop tile from current time
-        Reservation reservation = new Reservation(this.robotController.getRobot(),destination, TimeFrame.indefiniteTimeFrameFrom(this.robotController.getServer().getTimeInTicks()));
-        if(reservationManager.hasConflictingReservations(reservation)){
+        Reservation lastTileReservation = ReservationNavigation.createLastTileIndefiniteReservation(reservations);
+        reservations.add(lastTileReservation);
+
+        if(reservationManager.hasConflictingReservations(lastTileReservation)){
             //force all the other robots to replan their routes
-            forceReplan(reservation,reservationManager.getConflictingReservations(reservation));
-            reservationManager.reserve(reservation);
+            forceReplan(lastTileReservation,reservationManager.getConflictingReservations(lastTileReservation));
+            reservationManager.reserve(lastTileReservation);
         }else{
-            reservationManager.reserve(reservation);
+            reservationManager.reserve(lastTileReservation);
         }
     }
 
