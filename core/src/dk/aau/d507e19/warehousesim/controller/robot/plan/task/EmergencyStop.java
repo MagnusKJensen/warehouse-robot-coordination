@@ -1,6 +1,5 @@
 package dk.aau.d507e19.warehousesim.controller.robot.plan.task;
 
-import dk.aau.d507e19.warehousesim.controller.path.Line;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.LineTraversal;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
@@ -23,7 +22,6 @@ public class EmergencyStop implements Task {
         this.reservationManager = this.robotController.getServer().getReservationManager();
     }
 
-
     @Override
     public void perform() {
         if(!robotController.isMoving()){
@@ -32,20 +30,15 @@ public class EmergencyStop implements Task {
         }
 
         if(destination==null){
-            destination = calcDestination(calcDistance(this.robotController.getRobot()));
+            reservationManager.removeReservationsBy(robotController.getRobot());
+
+            destination = calcDestination(getMinimumBreakDistance(this.robotController.getRobot()));
             lineTraversal = new LineTraversal(this.robotController.getRobot(),this.robotController.getRobot().getCurrentPosition(),destination,distanceToDrive);
             //make sure that other robots know that we're about to stop at destination.
             //todo @bau make emergencyStop reserve the tiles it drives
-            //make indefinite reservation for the emergency stop tile from current time
-            Reservation reservation = new Reservation(this.robotController.getRobot(),destination,TimeFrame.indefiniteTimeFrameFrom(this.robotController.getServer().getTimeInTicks()));
-            if(reservationManager.hasConflictingReservations(reservation)){
-                //force all the other robots to replan their routes
-                forceReplan(reservation,reservationManager.getConflictingReservations(reservation));
-                reservationManager.reserve(reservation);
-            }else{
-                reservationManager.reserve(reservation);
-            }
 
+
+            reserveEmergencyStopPath();
         }
         if(!lineTraversal.isCompleted()){
             lineTraversal.perform();
@@ -54,16 +47,29 @@ public class EmergencyStop implements Task {
         }
     }
 
-    private void forceReplan(Reservation reservation, ArrayList<Reservation> conflictingReservations) {
-        for(Reservation r : conflictingReservations){
-            //remove all of this robots reservations
-            reservationManager.removeReservationsBy(r.getRobot());
-            //make robot stop immediately todo @bau, make a new task that stops at a free location instead of just emergency stopping
-            r.getRobot().getRobotController().assignImmediateTask(new EmergencyStop(r.getRobot().getRobotController()));
+    private void reserveEmergencyStopPath() {
+        ArrayList<Reservation> reservations
+                = MovementPredictor.calculateReservations(robotController.getRobot(), lineTraversal.getSpeedCalculator(), robotController.getServer().getTimeInTicks());
+        robotController.getServer().getReservationManager().reserve(reservations);
+
+        //make indefinite reservation for the emergency stop tile from current time
+        Reservation reservation = new Reservation(this.robotController.getRobot(),destination, TimeFrame.indefiniteTimeFrameFrom(this.robotController.getServer().getTimeInTicks()));
+        if(reservationManager.hasConflictingReservations(reservation)){
+            //force all the other robots to replan their routes
+            forceReplan(reservation,reservationManager.getConflictingReservations(reservation));
+            reservationManager.reserve(reservation);
+        }else{
+            reservationManager.reserve(reservation);
         }
     }
 
-    private float calcDistance(Robot robot){
+    private void forceReplan(Reservation reservation, ArrayList<Reservation> conflictingReservations) {
+        for(Reservation r : conflictingReservations){
+            r.getRobot().getRobotController().requestEmergencyStop();
+        }
+    }
+
+    private float getMinimumBreakDistance(Robot robot){
         float currentSpeed = robot.getCurrentSpeed();
         //if currentSpeed is 0 we might still have to move??
         if(currentSpeed == 0){
@@ -78,6 +84,7 @@ public class EmergencyStop implements Task {
         //formula to find stopping dis: v^2 /2a src(https://physics.stackexchange.com/questions/3818/stopping-distance-frictionless)
         //v = curr speed, a = acceleration/deceleration
         distanceToBrake = (float) (Math.pow(currentSpeed,2)/(2*deceleration));
+        if(robot.getRobotID() == 18) System.out.println(distanceToBrake + ", " + robot.getCurrentPosition());
         return distanceToBrake;
     }
     private GridCoordinate calcDestination(float distanceTravelled){

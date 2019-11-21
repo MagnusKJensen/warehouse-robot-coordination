@@ -42,7 +42,7 @@ public class Robot {
 
     private final float breakingDistanceMaxSpeedBins = decelerationBinSecond / maxSpeedBinsPerSecond;
 
-    private final float ROBOT_SIZE = Tile.TILE_SIZE;
+    public static final float ROBOT_SIZE = Tile.TILE_SIZE;
 
     public Robot(Position startingPosition, int robotID, Simulation simulation) {
         this.currentPosition = startingPosition;

@@ -8,12 +8,16 @@ import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.Direction;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.Robot;
+import dk.aau.d507e19.warehousesim.controller.robot.Status;
+
+import java.util.ArrayList;
 
 public class SpeedCalculator {
 
     private Robot robot;
     private float length;
     private Position start;
+    private GridCoordinate destination;
     private Direction direction;
 
     // The max speed achievable before having to decelerate
@@ -45,6 +49,7 @@ public class SpeedCalculator {
         this.start = line.getStart().getGridCoordinate().toPosition();
         this.length = line.getLength();
         this.initialSpeed = robot.getCurrentSpeed();
+        destination = line.getEnd().getGridCoordinate();
         pauseDuration = (line.getStart().isWaitingStep()) ? line.getStart().getWaitTimeInTicks() : 0L;
         direction = line.getDirection();
         calculateConstants();
@@ -56,6 +61,7 @@ public class SpeedCalculator {
 
         this.robot = robot;
         this.start = start;
+        this.destination = end;
         this.length = length;
         this.initialSpeed = robot.getCurrentSpeed();
         pauseDuration = 0;
@@ -199,15 +205,12 @@ public class SpeedCalculator {
         }
     }
 
-    public long amountOfTicksToReach() {
-        return amountOfTicksToReach(length);
-    }
-
     public long amountOfTicksToReach(float distance) {
         float timeToReach;
+        float a = robot.getAccelerationBinSecond();
 
         if (distance <= accelerationDistance) {
-            timeToReach = (float) Math.sqrt((2f * distance) / robot.getAccelerationBinSecond());
+            timeToReach = (float) (-initialSpeed + Math.sqrt(Math.pow(initialSpeed, 2) + 2 * a * distance)) / a;
             timeToReach += pauseDuration;
         } else if (distance <= accelerationDistance + maxSpeedDistance) {
             float distanceAtMaxSpeed = distance - accelerationDistance;
@@ -247,6 +250,54 @@ public class SpeedCalculator {
             return Direction.SOUTH;
 
         throw new IllegalArgumentException("Destination coordinate must be different from start coordinate");
+    }
+
+    public Position getStart() {
+        return start;
+    }
+
+    public GridCoordinate getStartingTile() {
+        switch (this.getDirection()) {
+            case NORTH:
+                return new GridCoordinate((int) start.getX(), (int) Math.floor(start.getY()));
+            case SOUTH:
+                return new GridCoordinate((int) start.getX(), (int) Math.ceil(this.start.getY()));
+            case EAST:
+                return new GridCoordinate((int) Math.floor(start.getX()), (int) start.getY());
+            case WEST:
+                return new GridCoordinate((int) Math.ceil(start.getX()), (int) start.getY());
+            default:
+                throw new EnumConstantNotPresentException(Direction.class, getDirection().toString());
+        }
+    }
+
+
+    public ArrayList<GridCoordinate> getTiles() {
+        ArrayList<GridCoordinate> tiles = new ArrayList<>();
+        GridCoordinate start = getStartingTile();
+        Direction direction = getDirection();
+        tiles.add(start);
+
+        GridCoordinate nextTile = start;
+        while (isInLine(nextTile = nextTile.plus(direction)))
+            tiles.add(nextTile);
+
+        return tiles;
+    }
+
+    private boolean isInLine(GridCoordinate gridCoordinate) {
+        GridCoordinate start = getStartingTile();
+        switch (getDirection()) {
+            case NORTH:
+                return gridCoordinate.getY() <= destination.getY() && gridCoordinate.getY() >= start.getY();
+            case WEST:
+                return gridCoordinate.getX() >= destination.getY() && gridCoordinate.getY() <= start.getX();
+            case SOUTH:
+                return gridCoordinate.getY() >= destination.getY() && gridCoordinate.getY() <= start.getY();
+            case EAST:
+                return gridCoordinate.getX() <= destination.getX() && gridCoordinate.getX() >= start.getX();
+        }
+        throw new EnumConstantNotPresentException(Direction.class, getDirection().toString());
     }
 
 

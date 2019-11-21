@@ -114,4 +114,16 @@ public class GridCoordinate {
 
         return directions;
     }
+
+    public float distanceFrom(Position start) {
+        float distX = Math.abs(start.getX() - this.getX());
+        float distY = Math.abs(start.getY() - this.getY());
+
+        if(distX > 0) {
+            if(distY > 0) throw new IllegalArgumentException("Cannot measure line distance when both x and y differ");
+            return distX;
+        }
+
+        return distY;
+    }
 }

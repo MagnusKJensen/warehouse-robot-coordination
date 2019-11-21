@@ -1,13 +1,16 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
+import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.controller.path.Line;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.SpeedCalculator;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
+import dk.aau.d507e19.warehousesim.storagegrid.Tile;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class MovementPredictor {
 
@@ -56,8 +59,6 @@ public class MovementPredictor {
         long leaveTime = lineSpeedCalculator.amountOfTicksToReach(leaveDistance);
         reservations.add(new Reservation(robot, line.getStart().getGridCoordinate(),
                 new TimeFrame(startTimeTicks - paddingTicks, startTimeTicks + leaveTime + paddingTicks)));
-
-
 
         GridCoordinate startCoordinate = coordinates.get(0);
         for(int i = 1; i < coordinates.size(); i++){
@@ -110,4 +111,35 @@ public class MovementPredictor {
     }
 
 
+    public static ArrayList<Reservation> calculateReservations(Robot robot, SpeedCalculator speedCalculator, long startTime) {
+        ArrayList<Reservation> reservations = new ArrayList<>();
+
+        ArrayList<GridCoordinate> tiles = speedCalculator.getTiles();
+        Iterator<GridCoordinate> tileIterator = tiles.iterator();
+        GridCoordinate startTile =  tileIterator.next();
+
+        float distanceToLeave = Tile.TILE_SIZE - (startTile.distanceFrom(speedCalculator.getStart()));
+        long timeToEnter = startTime;
+        long timeToLeave = speedCalculator.amountOfTicksToReach(distanceToLeave);
+
+        reservations.add(new Reservation(robot, startTile, new TimeFrame(timeToEnter, timeToEnter + timeToLeave)));
+
+
+        while(tileIterator.hasNext()){
+            GridCoordinate currentTile = tileIterator.next();
+            float enterDistance = currentTile.distanceFrom(speedCalculator.getStart()) - Robot.ROBOT_SIZE;
+            enterDistance = (enterDistance < 0) ? 0 : enterDistance;
+
+            float leaveDistance = currentTile.distanceFrom(speedCalculator.getStart()) + Robot.ROBOT_SIZE;
+
+            timeToEnter = speedCalculator.amountOfTicksToReach(enterDistance);
+            timeToLeave = speedCalculator.amountOfTicksToReach(leaveDistance);
+
+            TimeFrame timeFrame = new TimeFrame(startTime + timeToEnter,
+                    startTime + timeToLeave);
+            reservations.add(new Reservation(robot, currentTile, timeFrame));
+        }
+
+        return reservations;
+    }
 }

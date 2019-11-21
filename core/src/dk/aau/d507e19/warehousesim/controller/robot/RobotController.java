@@ -249,4 +249,11 @@ public class RobotController {
         float maxDelta = 0.00001f;
         return !(robot.getCurrentSpeed() < maxDelta && robot.getCurrentSpeed() > -maxDelta);
     }
+
+    public boolean requestEmergencyStop() {
+        if(robot.getCurrentStatus() == Status.EMERGENCY || robot.getCurrentStatus() == Status.MAINTENANCE)
+            return false;
+        assignImmediateTask(new EmergencyStop(this));
+        return true;
+    }
 }
