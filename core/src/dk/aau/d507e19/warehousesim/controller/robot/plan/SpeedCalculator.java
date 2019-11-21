@@ -135,7 +135,8 @@ public class SpeedCalculator {
                 if(achievableSpeed < robot.getAccelerationBinSecond()*timeInSeconds + initialSpeed)
                     return achievableSpeed;
                 return robot.getAccelerationBinSecond()*timeInSeconds + initialSpeed;
-            }) * timeInSeconds;
+            }
+            return robot.getAccelerationBinSecond() * timeInSeconds;
         } else if (phase == Phase.MAX_SPEED_PHASE) {
             return robot.getMaxSpeedBinsPerSecond();
         } else if (phase == Phase.DECELERATION_PHASE) {
