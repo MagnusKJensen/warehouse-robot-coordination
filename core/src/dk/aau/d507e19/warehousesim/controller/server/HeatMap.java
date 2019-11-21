@@ -81,7 +81,7 @@ public class HeatMap {
     }
 
     private static void addPickerHeat(Server server, int[][] heatMap) {
-        ArrayList<GridCoordinate> pickers = server.getPickerPoints();
+        ArrayList<GridCoordinate> pickers = server.getPickerCoordinates();
         for(GridCoordinate picker : pickers){
             ArrayList<Neighbour> neighbours = getNeighbours(picker, server.getGridBounds(), Math.abs(pickerCooling));
             for(Neighbour neighbour : neighbours){

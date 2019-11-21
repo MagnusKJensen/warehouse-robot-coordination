@@ -11,7 +11,7 @@
   "productsPerBin": 15,
   "SKUsPerBin": 9,
   "SKUs": 20,
-  "productsInStock": 767,
+  "productsInStock": 2000,
   "skuDistribution": [
     [
       20.5,
@@ -181,6 +181,6 @@
     ]
   ],
   "secondsBetweenOrders": 5,
-  "orderGoal": 100,
+  "orderGoal": 200,
   "productsPerOrder": 4
 }

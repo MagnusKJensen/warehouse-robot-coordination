@@ -51,6 +51,6 @@
   "numberOfPickers": 3,
   "pickerPoints":[] ,
   "secondsBetweenOrders": 60,
-  "orderGoal": 10,
+  "orderGoal": 50,
   "productsPerOrder": 2
 }

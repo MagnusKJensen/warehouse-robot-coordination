@@ -161,5 +161,11 @@ public class StorageGrid {
     }
 
 
-
+    public ArrayList<PickerTile> getPickerTiles() {
+        ArrayList<PickerTile> pickerTiles = new ArrayList<>();
+        for(GridCoordinate pickerCoord : pickerPoints){
+            pickerTiles.add((PickerTile) tiles[pickerCoord.getX()][pickerCoord.getY()]);
+        }
+        return pickerTiles;
+    }
 }

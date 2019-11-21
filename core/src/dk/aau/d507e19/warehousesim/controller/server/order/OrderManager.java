@@ -20,12 +20,11 @@ public class OrderManager {
     private ArrayList<Order> ordersFinished = new ArrayList<>();
     private Server server;
     private TaskAllocator taskAllocator;
-    private ArrayList<Task> tasksQueue = new ArrayList<>();
     private HashMap<Order, ArrayList<BinDelivery>> processingOrdersToTaskMap = new HashMap<>();
 
     public OrderManager(Server server) {
         this.server = server;
-        this.taskAllocator = Simulation.getTaskAllocator().getTaskAllocator(server.getSimulation().getStorageGrid());
+        this.taskAllocator = Simulation.getTaskAllocator().getTaskAllocator(server.getSimulation().getStorageGrid(), server);
     }
 
     public void takeOrder(Order order){
@@ -76,7 +75,10 @@ public class OrderManager {
             if(tasksFromOrder != null){
                 order.setStartTimeInMS(server.getTimeInMS());
                 processingOrdersToTaskMap.put(order, tasksFromOrder);
-                tasksQueue.addAll(tasksFromOrder);
+                taskAllocator.addTask(tasksFromOrder);
+                //tasksQueue.addAll(tasksFromOrder);
+
+
                 // Remove order from queue
                 orderIterator.remove();
                 // Picker is no longer available
@@ -91,18 +93,7 @@ public class OrderManager {
             maxOrderAssignPerTick--;
         }
 
-        if(server.hasAvailableRobot()) {
-            Iterator<Task> taskIterator = tasksQueue.iterator();
-            while(taskIterator.hasNext()){
-                Task task = taskIterator.next();
-                Optional<Robot> optimalRobot = taskAllocator.findOptimalRobot(server.getAllRobots(), task);
-                if(optimalRobot.isPresent()){
-                    if(optimalRobot.get().getRobotController().assignTask(task)){
-                        taskIterator.remove();
-                    }
-                }
-            }
-        }
+        taskAllocator.update();
     }
 
     private ArrayList<BinDelivery> divideOrderIntoDeliveries(Order order) {

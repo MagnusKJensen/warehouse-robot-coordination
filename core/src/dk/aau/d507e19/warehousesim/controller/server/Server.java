@@ -22,6 +22,7 @@ public class Server {
     private HashMap<SKU, ArrayList<BinTile>> productMap = new HashMap<>();
     private OrderManager orderManager;
     private OrderGenerator orderGenerator;
+    private StorageGrid grid;
 
     private ArrayList<Product> productsAvailable = new ArrayList<>();
 
@@ -29,6 +30,7 @@ public class Server {
 
     public Server(Simulation simulation, StorageGrid grid) {
         this.simulation = simulation;
+        this.grid = grid;
         this.reservationManager = new ReservationManager(simulation.getGridWidth(), simulation.getGridHeight(), this);
         this.orderManager = new OrderManager(this);
         this.orderGenerator = new OrderGenerator(orderManager, this);
@@ -102,8 +104,12 @@ public class Server {
         reservationManager.removeOutdatedReservations();
     }
 
-    public ArrayList<GridCoordinate> getPickerPoints() {
+    public ArrayList<GridCoordinate> getPickerCoordinates() {
         return pickerPoints;
+    }
+
+    public ArrayList<PickerTile> getPickerTiles() {
+        return grid.getPickerTiles();
     }
 
     public Simulation getSimulation() {
@@ -120,6 +126,15 @@ public class Server {
         }
 
         return false;
+    }
+
+    public ArrayList<Robot> getAvailableRobots(){
+        ArrayList<Robot> availableRobots = new ArrayList<>();
+        for (Robot robot : simulation.getAllRobots()){
+            if(robot.getCurrentStatus() == Status.AVAILABLE) availableRobots.add(robot);
+        }
+
+        return availableRobots;
     }
 
     public GridBounds getGridBounds() {
