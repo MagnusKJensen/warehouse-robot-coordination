@@ -118,7 +118,8 @@ public class RobotController {
        }
        else if(tasks.get(0) instanceof Charging) robot.setCurrentStatus(Status.CHARGING);
        else if(tasks.get(0) instanceof Maintenance) robot.setCurrentStatus(Status.MAINTENANCE);
-       else if (tasks.get(0) instanceof OutOfBattery) robot.setCurrentStatus(Status.NOPOWER);
+       else if(tasks.get(0) instanceof OutOfBattery) robot.setCurrentStatus(Status.NOPOWER);
+       else if(tasks.get(0) instanceof EmergencyStop) robot.setCurrentStatus(Status.EMERGENCY);
        else robot.setCurrentStatus(Status.BUSY);
     }
 

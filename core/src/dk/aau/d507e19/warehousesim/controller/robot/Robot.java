@@ -119,6 +119,9 @@ public class Robot {
                 }else{
                     batch.draw(GraphicsManager.getTexture("Simulation/Robots/greyBatteryRobot_X.png"),currentPosition.getX(),currentPosition.getY(),Tile.TILE_SIZE, Tile.TILE_SIZE);
                 }break;
+            case EMERGENCY:
+                batch.draw(GraphicsManager.getTexture("Simulation/Robots/warningRobot.png"),currentPosition.getX(),currentPosition.getY(),Tile.TILE_SIZE, Tile.TILE_SIZE);
+                break;
             default:
                 throw new RuntimeException("Robot status unavailable");
         }

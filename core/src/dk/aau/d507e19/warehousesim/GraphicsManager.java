@@ -71,6 +71,7 @@ public class GraphicsManager {
         addTexture("Simulation/Robots/repairRobot_RED.png");
         addTexture("Simulation/Robots/greyBatteryRobot.png");
         addTexture("Simulation/Robots/greyBatteryRobot_X.png");
+        addTexture("Simulation/Robots/warningRobot.png");
 
         // Tiles
         addTexture("Simulation/tiles/Bin.png");
