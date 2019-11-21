@@ -205,6 +205,17 @@ public class Robot {
     }
 
     public void updatePosition(Position newPosition, float newSpeed){
+        float deltaX = Math.abs(currentPosition.getX() - newPosition.getX());
+        float deltaY = currentPosition.getY() - newPosition.getY();
+        float maxDelta = 0.1f;
+
+        if(deltaX > ((getMaxSpeedBinsPerSecond() / SimulationApp.TICKS_PER_SECOND) + maxDelta))
+            throw new IllegalStateException("Teleported. Current x : " + currentPosition.getX() + ", new x : " + newPosition.getX() + "\n at tick : "
+            + robotController.getServer().getTimeInTicks());
+
+        if(deltaY > ((getMaxSpeedBinsPerSecond() / SimulationApp.TICKS_PER_SECOND) + maxDelta))
+            throw new IllegalStateException("Teleported. Current x : " + currentPosition.getY() + ", new x : " + newPosition.getY());
+
         currentPosition = newPosition;
         currentSpeed = newSpeed;
     }

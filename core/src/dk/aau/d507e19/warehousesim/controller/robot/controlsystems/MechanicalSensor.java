@@ -10,7 +10,7 @@ import java.util.Random;
 
 public class MechanicalSensor extends Sensor {
     final private int failureCheckFrequency = 30; //checks for error every 30 ticks. if this is 1 then we check every tick
-    final private int failureBoundary = 60; // chance for failure is 1/errorBoundary ie. high number = low chance, low number = high chance
+    final private int failureBoundary = 1000; // chance for failure is 1/errorBoundary ie. high number = low chance, low number = high chance
     final private int failureNumber = 3; //if we random this number then there is a failure
     final private long maintenanceTimeInTicks = 10000;
     private long maintenanceStartTick = -1;

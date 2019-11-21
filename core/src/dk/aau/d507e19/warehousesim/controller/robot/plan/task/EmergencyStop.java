@@ -60,8 +60,6 @@ public class EmergencyStop implements Task {
             reservationManager.removeReservationsBy(r.getRobot());
             //make robot stop immediately todo @bau, make a new task that stops at a free location instead of just emergency stopping
             r.getRobot().getRobotController().assignImmediateTask(new EmergencyStop(r.getRobot().getRobotController()));
-            //todo @bau is this needed?
-            r.getRobot().getRobotController().getTasks().get(0).perform();
         }
     }
 
@@ -112,13 +110,13 @@ public class EmergencyStop implements Task {
                 distanceToDrive = currentAdjustedPosition.getY()+rounded - this.robotController.getRobot().getCurrentPosition().getY();
                 return new GridCoordinate(currentAdjustedPosition.getX(),currentAdjustedPosition.getY()+rounded);
             case SOUTH:
-                distanceToDrive = currentAdjustedPosition.getY()-rounded - this.robotController.getRobot().getCurrentPosition().getY();
+                distanceToDrive = this.robotController.getRobot().getCurrentPosition().getY() - (currentAdjustedPosition.getY()-rounded);
                 return new GridCoordinate(currentAdjustedPosition.getX(),currentAdjustedPosition.getY()-rounded);
             case EAST:
                 distanceToDrive = currentAdjustedPosition.getX()+rounded - this.robotController.getRobot().getCurrentPosition().getX();
                 return new GridCoordinate(currentAdjustedPosition.getX()+rounded,currentAdjustedPosition.getY());
             case WEST:
-                distanceToDrive = currentAdjustedPosition.getX()-rounded - this.robotController.getRobot().getCurrentPosition().getX();
+                distanceToDrive = this.robotController.getRobot().getCurrentPosition().getX() - (currentAdjustedPosition.getX()-rounded);
                 return new GridCoordinate(currentAdjustedPosition.getX()-rounded,currentAdjustedPosition.getY());
         }
         return null;

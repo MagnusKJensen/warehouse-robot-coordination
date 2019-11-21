@@ -155,7 +155,7 @@ public class RRTTest {
         }
         return false;
     }
-    @Test
+    @Ignore
     public void improvePathTest(){
         when(robotController.getRobot().getAccelerationBinSecond()).thenReturn(Simulation.getWarehouseSpecs().robotAcceleration / Simulation.getWarehouseSpecs().binSizeInMeters);
         when(robotController.getRobot().getDecelerationBinSecond()).thenReturn(Simulation.getWarehouseSpecs().robotDeceleration / Simulation.getWarehouseSpecs().binSizeInMeters);

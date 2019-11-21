@@ -70,7 +70,7 @@ public class SpeedCalculator {
         maxSpeedDistance = length - accelerationDistance - breakingDistance;
         totalDistance = breakingDistance + maxSpeedDistance + accelerationDistance;
 
-        accelerationDuration = achievableSpeed / robot.getAccelerationBinSecond();
+        accelerationDuration = (achievableSpeed - initialSpeed) / robot.getAccelerationBinSecond();
         maxSpeedDuration = maxSpeedDistance / robot.getMaxSpeedBinsPerSecond();
         breakingDuration = achievableSpeed / robot.getDecelerationBinSecond();
 
@@ -79,12 +79,22 @@ public class SpeedCalculator {
     }
 
     private float calculateAchievableSpeed() {
+        float d = robot.getDecelerationBinSecond();
+        float a = robot.getAccelerationBinSecond();
+        float v0 = initialSpeed;
+
+        float vmax = (float) Math.sqrt((d*Math.pow(v0, 2) + 2*a*length*d)/(a+d));
+        if(vmax > robot.getMaxSpeedBinsPerSecond()) vmax = robot.getMaxSpeedBinsPerSecond();
+        return vmax;
+
+
+        /*
         float ToUOverA = 2*initialSpeed/robot.getAccelerationBinSecond();
         float etOverA = 1/robot.getAccelerationBinSecond();
         float etOverD = 1/robot.getDecelerationBinSecond();
         float uIAndenOverA = (float) Math.pow(initialSpeed,2)/robot.getAccelerationBinSecond();
 
-        float achievableSpeed = (float) ((ToUOverA) + Math.sqrt(-Math.pow(ToUOverA,2) - 4 *(etOverA+etOverD)*(uIAndenOverA-2*length))/
+        float achievableSpeed = (float) (((ToUOverA) + Math.sqrt(Math.pow(ToUOverA,2) - 4 *(etOverA+etOverD)*(uIAndenOverA-2*length)))/
                 (2*(etOverA + etOverD)));
 
         float achievableSpeed1 =
@@ -92,19 +102,20 @@ public class SpeedCalculator {
                         / (robot.getAccelerationBinSecond() + robot.getDecelerationBinSecond()));
         if (achievableSpeed>= robot.getMaxSpeedBinsPerSecond()) {
             return robot.getMaxSpeedBinsPerSecond();
-        }
+                    return achievableSpeed;
 
-        return achievableSpeed;
+        }*/
+
     }
 
     private float calculateBreakingDistance() {
-        float breakingTime = calculateAchievableSpeed() / robot.getDecelerationBinSecond();   // t = v / a
-        return (float) (robot.getCurrentSpeed()+ 0.5f * robot.getDecelerationBinSecond() * Math.pow(breakingTime, 2)); // s = 1/2 a t^2
+        float breakingTime = achievableSpeed / robot.getDecelerationBinSecond();   // t = v / a
+        return (float) (0.5f * robot.getDecelerationBinSecond() * Math.pow(breakingTime, 2)); // s = 1/2 a t^2
     }
 
     private float calculateAccelerationDistance() {
-        float accelerationTime = achievableSpeed / robot.getAccelerationBinSecond();              // t = v / a
-        return (float) (robot.getCurrentSpeed() + 0.5f * robot.getAccelerationBinSecond() * Math.pow(accelerationTime, 2)); // s = v1 + 1/2 a t^2 //v1 = current speed, which in this case is initial spd
+        float accelerationTime = (achievableSpeed - initialSpeed) / robot.getAccelerationBinSecond();              // t = (v - v1) / a
+        return (float) (initialSpeed * accelerationTime + 0.5f * robot.getAccelerationBinSecond() * Math.pow(accelerationTime, 2)); // s = v1 + 1/2 a t^2 //v1 = current speed, which in this case is initial spd
     }
 
     public float getAchievableSpeed() {
@@ -121,11 +132,10 @@ public class SpeedCalculator {
 
         if (phase == Phase.ACCELERATION_PHASE) {
             if(initialSpeed > 0){
-                if(achievableSpeed < robot.getAccelerationBinSecond()*timeInSeconds + robot.getCurrentSpeed())
+                if(achievableSpeed < robot.getAccelerationBinSecond()*timeInSeconds + initialSpeed)
                     return achievableSpeed;
-                return robot.getAccelerationBinSecond()*timeInSeconds + robot.getCurrentSpeed();
-            }
-            return robot.getAccelerationBinSecond() * timeInSeconds;
+                return robot.getAccelerationBinSecond()*timeInSeconds + initialSpeed;
+            }) * timeInSeconds;
         } else if (phase == Phase.MAX_SPEED_PHASE) {
             return robot.getMaxSpeedBinsPerSecond();
         } else if (phase == Phase.DECELERATION_PHASE) {
@@ -172,7 +182,7 @@ public class SpeedCalculator {
 
     private float distanceWithConstantAcceleration(float timeInSeconds) {
         float acceleration = robot.getAccelerationBinSecond();
-        return initialSpeed + 0.5f * acceleration * (float) Math.pow(timeInSeconds, 2); // s = v_initial + 1/2 a t^2
+        return (initialSpeed * timeInSeconds) + 0.5f * acceleration * (float) Math.pow(timeInSeconds, 2); // s = v_initial + 1/2 a t^2
     }
 
     private float distanceAtMaxSpeed(float timeInSeconds) {
@@ -181,7 +191,7 @@ public class SpeedCalculator {
 
     private float distanceWithDeceleration(float timeInSeconds) {
         float deceleration = robot.getDecelerationBinSecond();
-        return distanceAtConstantSpeed(timeInSeconds, achievableSpeed) - (initialSpeed + 0.5f * deceleration * (float) Math.pow(timeInSeconds, 2));
+        return distanceAtConstantSpeed(timeInSeconds, achievableSpeed) - (0.5f * deceleration * (float) Math.pow(timeInSeconds, 2));
     }
 
     private float distanceAtConstantSpeed(float timeInSeconds, float speed) {
