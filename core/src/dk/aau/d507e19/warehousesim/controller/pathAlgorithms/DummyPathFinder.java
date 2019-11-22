@@ -27,6 +27,22 @@ public class DummyPathFinder implements PathFinder {
         return new Path(pathList);
     }
 
+    public Path calculatePath(GridCoordinate start, GridCoordinate destination, Direction preferredStartDirection) {
+        ArrayList<Step> pathList = new ArrayList<>();
+
+        if(preferredStartDirection == Direction.NORTH || preferredStartDirection == Direction.SOUTH){
+            pathList.addAll(generateVerticalLine(start.getY(), destination.getY(), start.getX()));
+            pathList.remove(pathList.size() - 1);
+            pathList.addAll(generateHorizontalLine(start.getX(), destination.getX(), destination.getY()));
+        }else{
+            pathList.addAll(generateHorizontalLine(start.getX(), destination.getX(), start.getY()));
+            pathList.remove(pathList.size() - 1);
+            pathList.addAll(generateVerticalLine(start.getY(), destination.getY(), destination.getX()));
+        }
+
+        return new Path(pathList);
+    }
+
 
     @Override
     public boolean accountsForReservations() {

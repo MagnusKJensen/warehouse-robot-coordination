@@ -44,6 +44,11 @@ public class CHPathfinder implements PartialPathFinder {
         return new CHPathfinder(gridBounds, new DistanceTurnHeuristic(), new DistanceTurnGCost(), robotController);
     }
 
+
+    public static PathFinder timedCHPathfinder(GridBounds gridBounds, RobotController robotController) {
+        return new CHPathfinder(gridBounds, new TimeHeuristic(), new TimeGCostCalculator(), robotController);
+    }
+
     public CHPathfinder(GridBounds gridBounds, Heuristic heuristic, GCostCalculator gCostCalculator, RobotController robotController) {
         this.gridBounds = gridBounds;
         this.heuristic = heuristic;
@@ -124,6 +129,16 @@ public class CHPathfinder implements PartialPathFinder {
             CHNode bestOpenListNode = openList.poll();
 
             // Check if this node is better than the currently best known node
+            /*if(bestOpenListNode.getHCost() == bestNodeSoFar.getHCost()){
+                if(bestOpenListNode.getFCost() < bestNodeSoFar.getFCost() && canReservePath(bestOpenListNode.getPath())){
+                    bestNodeSoFar = bestOpenListNode;
+                }
+            }else if(bestOpenListNode.getHCost() < bestNodeSoFar.getHCost()){
+                if(canReservePath(bestOpenListNode.getPath())){
+                    bestNodeSoFar = bestOpenListNode;
+                }
+            }*/
+
             if (bestOpenListNode.getFCost() <= bestNodeSoFar.getFCost()
                     && bestOpenListNode.getHCost() < bestNodeSoFar.getHCost()) {
                 if (canReservePath(bestOpenListNode.getPath()))

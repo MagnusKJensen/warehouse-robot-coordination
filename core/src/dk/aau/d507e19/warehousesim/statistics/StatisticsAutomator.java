@@ -18,7 +18,7 @@ public class StatisticsAutomator {
 
     public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations";
     private static final int TICKS_PER_RUN = 45000; // 10.000 is about 55min of "real time"
-    private static final int FILE_WRITE_INTERVAL_TICKS = 1500;
+    private static final int FILE_WRITE_INTERVAL_TICKS = 10000;
     private static final String VERSION_NAME = "bigVersion";
     private static final String SPEC_FILE_NAME = "defaultSpecs.json";
     private static final int numberOfSeeds = 5;
@@ -30,8 +30,9 @@ public class StatisticsAutomator {
 
         // Task allocators to use
         ArrayList<TaskAllocatorEnum> taskAllocators = new ArrayList<>(Arrays.asList(
-                TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR, TaskAllocatorEnum.SMART_ALLOCATOR
+                //TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR, TaskAllocatorEnum.SMART_ALLOCATOR, TaskAllocatorEnum.NAIVE_SHORTEST_DISTANCE_TASK_ALLOCATOR
                 //TaskAllocatorEnum.NAIVE_SHORTEST_DISTANCE_TASK_ALLOCATOR
+                TaskAllocatorEnum.LEAST_USED_ROBOT_TASK_ALLOCATOR
         ));
 
         // Path finders to use
