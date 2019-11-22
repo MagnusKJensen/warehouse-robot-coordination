@@ -9,7 +9,7 @@ public class DistanceTurnHeuristic implements Heuristic{
 
     private static final DummyPathFinder dummyPathFinder = new DummyPathFinder();
 
-    public static final double stoppingCost = 0.5d;
+    public static final double stoppingCost = 0.6d;
 
     @Override
     public double getHeuristic(Path path, GridCoordinate goal, RobotController robotController) {
