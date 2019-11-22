@@ -10,8 +10,8 @@
   "binSizeInMeters": 0.5,
   "productsPerBin": 15,
   "SKUsPerBin": 9,
-  "SKUs": 1000,
-  "productsInStock": 1000,
+  "SKUs": 10000,
+  "productsInStock": 10000,
   "skuDistribution": [
     [
       100,
@@ -51,6 +51,6 @@
   "numberOfPickers": 3,
   "pickerPoints":[] ,
   "secondsBetweenOrders": 60,
-  "orderGoal": 10,
+  "orderGoal": 50,
   "productsPerOrder": 2
 }

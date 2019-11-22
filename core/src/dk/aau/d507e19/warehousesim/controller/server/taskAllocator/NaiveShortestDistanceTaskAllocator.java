@@ -6,20 +6,36 @@ import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.Status;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.BinDelivery;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
+import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.exception.NoPathFoundException;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Optional;
 
-public class NaiveShortestDistanceTaskAllocator implements TaskAllocator {
+public class NaiveShortestDistanceTaskAllocator extends TaskAllocator {
     private StorageGrid grid;
+    private Server server;
 
-    public NaiveShortestDistanceTaskAllocator(StorageGrid grid) {
+    public NaiveShortestDistanceTaskAllocator(StorageGrid grid, Server server) {
+        this.server = server;
         this.grid = grid;
     }
 
     @Override
+    public void update() {
+        Iterator<BinDelivery> taskIterator = getTaskIterator();
+        while(taskIterator.hasNext()){
+            Task task = taskIterator.next();
+            Optional<Robot> optimalRobot = findOptimalRobot(server.getAllRobots(), task);
+            if(optimalRobot.isPresent()){
+                if(optimalRobot.get().getRobotController().assignTask(task))
+                    taskIterator.remove();
+            }
+        }
+    }
+
     public Optional<Robot> findOptimalRobot(ArrayList<Robot> robots, Task task) {
         Robot optimalRobot = null;
 
@@ -52,4 +68,6 @@ public class NaiveShortestDistanceTaskAllocator implements TaskAllocator {
         // distance = abs(ydistance) + abs(xdistance)
         return Math.abs(source.getX() - dest.getX()) + Math.abs(source.getY() - dest.getY());
     }
+
+
 }

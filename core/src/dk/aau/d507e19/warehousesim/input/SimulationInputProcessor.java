@@ -96,9 +96,10 @@ public class SimulationInputProcessor implements InputProcessor {
             aDown = false;
         }
         if(ctrlDown && keycode == Input.Keys.H) simulation.toggleHeatMap();
-        if(ctrlDown && keycode == Input.Keys.G){
-            simulation.toggleRenderGrid();
-        }
+        if(ctrlDown && keycode == Input.Keys.G) simulation.toggleRenderGrid();
+        if(ctrlDown && keycode == Input.Keys.P) simulation.toggleRenderPriority();
+
+
         return false;
     }
 

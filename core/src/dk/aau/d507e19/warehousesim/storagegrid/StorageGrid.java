@@ -196,4 +196,11 @@ public class StorageGrid {
     public ArrayList<GridCoordinate> getMaintenancePoints() {
         return maintenancePoints;
     }
+    public ArrayList<PickerTile> getPickerTiles() {
+        ArrayList<PickerTile> pickerTiles = new ArrayList<>();
+        for(GridCoordinate pickerCoord : pickerPoints){
+            pickerTiles.add((PickerTile) tiles[pickerCoord.getX()][pickerCoord.getY()]);
+        }
+        return pickerTiles;
+    }
 }

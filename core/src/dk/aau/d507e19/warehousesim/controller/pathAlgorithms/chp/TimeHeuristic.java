@@ -1,37 +1,50 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.chp;
 
 import dk.aau.d507e19.warehousesim.controller.path.Path;
+import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.DummyPathFinder;
+import dk.aau.d507e19.warehousesim.controller.robot.Direction;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 import dk.aau.d507e19.warehousesim.controller.robot.MovementPredictor;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class TimeHeuristic implements Heuristic {
 
     private static DummyPathFinder dummyPathFinder = new DummyPathFinder();
 
     @Override
-    public double getHeuristic(Path path, GridCoordinate goal, RobotController robotController) {
-        Path simplifiedRemainingPath = simplePath(path.getLastStep().getGridCoordinate(), goal);
+    public double getHeuristic(Path pathSoFar, GridCoordinate goal, RobotController robotController) {
+        Direction currentDirection = Direction.NORTH;
+
+        if(pathSoFar.getStrippedPath().size()>1)
+            currentDirection = pathSoFar.getLastDirection();
+
+        Path simplifiedRemainingPath = simplePath(pathSoFar.getLastStep().getGridCoordinate(), goal, currentDirection);
 
         simplifiedRemainingPath.getFullPath().remove(0);
-        Path fullSimplePath = Path.join(path, simplifiedRemainingPath);
-
-        /*long firstHalfTime;
-        if(path.getFullPath().size() <= 1){
-            if(path.getLastStep().isWaitingStep()) firstHalfTime = path.getLastStep().getWaitTimeInTicks();
-            else firstHalfTime = 0;
-        }
-        else firstHalfTime = MovementPredictor.timeToTraverse(robotController.getRobot(), path);*/
+        if(simplifiedRemainingPath.getFullPath().size() <= 1) return 0;
+        Path fullSimplePath = Path.join(pathSoFar, simplifiedRemainingPath);
 
         long totalTime = MovementPredictor.timeToTraverse(robotController.getRobot(), fullSimplePath);
-        return totalTime; /*- firstHalfTime;*/
+        if(pathSoFar.getFullPath().size() <= 1) return totalTime;
+        long firstPartTime = MovementPredictor.timeToTraverse(robotController.getRobot(), pathSoFar);
+
+        return totalTime - firstPartTime;
     }
 
-    private static Path simplePath(GridCoordinate start, GridCoordinate end){
-        // todo temporary
-        return dummyPathFinder.calculatePath(start, end);
+    private long timeToReach(Step firstStepOfRemainingPath, Path fullSimplePath) {
+
+        for(Step s : fullSimplePath.getFullPath()){
+
+        }
+
+        throw new IllegalArgumentException("Given step is not contained in the given path");
+    }
+
+    private static Path simplePath(GridCoordinate start, GridCoordinate end, Direction preferredStartDirection){
+        return dummyPathFinder.calculatePath(start, end, preferredStartDirection);
     }
 }

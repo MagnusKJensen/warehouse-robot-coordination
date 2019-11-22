@@ -66,7 +66,7 @@ public class Bin {
 
     public boolean hasSKU(SKU sku){
         for (Product prod : products) {
-            if(prod.SKU.EAN.equals(sku.EAN)) return true;
+            if(prod.SKU.equals(sku)) return true;
         }
         return false;
     }

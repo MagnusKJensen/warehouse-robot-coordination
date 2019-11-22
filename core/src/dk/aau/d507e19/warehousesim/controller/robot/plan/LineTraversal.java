@@ -30,12 +30,14 @@ public class LineTraversal implements Task {
     public void perform() {
         if(isCompleted())
             throw new IllegalStateException("Attempting to perform a line traversal that is already completed");
+        ticksSinceStart++;
 
         ticksSinceStart++;
         robot.updatePosition(speedCalculator.getPositionAfter(ticksSinceStart),
                 speedCalculator.getSpeedAfter(ticksSinceStart));
 
-        robot.setDirection(speedCalculator.getDirection());
+        if(ticksSinceStart >= speedCalculator.getTotalTimeInTicks())
+            robot.setDirection(speedCalculator.getDirection());
 
         if(ticksSinceStart >= speedCalculator.getTotalTimeInTicks()){
             doneTraversing = true;

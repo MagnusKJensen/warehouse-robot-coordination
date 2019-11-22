@@ -64,11 +64,13 @@ public class Simulation {
     private SimulationInputProcessor inputProcessor;
 
     private long ordersProcessed = 0;
+    private ProductDistributor productDistributor;
 
     private Goal goal;
 
     private long tickStopperGoal;
 
+    public static String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations/";
     public static String CURRENT_RUN_CONFIG;
     private static WarehouseSpecs warehouseSpecs;
     private static PathFinderEnum pathFinder;
@@ -82,18 +84,20 @@ public class Simulation {
     private boolean shouldRenderGridAndRobots = true;
 
     private GridBounds renderedBounds;
+    private boolean shouldRenderPriority = false;
 
     // Used for fast no graphics simulations
     public Simulation(long randSeed, String runConfigName, PathFinderEnum pathfinder, TaskAllocatorEnum taskAllocator){
         RANDOM_SEED = randSeed;
-        Simulation.warehouseSpecs = readWarehouseSpecsFromFile(runConfigName);
         Simulation.CURRENT_RUN_CONFIG = runConfigName;
+        Simulation.warehouseSpecs = readWarehouseSpecsFromFile(runConfigName);
         Simulation.pathFinder = pathfinder;
         Simulation.taskAllocator = taskAllocator;
 
         storageGrid = new StorageGrid(Simulation.getWarehouseSpecs().wareHouseWidth, Simulation.getWarehouseSpecs().wareHouseHeight, this);
-        if(Simulation.getWarehouseSpecs().isRandomProductDistribution) ProductDistributor.distributeProductsRandomly(storageGrid);
-        else ProductDistributor.distributeProducts(storageGrid);
+        this.productDistributor = new ProductDistributor(Simulation.getWarehouseSpecs());
+        if(Simulation.getWarehouseSpecs().isRandomProductDistribution) productDistributor.distributeProductsRandomly(storageGrid);
+        else productDistributor.distributeProducts(storageGrid);
 
         server = new Server(this, storageGrid);
         goal = new OrderGoal(Simulation.warehouseSpecs.orderGoal, this);
@@ -124,8 +128,9 @@ public class Simulation {
         shapeRenderer = new ShapeRenderer();
 
         storageGrid = new StorageGrid(Simulation.getWarehouseSpecs().wareHouseWidth, Simulation.getWarehouseSpecs().wareHouseHeight, this);
-        if(Simulation.getWarehouseSpecs().isRandomProductDistribution) ProductDistributor.distributeProductsRandomly(storageGrid);
-        else ProductDistributor.distributeProducts(storageGrid);
+        this.productDistributor = new ProductDistributor(Simulation.getWarehouseSpecs());
+        if(Simulation.getWarehouseSpecs().isRandomProductDistribution) productDistributor.distributeProductsRandomly(storageGrid);
+        else productDistributor.distributeProducts(storageGrid);
 
         server = new Server(this, storageGrid);
         goal = new OrderGoal(Simulation.warehouseSpecs.orderGoal, this);
@@ -174,7 +179,6 @@ public class Simulation {
         }
         updateSideMenuScrollPanes();
 
-
         if(tickStopperGoal == tickCount) simulationApp.pause();
     }
 
@@ -210,6 +214,11 @@ public class Simulation {
             else prods = tile.getBin().getProducts();
 
             simulationApp.getSideMenu().getBinContentScrollPanes().updateBinContent(prods, tile.getPosX(), tile.getPosY());
+        }
+        if(selectedTile instanceof PickerTile){
+            PickerTile tile = (PickerTile) selectedTile;
+
+            simulationApp.getSideMenu().getBinContentScrollPanes().updatePickerContent(tile.getHoldingProducts(), tile.getPosX(), tile.getPosY());
         }
     }
 
@@ -270,7 +279,7 @@ public class Simulation {
 
     public void renderCtrlSelectedRobotTrees() {
         for(Robot robot : ctrlSelectedRobots){
-            //only do if robot path algo is RRT variant
+            //only do if robot path algorithm is RRT variant
             if(robot.getRobotController().getPathFinder() instanceof RRTPlanner){
                 RRTPlanner planner = (RRTPlanner) robot.getRobotController().getPathFinder();
                 ArrayList<Node<GridCoordinate>> listOfNodes = new ArrayList<>(planner.getPlanner().allNodesMap.values());
@@ -309,9 +318,19 @@ public class Simulation {
         batch.end();
     }
 
+    private void renderRobotPriority(){
+        if(!shouldRenderPriority) return;
+
+        batch.begin();
+        for(Robot robot : robots)
+            robot.renderPriority(batch, gridCamera, fontCamera);
+        batch.end();
+    }
+
     private void renderTickCountAndRealTime(OrthographicCamera gridCamera, OrthographicCamera fontCamera){
         Vector3 textPos = new Vector3(15 ,15 , 0);
         batch.setProjectionMatrix(fontCamera.combined);
+        renderRobotPriority();
         batch.begin();
         font.setColor(Color.WHITE);
 
@@ -461,5 +480,9 @@ public class Simulation {
 
     public static long getRandomSeed() {
         return RANDOM_SEED;
+    }
+
+    public void toggleRenderPriority() {
+        shouldRenderPriority = !shouldRenderPriority;
     }
 }

@@ -12,7 +12,6 @@ import dk.aau.d507e19.warehousesim.storagegrid.product.SKU;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 
 public class Server {
     private Simulation simulation;
@@ -20,6 +19,7 @@ public class Server {
     private HashMap<SKU, ArrayList<BinTile>> productMap = new HashMap<>();
     private OrderManager orderManager;
     private OrderGenerator orderGenerator;
+    private StorageGrid grid;
 
     private ArrayList<Product> productsAvailable = new ArrayList<>();
 
@@ -27,6 +27,7 @@ public class Server {
 
     public Server(Simulation simulation, StorageGrid grid) {
         this.simulation = simulation;
+        this.grid = grid;
         this.reservationManager = new ReservationManager(simulation.getGridWidth(), simulation.getGridHeight(), this);
         this.orderManager = new OrderManager(this);
         this.orderGenerator = new OrderGenerator(orderManager, this);
@@ -102,8 +103,12 @@ public class Server {
         reservationManager.removeOutdatedReservations();
     }
 
-    public ArrayList<GridCoordinate> getPickerPoints() {
+    public ArrayList<GridCoordinate> getPickerCoordinates() {
         return pickerPoints;
+    }
+
+    public ArrayList<PickerTile> getPickerTiles() {
+        return grid.getPickerTiles();
     }
 
     public Simulation getSimulation() {
@@ -120,6 +125,15 @@ public class Server {
         }
 
         return false;
+    }
+
+    public ArrayList<Robot> getAvailableRobots(){
+        ArrayList<Robot> availableRobots = new ArrayList<>();
+        for (Robot robot : simulation.getAllRobots()){
+            if(robot.getCurrentStatus() == Status.AVAILABLE) availableRobots.add(robot);
+        }
+
+        return availableRobots;
     }
 
     public GridBounds getGridBounds() {
@@ -196,7 +210,16 @@ public class Server {
     }
 
 
-    public int getPriority(Robot robot) {
-        return 100 - robot.getRobotID(); // todo Very important - Cycle priority between robots
+    public Robot getHighestPriority(Robot r1, Robot r2) {
+        if(r1.getRobotController().hasOrderAssigned()){
+            if(!r2.getRobotController().hasOrderAssigned())
+                return r1;
+
+            if(r1.getRobotController().getTicksSinceOrderAssigned() >= r2.getRobotController().getTicksSinceOrderAssigned())
+                return r1;
+            else
+                return r2;
+        }
+        return r1;
     }
 }

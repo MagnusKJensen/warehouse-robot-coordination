@@ -1,6 +1,12 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector3;
 import dk.aau.d507e19.warehousesim.*;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 import dk.aau.d507e19.warehousesim.controller.server.order.Order;
@@ -38,7 +44,6 @@ public class Robot {
     private final float maxSpeedBinsPerSecond = Simulation.getWarehouseSpecs().robotTopSpeed / Simulation.getWarehouseSpecs().binSizeInMeters;
     private final float accelerationBinSecond = Simulation.getWarehouseSpecs().robotAcceleration / Simulation.getWarehouseSpecs().binSizeInMeters;
     private final float decelerationBinSecond = Simulation.getWarehouseSpecs().robotDeceleration / Simulation.getWarehouseSpecs().binSizeInMeters;
-    private final float minSpeedBinsPerSecond = Simulation.getWarehouseSpecs().robotMinimumSpeed / Simulation.getWarehouseSpecs().binSizeInMeters;
 
     private final float breakingDistanceMaxSpeedBins = decelerationBinSecond / maxSpeedBinsPerSecond;
 
@@ -62,6 +67,8 @@ public class Robot {
         for(Product product : productsToPick){
             bin.getProducts().remove(product);
         }
+        PickerTile picker = (PickerTile) simulation.getStorageGrid().getTile(pickerCoords.getX(), pickerCoords.getY());
+        picker.acceptProducts(productsToPick);
         simulation.incrementOrderProcessedCount();
     }
 
@@ -300,5 +307,14 @@ public class Robot {
 
     public long getBinDeliveriesCompleted() {
         return binDeliveriesCompleted;
+    }
+
+    public void renderPriority(SpriteBatch batch, OrthographicCamera worldCamera, OrthographicCamera fontCamera) {
+        float offset = (robotController.getRobot().getSize()) / 2f;
+        Vector3 screenPosition = worldCamera.project(new Vector3(currentPosition.getX() + offset, currentPosition.getY() + offset, 0));
+        screenPosition = fontCamera.unproject(new Vector3(screenPosition.x, Gdx.graphics.getHeight() - screenPosition.y, screenPosition.z));
+        GraphicsManager.getFont().setColor(Color.WHITE);
+        GraphicsManager.getFont().draw(batch, robotController.getTicksSinceOrderAssigned() + "",
+                screenPosition.x, screenPosition.y);
     }
 }

@@ -9,6 +9,7 @@ import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 import dk.aau.d507e19.warehousesim.controller.server.order.Order;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 
+import javax.swing.plaf.basic.BasicLookAndFeel;
 import java.util.ArrayList;
 
 public class BinDelivery implements Task {
@@ -22,11 +23,16 @@ public class BinDelivery implements Task {
     private ArrayList<Task> subTasks = new ArrayList<>();
     private boolean completed = false;
     private boolean isPlanned = false;
+    private ArrayList<Runnable> onComplete = new ArrayList<>();
 
     public BinDelivery(Order order, GridCoordinate binCoords, ArrayList<Product> productsToPick) {
         this.order = order;
         this.binCoords = binCoords;
         this.productsToPick = productsToPick;
+    }
+
+    public void addOnCompleteAction(Runnable runnable){
+        onComplete.add(runnable);
     }
 
     public void setRobot(Robot robot) {
@@ -103,6 +109,9 @@ public class BinDelivery implements Task {
         robotController.getServer().getReservationManager().removeBinReservation(binCoords);
         robotController.getRobot().incrementDeliveriesCompleted();
         robotController.getRobot().addToDistanceTraveled(distanceForDelivery);
+        for(Runnable runnable : onComplete){
+            runnable.run();
+        }
     }
 
     @Override
@@ -128,5 +137,33 @@ public class BinDelivery implements Task {
             ((Navigation) subTasks.get(0)).forceInterrupt();
         else if(subTasks.get(0) instanceof TimedAction)
             subTasks.add(0,Navigation.getInstance(this.robotController,this.robot.getApproximateGridCoordinate()));
+    }
+
+    @Override
+    public String toString() {
+        return "BinDelivery{" +
+                "order=" + order +
+                ", robotController=" + robotController +
+                ", robot=" + robot +
+                ", binCoords=" + binCoords +
+                ", productsToPick=" + productsToPick +
+                ", distanceForDelivery=" + distanceForDelivery +
+                ", subTasks=" + subTasks +
+                ", completed=" + completed +
+                ", isPlanned=" + isPlanned +
+                '}';
+    }
+
+    public String toStringPretty(){
+        return "BinDelivery{" +
+                "productsToPick=" + binCoords + ", productsToPick=" + productsToPick + "}";
+    }
+
+    public ArrayList<Product> getProductsToPick() {
+        return productsToPick;
+    }
+
+    public void reset() {
+        subTasks.clear();
     }
 }

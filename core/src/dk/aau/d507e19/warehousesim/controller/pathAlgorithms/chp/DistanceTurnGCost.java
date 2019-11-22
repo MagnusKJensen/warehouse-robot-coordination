@@ -6,6 +6,7 @@ import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 
 public class DistanceTurnGCost implements GCostCalculator {
+
     private final double waitingPenalty = 1.5;
 
     @Override

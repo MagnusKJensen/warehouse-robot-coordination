@@ -34,7 +34,6 @@ public class OrderGenerator {
             tickSinceLastOrder = 0;
         }
         else tickSinceLastOrder += 1;
-
     }
 
     private Order generateRandomOrder(){

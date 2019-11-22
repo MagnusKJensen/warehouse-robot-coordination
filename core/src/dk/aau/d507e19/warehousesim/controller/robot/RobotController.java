@@ -15,6 +15,8 @@ import java.util.LinkedList;
 import java.util.Random;
 
 public class RobotController {
+
+    public long ticksSinceOrderAssigned = 0L;
     private Server server;
     private PathFinder pathFinder;
     private Robot robot;
@@ -53,8 +55,17 @@ public class RobotController {
 
     public boolean assignTask(Task task){
         tasks.add(task);
+        task.setRobot(this.getRobot());
+
+        if(task instanceof BinDelivery)
+            ((BinDelivery) task).addOnCompleteAction(this::resetTimeSinceAssignment);
+
         updateStatus();
         return true;
+    }
+
+    private void resetTimeSinceAssignment() {
+        this.ticksSinceOrderAssigned = 0;
     }
 
     public boolean assignImmediateTask(Task task){
@@ -86,6 +97,13 @@ public class RobotController {
             return;
         }
         controlSystemManager.checkSystem();
+
+        if(hasOrderAssigned()){
+            ticksSinceOrderAssigned++;
+        }else {
+            ticksSinceOrderAssigned = 0;
+        }
+
         Task currentTask = tasks.peekFirst();
         currentTask.perform();
 
@@ -247,12 +265,11 @@ public class RobotController {
 
         if(robot.getCurrentStatus() != Status.AVAILABLE){
             // Can't be interrupted by lower priority robots (unless idle)
-            int askingPriority = server.getPriority(authorityRobot);
-            int selfPriority = server.getPriority(this.robot);
-            if(askingPriority < selfPriority)
+            if(server.getHighestPriority(authorityRobot, this.robot) == this.robot){
                 return false;
-
-            return tasks.getFirst().canInterrupt();
+            }else{
+                return tasks.getFirst().canInterrupt();
+            }
         }
 
         return true;
@@ -276,5 +293,9 @@ public class RobotController {
         assignImmediateTask(new EmergencyStop(this));
         }
         return true;
+    }
+
+    public long getTicksSinceOrderAssigned() {
+        return ticksSinceOrderAssigned;
     }
 }
