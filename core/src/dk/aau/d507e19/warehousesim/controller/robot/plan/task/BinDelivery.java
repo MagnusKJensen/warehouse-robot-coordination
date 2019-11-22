@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class BinDelivery implements Task {
     private Order order;
-    private RobotController robotController;
+    public RobotController robotController;
     private Robot robot;
     private GridCoordinate binCoords;
     private ArrayList<Product> productsToPick;
@@ -33,6 +33,17 @@ public class BinDelivery implements Task {
         this.robotController = robot.getRobotController();
         this.robot = robot;
         planTasks();
+    }
+
+    public ArrayList<Task> getSubTasks() {
+        return subTasks;
+    }
+
+    public ArrayList<Product> getProductsToPick() {
+        return productsToPick;
+    }
+    public void clearAllSubTasks(){
+        this.subTasks = new ArrayList<>();
     }
 
     @Override
@@ -66,6 +77,7 @@ public class BinDelivery implements Task {
 
         isPlanned = true;
     }
+
 
     @Override
     public void perform() {
@@ -114,5 +126,7 @@ public class BinDelivery implements Task {
     public void forceInterrupt() {
         if(subTasks.get(0) instanceof Navigation)
             ((Navigation) subTasks.get(0)).forceInterrupt();
+        else if(subTasks.get(0) instanceof TimedAction)
+            subTasks.add(0,Navigation.getInstance(this.robotController,this.robot.getApproximateGridCoordinate()));
     }
 }

@@ -144,7 +144,7 @@ public abstract class Navigation implements Task{
         }
     }
 
-    private void clearPath(){
+    protected void clearPath(){
         this.path = null;
         lineTraversals.clear();
     }

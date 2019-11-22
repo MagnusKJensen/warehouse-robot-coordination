@@ -1,7 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
 import dk.aau.d507e19.warehousesim.Simulation;
-import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.controlsystems.ControlSystemManager;
@@ -10,10 +9,8 @@ import dk.aau.d507e19.warehousesim.controller.server.Reservation;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.controller.server.TimeFrame;
 import dk.aau.d507e19.warehousesim.exception.DoubleReservationException;
-import dk.aau.d507e19.warehousesim.statistics.StatisticsManager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -65,7 +62,23 @@ public class RobotController {
         updateStatus();
         return true;
     }
-
+    private Robot getRobotByID(int ID){
+        for (Robot r : server.getAllRobots()){
+            if(r.getRobotID()==ID){
+                return r;
+            }
+        }
+        return null;
+    }
+    private boolean containsSubTasWithWrongController(Robot r){
+        for(Task t : r.getRobotController().getTasks()){
+            if(t instanceof BinDelivery){
+                if(!((BinDelivery) t).robotController.equals(r.getRobotController())){
+                    return true;
+                }
+            }
+        }return false;
+    }
     public void update() {
         if(getServer().getTimeInTicks()%30 == 0) animationFlag = !animationFlag;
         if(tasks.isEmpty()){
@@ -75,8 +88,6 @@ public class RobotController {
         controlSystemManager.checkSystem();
         Task currentTask = tasks.peekFirst();
         currentTask.perform();
-
-        if(robot.getRobotID() == 18) System.out.println(robot.getCurrentSpeed());
 
         if(currentTask.hasFailed() && currentTask instanceof BinDelivery)
             throw new RuntimeException("Bin delivery failed");
@@ -255,8 +266,15 @@ public class RobotController {
     public boolean requestEmergencyStop() {
         if(robot.getCurrentStatus() == Status.EMERGENCY || robot.getCurrentStatus() == Status.MAINTENANCE)
             return false;
-        tasks.clear(); // todo TEMP
+        if(this.getTasks().size() > 0){
+            Task firstTask = this.getTasks().getFirst();
+            if(firstTask instanceof Navigation){
+                ((Navigation)firstTask).forceInterrupt();
+            }else if(firstTask instanceof BinDelivery){
+                ((BinDelivery) firstTask).forceInterrupt();
+            }
         assignImmediateTask(new EmergencyStop(this));
+        }
         return true;
     }
 }

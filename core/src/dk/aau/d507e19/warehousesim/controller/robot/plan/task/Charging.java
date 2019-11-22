@@ -11,7 +11,7 @@ public class Charging implements Task {
     final private int moveThreshhold = 5;
     private GridCoordinate destination;
     private RobotController robotController;
-    private boolean completed,failed;
+    private boolean completed,failed,positionUpdated;
     private Navigation navigation;
     private ChargingTile chargingTile;
 
@@ -23,6 +23,13 @@ public class Charging implements Task {
         return chargingTile;
     }
 
+    public void resetNavigation() {
+        this.navigation = null;
+        if(chargingTile!=null)
+            this.chargingTile.setReserved(false);
+        this.chargingTile=null;
+    }
+
     @Override
     public void perform() {
         if(navigation==null){
@@ -32,6 +39,9 @@ public class Charging implements Task {
                 navigation = Navigation.getInstance(robotController,destination);
                 chargingTile.setReserved(true);
             }else return;
+        }
+        if(positionUpdated){
+            navigation = Navigation.getInstance(robotController,destination);
         }
         if(!navigation.isCompleted()){
             navigation.perform();
@@ -80,7 +90,6 @@ public class Charging implements Task {
         return canInterrupt();
     }
     private boolean isMoving(){
-        System.out.println(robotController.getRobot().getCurrentSpeed());
         if(robotController.getRobot().getCurrentSpeed()!=0)
             return true;
         return false;

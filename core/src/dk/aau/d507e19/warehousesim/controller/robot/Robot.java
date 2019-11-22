@@ -65,6 +65,11 @@ public class Robot {
         simulation.incrementOrderProcessedCount();
     }
 
+    public void ignorantPutDownBin(){
+        //todo @bau implement proper handling when a robot emergency stops while its carrying a bin
+        setBin(null);
+    }
+
     public void putDownBin(){
         GridCoordinate coordinate = getApproximateGridCoordinate();
         Tile tile = simulation.getStorageGrid().getTile(coordinate.getX(), coordinate.getY());
@@ -80,7 +85,7 @@ public class Robot {
         Tile tile = simulation.getStorageGrid().getTile(coordinate.getX(), coordinate.getY());
         if (tile instanceof BinTile && ((BinTile) tile).hasBin()) {
             bin = ((BinTile) tile).releaseBin();
-        } else throw new RuntimeException("Robot could not pick up bin at ("
+        } else throw new RuntimeException("[TICK: "+ simulation.getTimeInTicks()+"]Robot could not pick up bin at ("
                 + coordinate.getX() + "," + coordinate.getY() + ")");
     }
 
@@ -188,7 +193,7 @@ public class Robot {
                 new GridCoordinate(Math.round(currentPosition.getX()), Math.round(currentPosition.getY()));
 
         if (!currentPosition.isSameAs(gridCoordinate))
-            throw new IllegalStateException("Robot is not at the center of a tile. Current position : "
+            throw new IllegalStateException("[TICK: "+ robotController.getServer().getTimeInTicks()+"] Robot is not at the center of a tile. Current position : "
                     + currentPosition
                     + "\n If you want an approximate grid position use getApproximateGridCoordinate()");
 
