@@ -4,12 +4,10 @@ import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.TimeUtils;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
+import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.server.order.Order;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
-
-import javax.swing.plaf.basic.BasicLookAndFeel;
 import java.util.ArrayList;
 
 public class BinDelivery implements Task {
@@ -48,6 +46,7 @@ public class BinDelivery implements Task {
     public ArrayList<Product> getProductsToPick() {
         return productsToPick;
     }
+
     public void clearAllSubTasks(){
         this.subTasks = new ArrayList<>();
     }
@@ -157,10 +156,6 @@ public class BinDelivery implements Task {
     public String toStringPretty(){
         return "BinDelivery{" +
                 "productsToPick=" + binCoords + ", productsToPick=" + productsToPick + "}";
-    }
-
-    public ArrayList<Product> getProductsToPick() {
-        return productsToPick;
     }
 
     public void reset() {
