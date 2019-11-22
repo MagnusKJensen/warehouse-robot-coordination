@@ -148,4 +148,8 @@ public class BinDelivery implements Task {
     public ArrayList<Product> getProductsToPick() {
         return productsToPick;
     }
+
+    public void reset() {
+        subTasks.clear();
+    }
 }

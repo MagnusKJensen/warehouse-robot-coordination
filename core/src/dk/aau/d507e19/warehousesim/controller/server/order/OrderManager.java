@@ -96,8 +96,8 @@ public class OrderManager {
         taskAllocator.update();
     }
 
-    public void reAddTask(Task task){
-        tasksQueue.add(0, task);
+    public void reAddBinDelivery(BinDelivery task){
+        taskAllocator.addTask(task);
     }
 
     private ArrayList<BinDelivery> divideOrderIntoDeliveries(Order order) {

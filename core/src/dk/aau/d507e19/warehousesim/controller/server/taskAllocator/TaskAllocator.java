@@ -14,6 +14,7 @@ public abstract class TaskAllocator {
     public abstract void update();
 
     public void addTask(BinDelivery binDelivery){
+        binDelivery.reset();
         unassignedTasks.add(binDelivery);
     }
 

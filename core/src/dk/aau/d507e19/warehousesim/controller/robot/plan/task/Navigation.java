@@ -120,7 +120,6 @@ public abstract class Navigation implements Task{
                 complete();
             else
                 clearPath();
-
             return;
         }
 
