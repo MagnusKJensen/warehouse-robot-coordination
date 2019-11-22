@@ -44,6 +44,7 @@ public class EmergencyStop implements Task {
     }
 
     private void reserveEmergencyStopPath() {
+
         ArrayList<Reservation> reservations
                 = MovementPredictor.calculateReservations(robotController.getRobot(), lineTraversal.getSpeedCalculator(), robotController.getServer().getTimeInTicks());
         robotController.getServer().getReservationManager().reserve(reservations);

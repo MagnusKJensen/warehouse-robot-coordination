@@ -3,8 +3,7 @@ import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 import dk.aau.d507e19.warehousesim.controller.robot.Status;
-import dk.aau.d507e19.warehousesim.controller.robot.plan.task.EmergencyStop;
-import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Maintenance;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.*;
 
 import java.util.Random;
 
@@ -56,6 +55,14 @@ public class MechanicalSensor extends Sensor {
         //this means that we might hold a bin while this is happening, making that task take WAY too long
         //for now we're just going to wait, but ideally another robot will come and pick up the bin/order from us before we are allowed to move
         if(!this.robotController.getRobot().getCurrentStatus().equals(Status.MAINTENANCE) && !createdTask){
+            if(robotController.getTasks().size() > 0){
+                Task firstTask = robotController.getTasks().getFirst();
+                if(firstTask instanceof Navigation){
+                    ((Navigation)firstTask).forceInterrupt();
+                }else if(firstTask instanceof BinDelivery){
+                    ((BinDelivery) firstTask).forceInterrupt();
+                }
+            }
             this.robotController.assignImmediateTask(new Maintenance(this.robotController));
             createdTask = true;
         }

@@ -246,4 +246,7 @@ public abstract class Navigation implements Task{
         reservationManager.reserve(robot, robot.getGridCoordinate(), TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks()));
     }
 
+    public void forceInterrupt(){
+        clearPath();
+    }
 }

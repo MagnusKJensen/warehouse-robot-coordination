@@ -110,4 +110,9 @@ public class BinDelivery implements Task {
     public Order getOrder() {
         return order;
     }
+
+    public void forceInterrupt() {
+        if(subTasks.get(0) instanceof Navigation)
+            ((Navigation) subTasks.get(0)).forceInterrupt();
+    }
 }
