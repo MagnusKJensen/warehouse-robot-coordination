@@ -130,7 +130,7 @@ public class SpeedCalculator {
             float timeSpentDecelerating = timeInSeconds - pauseDuration - accelerationDuration - maxSpeedDuration;
             return achievableSpeed - (robot.getDecelerationBinSecond() * timeSpentDecelerating);
         } else { // Phase == Finished or Phase == Pausing
-            return 0;
+            return 0f;
         }
     }
 

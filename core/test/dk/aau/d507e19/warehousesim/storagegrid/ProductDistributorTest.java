@@ -15,28 +15,32 @@ public class ProductDistributorTest {
         RunConfigurator.setDefaultRunConfiguration();
     }
 
+
     @Test
     public void isValidDistribution01() {
         double[][] distribution = {{20,80},{80,20}};
 
-        ProductDistributor.setSKUDistribution(distribution);
-        assertTrue(ProductDistributor.isValidDistribution());
+        ProductDistributor productDistributor = new ProductDistributor(Simulation.getWarehouseSpecs());
+
+        assertTrue(productDistributor.isValidDistribution(distribution));
     }
 
     @Test
     public void isValidDistribution02() {
-        double[][] distribution = {{20,80},{80,20}};
+        double[][] distribution = {{80,20},{20,80}};
 
-        ProductDistributor.setSKUDistribution(distribution);
-        assertTrue(ProductDistributor.isValidDistribution());
+        ProductDistributor productDistributor = new ProductDistributor(Simulation.getWarehouseSpecs());
+
+        assertTrue(productDistributor.isValidDistribution(distribution));
     }
 
     @Test
     public void calculateProductsPerSKU01() {
         double[][] distribution = {{20,80},{80,20}};
 
-        ProductDistributor.setSKUDistribution(distribution);
-        int[][] products =  ProductDistributor.calculateProductsPerSKU();
+        ProductDistributor productDistributor = new ProductDistributor(Simulation.getWarehouseSpecs());
+
+        int[][] products =  productDistributor.calculateProductsPerSKU(Simulation.getWarehouseSpecs().SKUs, Simulation.getWarehouseSpecs().productsInStock, distribution);
         assertEquals(products.length, Simulation.getWarehouseSpecs().SKUs);
     }
 
@@ -44,17 +48,18 @@ public class ProductDistributorTest {
     public void calculateProductsPerSKU02() {
         double[][] distribution = {{20, 50}, {10,30}, {70,20}};
 
-        ProductDistributor.setSKUDistribution(distribution);
-        int[][] products =  ProductDistributor.calculateProductsPerSKU();
+        ProductDistributor productDistributor = new ProductDistributor(Simulation.getWarehouseSpecs());
+
+        int[][] products =  productDistributor.calculateProductsPerSKU(Simulation.getWarehouseSpecs().SKUs, Simulation.getWarehouseSpecs().productsInStock, distribution);
         assertEquals(products.length, Simulation.getWarehouseSpecs().SKUs);
     }
 
     @Test
     public void calculateProductsPerSKU03() {
         double[][] distribution = {{20, 50}, {10,30}, {70,20}};
-        ProductDistributor.setSKUDistribution(distribution);
 
-        int[][] products =  ProductDistributor.calculateProductsPerSKU();
+        ProductDistributor productDistributor = new ProductDistributor(Simulation.getWarehouseSpecs());
+        int[][] products =  productDistributor.calculateProductsPerSKU(Simulation.getWarehouseSpecs().SKUs, Simulation.getWarehouseSpecs().productsInStock, distribution);
 
         int numberOfProducts = 0;
         for(int i = 0; i < products.length; ++i){
@@ -67,9 +72,9 @@ public class ProductDistributorTest {
     @Test
     public void calculateProductsPerSKU04() {
         double[][] distribution = {{10, 77}, {90, 23}};
-        ProductDistributor.setSKUDistribution(distribution);
 
-        int[][] products =  ProductDistributor.calculateProductsPerSKU();
+        ProductDistributor productDistributor = new ProductDistributor(Simulation.getWarehouseSpecs());
+        int[][] products =  productDistributor.calculateProductsPerSKU(Simulation.getWarehouseSpecs().SKUs, Simulation.getWarehouseSpecs().productsInStock, distribution);
 
         int numberOfProducts = 0;
         for(int i = 0; i < products.length; ++i){

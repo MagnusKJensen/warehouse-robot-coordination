@@ -49,7 +49,7 @@ public abstract class Navigation implements Task{
 
     public static Navigation getInstance(RobotController robotController, GridCoordinate destination, int maxRetries){
         if(robotController.getPathFinder() instanceof PartialPathFinder){
-            return new SmartNavigation(robotController, destination);
+            return new SmartNavigation(robotController, destination, maxRetries);
         } else if(robotController.getPathFinder().accountsForReservations()){
             return new ReservationNavigation(robotController, destination, maxRetries);
         }else{

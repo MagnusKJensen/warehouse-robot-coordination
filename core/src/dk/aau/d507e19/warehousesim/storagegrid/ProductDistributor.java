@@ -1,7 +1,6 @@
 package dk.aau.d507e19.warehousesim.storagegrid;
 
 import dk.aau.d507e19.warehousesim.Simulation;
-import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
@@ -11,13 +10,20 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class ProductDistributor {
-    private static int totalSKUsInWarehouse = Simulation.getWarehouseSpecs().SKUs;
-    private static final int productsInWarehouse = Simulation.getWarehouseSpecs().productsInStock;
-    private static double[][] SKUDistribution = Simulation.getWarehouseSpecs().skuDistribution;
-    private static Random random;
+    private WarehouseSpecs warehouseSpecs;
+    private Random random;
 
-    public static void distributeProducts(StorageGrid grid){
-        int[][] SKUs = calculateProductsPerSKU();
+    public ProductDistributor(WarehouseSpecs specs) {
+        this.warehouseSpecs = specs;
+        this.random = new Random(Simulation.RANDOM_SEED);
+    }
+
+    public void distributeProducts(StorageGrid grid){
+        if(warehouseSpecs.productsPerBin * warehouseSpecs.wareHouseHeight * warehouseSpecs.wareHouseWidth
+                < warehouseSpecs.productsInStock) throw new IllegalArgumentException("Too many products for the grid. Please lower productsInStock to be below" +
+                "number of binTile * productsPerBin");
+
+        int[][] SKUs = calculateProductsPerSKU(warehouseSpecs.SKUs, warehouseSpecs.productsInStock, warehouseSpecs.skuDistribution);
 
         ArrayList<Product> allProducts = generateProducts(SKUs);
 
@@ -26,51 +32,63 @@ public class ProductDistributor {
         distributeToGrid(new ArrayList<>(allProducts), grid);
     }
 
-    public static void distributeProductsRandomly(StorageGrid grid){
-        random = new Random(Simulation.RANDOM_SEED);
+    public void distributeProductsRandomly(StorageGrid grid){
+        if(warehouseSpecs.SKUs * warehouseSpecs.wareHouseHeight * warehouseSpecs.wareHouseWidth
+                < warehouseSpecs.productsInStock) throw new IllegalArgumentException("The products may not fit in the grid. Please lower productsInStock to be below" +
+                "number of binTile * SKUsPerBin");
 
-        int[][] SKUs = calculateProductsPerSKU();
+        int[][] SKUs = calculateProductsPerSKU(warehouseSpecs.SKUs, warehouseSpecs.productsInStock, warehouseSpecs.skuDistribution);
 
         ArrayList<Product> allProducts = generateProducts(SKUs);
+
+        // Sanity check
+        assert(allProducts.size() == warehouseSpecs.productsInStock);
 
         grid.setAllProducts(allProducts);
 
         distributeRandomly(new ArrayList<>(allProducts), grid);
-
     }
 
-    private static void distributeRandomly(ArrayList<Product> allProducts, StorageGrid grid) {
+    private void distributeRandomly(ArrayList<Product> allProducts, StorageGrid grid) {
         ArrayList<BinTile> nonFullTiles = getAllBinTiles(grid);
 
         for(BinTile tile : nonFullTiles){
             tile.addBin(new Bin());
         }
 
+        int attempts = 0;
+        int MAX_ATTEMPTS = 100000;
         // While some tiles are not full, and more products need to be added
         while(!nonFullTiles.isEmpty() && !allProducts.isEmpty()){
             int nextTile = random.nextInt(nonFullTiles.size());
 
+            attempts++;
             // If the bin already has the SKU or has room for more SKUs
             if(nonFullTiles.get(nextTile).getBin().hasSKU(allProducts.get(0).getSKU())
                     || nonFullTiles.get(nextTile).getBin().hasRoomForMoreSKUs()) {
                 nonFullTiles.get(nextTile).getBin().addProduct(allProducts.get(0));
                 allProducts.remove(0);
+                attempts = 0;
             }
 
             // If the bin is now full, remove it from the nonFullTiles.
             if(nonFullTiles.get(nextTile).getBin().isFull()){
                 nonFullTiles.remove(nextTile);
             }
+
+
+            if(attempts > MAX_ATTEMPTS) throw new IllegalArgumentException("Could not distribute products after " + attempts +  " attempts. Not enough room." +
+                    " Still need " + allProducts.size() +  " product(s) to fit in " + nonFullTiles.size() + " bins");
         }
 
         if(nonFullTiles.isEmpty() && !allProducts.isEmpty()) throw new IllegalArgumentException("Could not distribute products. Not enough room.");
     }
 
-    private static ArrayList<BinTile> getAllBinTiles(StorageGrid grid) {
+    private ArrayList<BinTile> getAllBinTiles(StorageGrid grid) {
         ArrayList<BinTile> tiles = new ArrayList<>();
 
-        for(int x = 0; x < Simulation.getWarehouseSpecs().wareHouseWidth; ++x){
-            for(int y = 0; y < Simulation.getWarehouseSpecs().wareHouseHeight; ++y){
+        for(int x = 0; x < warehouseSpecs.wareHouseWidth; ++x){
+            for(int y = 0; y < warehouseSpecs.wareHouseHeight; ++y){
                 if(grid.getTile(x,y) instanceof BinTile) tiles.add((BinTile) grid.getTile(x,y));
             }
         }
@@ -78,13 +96,13 @@ public class ProductDistributor {
         return tiles;
     }
 
-    private static void distributeToGrid(ArrayList<Product> allProducts, StorageGrid grid) {
+    private void distributeToGrid(ArrayList<Product> allProducts, StorageGrid grid) {
         Tile tile;
         Bin bin;
 
         // Run though all tiles in the warehouse
-        for(int x = 0; x < Simulation.getWarehouseSpecs().wareHouseWidth; ++x){
-            for(int y = 0; y < Simulation.getWarehouseSpecs().wareHouseHeight; ++y){
+        for(int x = 0; x < warehouseSpecs.wareHouseWidth; ++x){
+            for(int y = 0; y < warehouseSpecs.wareHouseHeight; ++y){
                 tile = grid.getTile(x,y);
                 if(tile instanceof BinTile){
                     // If it does not have a bin, add one
@@ -118,7 +136,7 @@ public class ProductDistributor {
      * @param SKUs Array of int arrays. int[i][0] = SKU name of index i. int[i][1] = number of products for index i.
      * @return
      */
-    private static ArrayList<Product> generateProducts(int[][] SKUs) {
+    private ArrayList<Product> generateProducts(int[][] SKUs) {
         ArrayList<Product> allProducts = new ArrayList<>();
 
         for(int i = 0; i < SKUs.length; ++i){
@@ -133,14 +151,16 @@ public class ProductDistributor {
     /**
      * Calculate how many products each SKU should have according to the distribution given in WarehouseSpec
      * @return Array of int arrays. int[i][0] = SKU name of index i. int[i][1] = number of products for index i.
+     * @param SKUs
+     * @param productsInStock
      */
-    public static int[][] calculateProductsPerSKU() {
-        if(!isValidDistribution()) throw new IllegalArgumentException("Distribution or turnover does not equal 100%");
+    public int[][] calculateProductsPerSKU(int SKUs, int productsInStock, double[][] distribution) {
+        if(!isValidDistribution(distribution)) throw new IllegalArgumentException("Distribution or turnover does not equal 100%");
 
         // A list of all SKUs. Index 0 is SKU name as int. Index 1 is number of products for the given SKU.
-        int[][] products = new int[totalSKUsInWarehouse][2];
+        int[][] products = new int[SKUs][2];
 
-        int numberOfDistributions = SKUDistribution.length;
+        int numberOfDistributions = distribution.length;
 
         int currentSKU = 0;
         int nextSKUName = 0;
@@ -154,14 +174,14 @@ public class ProductDistributor {
         for(int i = 0; i < numberOfDistributions; ++i){
             // How many SKUs in this category (Total SKUs / SKU turnover in percent)
             // If this is the last distribution take the rest of the SKUs.
-            if(i == numberOfDistributions - 1) SKUsInCategory = totalSKUsInWarehouse - totalSKUsCounted;
-            else SKUsInCategory = (int)(totalSKUsInWarehouse * (SKUDistribution[i][0] / 100));
+            if(i == numberOfDistributions - 1) SKUsInCategory = SKUs - totalSKUsCounted;
+            else SKUsInCategory = (int)(SKUs * (distribution[i][0] / 100));
 
 
             //Products in this SKU category (Total products / SKU category turnover)
             // If this is the last distribution, take the rest of the products
-            if(i == numberOfDistributions - 1) productsInSKUCat = productsInWarehouse - totalProductsCounted;
-            else productsInSKUCat = (int) (productsInWarehouse * (SKUDistribution[i][1] / 100));
+            if(i == numberOfDistributions - 1) productsInSKUCat = productsInStock - totalProductsCounted;
+            else productsInSKUCat = (int) (productsInStock * (distribution[i][1] / 100));
 
             // How many products does each SKU in this category have? (products in this SKU / SKUs in category)
             productPerSKU = productsInSKUCat / SKUsInCategory;
@@ -192,23 +212,19 @@ public class ProductDistributor {
         return products;
     }
 
-    public static boolean isValidDistribution() {
+    public boolean isValidDistribution(double[][] distribution) {
         float SKUSum = 0;
         float turnoverSum = 0;
         float delta = 0.01f;
 
-        for(int i = 0; i < SKUDistribution.length; ++i){
-            SKUSum += SKUDistribution[i][0];
-            turnoverSum += SKUDistribution[i][1];
+        for(int i = 0; i < distribution.length; ++i){
+            SKUSum += distribution[i][0];
+            turnoverSum += distribution[i][1];
         }
 
         if(Math.abs(SKUSum - 100) > delta) return false;
         if(Math.abs(turnoverSum - 100) > delta) return false;
 
         return true;
-    }
-
-    public static void setSKUDistribution(double[][] SKUDistribution) {
-        ProductDistributor.SKUDistribution = SKUDistribution;
     }
 }

@@ -85,6 +85,16 @@ public class TileInfoMenu {
         }
     }
 
+    public void updatePickerContent(ArrayList<Product> products, int x, int y){
+        binContentText.setText("Picker holding " + "for tile (" + x + "," + y + ")");
+        binContent.clear();
+        for (Product prod : products) {
+            Label label = new Label(prod.toString(), this.skin);
+            binContent.add(label).left();
+            binContent.row();
+        }
+    }
+
     public void resetScrollPaneContent(){
         resetBinContent();
         resetRobotBinContent();

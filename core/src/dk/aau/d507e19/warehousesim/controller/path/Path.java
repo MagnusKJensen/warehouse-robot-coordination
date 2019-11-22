@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.path;
 
+import dk.aau.d507e19.warehousesim.controller.robot.Direction;
 import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
 
 import java.util.ArrayList;
@@ -176,5 +177,9 @@ public class Path {
 
     public boolean isOneStepPath() {
         return getFullPath().size() == 1;
+    }
+
+    public Direction getLastDirection() {
+        return getLines().get(getLines().size() - 1).getDirection();
     }
 }

@@ -1,5 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.aStar;
 
+import java.util.Objects;
+
 public class AStarTile {
     private int currentXPosition;
     private int currentYPosition;
@@ -30,9 +32,11 @@ public class AStarTile {
         isBlocked = blocked;
     }
 
-    public void setG(int g){
+    public void setG(int g) {
         G = g;
     }
+
+    public void setH(int h) { H = h;}
 
     //Getters
 
@@ -96,5 +100,30 @@ public class AStarTile {
                 ", F=" + F +
                 ", isBlocked=" + isBlocked +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AStarTile aStarTile = (AStarTile) o;
+        return currentXPosition == aStarTile.currentXPosition &&
+                currentYPosition == aStarTile.currentYPosition;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(currentXPosition, currentYPosition);
+    }
+
+    public AStarTile copy(){
+        AStarTile ast = new AStarTile(this.getCurrentXPosition(), this.getCurrentYPosition());
+        ast.setPreviousXPosition(this.getPreviousXPosition());
+        ast.setPreviousYPosition(this.getPreviousYPosition);
+        ast.setH(this.getH());
+        ast.setG(this.getG());
+        ast.setBlocked(this.isBlocked);
+
+        return ast;
     }
 }

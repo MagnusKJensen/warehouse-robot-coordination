@@ -27,7 +27,7 @@
     ]
   ],
   "isRandomProductDistribution": true,
-  "numberOfRobots": 15,
+  "numberOfRobots": 20,
   "robotTopSpeed": 3.0,
   "robotAcceleration": 0.8,
   "robotDeceleration": 2.0,
@@ -181,6 +181,6 @@
     ]
   ],
   "secondsBetweenOrders": 5,
-  "orderGoal": 50,
+  "orderGoal": 250,
   "productsPerOrder": 4
 }
