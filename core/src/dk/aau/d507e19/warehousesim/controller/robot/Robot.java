@@ -216,7 +216,6 @@ public class Robot {
      * For instance, if current pos is (1.2 , 2) this function will return (2,2) or (1,2) depending on current direction
      * Uses the current direction of the robot to achieve this
      */
-
     public GridCoordinate getNextGridCoordinate(){
         switch(this.getDirection()){
             case NORTH: return new GridCoordinate((int)this.getCurrentPosition().getX(),(int)Math.ceil(this.getCurrentPosition().getY()));
