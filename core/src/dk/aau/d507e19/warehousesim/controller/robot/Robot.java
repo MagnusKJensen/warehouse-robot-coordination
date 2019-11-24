@@ -233,7 +233,7 @@ public class Robot {
     public void updatePosition(Position newPosition, float newSpeed){
         float deltaX = Math.abs(currentPosition.getX() - newPosition.getX());
         float deltaY = currentPosition.getY() - newPosition.getY();
-        float maxDelta = 0.1f;
+        float maxDelta = 0.05f;
 
         if(deltaX > ((getMaxSpeedBinsPerSecond() / SimulationApp.TICKS_PER_SECOND) + maxDelta) ||
                 deltaY > ((getMaxSpeedBinsPerSecond() / SimulationApp.TICKS_PER_SECOND) + maxDelta))
