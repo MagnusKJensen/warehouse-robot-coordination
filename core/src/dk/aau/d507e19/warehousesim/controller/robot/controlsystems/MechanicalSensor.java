@@ -1,11 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.robot.controlsystems;
-import dk.aau.d507e19.warehousesim.Simulation;
-import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 import dk.aau.d507e19.warehousesim.controller.robot.Status;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.*;
-
-import java.util.Random;
 
 public class MechanicalSensor extends Sensor {
     final private int failureCheckFrequency = 30; //checks for error every 30 ticks. if this is 1 then we check every tick
@@ -37,7 +33,7 @@ public class MechanicalSensor extends Sensor {
         }
     }
     private void undergoMaintenance(){
-        //how long should maintenance take?
+        // how long should maintenance take?
         if(this.robotController.isUnderMaintenance()){
             if(maintenanceStartTick == -1){
                 maintenanceStartTick = this.robotController.getServer().getTimeInTicks();
@@ -54,16 +50,8 @@ public class MechanicalSensor extends Sensor {
         //if we encounter a mechanical failure then ideally we should drive straight to maintenance, in practice however
         //this means that we might hold a bin while this is happening, making that task take WAY too long
         //for now we're just going to wait, but ideally another robot will come and pick up the bin/order from us before we are allowed to move
-        if(!this.robotController.getRobot().getCurrentStatus().equals(Status.MAINTENANCE) && !createdTask){
-            if(robotController.getTasks().size() > 0){
-                Task firstTask = robotController.getTasks().getFirst();
-                if(firstTask instanceof Navigation){
-                    ((Navigation)firstTask).forceInterrupt();
-                }else if(firstTask instanceof BinDelivery){
-                    ((BinDelivery) firstTask).forceInterrupt();
-                }
-            }
-            this.robotController.assignImmediateTask(new Maintenance(this.robotController));
+        if(!createdTask){
+            robotController.startMaintenance();
             createdTask = true;
         }
     }

@@ -280,19 +280,33 @@ public class RobotController {
         return !(robot.getCurrentSpeed() < maxDelta && robot.getCurrentSpeed() > -maxDelta);
     }
 
-    public boolean requestEmergencyStop() {
-        if(robot.getCurrentStatus() == Status.EMERGENCY || robot.getCurrentStatus() == Status.MAINTENANCE)
+    public boolean emergencyStop() {
+        if(robot.getCurrentStatus() == Status.EMERGENCY) // || robot.getCurrentStatus() == Status.MAINTENANCE
             return false;
+
+        forceInterruptCurrentTask();
+        assignImmediateTask(new EmergencyStop(this));
+        return true;
+    }
+
+    private void forceInterruptCurrentTask(){
         if(this.getTasks().size() > 0){
             Task firstTask = this.getTasks().getFirst();
             if(firstTask instanceof Navigation){
                 ((Navigation)firstTask).forceInterrupt();
             }else if(firstTask instanceof BinDelivery){
                 ((BinDelivery) firstTask).forceInterrupt();
+            }else if(firstTask instanceof Relocation){
+                tasks.removeFirst();
             }
-        assignImmediateTask(new EmergencyStop(this));
         }
-        return true;
+    }
+
+    public void startMaintenance(){
+        if(robot.getCurrentStatus() == Status.MAINTENANCE)
+            return; // Already in maintenance
+        forceInterruptCurrentTask();
+        assignImmediateTask(new Maintenance(this));
     }
 
     public long getTicksSinceOrderAssigned() {

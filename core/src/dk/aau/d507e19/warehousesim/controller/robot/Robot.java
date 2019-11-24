@@ -236,8 +236,8 @@ public class Robot {
 
         if(deltaX > ((getMaxSpeedBinsPerSecond() / SimulationApp.TICKS_PER_SECOND) + maxDelta) ||
                 deltaY > ((getMaxSpeedBinsPerSecond() / SimulationApp.TICKS_PER_SECOND) + maxDelta))
-            throw new IllegalArgumentException("Teleported. from : " + currentPosition + ", to : " + newPosition + "\n at tick : "
-            + robotController.getServer().getTimeInTicks());
+            throw new IllegalArgumentException("[TICK : " + robotController.getServer().getTimeInTicks() + "]" +
+                    "Robot  " + getRobotID() + " teleported from : " + currentPosition + ", to : " + newPosition);
 
 
         currentPosition = newPosition;

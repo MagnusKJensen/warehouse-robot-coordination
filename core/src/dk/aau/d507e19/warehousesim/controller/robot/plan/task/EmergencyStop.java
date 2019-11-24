@@ -64,7 +64,7 @@ public class EmergencyStop implements Task {
 
     private void forceReplan(ArrayList<Reservation> conflictingReservations) {
         for(Reservation r : conflictingReservations){
-            r.getRobot().getRobotController().requestEmergencyStop();
+            r.getRobot().getRobotController().emergencyStop();
         }
     }
 
