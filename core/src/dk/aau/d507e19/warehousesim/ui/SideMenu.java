@@ -123,6 +123,7 @@ public class SideMenu {
                     long tickStopGoal = Long.parseLong(input);
                     simulationApp.getSimulation().setTickStopperGoal(tickStopGoal);
                     tickStopperTextField.setText("");
+                    tickStopperText.setText("TickStopper " + tickStopGoal);
                 } catch (NumberFormatException e){
                     tickStopperTextField.setText("");
                 }
