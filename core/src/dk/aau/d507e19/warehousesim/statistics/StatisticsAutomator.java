@@ -17,11 +17,11 @@ import java.util.Random;
 public class StatisticsAutomator {
 
     public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations";
-    private static final int TICKS_PER_RUN = 45000; // 10.000 is about 55min of "real time"
-    private static final int FILE_WRITE_INTERVAL_TICKS = 10000;
-    private static final String VERSION_NAME = "bigVersion";
-    private static final String SPEC_FILE_NAME = "defaultSpecs.json";
-    private static final int numberOfSeeds = 5;
+    private static final int TICKS_PER_RUN = 216000; // 10.000 is about 55min of "real time"
+    private static final int FILE_WRITE_INTERVAL_TICKS = 50000;
+    private static final String VERSION_NAME = "result";
+    private static final String SPEC_FILE_NAME = "proshop1Layer.json";
+    private static final int numberOfSeeds = 30;
     private static long[] SEEDS = new long[numberOfSeeds];
     private static Random random = new Random(SimulationApp.DEFAULT_SEED);
 
@@ -30,14 +30,17 @@ public class StatisticsAutomator {
 
         // Task allocators to use
         ArrayList<TaskAllocatorEnum> taskAllocators = new ArrayList<>(Arrays.asList(
-                //TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR, TaskAllocatorEnum.SMART_ALLOCATOR, TaskAllocatorEnum.NAIVE_SHORTEST_DISTANCE_TASK_ALLOCATOR
-                //TaskAllocatorEnum.NAIVE_SHORTEST_DISTANCE_TASK_ALLOCATOR
-                TaskAllocatorEnum.LEAST_USED_ROBOT_TASK_ALLOCATOR
+                TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR,
+                TaskAllocatorEnum.SMART_ALLOCATOR,
+                TaskAllocatorEnum.NAIVE_SHORTEST_DISTANCE_TASK_ALLOCATOR
         ));
 
         // Path finders to use
         ArrayList<PathFinderEnum> pathFinders = new ArrayList<>(Arrays.asList(
-                PathFinderEnum.CHPATHFINDER
+                PathFinderEnum.CHPATHFINDER,
+                PathFinderEnum.ASTAR,
+                PathFinderEnum.DUMMYPATHFINDER,
+                PathFinderEnum.RRTSTAREXTENDED
         ));
 
         // Run a single config with the specified taskAllocators and pathfinders
@@ -59,11 +62,12 @@ public class StatisticsAutomator {
 
         System.out.println("WarehouseConfig: " + configFileName);
         System.out.println("________________________________________________________________");
+        int seedNumber = 1;
         for (TaskAllocatorEnum taskAllocator : taskAllocators) {
             for (PathFinderEnum pathFinder : pathFinders) {
                 if (taskAllocator.works() && pathFinder.works()) {
                     for(long seed : seeds){
-                        System.out.println("TaskAllocator: " + taskAllocator.getName() + ", PathFinder: " + pathFinder.getName() + ", Seed: " + seed);
+                        System.out.println("TaskAllocator: " + taskAllocator.getName() + ", PathFinder: " + pathFinder.getName() + ", Seed: " + seedNumber++ + "/" + SEEDS.length + " : " + seed);
                         simulation = new Simulation(seed, configFileName, pathFinder, taskAllocator);
                         simulation.getStatisticsManager().setVERSION_NAME(versionName);
                         while (simulation.getTimeInTicks() < TICKS_PER_RUN) {

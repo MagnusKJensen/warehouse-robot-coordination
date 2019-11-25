@@ -7,11 +7,11 @@
     "endX": 51,
     "endY": 51
   },
-  "binSizeInMeters": 0.5,
-  "productsPerBin": 10,
+  "binSizeInMeters": 0.4,
+  "productsPerBin": 15,
   "SKUsPerBin": 9,
-  "SKUs": 9375,
-  "productsInStock": 50000,
+  "SKUs": 8125,
+  "productsInStock": 20000,
   "skuDistribution": [
     [
       20,
@@ -23,7 +23,7 @@
     ]
   ],
   "isRandomProductDistribution": true,
-  "numberOfRobots": 30,
+  "numberOfRobots": 40,
   "robotTopSpeed": 3.0,
   "robotAcceleration": 0.8,
   "robotDeceleration": 2.0,
@@ -114,7 +114,7 @@
       0
     ]
   ],
-  "secondsBetweenOrders": 15,
+  "secondsBetweenOrders": 12,
   "orderGoal": 50,
   "productsPerOrder": 4
 }
