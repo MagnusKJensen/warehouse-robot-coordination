@@ -114,7 +114,12 @@ public class ReservationManager {
     public void reserve(ArrayList<Reservation> reservations) throws DoubleReservationException {
         for (Reservation reservation : reservations) {
             int x = reservation.getGridCoordinate().getX(), y = reservation.getGridCoordinate().getY();
-            reservationTiles[x][y].addReservation(reservation);
+            try{
+                reservationTiles[x][y].addReservation(reservation);
+            }catch (ArrayIndexOutOfBoundsException e){
+                System.err.println(e.getMessage() + "\nRobot : " + reservation.getRobot().getRobotID()
+                        + " [TICK: " + server.getTimeInTicks() + "]");
+            }
             mapReservation(reservation);
         }
     }

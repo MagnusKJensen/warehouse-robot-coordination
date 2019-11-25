@@ -86,6 +86,9 @@ public class EmergencyStop implements Task {
         return distanceToBrake;
     }
     private GridCoordinate calcDestination(float distanceTravelled){
+        final float delta = 0.0001f;
+        distanceTravelled -= delta;
+
         GridCoordinate destination;
         GridCoordinate currentAdjustedPosition = this.robotController.getRobot().getNextGridCoordinate();
         Direction direction = this.robotController.getRobot().getDirection();

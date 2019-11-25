@@ -117,7 +117,6 @@ public class SpeedCalculator {
         float timeInSeconds = (float) ticks / SimulationApp.TICKS_PER_SECOND;
         Phase phase = getPhase(timeInSeconds);
 
-
         if (phase == Phase.ACCELERATION_PHASE) {
             if (initialSpeed > 0) {
                 if (achievableSpeed < robot.getAccelerationBinSecond() * (timeInSeconds - pauseDuration) + initialSpeed)
