@@ -17,10 +17,10 @@ import java.util.Random;
 public class StatisticsAutomator {
 
     public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations";
-    private static final int TICKS_PER_RUN = 216000; // 10.000 is about 55min of "real time"
+    private static final int TICKS_PER_RUN = 216000; // 216.000 = 2 timers real time
     private static final int FILE_WRITE_INTERVAL_TICKS = 50000;
     private static final String VERSION_NAME = "result";
-    private static final String SPEC_FILE_NAME = "proshop1Layer.json";
+    private static final String SPEC_FILE_NAME = "massProducts.json";
     private static final int numberOfSeeds = 30;
     private static long[] SEEDS = new long[numberOfSeeds];
     private static Random random = new Random(SimulationApp.DEFAULT_SEED);
