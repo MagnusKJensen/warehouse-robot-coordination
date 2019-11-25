@@ -15,7 +15,6 @@ import java.util.Iterator;
 
 public class Maintenance implements Task {
     private GridCoordinate destination;
-    private Server server;
     private RobotController robotController;
     private boolean completed, failed, hasReAssignedTasks = false;
     private Navigation navigation;
@@ -25,7 +24,7 @@ public class Maintenance implements Task {
     public Maintenance(RobotController robotController) {
         this.robotController = robotController;
         this.emergencyStop = new EmergencyStop(this.robotController);
-        if(robotController.getRobot().getRobotID()==6){
+        if (robotController.getRobot().getRobotID() == 6) {
             System.out.println();
         }
 
@@ -38,7 +37,7 @@ public class Maintenance implements Task {
     @Override
     public void perform() {
         if (emergencyStop.isCompleted()) {
-            if(!hasReAssignedTasks){
+            if (!hasReAssignedTasks) {
                 handleOldTasks();
                 hasReAssignedTasks = true;
             }
@@ -61,7 +60,7 @@ public class Maintenance implements Task {
                 if (navigation.hasFailed())
                     fail();
             }
-        //if emergency stop is not completed we perform it
+            //if emergency stop is not completed we perform it
         } else {
             emergencyStop.perform();
         }
@@ -109,91 +108,81 @@ public class Maintenance implements Task {
         }
         return null;
     }
-    public void handleOldTasks(){
+
+    public void handleOldTasks() {
         Iterator<Task> iterator = robotController.getTasks().iterator();
         ArrayList<Task> tasksToRemove = new ArrayList<>();
-        while(iterator.hasNext()){
+        while (iterator.hasNext()) {
             Task t = iterator.next();
-            if(t instanceof BinDelivery){
+            if (t instanceof BinDelivery) {
                 tasksToRemove.add(t);
                 handleBinDelivery((BinDelivery) t);
 
-            }else if(t instanceof Charging){
+            } else if (t instanceof Charging) {
                 ((Charging) t).resetNavigation();
             }
         }
         robotController.getTasks().removeAll(tasksToRemove);
     }
-    private void handleBinDelivery(BinDelivery binDelivery){
-        Robot replacementBot = findRobotToPerformTask();
-        if(!robotController.getRobot().isCarrying()){
+
+    private void handleBinDelivery(BinDelivery binDelivery) {
+        Server server = robotController.getServer();
+        if (robotController.getRobot().isCarrying()) {
             //if interrupted during navigation we can just give the BinDelivery to the replacement bot
-            if(containsBinOnTopOfGridPickup(binDelivery.getSubTasks())){
-                BinOnTopOfGridPickup old = getBinOnTopOffGridPickup(binDelivery.getSubTasks());
-                BinOnTopOfGridPickup updated = new BinOnTopOfGridPickup(replacementBot.getRobotController(),old.binLocation,old.bin);
-                binDelivery.clearAllSubTasks();
-                binDelivery.getSubTasks().add(updated);
-                binDelivery.setRobot(replacementBot);
-                removePickUpTask(binDelivery);
-                reAssignTask(binDelivery,replacementBot);
-
-            }else{
-                binDelivery.clearAllSubTasks();
-                binDelivery.setRobot(replacementBot);
-                reAssignTask(binDelivery,replacementBot);
-            }
-
-        }else{
-            //todo @bau implement proper handling when a robot emergency stops while its carrying a bin
-            //we are carrying a bin right now, meaning we need to drop it and give it to someone else
             Bin bin = robotController.getRobot().getBin();
             robotController.getRobot().ignorantPutDownBin();
-            binDelivery.clearAllSubTasks();
-            binDelivery.setRobot(replacementBot);
-            binDelivery.getSubTasks().add(0,new BinOnTopOfGridPickup(replacementBot.getRobotController(),this.robotController.getRobot().getApproximateGridCoordinate(),bin));
-            removePickUpTask(binDelivery);
-            reAssignTask(binDelivery,replacementBot);
+            server.getOrderManager().reAddBinDelivery(new RecollectBinDelivery(binDelivery, robotController.getRobot().getApproximateGridCoordinate(), bin));
+            robotController.removeTask(binDelivery);
+        } else {
+            server.getOrderManager().reAddBinDelivery(binDelivery);
+            robotController.removeTask(binDelivery);
         }
 
     }
-    private void removePickUpTask(BinDelivery delivery){
+
+    private void removePickUpTask(BinDelivery delivery) {
         Iterator<Task> iterator = delivery.getSubTasks().listIterator();
-        int i =0;
-        while (iterator.hasNext()){
-            if(iterator.next() instanceof TimedAction){
+        int i = 0;
+        while (iterator.hasNext()) {
+            if (iterator.next() instanceof TimedAction) {
                 delivery.getSubTasks().remove(i);
-                delivery.getSubTasks().remove(i-1);
+                delivery.getSubTasks().remove(i - 1);
                 break;
             }
             i++;
         }
     }
-    private void reAssignTask(BinDelivery task, Robot replacementRobot){
+
+    private void reAssignTask(BinDelivery task, Robot replacementRobot) {
         //assign the task to replacementRobot instead of us.
         replacementRobot.getRobotController().getTasks().add(task);
     }
-    private Robot findRobotToPerformTask(){
+
+    private Robot findRobotToPerformTask() {
         //todo use task allocator for this
         //get the first robot that is not us
-        for(Robot r : robotController.getServer().getAllRobots()){
-            if(!r.equals(robotController.getRobot()) && r.getRobotController().getTasks().size() < 2){
+        for (Robot r : robotController.getServer().getAllRobots()) {
+            if (!r.equals(robotController.getRobot()) && r.getRobotController().getTasks().size() < 2) {
                 return r;
             }
         }
         return robotController.getServer().getAllRobots().get(7);
     }
+
     private BinOnTopOfGridPickup getBinOnTopOffGridPickup(ArrayList<Task> subTasks) {
-        for(Task t : subTasks){
-            if(t instanceof BinOnTopOfGridPickup)
+        for (Task t : subTasks) {
+            if (t instanceof BinOnTopOfGridPickup)
                 return (BinOnTopOfGridPickup) t;
         }
         return null;
     }
-    private boolean containsBinOnTopOfGridPickup(ArrayList<Task> subTasks){
-        for(Task t : subTasks){
-            if(t instanceof BinOnTopOfGridPickup){
+
+    private boolean containsBinOnTopOfGridPickup(ArrayList<Task> subTasks) {
+        for (Task t : subTasks) {
+            if (t instanceof BinOnTopOfGridPickup) {
                 return true;
             }
-        }return false;
+        }
+        return false;
     }
 }

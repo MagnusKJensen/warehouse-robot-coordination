@@ -10,6 +10,16 @@ public class GridCoordinate {
 
     private int x, y;
 
+    public static GridCoordinate getNextGridCoordinate(Position firstBreakPoint, Direction direction) {
+        switch(direction){
+            case NORTH: return new GridCoordinate((int)firstBreakPoint.getX(),(int)Math.ceil(firstBreakPoint.getY()));
+            case SOUTH: return new GridCoordinate ((int)firstBreakPoint.getX(), (int)Math.floor(firstBreakPoint.getY()));
+            case WEST: return new GridCoordinate ((int)Math.floor(firstBreakPoint.getX()), (int)firstBreakPoint.getY());
+            case EAST: return new GridCoordinate ((int)Math.ceil(firstBreakPoint.getX()),(int)firstBreakPoint.getY());
+            default: throw new EnumConstantNotPresentException(Direction.class, direction.name());
+        }
+    }
+
     @Override
     public String toString() {
         return "GridCoordinate{" +

@@ -312,4 +312,8 @@ public class RobotController {
     public long getTicksSinceOrderAssigned() {
         return ticksSinceOrderAssigned;
     }
+
+    public void removeTask(BinDelivery binDelivery) {
+        tasks.remove(binDelivery);
+    }
 }

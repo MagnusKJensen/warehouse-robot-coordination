@@ -11,16 +11,16 @@ import dk.aau.d507e19.warehousesim.storagegrid.product.Product;
 import java.util.ArrayList;
 
 public class BinDelivery implements Task {
-    private Order order;
+    Order order;
     public RobotController robotController;
-    private Robot robot;
-    private GridCoordinate binCoords;
-    private ArrayList<Product> productsToPick;
+    Robot robot;
+    GridCoordinate binCoords;
+    ArrayList<Product> productsToPick;
     private int distanceForDelivery = 0;
 
-    private ArrayList<Task> subTasks = new ArrayList<>();
+    protected ArrayList<Task> subTasks = new ArrayList<>();
     private boolean completed = false;
-    private boolean isPlanned = false;
+    protected boolean isPlanned = false;
     private ArrayList<Runnable> onComplete = new ArrayList<>();
 
     public BinDelivery(Order order, GridCoordinate binCoords, ArrayList<Product> productsToPick) {
@@ -67,7 +67,7 @@ public class BinDelivery implements Task {
         return true;
     }
 
-    private void planTasks() {
+    protected void planTasks() {
         // Pickup
         subTasks.add(Navigation.getInstance(robotController, binCoords));
         subTasks.add(new TimedAction(() -> robot.pickUpBin(), TimeUtils.secondsToTicks(Simulation.getWarehouseSpecs().robotPickUpSpeedInSeconds)));

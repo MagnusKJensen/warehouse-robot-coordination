@@ -1,5 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.robot.plan.task;
 
+import dk.aau.d507e19.warehousesim.Position;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.LineTraversal;
 import dk.aau.d507e19.warehousesim.controller.server.Reservation;
@@ -13,7 +14,7 @@ public class EmergencyStop implements Task {
     boolean finished = false;
     LineTraversal lineTraversal;
     ReservationManager reservationManager;
-    private float distanceToBrake,distanceToDrive;
+    private float distanceToBrake;
 
 
     public EmergencyStop(RobotController robotController) {
@@ -32,6 +33,7 @@ public class EmergencyStop implements Task {
             reservationManager.removeReservationsBy(robotController.getRobot());
 
             destination = calcDestination(getMinimumBrakeDistance(this.robotController.getRobot()));
+            float distanceToDrive = destination.distanceFrom(robotController.getRobot().getCurrentPosition());
             lineTraversal = new LineTraversal(this.robotController.getRobot(),this.robotController.getRobot().getCurrentPosition(),destination,distanceToDrive);
             //make sure that other robots know that we're about to stop at destination.
             reserveEmergencyStopPath();
@@ -85,49 +87,21 @@ public class EmergencyStop implements Task {
         distanceToBrake = (float) (Math.pow(currentSpeed,2)/(2*deceleration));
         return distanceToBrake;
     }
-    private GridCoordinate calcDestination(float distanceTravelled){
+
+
+    private GridCoordinate calcDestination(float minBreakingDistance){
         final float delta = 0.0001f;
-        distanceTravelled -= delta;
+        minBreakingDistance -= delta;
+        minBreakingDistance = Math.max(minBreakingDistance, 0f);
 
-        GridCoordinate destination;
-        GridCoordinate currentAdjustedPosition = this.robotController.getRobot().getNextGridCoordinate();
         Direction direction = this.robotController.getRobot().getDirection();
+        Robot robot = robotController.getRobot();
 
-        if(distanceTravelled <= currentAdjustedPosition.distanceFrom(robotController.getRobot().getCurrentPosition())){
-            destination = robotController.getRobot().getNextGridCoordinate();
-            switch (direction){
-                case NORTH:
-                    distanceToDrive = destination.getY()-this.robotController.getRobot().getCurrentPosition().getY();
-                    break;
-                case SOUTH:
-                    distanceToDrive = this.robotController.getRobot().getCurrentPosition().getY() - destination.getY();
-                    break;
-                case EAST:
-                    distanceToDrive = destination.getX()-this.robotController.getRobot().getCurrentPosition().getX();
-                    break;
-                case WEST:
-                    distanceToDrive = this.robotController.getRobot().getCurrentPosition().getX()- destination.getX();
-                    break;
-            }
-            return destination;
-        }
-
-        int rounded  = (int)Math.ceil(distanceTravelled);
-        switch (direction){
-            case NORTH:
-                distanceToDrive = currentAdjustedPosition.getY()+rounded - this.robotController.getRobot().getCurrentPosition().getY();
-                return new GridCoordinate(currentAdjustedPosition.getX(),currentAdjustedPosition.getY()+rounded);
-            case SOUTH:
-                distanceToDrive = this.robotController.getRobot().getCurrentPosition().getY() - (currentAdjustedPosition.getY()-rounded);
-                return new GridCoordinate(currentAdjustedPosition.getX(),currentAdjustedPosition.getY()-rounded);
-            case EAST:
-                distanceToDrive = currentAdjustedPosition.getX()+rounded - this.robotController.getRobot().getCurrentPosition().getX();
-                return new GridCoordinate(currentAdjustedPosition.getX()+rounded,currentAdjustedPosition.getY());
-            case WEST:
-                distanceToDrive = this.robotController.getRobot().getCurrentPosition().getX() - (currentAdjustedPosition.getX()-rounded);
-                return new GridCoordinate(currentAdjustedPosition.getX()-rounded,currentAdjustedPosition.getY());
-        }
-        return null;
+        float possibleStopX = robot.getCurrentPosition().getX() + (direction.xDir * minBreakingDistance);;
+        float possibleStopY = robot.getCurrentPosition().getY() + (direction.yDir * minBreakingDistance);
+        Position stoppingPosition = new Position(possibleStopX, possibleStopY);
+        GridCoordinate stoppingTile = GridCoordinate.getNextGridCoordinate(stoppingPosition, direction);
+        return stoppingTile;
     }
 
 
