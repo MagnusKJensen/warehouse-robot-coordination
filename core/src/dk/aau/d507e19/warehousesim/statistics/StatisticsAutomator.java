@@ -15,13 +15,12 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class StatisticsAutomator {
-
     public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations";
     private static final int TICKS_PER_RUN = 216000; // 216.000 = 2 timers real time
     private static final int FILE_WRITE_INTERVAL_TICKS = 50000;
     private static final String VERSION_NAME = "result";
-    private static final String SPEC_FILE_NAME = "massProducts.json";
-    private static final int numberOfSeeds = 30;
+    private static final String SPEC_FILE_NAME = "artShop.json";
+    private static final int numberOfSeeds = 1;
     private static long[] SEEDS = new long[numberOfSeeds];
     private static Random random = new Random(SimulationApp.DEFAULT_SEED);
 
@@ -62,10 +61,10 @@ public class StatisticsAutomator {
 
         System.out.println("WarehouseConfig: " + configFileName);
         System.out.println("________________________________________________________________");
-        int seedNumber = 1;
         for (TaskAllocatorEnum taskAllocator : taskAllocators) {
             for (PathFinderEnum pathFinder : pathFinders) {
                 if (taskAllocator.works() && pathFinder.works()) {
+                    int seedNumber = 1;
                     for(long seed : seeds){
                         System.out.println("TaskAllocator: " + taskAllocator.getName() + ", PathFinder: " + pathFinder.getName() + ", Seed: " + seedNumber++ + "/" + SEEDS.length + " : " + seed);
                         simulation = new Simulation(seed, configFileName, pathFinder, taskAllocator);
