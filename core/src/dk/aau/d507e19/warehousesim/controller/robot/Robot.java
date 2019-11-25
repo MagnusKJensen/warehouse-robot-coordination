@@ -200,14 +200,14 @@ public class Robot {
                 new GridCoordinate(Math.round(currentPosition.getX()), Math.round(currentPosition.getY()));
 
         if (!currentPosition.isSameAs(gridCoordinate))
-            throw new IllegalStateException("[TICK: "+ robotController.getServer().getTimeInTicks()+"] Robot is not at the center of a tile. Current position : "
+            throw new IllegalStateException("[TICK: "+ robotController.getServer().getTimeInTicks()+"] Robot " + getRobotID() + " is not at the center of a tile. Current position : "
                     + currentPosition
                     + "\n If you want an approximate grid position use getApproximateGridCoordinate()");
 
         return gridCoordinate;
     }
 
-    public GridCoordinate getApproximateGridCoordinate() {
+        public GridCoordinate getApproximateGridCoordinate() {
         return new GridCoordinate(Math.round(currentPosition.getX()), Math.round(currentPosition.getY()));
     }
 

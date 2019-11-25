@@ -44,7 +44,7 @@ public class RobotController {
         return random;
     }
 
-    private void reserveCurrentSpot() {
+    public void reserveCurrentSpot() {
         try {
             TimeFrame indefiniteTimeFrame = TimeFrame.indefiniteTimeFrameFrom(server.getTimeInTicks());
             server.getReservationManager().reserve(robot, robot.getGridCoordinate(), indefiniteTimeFrame);

@@ -24,23 +24,31 @@ public class EmergencyStop implements Task {
 
     @Override
     public void perform() {
-        if(!robotController.isMoving()){
+        if (!robotController.isMoving()) {
             complete();
             return;
         }
 
-        if(destination==null){
+        if (destination == null) {
             reservationManager.removeReservationsBy(robotController.getRobot());
 
             destination = calcDestination(getMinimumBrakeDistance(this.robotController.getRobot()));
             float distanceToDrive = destination.distanceFrom(robotController.getRobot().getCurrentPosition());
-            lineTraversal = new LineTraversal(this.robotController.getRobot(),this.robotController.getRobot().getCurrentPosition(),destination,distanceToDrive);
-            //make sure that other robots know that we're about to stop at destination.
-            reserveEmergencyStopPath();
+
+            if (distanceToDrive < 0.001f) {
+                robotController.getRobot().updatePosition(destination.toPosition(), 0f);
+                robotController.reserveCurrentSpot();
+                complete();
+                return;
+            }else{
+                lineTraversal = new LineTraversal(this.robotController.getRobot(), this.robotController.getRobot().getCurrentPosition(), destination, distanceToDrive);
+                reserveEmergencyStopPath();
+                //make sure that other robots know that we're about to stop at destination.
+            }
         }
-        if(!lineTraversal.isCompleted()){
+        if (!lineTraversal.isCompleted()) {
             lineTraversal.perform();
-        }else{
+        } else {
             complete();
         }
     }
@@ -55,41 +63,45 @@ public class EmergencyStop implements Task {
         Reservation lastTileReservation = ReservationNavigation.createLastTileIndefiniteReservation(reservations);
         reservations.add(lastTileReservation);
 
-        if(reservationManager.hasConflictingReservations(reservations)){
+        if (reservationManager.hasConflictingReservations(reservations)) {
             //force all the other robots to replan their routes
             forceReplan(reservationManager.getConflictingReservations(reservations));
             reservationManager.reserve(lastTileReservation);
-        }else{
+        } else {
             reservationManager.reserve(lastTileReservation);
         }
     }
 
     private void forceReplan(ArrayList<Reservation> conflictingReservations) {
-        for(Reservation r : conflictingReservations){
+        for (Reservation r : conflictingReservations) {
             r.getRobot().getRobotController().emergencyStop();
         }
     }
 
-    private float getMinimumBrakeDistance(Robot robot){
+    private float getMinimumBrakeDistance(Robot robot) {
         float currentSpeed = robot.getCurrentSpeed();
         //if currentSpeed is 0 we might still have to move??
-        if(currentSpeed == 0){
-            switch(robot.getDirection()){
-                case NORTH: return (float) (Math.ceil(robot.getCurrentPosition().getY()) - robot.getCurrentPosition().getY());
-                case SOUTH: return (float) (robot.getCurrentPosition().getY() - Math.floor(robot.getCurrentPosition().getY()));
-                case WEST: return (float) (Math.ceil(robot.getCurrentPosition().getX()) - robot.getCurrentPosition().getX());
-                case EAST: return (float) (robot.getCurrentPosition().getX() - Math.floor(robot.getCurrentPosition().getX()));
+        if (currentSpeed == 0) {
+            switch (robot.getDirection()) {
+                case NORTH:
+                    return (float) (Math.ceil(robot.getCurrentPosition().getY()) - robot.getCurrentPosition().getY());
+                case SOUTH:
+                    return (float) (robot.getCurrentPosition().getY() - Math.floor(robot.getCurrentPosition().getY()));
+                case WEST:
+                    return (float) (Math.ceil(robot.getCurrentPosition().getX()) - robot.getCurrentPosition().getX());
+                case EAST:
+                    return (float) (robot.getCurrentPosition().getX() - Math.floor(robot.getCurrentPosition().getX()));
             }
         }
         float deceleration = robot.getDecelerationBinSecond();
         //formula to find stopping dis: v^2 /2a src(https://physics.stackexchange.com/questions/3818/stopping-distance-frictionless)
         //v = curr speed, a = acceleration/deceleration
-        distanceToBrake = (float) (Math.pow(currentSpeed,2)/(2*deceleration));
+        distanceToBrake = (float) (Math.pow(currentSpeed, 2) / (2 * deceleration));
         return distanceToBrake;
     }
 
 
-    private GridCoordinate calcDestination(float minBreakingDistance){
+    private GridCoordinate calcDestination(float minBreakingDistance) {
         final float delta = 0.0001f;
         minBreakingDistance -= delta;
         minBreakingDistance = Math.max(minBreakingDistance, 0f);
@@ -97,7 +109,8 @@ public class EmergencyStop implements Task {
         Direction direction = this.robotController.getRobot().getDirection();
         Robot robot = robotController.getRobot();
 
-        float possibleStopX = robot.getCurrentPosition().getX() + (direction.xDir * minBreakingDistance);;
+        float possibleStopX = robot.getCurrentPosition().getX() + (direction.xDir * minBreakingDistance);
+        ;
         float possibleStopY = robot.getCurrentPosition().getY() + (direction.yDir * minBreakingDistance);
         Position stoppingPosition = new Position(possibleStopX, possibleStopY);
         GridCoordinate stoppingTile = GridCoordinate.getNextGridCoordinate(stoppingPosition, direction);
@@ -109,7 +122,8 @@ public class EmergencyStop implements Task {
     public boolean isCompleted() {
         return finished;
     }
-    private void complete(){
+
+    private void complete() {
         finished = true;
     }
 

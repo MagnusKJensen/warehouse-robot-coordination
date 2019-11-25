@@ -26,12 +26,12 @@ public class NaiveShortestDistanceTaskAllocator extends TaskAllocator {
     @Override
     public void update() {
         Iterator<BinDelivery> taskIterator = getTaskIterator();
-        while(taskIterator.hasNext()){
+        while (taskIterator.hasNext()) {
             Task task = taskIterator.next();
             Optional<Robot> optimalRobot = findOptimalRobot(server.getAllRobots(), task);
-            if(optimalRobot.isPresent()){
-                if(optimalRobot.get().getRobotController().assignTask(task))
-                    taskIterator.remove();
+            if (optimalRobot.isPresent()) {
+                assignTask(task, optimalRobot.get());
+                taskIterator.remove();
             }
         }
     }
@@ -43,22 +43,22 @@ public class NaiveShortestDistanceTaskAllocator extends TaskAllocator {
 
         int shortestDistance = -1;
         int newDistance;
-        for(Robot robot : availableRobots){
+        for (Robot robot : availableRobots) {
             newDistance = calculateDistance(robot.getApproximateGridCoordinate(), ((BinDelivery) task).getBinCoords());
-            if(shortestDistance == -1 || newDistance < shortestDistance){
+            if (shortestDistance == -1 || newDistance < shortestDistance) {
                 shortestDistance = newDistance;
                 optimalRobot = robot;
             }
         }
 
-        if(optimalRobot != null) return Optional.of(optimalRobot);
+        if (optimalRobot != null) return Optional.of(optimalRobot);
         return Optional.empty();
     }
 
-    private ArrayList<Robot> findAvailableRobots(ArrayList<Robot> robots){
+    private ArrayList<Robot> findAvailableRobots(ArrayList<Robot> robots) {
         ArrayList<Robot> availableRobots = new ArrayList<>();
-        for (Robot robot : robots){
-            if(robot.getCurrentStatus() == Status.AVAILABLE) availableRobots.add(robot);
+        for (Robot robot : robots) {
+            if (robot.getCurrentStatus() == Status.AVAILABLE) availableRobots.add(robot);
         }
 
         return availableRobots;

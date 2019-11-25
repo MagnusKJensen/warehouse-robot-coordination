@@ -6,7 +6,6 @@ import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 import dk.aau.d507e19.warehousesim.controller.robot.Status;
 import dk.aau.d507e19.warehousesim.controller.robot.controlsystems.SensorState;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
-import dk.aau.d507e19.warehousesim.storagegrid.ChargingTile;
 import dk.aau.d507e19.warehousesim.storagegrid.MaintenanceTile;
 import dk.aau.d507e19.warehousesim.storagegrid.product.Bin;
 
@@ -50,6 +49,7 @@ public class Maintenance implements Task {
                     maintenanceTile.setReserved(true);
                 } else return;
             }
+
             if (!navigation.isCompleted()) {
                 navigation.perform();
             }
@@ -115,27 +115,23 @@ public class Maintenance implements Task {
         while (iterator.hasNext()) {
             Task t = iterator.next();
             if (t instanceof BinDelivery) {
-                tasksToRemove.add(t);
-                handleBinDelivery((BinDelivery) t);
-
+                iterator.remove();
+                reassignBinDelivery((BinDelivery) t);
             } else if (t instanceof Charging) {
                 ((Charging) t).resetNavigation();
             }
         }
-        robotController.getTasks().removeAll(tasksToRemove);
     }
 
-    private void handleBinDelivery(BinDelivery binDelivery) {
+    private void reassignBinDelivery(BinDelivery binDelivery) {
         Server server = robotController.getServer();
         if (robotController.getRobot().isCarrying()) {
             //if interrupted during navigation we can just give the BinDelivery to the replacement bot
             Bin bin = robotController.getRobot().getBin();
             robotController.getRobot().ignorantPutDownBin();
             server.getOrderManager().reAddBinDelivery(new RecollectBinDelivery(binDelivery, robotController.getRobot().getApproximateGridCoordinate(), bin));
-            robotController.removeTask(binDelivery);
         } else {
             server.getOrderManager().reAddBinDelivery(binDelivery);
-            robotController.removeTask(binDelivery);
         }
 
     }

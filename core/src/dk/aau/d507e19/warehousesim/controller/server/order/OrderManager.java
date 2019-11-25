@@ -27,44 +27,35 @@ public class OrderManager {
         this.taskAllocator = Simulation.getTaskAllocator().getTaskAllocator(server.getSimulation().getStorageGrid(), server);
     }
 
-    public void takeOrder(Order order){
+    public void takeOrder(Order order) {
         this.orderQueue.add(order);
     }
 
-    private void checkIfOrdersAreCompleted() {
-        boolean isCompleted;
-        ArrayList<Order> ordersToRemove = new ArrayList<>();
-        for(Order order : processingOrdersToTaskMap.keySet()){
-            isCompleted = true;
-            if(!processingOrdersToTaskMap.get(order).isEmpty()){
-                for(Task task : processingOrdersToTaskMap.get(order)){
-                    if(!task.isCompleted()) isCompleted = false;
-                }
+    private void checkIfOrdersAreCompleted(PickerTile picker, Order order) {
+        boolean isCompleted = true;
 
-                if(isCompleted){
-                    order.getPicker().finishOrder();
-                    ordersFinished.add(order);
-                    order.setFinishTimeInMS(server.getTimeInMS());
-                    ordersToRemove.add(order);
-                }
+        if (!processingOrdersToTaskMap.get(order).isEmpty()) {
+            for (Task task : processingOrdersToTaskMap.get(order)) {
+                if (!task.isCompleted()) isCompleted = false;
             }
-        }
 
-        for(Order order : ordersToRemove){
-            processingOrdersToTaskMap.remove(order);
+            if (isCompleted) {
+                order.getPicker().finishOrder();
+                processingOrdersToTaskMap.remove(order);
+                ordersFinished.add(order);
+                order.setFinishTimeInMS(server.getTimeInMS());
+            }
         }
     }
 
 
-    public void update(){
-        checkIfOrdersAreCompleted();
-
+    public void update() {
         ArrayList<PickerTile> availablePickers = server.getAvailablePickers();
 
         int maxOrderAssignPerTick = 50;
         Iterator<Order> orderIterator = orderQueue.iterator();
 
-        while(orderIterator.hasNext() && !availablePickers.isEmpty() && maxOrderAssignPerTick != 0){
+        while (orderIterator.hasNext() && !availablePickers.isEmpty() && maxOrderAssignPerTick != 0) {
             Order order = orderIterator.next();
             // Assign order to picker
             availablePickers.get(0).assignOrder(order);
@@ -72,9 +63,11 @@ public class OrderManager {
             order.setPicker(availablePickers.get(0));
             // Divide order into tasks to robots and add to list of available tasks
             ArrayList<BinDelivery> tasksFromOrder = createTasksFromOrder(order);
-            if(tasksFromOrder != null){
+            if (tasksFromOrder != null) {
                 order.setStartTimeInMS(server.getTimeInMS());
                 processingOrdersToTaskMap.put(order, tasksFromOrder);
+                // Check if orders are complete when completed
+                tasksFromOrder.forEach((t) -> t.addOnCompleteAction(() -> checkIfOrdersAreCompleted(order.getPicker(), order)));
                 taskAllocator.addTask(tasksFromOrder);
                 //tasksQueue.addAll(tasksFromOrder);
 
@@ -96,8 +89,10 @@ public class OrderManager {
         taskAllocator.update();
     }
 
-    public void reAddBinDelivery(BinDelivery task){
+    public void reAddBinDelivery(BinDelivery task) {
+        task.addOnCompleteAction(() -> checkIfOrdersAreCompleted(task.getOrder().getPicker(), task.getOrder()));
         taskAllocator.addTask(task);
+        task.reset();
     }
 
     private ArrayList<BinDelivery> divideOrderIntoDeliveries(Order order) {
@@ -118,14 +113,14 @@ public class OrderManager {
             }
         });
 
-        for(BinTile tile : binTiles){
-            if(server.getReservationManager().isBinReserved(tile.getGridCoordinate())) continue;
+        for (BinTile tile : binTiles) {
+            if (server.getReservationManager().isBinReserved(tile.getGridCoordinate())) continue;
             BinDelivery delivery = generateDelivery(tile, productsToPick, order);
-            if(delivery != null) deliveries.add(delivery);
-            if(productsToPick.isEmpty()) break;
+            if (delivery != null) deliveries.add(delivery);
+            if (productsToPick.isEmpty()) break;
         }
 
-        if(!deliveries.isEmpty() && productsToPick.isEmpty()){
+        if (!deliveries.isEmpty() && productsToPick.isEmpty()) {
             return deliveries;
         }
 
@@ -134,23 +129,23 @@ public class OrderManager {
 
     private BinDelivery generateDelivery(BinTile tile, ArrayList<Product> productsToPick, Order order) {
         ArrayList<Product> pickProductFromBin = new ArrayList<>();
-        for(Product product : tile.getBin().getProducts()){
-            if(productsToPick.contains(product)){
+        for (Product product : tile.getBin().getProducts()) {
+            if (productsToPick.contains(product)) {
                 pickProductFromBin.add(product);
                 productsToPick.remove(product);
             }
         }
 
-        if(pickProductFromBin.isEmpty()) return null;
+        if (pickProductFromBin.isEmpty()) return null;
 
         return new BinDelivery(order, tile.getGridCoordinate(), pickProductFromBin);
     }
 
     private ArrayList<BinDelivery> createTasksFromOrder(Order order) {
         ArrayList<BinDelivery> deliveries = divideOrderIntoDeliveries(order);
-        if(deliveries != null){
-            for(BinDelivery delivery : deliveries){
-                if(!areProductsPresent(delivery)) {
+        if (deliveries != null) {
+            for (BinDelivery delivery : deliveries) {
+                if (!areProductsPresent(delivery)) {
                     throw new RuntimeException("Products not present in bin" + delivery.toString());
                 }
                 server.getReservationManager().reserveBinTile(delivery.getBinCoords());
@@ -161,28 +156,28 @@ public class OrderManager {
         return null;
     }
 
-    private boolean areProductsPresent(BinDelivery binDelivery){
-        for(Product product : binDelivery.getProductsToPick()){
-            BinTile tile = (BinTile)server.getSimulation().getStorageGrid().getTile(binDelivery.getBinCoords().getX(), binDelivery.getBinCoords().getY());
-            if(!tile.getBin().getProducts().contains(product)) return false;
+    private boolean areProductsPresent(BinDelivery binDelivery) {
+        for (Product product : binDelivery.getProductsToPick()) {
+            BinTile tile = (BinTile) server.getSimulation().getStorageGrid().getTile(binDelivery.getBinCoords().getX(), binDelivery.getBinCoords().getY());
+            if (!tile.getBin().getProducts().contains(product)) return false;
         }
 
         return true;
     }
 
-    public int ordersInQueue(){
+    public int ordersInQueue() {
         return orderQueue.size();
     }
 
-    public int ordersFinished(){
+    public int ordersFinished() {
         return ordersFinished.size();
     }
 
-    public int tasksInQueue(){
+    public int tasksInQueue() {
         int tasksNotComplete = 0;
-        for(ArrayList<BinDelivery> taskArray : processingOrdersToTaskMap.values()){
-            for(Task task : taskArray){
-                if(!task.isCompleted()) tasksNotComplete++;
+        for (ArrayList<BinDelivery> taskArray : processingOrdersToTaskMap.values()) {
+            for (Task task : taskArray) {
+                if (!task.isCompleted()) tasksNotComplete++;
             }
         }
         return tasksNotComplete;

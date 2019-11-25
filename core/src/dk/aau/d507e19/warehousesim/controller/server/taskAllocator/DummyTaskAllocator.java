@@ -23,22 +23,22 @@ public class DummyTaskAllocator extends TaskAllocator {
 
     @Override
     public void update() {
-        if(server.hasAvailableRobot()){
+        if (server.hasAvailableRobot()) {
             Iterator<BinDelivery> taskIterator = getTaskIterator();
-            while(taskIterator.hasNext()){
+            while (taskIterator.hasNext()) {
                 Task task = taskIterator.next();
                 Optional<Robot> optimalRobot = findOptimalRobot(server.getAllRobots(), task);
-                if(optimalRobot.isPresent()){
-                    if(optimalRobot.get().getRobotController().assignTask(task))
-                        taskIterator.remove();
+                if (optimalRobot.isPresent()) {
+                    assignTask(task, optimalRobot.get());
+                    taskIterator.remove();
                 }
             }
         }
     }
 
     public Optional<Robot> findOptimalRobot(ArrayList<Robot> robots, Task task) {
-        for(Robot robot : robots){
-            if(robot.getCurrentStatus() == Status.AVAILABLE){
+        for (Robot robot : robots) {
+            if (robot.getCurrentStatus() == Status.AVAILABLE) {
                 return Optional.of(robot);
             }
         }

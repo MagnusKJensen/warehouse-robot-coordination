@@ -108,9 +108,8 @@ public class BinDelivery implements Task {
         robotController.getServer().getReservationManager().removeBinReservation(binCoords);
         robotController.getRobot().incrementDeliveriesCompleted();
         robotController.getRobot().addToDistanceTraveled(distanceForDelivery);
-        for(Runnable runnable : onComplete){
+        for(Runnable runnable : onComplete)
             runnable.run();
-        }
     }
 
     @Override
@@ -160,5 +159,8 @@ public class BinDelivery implements Task {
 
     public void reset() {
         subTasks.clear();
+        onComplete.clear();
+        robot = null;
+        robotController = null;
     }
 }

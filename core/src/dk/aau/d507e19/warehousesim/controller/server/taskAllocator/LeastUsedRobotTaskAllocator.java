@@ -15,7 +15,7 @@ public class LeastUsedRobotTaskAllocator extends TaskAllocator {
     private final Server server;
     private StorageGrid grid;
 
-    LeastUsedRobotTaskAllocator(StorageGrid grid, Server server){
+    LeastUsedRobotTaskAllocator(StorageGrid grid, Server server) {
         this.grid = grid;
         this.server = server;
     }
@@ -23,12 +23,12 @@ public class LeastUsedRobotTaskAllocator extends TaskAllocator {
     @Override
     public void update() {
         Iterator<BinDelivery> taskIterator = getTaskIterator();
-        while(taskIterator.hasNext()){
+        while (taskIterator.hasNext()) {
             Task task = taskIterator.next();
             Optional<Robot> optimalRobot = findOptimalRobot(server.getAllRobots(), task);
-            if(optimalRobot.isPresent()){
-                if(optimalRobot.get().getRobotController().assignTask(task))
-                    taskIterator.remove();
+            if (optimalRobot.isPresent()) {
+                assignTask(task, optimalRobot.get());
+                taskIterator.remove();
 
             }
         }
@@ -38,7 +38,7 @@ public class LeastUsedRobotTaskAllocator extends TaskAllocator {
         Robot leastUsedRobot = null;
 
         ArrayList<Robot> availableRobots = findAvailableRobots(robots);
-        if(!availableRobots.isEmpty()) {
+        if (!availableRobots.isEmpty()) {
             double leastDistanceTraveled = availableRobots.get(0).getDistanceTraveledInMeters();
             for (Robot n : availableRobots) {
                 if (leastDistanceTraveled >= n.getDistanceTraveledInMeters()) {
@@ -48,14 +48,16 @@ public class LeastUsedRobotTaskAllocator extends TaskAllocator {
             }
         }
 
-        if(leastUsedRobot != null){return Optional.of(leastUsedRobot);}
+        if (leastUsedRobot != null) {
+            return Optional.of(leastUsedRobot);
+        }
         return Optional.empty();
     }
 
-    private ArrayList<Robot> findAvailableRobots(ArrayList<Robot> robots){
+    private ArrayList<Robot> findAvailableRobots(ArrayList<Robot> robots) {
         ArrayList<Robot> availableRobots = new ArrayList<>();
-        for (Robot robot : robots){
-            if(robot.getCurrentStatus() == Status.AVAILABLE) availableRobots.add(robot);
+        for (Robot robot : robots) {
+            if (robot.getCurrentStatus() == Status.AVAILABLE) availableRobots.add(robot);
         }
         return availableRobots;
     }

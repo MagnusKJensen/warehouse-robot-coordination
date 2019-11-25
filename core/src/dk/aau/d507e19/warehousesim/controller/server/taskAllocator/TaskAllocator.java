@@ -1,6 +1,8 @@
 package dk.aau.d507e19.warehousesim.controller.server.taskAllocator;
 
+import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.BinDelivery;
+import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,7 +16,6 @@ public abstract class TaskAllocator {
     public abstract void update();
 
     public void addTask(BinDelivery binDelivery){
-        //binDelivery.reset(); todo TEMP
         unassignedTasks.add(binDelivery);
     }
 
@@ -24,6 +25,10 @@ public abstract class TaskAllocator {
 
     public Iterator<BinDelivery> getTaskIterator(){
         return unassignedTasks.iterator();
+    }
+
+    protected final void assignTask(Task task, Robot robot){
+        robot.getRobotController().assignTask(task);
     }
 
 }

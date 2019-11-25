@@ -50,7 +50,7 @@ public class SmartAllocator extends TaskAllocator{
             incrementTaskCount(leastCrowdedTask.getOrder().getPicker());
             leastCrowdedTask.addOnCompleteAction(() -> decrementTaskCount(leastCrowdedTask.getOrder().getPicker()));
 
-            closestRobot.getRobotController().assignTask(leastCrowdedTask);
+            assignTask(leastCrowdedTask, closestRobot);
         }
     }
 
