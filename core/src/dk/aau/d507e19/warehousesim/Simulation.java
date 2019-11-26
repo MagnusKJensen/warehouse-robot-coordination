@@ -86,11 +86,10 @@ public class Simulation {
     private GridBounds renderedBounds;
     private boolean shouldRenderPriority = false;
 
-    // Used for fast no graphics simulations
-    public Simulation(long randSeed, String runConfigName, PathFinderEnum pathfinder, TaskAllocatorEnum taskAllocator){
+    public Simulation(long randSeed, String runConfigName, PathFinderEnum pathfinder, TaskAllocatorEnum taskAllocator, WarehouseSpecs warehouseSpecs){
+        CURRENT_RUN_CONFIG = runConfigName;
+        setWarehouseSpecs(warehouseSpecs);
         RANDOM_SEED = randSeed;
-        Simulation.CURRENT_RUN_CONFIG = runConfigName;
-        Simulation.warehouseSpecs = readWarehouseSpecsFromFile(runConfigName);
         Simulation.pathFinder = pathfinder;
         Simulation.taskAllocator = taskAllocator;
 
@@ -105,6 +104,11 @@ public class Simulation {
         initRobots();
         simulationStartTime = new Date(System.currentTimeMillis());
         statisticsManager = new StatisticsManager(this);
+    }
+
+    // Used for fast no graphics simulations
+    public Simulation(long randSeed, String runConfigName, PathFinderEnum pathfinder, TaskAllocatorEnum taskAllocator){
+        this(randSeed, runConfigName, pathfinder, taskAllocator, readWarehouseSpecsFromFile(runConfigName));
     }
 
     public Simulation(long randSeed, String runConfigName, SimulationApp simulationApp, String pathToRunConfig){
@@ -142,7 +146,7 @@ public class Simulation {
         updateRenderedBounds();
     }
 
-    private WarehouseSpecs readWarehouseSpecsFromFile(String specFileName) {
+    public static WarehouseSpecs readWarehouseSpecsFromFile(String specFileName) {
         File runConfigFile = new File(StatisticsAutomator.PATH_TO_RUN_CONFIGS + File.separator + specFileName);
         Gson gson = new Gson();
         try(BufferedReader reader = new BufferedReader(new FileReader(runConfigFile.getPath()))){

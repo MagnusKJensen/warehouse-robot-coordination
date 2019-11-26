@@ -30,17 +30,17 @@ public class StatisticsAutomator {
 
         // Task allocators to use
         ArrayList<TaskAllocatorEnum> taskAllocators = new ArrayList<>(Arrays.asList(
-                TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR,
-                TaskAllocatorEnum.SMART_ALLOCATOR,
-                TaskAllocatorEnum.NAIVE_SHORTEST_DISTANCE_TASK_ALLOCATOR
+                TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR, //,
+                TaskAllocatorEnum.SMART_ALLOCATOR//,
+                //TaskAllocatorEnum.NAIVE_SHORTEST_DISTANCE_TASK_ALLOCATOR
         ));
 
         // Path finders to use
         ArrayList<PathFinderEnum> pathFinders = new ArrayList<>(Arrays.asList(
-                PathFinderEnum.CHPATHFINDER,
-                PathFinderEnum.ASTAR,
-                PathFinderEnum.DUMMYPATHFINDER,
-                PathFinderEnum.RRTSTAREXTENDED
+                PathFinderEnum.CHPATHFINDER//,
+                //PathFinderEnum.ASTAR//,
+                //PathFinderEnum.DUMMYPATHFINDER,
+                //PathFinderEnum.RRTSTAREXTENDED
         ));
 
         // Run a single config with the specified taskAllocators and pathfinders
