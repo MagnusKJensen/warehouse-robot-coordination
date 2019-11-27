@@ -21,7 +21,7 @@ public class StatisticsAutomator {
     private static final int TICKS_PER_RUN = 216000; // 216.000 = 2 timers real time
     private static final int FILE_WRITE_INTERVAL_TICKS = 50000;
     private static final String VERSION_NAME = "v.Result";
-    private static final String SPEC_FILE_NAME = "proshop1Layer.json";
+    private static final String SPEC_FILE_NAME = "proshop1LayerPeak.json";
     private static final int numberOfSeeds = 30;
     private static long[] SEEDS = new long[numberOfSeeds];
     private static Random random = new Random(SimulationApp.DEFAULT_SEED);
