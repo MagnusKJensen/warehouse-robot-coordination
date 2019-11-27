@@ -18,11 +18,11 @@ import java.util.Random;
 public class StatisticsAutomator {
     public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations";
     public static final String PATH_TO_STATISTICS_FOLDER = System.getProperty("user.dir") + File.separator + "statistics";
-    private static final int TICKS_PER_RUN = 40000; // 216.000 = 2 timers real time
+    private static final int TICKS_PER_RUN = 216000; // 216.000 = 2 timers real time
     private static final int FILE_WRITE_INTERVAL_TICKS = 50000;
-    private static final String VERSION_NAME = "v.Robot";
+    private static final String VERSION_NAME = "v.Result";
     private static final String SPEC_FILE_NAME = "proshop1Layer.json";
-    private static final int numberOfSeeds = 2;
+    private static final int numberOfSeeds = 30;
     private static long[] SEEDS = new long[numberOfSeeds];
     private static Random random = new Random(SimulationApp.DEFAULT_SEED);
 
@@ -38,16 +38,16 @@ public class StatisticsAutomator {
 
         // Path finders to use
         ArrayList<PathFinderEnum> pathFinders = new ArrayList<>(Arrays.asList(
-                PathFinderEnum.CHPATHFINDER,//,
-                //PathFinderEnum.ASTAR//,
-                PathFinderEnum.DUMMYPATHFINDER
-                //PathFinderEnum.RRTSTAREXTENDED
+                PathFinderEnum.CHPATHFINDER,
+                PathFinderEnum.ASTAR,
+                PathFinderEnum.DUMMYPATHFINDER,
+                PathFinderEnum.RRTSTAREXTENDED
         ));
 
         WarehouseSpecs specs = Simulation.readWarehouseSpecsFromFile(SPEC_FILE_NAME);
 
         // Run a single config with the specified taskAllocators and pathfinders
-        // runConfig(specs, VERSION_NAME, taskAllocators, pathFinders, SEEDS);
+        runConfig(specs, VERSION_NAME, taskAllocators, pathFinders, SEEDS);
 
         // Run with some amount of robots in a interval
         // runRobotInterval(specs, VERSION_NAME, taskAllocators, pathFinders, SEEDS, generateRobotIntervalArray(5, 8));
@@ -55,7 +55,7 @@ public class StatisticsAutomator {
         // Run with a custom presets of robots
         // This can be used instead of generateRobotIntervalArray to run some specifications with custom amounts of robots.
         ArrayList<Integer> robotNumbers = new ArrayList<>(Arrays.asList(1, 25, 50, 75, 100));
-        runRobotInterval(specs, VERSION_NAME, taskAllocators, pathFinders, SEEDS, robotNumbers);
+        // runRobotInterval(specs, VERSION_NAME, taskAllocators, pathFinders, SEEDS, robotNumbers);
     }
 
     private static ArrayList<Integer> generateRobotIntervalArray(int fewestRobots, int maxRobots){
