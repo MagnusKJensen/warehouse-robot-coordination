@@ -2,6 +2,7 @@ package dk.aau.d507e19.warehousesim.statistics;
 
 import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.SimulationApp;
+import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocatorEnum;
 import org.apache.poi.ss.usermodel.*;
@@ -16,11 +17,12 @@ import java.util.Random;
 
 public class StatisticsAutomator {
     public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations";
-    private static final int TICKS_PER_RUN = 216000; // 216.000 = 2 timers real time
+    public static final String PATH_TO_STATISTICS_FOLDER = System.getProperty("user.dir") + File.separator + "statistics";
+    private static final int TICKS_PER_RUN = 40000; // 216.000 = 2 timers real time
     private static final int FILE_WRITE_INTERVAL_TICKS = 50000;
-    private static final String VERSION_NAME = "result";
-    private static final String SPEC_FILE_NAME = "artShop.json";
-    private static final int numberOfSeeds = 1;
+    private static final String VERSION_NAME = "v.Robot";
+    private static final String SPEC_FILE_NAME = "proshop1Layer.json";
+    private static final int numberOfSeeds = 2;
     private static long[] SEEDS = new long[numberOfSeeds];
     private static Random random = new Random(SimulationApp.DEFAULT_SEED);
 
@@ -29,64 +31,117 @@ public class StatisticsAutomator {
 
         // Task allocators to use
         ArrayList<TaskAllocatorEnum> taskAllocators = new ArrayList<>(Arrays.asList(
-                TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR, //,
-                TaskAllocatorEnum.SMART_ALLOCATOR//,
-                //TaskAllocatorEnum.NAIVE_SHORTEST_DISTANCE_TASK_ALLOCATOR
+                TaskAllocatorEnum.SMART_ALLOCATOR,
+                TaskAllocatorEnum.NAIVE_SHORTEST_DISTANCE_TASK_ALLOCATOR,
+                TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR
         ));
 
         // Path finders to use
         ArrayList<PathFinderEnum> pathFinders = new ArrayList<>(Arrays.asList(
-                PathFinderEnum.CHPATHFINDER//,
+                PathFinderEnum.CHPATHFINDER,//,
                 //PathFinderEnum.ASTAR//,
-                //PathFinderEnum.DUMMYPATHFINDER,
+                PathFinderEnum.DUMMYPATHFINDER
                 //PathFinderEnum.RRTSTAREXTENDED
         ));
 
+        WarehouseSpecs specs = Simulation.readWarehouseSpecsFromFile(SPEC_FILE_NAME);
+
         // Run a single config with the specified taskAllocators and pathfinders
-        runConfig(SPEC_FILE_NAME, VERSION_NAME, taskAllocators, pathFinders, SEEDS);
+        // runConfig(specs, VERSION_NAME, taskAllocators, pathFinders, SEEDS);
 
-        // Run with all configurations inside the .../core/assets/warehouseconfigurations/ folder
-        //runAllConfigurations(VERSION_NAME, taskAllocators, pathFinders, SEEDS);
+        // Run with some amount of robots in a interval
+        // runRobotInterval(specs, VERSION_NAME, taskAllocators, pathFinders, SEEDS, generateRobotIntervalArray(5, 8));
+
+        // Run with a custom presets of robots
+        // This can be used instead of generateRobotIntervalArray to run some specifications with custom amounts of robots.
+        ArrayList<Integer> robotNumbers = new ArrayList<>(Arrays.asList(1, 25, 50, 75, 100));
+        runRobotInterval(specs, VERSION_NAME, taskAllocators, pathFinders, SEEDS, robotNumbers);
     }
 
-    private static void runAllConfigurations(String versionName, ArrayList<TaskAllocatorEnum> taskAllocators, ArrayList<PathFinderEnum> pathFinders, long ...seeds) {
-        ArrayList<String> runConfigs = getAllRunConfigs();
+    private static ArrayList<Integer> generateRobotIntervalArray(int fewestRobots, int maxRobots){
+        ArrayList<Integer> robots = new ArrayList<>();
 
-        for (String warehouseConfig : runConfigs)
-            runConfig(warehouseConfig, versionName, taskAllocators, pathFinders, seeds);
+        for(int robot = fewestRobots; robot <= maxRobots; ++robot){
+            robots.add(robot);
+        }
+
+        return robots;
     }
 
-    private static void runConfig(String configFileName, String versionName, ArrayList<TaskAllocatorEnum> taskAllocators, ArrayList<PathFinderEnum> pathFinders, long ...seeds){
+    private static void runRobotInterval(WarehouseSpecs specs, String versionName, ArrayList<TaskAllocatorEnum> taskAllocators, ArrayList<PathFinderEnum> pathFinders, long[] seeds, ArrayList<Integer> robotNumbers){
+        String versionNameOld = versionName;
         Simulation simulation;
+        for(TaskAllocatorEnum taskAllocator : taskAllocators){
+            for(PathFinderEnum pathFinder : pathFinders){
+                int rowNumber = 1;
+                for(Integer robots : robotNumbers){
+                    specs.setNumberOfRobots(robots);
+                    versionName = versionNameOld + "_" + robots + "robots";
+                    int seedNumber = 1;
+                    ArrayList<Double> averageOrderTimes = new ArrayList<>();
+                    ArrayList<Double> ordersPerMinuteScores = new ArrayList<>();
+                    double ultimateSlowestOrder = 0;
+                    for(long seed : seeds){
+                        System.out.println("TaskAllocator: " + taskAllocator.getName() + ", PathFinder: " + pathFinder.getName()
+                                + ", Seed: " + seedNumber++ + "/" + SEEDS.length + " : " + seed + ", version name: " + versionName);
+                        simulation = runSimulationWith(seed, specs.getName(), pathFinder, taskAllocator, specs, versionName);
+                        // Add stats about this run for this amount of robots
+                        averageOrderTimes.add(simulation.getStatisticsManager().getAverageOrderProcessingTime());
+                        ordersPerMinuteScores.add(simulation.getStatisticsManager().getOrdersPerMinute());
+                        if(ultimateSlowestOrder < simulation.getStatisticsManager().getSlowestOrder().getTimeSpentOnOrderInSec())
+                            ultimateSlowestOrder = simulation.getStatisticsManager().getSlowestOrder().getTimeSpentOnOrderInSec();
+                    }
+                    String pathToRobotFile = PATH_TO_STATISTICS_FOLDER + File.separator +  "robotInterval_" + specs.getName() + "_" + taskAllocator.getName() + "_" + pathFinder.getName() + ".xlsx";
+                    writeRobotStatsToFile(averageOrderTimes, ordersPerMinuteScores,
+                            ultimateSlowestOrder, robots,  pathToRobotFile, rowNumber);
+                    rowNumber++;
+                    generateSeedAverages(specs.getName(), versionName);
+                }
+            }
+        }
+    }
 
-        System.out.println("WarehouseConfig: " + configFileName);
+    private static void writeRobotStatsToFile(ArrayList<Double> averageOrderTimes, ArrayList<Double> ordersPerMinuteScores,
+                                              double ultimateSlowestOrder, int robots, String path, int rowNumber) {
+        double averageOrderTime = getAverageValue(averageOrderTimes);
+        double ordersPerMinuteAverage = getAverageValue(ordersPerMinuteScores);
+        ExcelWriter excelWriter = new ExcelWriter(path);
+        excelWriter.updateRobotIntervalFile(robots, rowNumber, averageOrderTime, ordersPerMinuteAverage, ultimateSlowestOrder);
+    }
+
+    private static void runConfig(WarehouseSpecs specs, String versionName, ArrayList<TaskAllocatorEnum> taskAllocators, ArrayList<PathFinderEnum> pathFinders, long[] seeds){
+        System.out.println("WarehouseConfig: " + specs.getName());
         System.out.println("________________________________________________________________");
         for (TaskAllocatorEnum taskAllocator : taskAllocators) {
             for (PathFinderEnum pathFinder : pathFinders) {
                 if (taskAllocator.works() && pathFinder.works()) {
                     int seedNumber = 1;
                     for(long seed : seeds){
-                        System.out.println("TaskAllocator: " + taskAllocator.getName() + ", PathFinder: " + pathFinder.getName() + ", Seed: " + seedNumber++ + "/" + SEEDS.length + " : " + seed);
-                        simulation = new Simulation(seed, configFileName, pathFinder, taskAllocator);
-                        simulation.getStatisticsManager().setVERSION_NAME(versionName);
-                        while (simulation.getTimeInTicks() < TICKS_PER_RUN) {
-                            if (simulation.getTimeInTicks() % FILE_WRITE_INTERVAL_TICKS == 0) {
-                                simulation.getStatisticsManager().printStatistics();
-                                System.out.println(simulation.getTimeInTicks());
-                            }
-                            simulation.update();
-                        }
-                        simulation.getStatisticsManager().addSummaries();
+                        System.out.println("TaskAllocator: " + taskAllocator.getName() + ", PathFinder: " + pathFinder.getName() + ", Seed: " + seedNumber++ + "/" + SEEDS.length + " : " + seed + ", version name: " + versionName);
+                        runSimulationWith(seed, specs.getName(), pathFinder, taskAllocator, specs, versionName);
                     }
                 }
             }
         }
-        generateSeedAverages(configFileName, versionName);
+        generateSeedAverages(specs.getName(), versionName);
+    }
+
+    private static Simulation runSimulationWith(long seed, String runConfigName, PathFinderEnum pathFinder, TaskAllocatorEnum taskAllocator, WarehouseSpecs specs, String versionName){
+        Simulation simulation = new Simulation(seed, specs.getName(), pathFinder, taskAllocator, specs);
+        simulation.getStatisticsManager().setVERSION_NAME(versionName);
+        while (simulation.getTimeInTicks() < TICKS_PER_RUN) {
+            if (simulation.getTimeInTicks() % FILE_WRITE_INTERVAL_TICKS == 0) {
+                simulation.getStatisticsManager().printStatistics();
+                System.out.println(simulation.getTimeInTicks());
+            }
+            simulation.update();
+        }
+        simulation.getStatisticsManager().addSummaries();
+
+        return simulation;
     }
 
     private static void generateSeedAverages(String configFileName, String versionName){
-        double availableProductsLeftAverage;
-
         File file = new File(System.getProperty("user.dir") + File.separator + "statistics" + File.separator + configFileName + "_" + versionName + File.separator);
         File[] configurationFolders = getSubFolders(file);
 
@@ -252,8 +307,8 @@ public class StatisticsAutomator {
         return file.listFiles(filter);
     }
 
-    private static ArrayList<String> getAllRunConfigs() {
-        ArrayList<String> runConfigs = new ArrayList<>();
+    private static ArrayList<WarehouseSpecs> getAllRunConfigs() {
+        ArrayList<WarehouseSpecs> runConfigs = new ArrayList<>();
 
         File runConfigFolder = new File(PATH_TO_RUN_CONFIGS);
 
@@ -261,7 +316,7 @@ public class StatisticsAutomator {
         try {
             Files.list(runConfigFolder.toPath())
                     .forEach(path -> {
-                        runConfigs.add(path.getFileName().toString());
+                        runConfigs.add(Simulation.readWarehouseSpecsFromFile(path.getFileName().toString()));
                     });
         } catch (IOException e) {
             e.printStackTrace();
@@ -274,5 +329,13 @@ public class StatisticsAutomator {
         for(int i = 0; i < SEEDS.length; ++i){
             SEEDS[i] = random.nextLong();
         }
+    }
+
+    private static double getAverageValue(ArrayList<Double> list){
+        double sum = 0;
+        for(Double d : list){
+            sum += d;
+        }
+        return sum / list.size();
     }
 }

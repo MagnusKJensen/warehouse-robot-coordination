@@ -4,6 +4,8 @@ import dk.aau.d507e19.warehousesim.controller.path.Line;
 import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
 
+import java.sql.Time;
+
 public class LineTraversal implements Task {
 
     private Robot robot;

@@ -13,8 +13,7 @@ public class WarehouseSpecs {
      * * * * * * * * * * * * * * * * * * * * * * * * * * **/
 
 
-
-
+    public String name = "NONAME";
 
     /** Warehouse **/
     public int wareHouseWidth = 30;
@@ -55,7 +54,8 @@ public class WarehouseSpecs {
     @Override
     public String toString() {
         return "WarehouseSpecs{" +
-                "wareHouseWidth=" + wareHouseWidth +
+                "name='" + name + '\'' +
+                ", wareHouseWidth=" + wareHouseWidth +
                 ", wareHouseHeight=" + wareHouseHeight +
                 ", WAREHOUSE_BOUNDS=" + WAREHOUSE_BOUNDS +
                 ", binSizeInMeters=" + binSizeInMeters +
@@ -71,6 +71,7 @@ public class WarehouseSpecs {
                 ", robotDeceleration=" + robotDeceleration +
                 ", robotMinimumSpeed=" + robotMinimumSpeed +
                 ", robotPickUpSpeedInSeconds=" + robotPickUpSpeedInSeconds +
+                ", robotDeliverToPickInSeconds=" + robotDeliverToPickInSeconds +
                 ", collisionDetectedEnabled=" + collisionDetectedEnabled +
                 ", robotPlacementPattern=" + robotPlacementPattern +
                 ", pickerPlacementPattern=" + pickerPlacementPattern +
@@ -80,5 +81,13 @@ public class WarehouseSpecs {
                 ", orderGoal=" + orderGoal +
                 ", productsPerOrder=" + productsPerOrder +
                 '}';
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setNumberOfRobots(int numberOfRobots) {
+        this.numberOfRobots = numberOfRobots;
     }
 }

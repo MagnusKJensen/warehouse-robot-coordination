@@ -21,7 +21,8 @@ public class ExcelWriter {
     private static final String[] robotSummaryHeader = {"", "Measurement", "RobotID"};
     private static final String[] orderSummaryHeader =  {"", "Measurement", "OrderID", "Products"};
     private static final String[] overviewHeader = {"", "Measurement"};
-    private static String PATH_TO_SIM_FOLDER;
+    private static final String[] robotIntervalHeader = {"", "Average order time", "Orders per minute", "Slowest order"};
+    private static String CONSTRUCTOR_PATH;
     private DecimalFormat decimalFormatter = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
     private static final String GENERAL_STATS_FILENAME = "generalStats.xlsx";
     private static final String ORDER_STATS_FILENAME = "orderStats.xlsx";
@@ -33,11 +34,11 @@ public class ExcelWriter {
         decimalFormatter.setRoundingMode(RoundingMode.HALF_UP);
         decimalFormatter.setGroupingUsed(false);
 
-        PATH_TO_SIM_FOLDER = path;
+        CONSTRUCTOR_PATH = path;
     }
 
     public void writeOverviewFile(AllSeedsOverview allSeedsOverview, String fileName){
-        String pathToOverview = PATH_TO_SIM_FOLDER + File.separator + "Overview_" + fileName;
+        String pathToOverview = CONSTRUCTOR_PATH + File.separator + "Overview_" + fileName;
         Workbook workbook = getOrCreateWorkbook(pathToOverview + ".xlsx");
 
         // Create a Sheet
@@ -125,7 +126,7 @@ public class ExcelWriter {
     }
 
     public void writeRobotStats(Simulation simulation){
-        String pathToRobotStats = PATH_TO_SIM_FOLDER + ROBOT_STATS_FILENAME;
+        String pathToRobotStats = CONSTRUCTOR_PATH + ROBOT_STATS_FILENAME;
         Workbook workbook = getOrCreateWorkbook(pathToRobotStats);
 
         // Create a Sheet
@@ -145,12 +146,12 @@ public class ExcelWriter {
 
         resizeAllColumnSizes(robotStatsHeader, sheet);
 
-        String pathToFile = PATH_TO_SIM_FOLDER + ROBOT_STATS_FILENAME;
+        String pathToFile = CONSTRUCTOR_PATH + ROBOT_STATS_FILENAME;
         saveWorkbook(workbook, pathToFile);
     }
 
     public void writeOrderStats(Simulation simulation){
-        String pathToRobotStats = PATH_TO_SIM_FOLDER + ORDER_STATS_FILENAME;
+        String pathToRobotStats = CONSTRUCTOR_PATH + ORDER_STATS_FILENAME;
         Workbook workbook = getOrCreateWorkbook(pathToRobotStats);
 
         // Create a Sheet
@@ -170,12 +171,12 @@ public class ExcelWriter {
 
         resizeAllColumnSizes(orderStatsHeader, sheet);
 
-        String pathToFile = PATH_TO_SIM_FOLDER + ORDER_STATS_FILENAME;
+        String pathToFile = CONSTRUCTOR_PATH + ORDER_STATS_FILENAME;
         saveWorkbook(workbook, pathToFile);
     }
 
     private void writeGeneralStatsToSheets(String sheetName, Simulation simulation){
-        String pathToRobotStats = PATH_TO_SIM_FOLDER + GENERAL_STATS_FILENAME;
+        String pathToRobotStats = CONSTRUCTOR_PATH + GENERAL_STATS_FILENAME;
         Workbook workbook = getOrCreateWorkbook(pathToRobotStats);
 
         // Create a Sheet
@@ -214,7 +215,7 @@ public class ExcelWriter {
 
         resizeAllColumnSizes(generalStatsHeader, sheet);
 
-        String pathToFile = PATH_TO_SIM_FOLDER + GENERAL_STATS_FILENAME;
+        String pathToFile = CONSTRUCTOR_PATH + GENERAL_STATS_FILENAME;
         saveWorkbook(workbook, pathToFile);
     }
 
@@ -223,7 +224,7 @@ public class ExcelWriter {
     }
 
     public void summarizeOrderStats(Simulation simulation){
-        String pathToOrderStats = PATH_TO_SIM_FOLDER + ORDER_STATS_FILENAME;
+        String pathToOrderStats = CONSTRUCTOR_PATH + ORDER_STATS_FILENAME;
         Workbook workbook = getOrCreateWorkbook(pathToOrderStats);
 
         Sheet sheet = getOrCreateSheet(workbook, "Summary");
@@ -273,7 +274,7 @@ public class ExcelWriter {
     }
 
     public void summarizeRobotStats(Simulation simulation){
-        String pathToRobotStats = PATH_TO_SIM_FOLDER + ROBOT_STATS_FILENAME;
+        String pathToRobotStats = CONSTRUCTOR_PATH + ROBOT_STATS_FILENAME;
         Workbook workbook = getOrCreateWorkbook(pathToRobotStats);
 
         Sheet sheet = getOrCreateSheet(workbook, "Summary");
@@ -516,6 +517,23 @@ public class ExcelWriter {
     private void createOverviewRow(String name, double measurement, Row row){
         row.createCell(0).setCellValue(name);
         row.createCell(1).setCellValue(measurement);
+    }
+
+    public void updateRobotIntervalFile(int robots, int rowNumber, double averageOrderTime, double ordersPerMinuteAverage, double ultimateSlowestOrder) {
+        String pathToRobotStats = CONSTRUCTOR_PATH;
+        Workbook workbook = getOrCreateWorkbook(pathToRobotStats);
+
+        Sheet sheet = getOrCreateSheet(workbook, "Summary");
+        createHeaders(workbook, sheet, robotIntervalHeader);
+
+        Row row = sheet.createRow(rowNumber);
+        row.createCell(0).setCellValue("Robots: " + robots);
+        row.createCell(1).setCellValue(averageOrderTime);
+        row.createCell(2).setCellValue(ordersPerMinuteAverage);
+        row.createCell(3).setCellValue(ultimateSlowestOrder);
+
+        resizeAllColumnSizes(robotStatsHeader, sheet);
+        saveWorkbook(workbook, CONSTRUCTOR_PATH);
     }
 }
 

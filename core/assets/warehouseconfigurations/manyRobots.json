@@ -1,4 +1,5 @@
 {
+  "name": "manyRobots.json",
   "wareHouseWidth": 10,
   "wareHouseHeight": 10,
   "WAREHOUSE_BOUNDS": {

@@ -1,4 +1,5 @@
 {
+  "name": "artShop.json",
   "wareHouseWidth": 40,
   "wareHouseHeight": 40,
   "WAREHOUSE_BOUNDS": {

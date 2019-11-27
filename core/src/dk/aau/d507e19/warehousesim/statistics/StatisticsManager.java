@@ -427,4 +427,15 @@ public class StatisticsManager {
         }
         return sum / ordersFinished;
     }
+
+    public double getOrdersPerMinute(){
+        double ordersPerMinute;
+        if(simulation.getTimeInTicks() == 0) ordersPerMinute = 0;
+        else {
+            long msSinceStart = simulation.getSimulatedTimeInMS();
+            ordersPerMinute = simulation.getOrdersProcessed() / ((double) msSinceStart / 1000 / 60);
+        }
+
+        return ordersPerMinute;
+    }
 }

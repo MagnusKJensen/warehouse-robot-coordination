@@ -39,6 +39,8 @@ public class BinTile extends Tile {
         }
     }
 
+    // 782 RRT extended, 764 dummy, 827 astar, custom h 680
+
     public void addBin(Bin bin){
         if(this.bin != null) throw new IllegalArgumentException("Tile at position(" + getPosX() + "," + getPosY() + ") already has a bin");
         this.bin = bin;

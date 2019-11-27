@@ -1,4 +1,5 @@
 {
+  "name": "defaultSpecs.json",
   "wareHouseWidth": 30,
   "wareHouseHeight": 30,
   "WAREHOUSE_BOUNDS": {
