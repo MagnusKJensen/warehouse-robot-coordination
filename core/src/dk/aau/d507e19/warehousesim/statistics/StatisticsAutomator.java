@@ -18,10 +18,10 @@ import java.util.Random;
 public class StatisticsAutomator {
     public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations";
     public static final String PATH_TO_STATISTICS_FOLDER = System.getProperty("user.dir") + File.separator + "statistics";
-    private static final int TICKS_PER_RUN = 216000; // 216.000 = 2 timers real time
+    private static final int TICKS_PER_RUN = 200000; // 216.000 = 2 timers real time
     private static final int FILE_WRITE_INTERVAL_TICKS = 50000;
-    private static final String VERSION_NAME = "v.Result";
-    private static final String SPEC_FILE_NAME = "proshop1LayerPeak.json";
+    private static final String VERSION_NAME = "v.Thread";
+    private static final String SPEC_FILE_NAME = "artShop.json";
     private static final int numberOfSeeds = 30;
     private static long[] SEEDS = new long[numberOfSeeds];
     private static Random random = new Random(SimulationApp.DEFAULT_SEED);
@@ -38,8 +38,8 @@ public class StatisticsAutomator {
 
         // Path finders to use
         ArrayList<PathFinderEnum> pathFinders = new ArrayList<>(Arrays.asList(
-                PathFinderEnum.CHPATHFINDER,
-                PathFinderEnum.ASTAR,
+                //PathFinderEnum.CHPATHFINDER,
+                //PathFinderEnum.ASTAR
                 PathFinderEnum.DUMMYPATHFINDER,
                 PathFinderEnum.RRTSTAREXTENDED
         ));
@@ -54,7 +54,7 @@ public class StatisticsAutomator {
 
         // Run with a custom presets of robots
         // This can be used instead of generateRobotIntervalArray to run some specifications with custom amounts of robots.
-        ArrayList<Integer> robotNumbers = new ArrayList<>(Arrays.asList(1, 25, 50, 75, 100));
+        ArrayList<Integer> robotNumbers = new ArrayList<>(Arrays.asList(1, 25, 50, 75));
         // runRobotInterval(specs, VERSION_NAME, taskAllocators, pathFinders, SEEDS, robotNumbers);
     }
 
@@ -95,7 +95,7 @@ public class StatisticsAutomator {
                     writeRobotStatsToFile(averageOrderTimes, ordersPerMinuteScores,
                             ultimateSlowestOrder, robots,  pathToRobotFile, rowNumber);
                     rowNumber++;
-                    generateSeedAverages(specs.getName(), versionName);
+                    generateSeedAveragesForConfig(specs.getName(), versionName, taskAllocator, pathFinder);
                 }
             }
         }
@@ -120,10 +120,11 @@ public class StatisticsAutomator {
                         System.out.println("TaskAllocator: " + taskAllocator.getName() + ", PathFinder: " + pathFinder.getName() + ", Seed: " + seedNumber++ + "/" + SEEDS.length + " : " + seed + ", version name: " + versionName);
                         runSimulationWith(seed, specs.getName(), pathFinder, taskAllocator, specs, versionName);
                     }
+                    generateSeedAveragesForConfig(specs.getName(), versionName, taskAllocator, pathFinder);
                 }
             }
         }
-        generateSeedAverages(specs.getName(), versionName);
+        // generateSeedAverages(specs.getName(), versionName);
     }
 
     private static Simulation runSimulationWith(long seed, String runConfigName, PathFinderEnum pathFinder, TaskAllocatorEnum taskAllocator, WarehouseSpecs specs, String versionName){
@@ -139,6 +140,35 @@ public class StatisticsAutomator {
         simulation.getStatisticsManager().addSummaries();
 
         return simulation;
+    }
+
+    private static void generateSeedAveragesForConfig(String configFileName, String versionName, TaskAllocatorEnum taskAllocator, PathFinderEnum pathFinder){
+        String pathToConfiguration = System.getProperty("user.dir") + File.separator + "statistics" + File.separator + configFileName + "_" + versionName + File.separator + taskAllocator + "___" + pathFinder;
+        File configurationFolder = new File(pathToConfiguration);
+
+        File[] seedFolders = getSubFolders(configurationFolder);
+        AllSeedsOverview overview = new AllSeedsOverview();
+        for(File seedFolder : seedFolders){
+            overview.incrementSeedsVisited();
+            File[] statsFiles = seedFolder.listFiles();
+            for(File statFile : statsFiles){
+                switch (statFile.getName()){
+                    case "generalStats.xlsx" :
+                        getGeneralStatsFromFile(statFile, overview);
+                        break;
+                    case "orderStats.xlsx" :
+                        getOrderStatsFromFile(statFile, overview);
+                        break;
+                    case "robotStats.xlsx" :
+                        getRobotStatsFromFile(statFile, overview);
+                        break;
+                }
+            }
+        }
+        String fileName = configFileName + "_" + versionName;
+        ExcelWriter excelWriter = new ExcelWriter(pathToConfiguration);
+        excelWriter.writeOverviewFile(overview, fileName);
+
     }
 
     private static void generateSeedAverages(String configFileName, String versionName){

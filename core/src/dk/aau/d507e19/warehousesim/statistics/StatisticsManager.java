@@ -57,11 +57,11 @@ public class StatisticsManager {
         String runConfigFolder = createRunConfigFolder();
 
         // Create folder for this specific simulation run
-        // .../core/assets/statistics/*runConfig*_*versionName*/Seed_*seed*/*TaskAllocator___PathFinder*/
+        // .../core/assets/statistics/*runConfig*_*versionName*/*TaskAllocator___PathFinder*/
         String pathToSimulationFolder = createSimulationFolder(runConfigFolder);
 
         // Create folder for current seed used
-        // .../core/assets/statistics/*runConfig*_*versionName*/Seed_*seed*/
+        // .../core/assets/statistics/*runConfig*_*versionName*/*TaskAllocator___PathFinder*/Seed_*seed*/
         String seedFolder = createSeedFolder(pathToSimulationFolder);
 
         return seedFolder;
