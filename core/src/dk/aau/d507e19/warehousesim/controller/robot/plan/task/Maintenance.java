@@ -1,9 +1,6 @@
 package dk.aau.d507e19.warehousesim.controller.robot.plan.task;
 
-import dk.aau.d507e19.warehousesim.controller.robot.GridCoordinate;
-import dk.aau.d507e19.warehousesim.controller.robot.Robot;
-import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
-import dk.aau.d507e19.warehousesim.controller.robot.Status;
+import dk.aau.d507e19.warehousesim.controller.robot.*;
 import dk.aau.d507e19.warehousesim.controller.robot.controlsystems.SensorState;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.storagegrid.MaintenanceTile;
@@ -111,7 +108,6 @@ public class Maintenance implements Task {
 
     public void handleOldTasks() {
         Iterator<Task> iterator = robotController.getTasks().iterator();
-        ArrayList<Task> tasksToRemove = new ArrayList<>();
         while (iterator.hasNext()) {
             Task t = iterator.next();
             if (t instanceof BinDelivery) {
@@ -119,6 +115,8 @@ public class Maintenance implements Task {
                 reassignBinDelivery((BinDelivery) t);
             } else if (t instanceof Charging) {
                 ((Charging) t).resetNavigation();
+            } else if(t instanceof Relocation || t instanceof OneTileRelocationTask){
+                iterator.remove();
             }
         }
     }
