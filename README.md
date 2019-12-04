@@ -9,7 +9,7 @@ Magnus Kirkegaard
 
 Mads Faber
 
-Mads Bau
+Mads Kristian Bau-Madsen
 
 Asger Bertel
 
