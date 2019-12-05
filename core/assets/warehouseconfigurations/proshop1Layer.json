@@ -1,4 +1,5 @@
 {
+  "networkDelay": false,
   "name": "proshop1Layer.json",
   "wareHouseWidth": 52,
   "wareHouseHeight": 52,

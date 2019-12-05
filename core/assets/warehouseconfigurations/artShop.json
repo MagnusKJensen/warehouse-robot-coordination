@@ -1,4 +1,5 @@
 {
+  "networkDelay": false,
   "name": "artShop.json",
   "wareHouseWidth": 40,
   "wareHouseHeight": 40,

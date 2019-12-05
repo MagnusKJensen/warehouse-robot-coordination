@@ -1,6 +1,7 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
 import dk.aau.d507e19.warehousesim.Simulation;
+import dk.aau.d507e19.warehousesim.TimeUtils;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinder;
 import dk.aau.d507e19.warehousesim.controller.robot.plan.task.*;
@@ -42,6 +43,11 @@ public class RobotController {
     }
 
     public boolean assignTask(Task task){
+        // Takes between 50-250ms to calculate if network delay is on
+        if(Simulation.getWarehouseSpecs().networkDelay){
+            float calculationTime = random.nextFloat() * 0.2f + 0.05f;
+            tasks.add(new TimedAction(() -> {}, TimeUtils.secondsToTicks(calculationTime)));
+        }
         tasks.add(task);
         task.setRobot(this.getRobot());
 

@@ -103,8 +103,6 @@ public class ReservationManager {
         robotReservationsMap.get(reservation.getRobot()).remove(reservation);
     }
 
-
-
     public boolean isBinReserved(GridCoordinate gridCoordinate) {
         StorageGrid grid = server.getSimulation().getStorageGrid();
         BinTile tile = (BinTile)grid.getTile(gridCoordinate.getX(), gridCoordinate.getY());

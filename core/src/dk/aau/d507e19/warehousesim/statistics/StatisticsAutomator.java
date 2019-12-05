@@ -18,11 +18,11 @@ import java.util.Random;
 public class StatisticsAutomator {
     public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations";
     public static final String PATH_TO_STATISTICS_FOLDER = System.getProperty("user.dir") + File.separator + "statistics";
-    private static final int TICKS_PER_RUN = 200000; // 216.000 = 2 timers real time
+    private static final int TICKS_PER_RUN = 216000; // 216.000 = 2 timers real time
     private static final int FILE_WRITE_INTERVAL_TICKS = 50000;
-    private static final String VERSION_NAME = "v.Thread";
+    private static final String VERSION_NAME = "v.NoDelay";
     private static final String SPEC_FILE_NAME = "artShop.json";
-    private static final int numberOfSeeds = 30;
+    private static final int numberOfSeeds = 5;
     private static long[] SEEDS = new long[numberOfSeeds];
     private static Random random = new Random(SimulationApp.DEFAULT_SEED);
 
@@ -31,17 +31,12 @@ public class StatisticsAutomator {
 
         // Task allocators to use
         ArrayList<TaskAllocatorEnum> taskAllocators = new ArrayList<>(Arrays.asList(
-                TaskAllocatorEnum.SMART_ALLOCATOR,
-                TaskAllocatorEnum.NAIVE_SHORTEST_DISTANCE_TASK_ALLOCATOR,
-                TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR
+                TaskAllocatorEnum.SMART_ALLOCATOR
         ));
 
         // Path finders to use
         ArrayList<PathFinderEnum> pathFinders = new ArrayList<>(Arrays.asList(
-                //PathFinderEnum.CHPATHFINDER,
-                //PathFinderEnum.ASTAR
-                PathFinderEnum.DUMMYPATHFINDER,
-                PathFinderEnum.RRTSTAREXTENDED
+                PathFinderEnum.CHPATHFINDER
         ));
 
         WarehouseSpecs specs = Simulation.readWarehouseSpecsFromFile(SPEC_FILE_NAME);
@@ -124,7 +119,6 @@ public class StatisticsAutomator {
                 }
             }
         }
-        // generateSeedAverages(specs.getName(), versionName);
     }
 
     private static Simulation runSimulationWith(long seed, String runConfigName, PathFinderEnum pathFinder, TaskAllocatorEnum taskAllocator, WarehouseSpecs specs, String versionName){
