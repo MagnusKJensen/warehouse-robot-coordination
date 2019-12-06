@@ -1,13 +1,14 @@
 package dk.aau.d507e19.warehousesim.controller.pathAlgorithms.chp;
 
 import dk.aau.d507e19.warehousesim.SimulationApp;
+import dk.aau.d507e19.warehousesim.TimeUtils;
 import dk.aau.d507e19.warehousesim.controller.path.Path;
 import dk.aau.d507e19.warehousesim.controller.path.Step;
 import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 
 public class DistanceTurnGCost implements GCostCalculator {
 
-    private final double waitingPenalty = 1.5;
+    private final double waitingPenalty = 1.0;
 
     @Override
     public double getGCost(Path path, RobotController robotController) {
@@ -22,9 +23,9 @@ public class DistanceTurnGCost implements GCostCalculator {
         double penalty = 0;
         for(Step step : path.getFullPath()){
             if (step.isWaitingStep())
-                penalty += (double) step.getWaitTimeInTicks() / (double) SimulationApp.TICKS_PER_SECOND;
+                penalty += TimeUtils.tickToSeconds(step.getWaitTimeInTicks());
         }
-        return penalty;
+        return penalty * waitingPenalty;
     }
 
 }
