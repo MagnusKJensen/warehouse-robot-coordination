@@ -245,4 +245,8 @@ public class Robot {
         GraphicsManager.getFont().draw(batch, robotController.getTicksSinceOrderAssigned() + "",
                 screenPosition.x, screenPosition.y);
     }
+
+    public void setRobotID(int robotID) {
+        this.robotID = robotID;
+    }
 }

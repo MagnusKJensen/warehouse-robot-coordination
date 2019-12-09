@@ -20,12 +20,10 @@ import java.util.Random;
 
 public abstract class RRTBase {
     RobotController robotController;
-    ReservationManager reservationManager;
     private Random random = new Random(Simulation.RANDOM_SEED);
 
     public RRTBase(RobotController robotController) {
         this.robotController = robotController;
-        reservationManager = robotController.getServer().getReservationManager();
     }
 
 

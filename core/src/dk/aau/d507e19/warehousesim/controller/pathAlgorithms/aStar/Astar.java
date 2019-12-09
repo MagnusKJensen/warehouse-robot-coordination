@@ -78,7 +78,6 @@ public class Astar implements PartialPathFinder {
 
             // If the current tile coordinates are valid, and the neighbor tile is not blocked then proceed.
             if (currentTile.getCurrentYPosition() - 1 >= 0 && !(grid[downstairsNeighbor.getX()][downstairsNeighbor.getY()].isBlocked())) {
-
                 // Add neighbor tile to openList.
                 addNeighborTileToOpenList(downstairsNeighbor);
             }
