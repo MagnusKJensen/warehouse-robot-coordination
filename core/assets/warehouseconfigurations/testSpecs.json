@@ -1,4 +1,5 @@
 {
+  "networkDelay": false,
   "name": "testSpecs.json",
   "wareHouseWidth": 30,
   "wareHouseHeight": 30,

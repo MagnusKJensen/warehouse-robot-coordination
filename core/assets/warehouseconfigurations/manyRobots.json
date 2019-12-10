@@ -1,4 +1,5 @@
 {
+  "networkDelay": false,
   "name": "manyRobots.json",
   "wareHouseWidth": 10,
   "wareHouseHeight": 10,

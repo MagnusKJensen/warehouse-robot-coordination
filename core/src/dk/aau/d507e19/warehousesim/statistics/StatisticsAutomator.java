@@ -120,7 +120,6 @@ public class StatisticsAutomator {
                 }
             }
         }
-        // generateSeedAverages(specs.getName(), versionName);
     }
 
     private static Simulation runSimulationWith(long seed, String runConfigName, PathFinderEnum pathFinder, TaskAllocatorEnum taskAllocator, WarehouseSpecs specs, String versionName){

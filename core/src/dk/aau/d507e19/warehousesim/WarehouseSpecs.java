@@ -12,7 +12,7 @@ public class WarehouseSpecs {
      *                                                    *
      * * * * * * * * * * * * * * * * * * * * * * * * * * **/
 
-
+    public boolean networkDelay = true;
     public String name = "NONAME";
 
     /** Warehouse **/
@@ -89,5 +89,9 @@ public class WarehouseSpecs {
 
     public void setNumberOfRobots(int numberOfRobots) {
         this.numberOfRobots = numberOfRobots;
+    }
+
+    public void setNetworkDelay(boolean networkDelay) {
+        this.networkDelay = networkDelay;
     }
 }

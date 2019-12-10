@@ -4,7 +4,11 @@ import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 
 public enum TaskAllocatorEnum {
-    DUMMY_TASK_ALLOCATOR("DummyTaskAllocator", true), NAIVE_SHORTEST_DISTANCE_TASK_ALLOCATOR("NaiveShortestDistanceTaskAllocator", true), LEAST_USED_ROBOT_TASK_ALLOCATOR("LeastUsedRobotTaskAllocator", true), SMART_ALLOCATOR("\"Smart\"Allocator", true);
+    DUMMY_TASK_ALLOCATOR("DummyTaskAllocator", true),
+    NAIVE_SHORTEST_DISTANCE_TASK_ALLOCATOR("NaiveShortestDistanceTaskAllocator", true),
+    LEAST_USED_ROBOT_TASK_ALLOCATOR("LeastUsedRobotTaskAllocator", true),
+    SMART_ALLOCATOR("\"Smart\"Allocator", true),
+    FAIR_TASK_ALLOCATOR("FairTaskAllocator", true);
 
     private String name;
     private boolean works;
@@ -31,6 +35,8 @@ public enum TaskAllocatorEnum {
                 return new LeastUsedRobotTaskAllocator(grid, server);
             case SMART_ALLOCATOR:
                 return new SmartAllocator(server);
+            case FAIR_TASK_ALLOCATOR:
+                return new FairTaskAllocator(grid, server);
             default:
                 throw new RuntimeException("Could not identify task allocator " + this.getName());
         }
