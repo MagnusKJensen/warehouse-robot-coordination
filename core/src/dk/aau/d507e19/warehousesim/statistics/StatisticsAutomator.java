@@ -4,6 +4,7 @@ import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
+import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocatorEnum;
 import org.apache.poi.ss.usermodel.*;
 
@@ -18,44 +19,38 @@ import java.util.Random;
 public class StatisticsAutomator {
     public static final String PATH_TO_RUN_CONFIGS = System.getProperty("user.dir") + File.separator + "warehouseconfigurations";
     public static final String PATH_TO_STATISTICS_FOLDER = System.getProperty("user.dir") + File.separator + "statistics";
-    private static final int TICKS_PER_RUN = 200000; // 216.000 = 2 timers real time
-    private static final int FILE_WRITE_INTERVAL_TICKS = 50000;
-    private static final String VERSION_NAME = "v.Thread";
-    private static final String SPEC_FILE_NAME = "artShop.json";
-    private static final int numberOfSeeds = 30;
-    private static long[] SEEDS = new long[numberOfSeeds];
+    private static final int TICKS_PER_RUN = 216000; // 216.000 = 2 timers real time
+    private static final int FILE_WRITE_INTERVAL_TICKS = 25000;
+    private static final int NUMBER_OF_SEEDS = 8;
+    private static final String VERSION_NAME = "v.Deadlock3";
+    private static final String SPEC_FILE_NAME = "manyRobots.json";
     private static Random random = new Random(SimulationApp.DEFAULT_SEED);
 
     public static void main(String[] args) {
-        generateSeeds();
+        long[] seeds = generateSeeds(NUMBER_OF_SEEDS);
 
         // Task allocators to use
         ArrayList<TaskAllocatorEnum> taskAllocators = new ArrayList<>(Arrays.asList(
-                TaskAllocatorEnum.SMART_ALLOCATOR,
-                TaskAllocatorEnum.NAIVE_SHORTEST_DISTANCE_TASK_ALLOCATOR,
-                TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR
+                TaskAllocatorEnum.SMART_ALLOCATOR
         ));
 
         // Path finders to use
         ArrayList<PathFinderEnum> pathFinders = new ArrayList<>(Arrays.asList(
-                //PathFinderEnum.CHPATHFINDER,
-                //PathFinderEnum.ASTAR
-                PathFinderEnum.DUMMYPATHFINDER,
-                PathFinderEnum.RRTSTAREXTENDED
+                PathFinderEnum.CHPATHFINDER
         ));
 
         WarehouseSpecs specs = Simulation.readWarehouseSpecsFromFile(SPEC_FILE_NAME);
 
         // Run a single config with the specified taskAllocators and pathfinders
-        runConfig(specs, VERSION_NAME, taskAllocators, pathFinders, SEEDS);
+        runConfig(specs, VERSION_NAME, taskAllocators, pathFinders, seeds);
 
         // Run with some amount of robots in a interval
-        // runRobotInterval(specs, VERSION_NAME, taskAllocators, pathFinders, SEEDS, generateRobotIntervalArray(5, 8));
+        // runRobotInterval(specs, VERSION_NAME, taskAllocators, pathFinders, seeds, generateRobotIntervalArray(5, 8));
 
         // Run with a custom presets of robots
         // This can be used instead of generateRobotIntervalArray to run some specifications with custom amounts of robots.
         ArrayList<Integer> robotNumbers = new ArrayList<>(Arrays.asList(1, 25, 50, 75));
-        // runRobotInterval(specs, VERSION_NAME, taskAllocators, pathFinders, SEEDS, robotNumbers);
+        // runRobotInterval(specs, VERSION_NAME, taskAllocators, pathFinders, seeds, robotNumbers);
     }
 
     private static ArrayList<Integer> generateRobotIntervalArray(int fewestRobots, int maxRobots){
@@ -83,13 +78,14 @@ public class StatisticsAutomator {
                     double ultimateSlowestOrder = 0;
                     for(long seed : seeds){
                         System.out.println("TaskAllocator: " + taskAllocator.getName() + ", PathFinder: " + pathFinder.getName()
-                                + ", Seed: " + seedNumber++ + "/" + SEEDS.length + " : " + seed + ", version name: " + versionName);
+                                + ", Seed: " + seedNumber++ + "/" + seeds.length + " : " + seed + ", version name: " + versionName);
                         simulation = runSimulationWith(seed, specs.getName(), pathFinder, taskAllocator, specs, versionName);
                         // Add stats about this run for this amount of robots
                         averageOrderTimes.add(simulation.getStatisticsManager().getAverageOrderProcessingTime());
                         ordersPerMinuteScores.add(simulation.getStatisticsManager().getOrdersPerMinute());
                         if(ultimateSlowestOrder < simulation.getStatisticsManager().getSlowestOrder().getTimeSpentOnOrderInSec())
                             ultimateSlowestOrder = simulation.getStatisticsManager().getSlowestOrder().getTimeSpentOnOrderInSec();
+
                     }
                     String pathToRobotFile = PATH_TO_STATISTICS_FOLDER + File.separator +  "robotInterval_" + specs.getName() + "_" + taskAllocator.getName() + "_" + pathFinder.getName() + ".xlsx";
                     writeRobotStatsToFile(averageOrderTimes, ordersPerMinuteScores,
@@ -117,7 +113,7 @@ public class StatisticsAutomator {
                 if (taskAllocator.works() && pathFinder.works()) {
                     int seedNumber = 1;
                     for(long seed : seeds){
-                        System.out.println("TaskAllocator: " + taskAllocator.getName() + ", PathFinder: " + pathFinder.getName() + ", Seed: " + seedNumber++ + "/" + SEEDS.length + " : " + seed + ", version name: " + versionName);
+                        System.out.println("TaskAllocator: " + taskAllocator.getName() + ", PathFinder: " + pathFinder.getName() + ", Seed: " + seedNumber++ + "/" + seeds.length + " : " + seed + ", version name: " + versionName);
                         runSimulationWith(seed, specs.getName(), pathFinder, taskAllocator, specs, versionName);
                     }
                     generateSeedAveragesForConfig(specs.getName(), versionName, taskAllocator, pathFinder);
@@ -232,6 +228,7 @@ public class StatisticsAutomator {
                 case "OrderGoal":
                 case "CurrentTick":
                 case "TasksInQueue":
+                case "Longest standing task":
                     break;
                 default:
                     throw new IllegalArgumentException("'" + row.getCell(0).getStringCellValue() + "' not found in file ' "
@@ -355,10 +352,12 @@ public class StatisticsAutomator {
         return runConfigs;
     }
 
-    private static void generateSeeds() {
-        for(int i = 0; i < SEEDS.length; ++i){
-            SEEDS[i] = random.nextLong();
+    private static long[] generateSeeds(int numberOfSeeds) {
+        long[] seeds = new long[numberOfSeeds];
+        for(int i = 0; i < numberOfSeeds; ++i){
+            seeds[i] = random.nextLong();
         }
+        return seeds;
     }
 
     private static double getAverageValue(ArrayList<Double> list){
