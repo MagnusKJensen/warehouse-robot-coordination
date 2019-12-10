@@ -27,7 +27,7 @@ public class CHPathfinder implements PartialPathFinder {
 
     private static final long MAXIMUM_WAIT_TIME = TimeUtils.secondsToTicks(10);
     private static final long MAXIMUM_ITERATIONS = 1000;
-    private static final long PARTIAL_PATH_MAX_ITERATIONS = 1000;
+    private static final long PARTIAL_PATH_MAX_ITERATIONS = 300;
     private static final long MIN_TIME_BETWEEN_NODES = TimeUtils.secondsToTicks(0.9f);
     private final RobotController robotController;
     private final Server server;

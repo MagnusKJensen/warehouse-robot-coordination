@@ -15,7 +15,7 @@ import java.util.Random;
 
 public class RobotController {
 
-    public long ticksSinceOrderAssigned = 0L;
+    public long ticksSinceTaskAssigned = 0L;
     private Server server;
     private PathFinder pathFinder;
     private Robot robot;
@@ -53,7 +53,7 @@ public class RobotController {
     }
 
     private void resetTimeSinceAssignment() {
-        this.ticksSinceOrderAssigned = 0;
+        this.ticksSinceTaskAssigned = 0;
     }
 
     public boolean assignImmediateTask(Task task){
@@ -69,9 +69,9 @@ public class RobotController {
         }
 
         if(hasOrderAssigned()){
-            ticksSinceOrderAssigned++;
+            ticksSinceTaskAssigned++;
         }else {
-            ticksSinceOrderAssigned = 0;
+            ticksSinceTaskAssigned = 0;
         }
 
         Task currentTask = tasks.peekFirst();
@@ -210,7 +210,7 @@ public class RobotController {
         return true;
     }
 
-    public long getTicksSinceOrderAssigned() {
-        return ticksSinceOrderAssigned;
+    public long getTicksSinceTaskAssigned() {
+        return ticksSinceTaskAssigned;
     }
 }

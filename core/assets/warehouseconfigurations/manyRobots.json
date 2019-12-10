@@ -20,7 +20,7 @@
     ]
   ],
   "isRandomProductDistribution": true,
-  "numberOfRobots": 15,
+  "numberOfRobots": 99,
   "robotTopSpeed": 3.0,
   "robotAcceleration": 0.8,
   "robotDeceleration": 2.0,
@@ -29,7 +29,7 @@
   "robotDeliverToPickInSeconds": 12,
   "collisionDetectedEnabled": true,
   "robotPlacementPattern": {
-    "patternType": "SPIRAL",
+    "patternType": "STACKED_LINES",
     "padding": 0,
     "bounds": {
       "startX": 0,
@@ -173,7 +173,7 @@
       0
     ]
   ],
-  "secondsBetweenOrders": 12,
+  "secondsBetweenOrders": 20,
   "orderGoal": 125,
-  "productsPerOrder": 4
+  "productsPerOrder": 1
 }

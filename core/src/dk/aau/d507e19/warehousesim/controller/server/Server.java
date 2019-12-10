@@ -186,7 +186,7 @@ public class Server {
             if(!r2.getRobotController().hasOrderAssigned())
                 return r1;
 
-            if(r1.getRobotController().getTicksSinceOrderAssigned() >= r2.getRobotController().getTicksSinceOrderAssigned())
+            if(r1.getRobotController().getTicksSinceTaskAssigned() >= r2.getRobotController().getTicksSinceTaskAssigned())
                 return r1;
             else
                 return r2;

@@ -1,15 +1,11 @@
 package dk.aau.d507e19.warehousesim.controller.robot;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import dk.aau.d507e19.warehousesim.*;
-import dk.aau.d507e19.warehousesim.controller.robot.plan.task.Task;
-import dk.aau.d507e19.warehousesim.controller.server.order.Order;
 import dk.aau.d507e19.warehousesim.storagegrid.BinTile;
 import dk.aau.d507e19.warehousesim.storagegrid.PickerTile;
 import dk.aau.d507e19.warehousesim.storagegrid.Tile;
@@ -20,8 +16,6 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Locale;
 
 public class Robot {
@@ -242,7 +236,7 @@ public class Robot {
         Vector3 screenPosition = worldCamera.project(new Vector3(currentPosition.getX() + offset, currentPosition.getY() + offset, 0));
         screenPosition = fontCamera.unproject(new Vector3(screenPosition.x, Gdx.graphics.getHeight() - screenPosition.y, screenPosition.z));
         GraphicsManager.getFont().setColor(Color.WHITE);
-        GraphicsManager.getFont().draw(batch, robotController.getTicksSinceOrderAssigned() + "",
+        GraphicsManager.getFont().draw(batch, robotController.getTicksSinceTaskAssigned() + "",
                 screenPosition.x, screenPosition.y);
     }
 

@@ -213,6 +213,9 @@ public class ExcelWriter {
         row = sheet.createRow(rowNum++);
         createGeneralRow("OrderGoal", simulation.getGoal().getStatsAsCSV(), row);
 
+        row = sheet.createRow(rowNum++);
+        createGeneralRow("Longest standing task", findLongestProcessingTask(simulation), row);
+
         resizeAllColumnSizes(generalStatsHeader, sheet);
 
         String pathToFile = CONSTRUCTOR_PATH + GENERAL_STATS_FILENAME;
@@ -534,6 +537,17 @@ public class ExcelWriter {
 
         resizeAllColumnSizes(robotStatsHeader, sheet);
         saveWorkbook(workbook, CONSTRUCTOR_PATH);
+    }
+
+    private Long findLongestProcessingTask(Simulation simulation){
+        Long longestProcessingTask = 0L;
+        for(Robot robot : simulation.getAllRobots()){
+            Long robotProcessingTime = robot.getRobotController().getTicksSinceTaskAssigned();
+            if(longestProcessingTask == 0L) longestProcessingTask = robotProcessingTime;
+            if(longestProcessingTask < robotProcessingTime) longestProcessingTask = robotProcessingTime;
+        }
+
+        return longestProcessingTask;
     }
 }
 

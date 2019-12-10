@@ -68,11 +68,11 @@ public class PathFinderPerformanceTests {
 
     @AfterClass
     public static void finish(){
-        long aStarAverageTime = getAverageTime(AStarResults, AStarIterations);
-        long TAAverageTime = getAverageTime(TAResults, TAIterations);
+        // long aStarAverageTime = getAverageTime(AStarResults, AStarIterations);
+        // long TAAverageTime = getAverageTime(TAResults, TAIterations);
 
-        System.out.println("ASTAR average calculations time: " + aStarAverageTime + " (" + AStarIterations + " iterations)");
-        System.out.println("TA* average calculations time: " + TAAverageTime + " (" + TAIterations + " iterations)");
+        // System.out.println("ASTAR average calculations time: " + aStarAverageTime + " (" + AStarIterations + " iterations)");
+        // 7System.out.println("TA* average calculations time: " + TAAverageTime + " (" + TAIterations + " iterations)");
     }
 
     @Ignore
