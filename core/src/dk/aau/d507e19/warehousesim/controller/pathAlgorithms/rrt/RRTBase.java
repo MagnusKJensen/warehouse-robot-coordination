@@ -337,6 +337,7 @@ public abstract class RRTBase {
         path = makePath(destinationNode);
         return makePath(destinationNode);
     }
+
     private void growKtimes(GridCoordinate destination, int k){
         for(int i = 0; i < k; i++){
             growRRT(root,k);

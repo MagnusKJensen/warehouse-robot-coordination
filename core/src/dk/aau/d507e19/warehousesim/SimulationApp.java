@@ -17,7 +17,7 @@ import java.io.*;
 public class SimulationApp extends ApplicationAdapter {
 
     public static final long DEFAULT_SEED = 123456789L;
-	public static String CURRENT_RUN_CONFIG = "manyRobots.json";
+	public static String CURRENT_RUN_CONFIG = "proshop1LayerPeak.json";
 
 	public static final int MENU_WIDTH_IN_PIXELS = 300;
 
@@ -50,8 +50,8 @@ public class SimulationApp extends ApplicationAdapter {
     private InputMultiplexer inputMultiplexer;
 
     // Currently using the following pathFinder and TaskAllocators.
-	public static PathFinderEnum pathFinderSelected = PathFinderEnum.DUMMYPATHFINDER;
-	private static TaskAllocatorEnum taskAllocatorSelected = TaskAllocatorEnum.DUMMY_TASK_ALLOCATOR;
+	public static PathFinderEnum pathFinderSelected = PathFinderEnum.MANHATTAN_PATH_FINDER;
+	private static TaskAllocatorEnum taskAllocatorSelected = TaskAllocatorEnum.SEQUENTIAL_TASK_ALLOCATOR;
 
 	@Override
 	public void create () {

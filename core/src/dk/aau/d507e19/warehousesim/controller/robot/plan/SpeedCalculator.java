@@ -127,7 +127,6 @@ public class SpeedCalculator {
 
         }
 
-
         float distX = line.getDirection().xDir * distance;
         float distY = line.getDirection().yDir * distance;
         return new Position(line.getStart().getX() + distX, line.getStart().getY() + distY);

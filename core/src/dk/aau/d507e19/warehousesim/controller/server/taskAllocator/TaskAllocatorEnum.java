@@ -4,10 +4,10 @@ import dk.aau.d507e19.warehousesim.controller.server.Server;
 import dk.aau.d507e19.warehousesim.storagegrid.StorageGrid;
 
 public enum TaskAllocatorEnum {
-    DUMMY_TASK_ALLOCATOR("DummyTaskAllocator", true),
-    NAIVE_SHORTEST_DISTANCE_TASK_ALLOCATOR("NaiveShortestDistanceTaskAllocator", true),
+    SEQUENTIAL_TASK_ALLOCATOR("SequentialTaskAllocator", true),
+    DISTANCE_TASK_ALLOCATOR("DistanceTaskAllocator", true),
     LEAST_USED_ROBOT_TASK_ALLOCATOR("LeastUsedRobotTaskAllocator", true),
-    SMART_ALLOCATOR("\"Smart\"Allocator", true),
+    WORKLOAD_TASK_ALLOCATOR("WorkloadTaskAllocator", true),
     FAIR_TASK_ALLOCATOR("FairTaskAllocator", true);
 
     private String name;
@@ -27,13 +27,13 @@ public enum TaskAllocatorEnum {
 
     public TaskAllocator getTaskAllocator(StorageGrid grid, Server server){
         switch (this) {
-            case DUMMY_TASK_ALLOCATOR:
+            case SEQUENTIAL_TASK_ALLOCATOR:
                 return new DummyTaskAllocator(server);
-            case NAIVE_SHORTEST_DISTANCE_TASK_ALLOCATOR:
+            case DISTANCE_TASK_ALLOCATOR:
                 return new NaiveShortestDistanceTaskAllocator(grid, server);
             case LEAST_USED_ROBOT_TASK_ALLOCATOR:
                 return new LeastUsedRobotTaskAllocator(grid, server);
-            case SMART_ALLOCATOR:
+            case WORKLOAD_TASK_ALLOCATOR:
                 return new SmartAllocator(server);
             case FAIR_TASK_ALLOCATOR:
                 return new FairTaskAllocator(grid, server);

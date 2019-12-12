@@ -78,7 +78,7 @@ public class PathFinderPerformanceTests {
     @Ignore
     @RepeatTest(times = 1000)
     public void testTAStarPerformance(){
-        RobotController robotController = new RobotController(server, robot, PathFinderEnum.CHPATHFINDER);
+        RobotController robotController = new RobotController(server, robot, PathFinderEnum.TA_STAR_PATHFINDER);
         when(robot.getRobotController()).thenReturn(robotController);
         CHPathfinder chPathfinder = CHPathfinder.defaultCHPathfinder(gridBounds, robot.getRobotController());
 

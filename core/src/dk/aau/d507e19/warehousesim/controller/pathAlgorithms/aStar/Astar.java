@@ -211,7 +211,6 @@ public class Astar implements PartialPathFinder {
         createPathListFromClosedList();
 
         if (isReserved()) {
-
             // Clear all lists except for isReservedList
             clear();
 
@@ -254,7 +253,6 @@ public class Astar implements PartialPathFinder {
     }
 
     public boolean isReserved() {
-
         boolean i = false;
 
         // Makes the tempPath to steps

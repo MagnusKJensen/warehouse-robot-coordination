@@ -4,7 +4,6 @@ import dk.aau.d507e19.warehousesim.Simulation;
 import dk.aau.d507e19.warehousesim.SimulationApp;
 import dk.aau.d507e19.warehousesim.WarehouseSpecs;
 import dk.aau.d507e19.warehousesim.controller.pathAlgorithms.PathFinderEnum;
-import dk.aau.d507e19.warehousesim.controller.robot.Robot;
 import dk.aau.d507e19.warehousesim.controller.server.taskAllocator.TaskAllocatorEnum;
 import org.apache.poi.ss.usermodel.*;
 
@@ -31,12 +30,12 @@ public class StatisticsAutomator {
 
         // Task allocators to use
         ArrayList<TaskAllocatorEnum> taskAllocators = new ArrayList<>(Arrays.asList(
-                TaskAllocatorEnum.SMART_ALLOCATOR
+                TaskAllocatorEnum.WORKLOAD_TASK_ALLOCATOR
         ));
 
         // Path finders to use
         ArrayList<PathFinderEnum> pathFinders = new ArrayList<>(Arrays.asList(
-                PathFinderEnum.CHPATHFINDER
+                PathFinderEnum.TA_STAR_PATHFINDER
         ));
 
         WarehouseSpecs specs = Simulation.readWarehouseSpecsFromFile(SPEC_FILE_NAME);

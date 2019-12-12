@@ -76,9 +76,6 @@ public class OrderManager {
                 order.setStartTimeInMS(server.getTimeInMS());
                 processingOrdersToTaskMap.put(order, tasksFromOrder);
                 taskAllocator.addTask(tasksFromOrder);
-                //tasksQueue.addAll(tasksFromOrder);
-
-
                 // Remove order from queue
                 orderIterator.remove();
                 // Picker is no longer available
