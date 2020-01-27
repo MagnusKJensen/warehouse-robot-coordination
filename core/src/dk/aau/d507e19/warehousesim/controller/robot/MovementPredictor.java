@@ -22,7 +22,7 @@ public class MovementPredictor {
                 throw new IllegalArgumentException
                         ("Cannot calcuate reservations for paths consisting of only one movement step");
 
-            // Edge case where the first and only coordiate is a waiting step
+            // Edge case where the first and only coordinate is a waiting step
             Step waitingStep = path.getFullPath().get(0);
             TimeFrame timeFrame = new TimeFrame(startTimeTicks - paddingTimeTicks, startTimeTicks
                     + waitingStep.getWaitTimeInTicks() + paddingTimeTicks);
@@ -32,7 +32,7 @@ public class MovementPredictor {
         for (int i = 0; i < lines.size(); i++) {
             Line line = lines.get(i);
             if(i > 0)
-                startTimeTicks = reservations.get(reservations.size() - 1).getTimeFrame().getEnd();
+                startTimeTicks = reservations.get(reservations.size() - 1).getTimeFrame().getEnd() - paddingTimeTicks;
             reservations.addAll(calculateReservations(robot, line, startTimeTicks, paddingTimeTicks));
         }
 
@@ -56,8 +56,6 @@ public class MovementPredictor {
         long leaveTime = lineSpeedCalculator.amountOfTicksToReach(leaveDistance);
         reservations.add(new Reservation(robot, line.getStart().getGridCoordinate(),
                 new TimeFrame(startTimeTicks - paddingTicks, startTimeTicks + leaveTime + paddingTicks)));
-
-
 
         GridCoordinate startCoordinate = coordinates.get(0);
         for(int i = 1; i < coordinates.size(); i++){

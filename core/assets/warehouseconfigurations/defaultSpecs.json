@@ -29,17 +29,17 @@
     ]
   ],
   "isRandomProductDistribution": true,
-  "numberOfRobots": 20,
+  "numberOfRobots": 15,
   "robotTopSpeed": 3.0,
   "robotAcceleration": 0.8,
   "robotDeceleration": 2.0,
   "robotMinimumSpeed": 0.1,
   "robotPickUpSpeedInSeconds": 3,
-  "robotDeliverToPickInSeconds": 12,
+  "robotDeliverToPickInSeconds": 6,
   "collisionDetectedEnabled": true,
   "robotPlacementPattern": {
     "patternType": "STACKED_LINES",
-    "padding": 1,
+    "padding": 3,
     "bounds": {
       "startX": 0,
       "startY": 0,

@@ -9,8 +9,8 @@ import dk.aau.d507e19.warehousesim.controller.robot.RobotController;
 import dk.aau.d507e19.warehousesim.controller.server.Server;
 
 public enum PathFinderEnum {
-    MANHATTAN_PATH_FINDER("ManhattanPathFinder", true), ASTAR("A*", true),
-    ASTARCORNERS("A* Corners", true), TA_STAR_PATHFINDER("TA* - Turns", true),
+    MANHATTAN_PATH_FINDER("ManhattanPathFinder", true), ASTAR("WHCA*", true),
+    ASTARCORNERS("A* Corners", true), TA_STAR_PATHFINDER("TA*", true),
     RRT("RRT", true), RRTSTAR("RRT*", true),
     RRTSTAREXTENDED("RRT*EXTENDED",true);
 

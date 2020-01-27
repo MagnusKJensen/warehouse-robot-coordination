@@ -16,8 +16,10 @@ import java.io.*;
 
 public class SimulationApp extends ApplicationAdapter {
 
-    public static final long DEFAULT_SEED = 123456789L;
-	public static String CURRENT_RUN_CONFIG = "proshop1LayerPeak.json";
+    public static final long DEFAULT_SEED = 1234L;
+
+	public static final String CURRENT_RUN_CONFIG = "defaultSpecs.json";
+    //public static final String CURRENT_RUN_CONFIG = "manyRobots.json";
 
 	public static final int MENU_WIDTH_IN_PIXELS = 300;
 
